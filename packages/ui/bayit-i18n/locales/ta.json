@@ -4042,56 +4042,52 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "Live TV Channels",
-        "Radio & Podcasts",
-        "Audiobooks",
-        "50 AI Credits/month"
+        "BYOC பளத்தளம் (நேரலை TV, ரேடியோ, பாட்காஸ்ட்)",
+        "50 AI க்ரெடிட் (ஒரு முறை)",
+        "1 விட்ஜெட்",
+        "1 குடும்ப ப்ரோபைல்"
       ]
     },
     "plus": {
       "name": "Plus",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 AI Credits/month",
-        "Unlimited AI Dubbing",
-        "Smart Subtitles",
-        "AI Scene Search",
-        "AI Catch-Up",
-        "Talk-Back to Characters",
-        "4 Simultaneous Devices",
-        "Priority Support"
-      ]
+        "19 AI சேவைகள் - வரம்பில்லா",
+        "வரம்பில்லா விட்ஜெட்",
+        "வரம்பில்லா குடும்ப ப்ரோபைல்",
+        "முன்னுரிமை ஆதரவு"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "டப்பிங் மற்றும் உபதலைப்பு",
+        "dubbingSubtitlesCount": "8 சேவைகள்",
+        "searchDiscovery": "தேடல் மற்றும் கண்டுபிடிப்பு",
+        "searchDiscoveryCount": "3 சேவைகள்",
+        "languageTools": "மொழி கருவிகள்",
+        "languageToolsCount": "4 சேவைகள்",
+        "creativeInteractive": "ஆக்கபூர்வமான மற்றும் இன்டராக்டிவ்",
+        "creativeInteractiveCount": "4 சேவைகள்"
+      }
     },
     "comparison": {
-      "title": "Compare Plans",
-      "subtitle": "Find the perfect plan for your needs",
+      "title": "திட்டங்களை ஒப்பிடுக",
+      "subtitle": "உங்கள் தேவைகளுக்கு சரியான திட்டத்தை கண்டறியுங்கள்",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "AI சேவைகள்",
+        "platform": "பளத்தளம்",
+        "support": "ஆதரவு"
       },
       "features": {
-        "liveChannels": "Live TV Channels",
-        "radioPodcasts": "Radio & Podcasts",
-        "audiobooks": "Audiobooks",
-        "byocPlexIptv": "Plex & IPTV Integration",
-        "aiCredits": "AI Credits",
-        "aiDubbing": "AI Dubbing",
-        "aiSubtitles": "Smart Subtitles",
-        "aiSearch": "AI Scene Search",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "Talk-Back to Characters",
-        "simultaneousDevices": "Simultaneous Devices",
-        "customerSupport": "Customer Support"
+        "aiFeatures": "AI சேவைகள் (மொத்தம் 19)",
+        "widgets": "விட்ஜெட்",
+        "familyProfiles": "குடும்ப ப்ரோபைல்",
+        "customerSupport": "வாடிக்கையாளர் ஆதரவு"
       },
       "values": {
-        "fiftyCredits": "50/month",
-        "fiveHundredCredits": "500/month",
-        "creditBased": "Credit-based",
-        "emailSupport": "Email",
-        "prioritySupport": "Priority"
+        "fiftyCredits": "50 க்ரெடிட் (ஒரு முறை)",
+        "unlimited": "வரம்பில்லா",
+        "emailSupport": "மின்னஞ்சல்",
+        "prioritySupport": "முன்னுரிமை"
       }
     }
   },
@@ -4263,7 +4259,13 @@
       "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
       "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
     },
-    "invalidEpisodeUrl": "Invalid episode URL"
+    "invalidEpisodeUrl": "Invalid episode URL",
+    "dubbing": {
+      "premiumTitle": "Plus சேவை",
+      "premiumMessage": "நேரடி டப்பிங்கிற்கு Plus சந்தா தேவை",
+      "upgrade": "Plus-க்கு மேம்படுத்துங்கள்",
+      "notNow": "இப்போது வேண்டாம்"
+    }
   },
   "listen": {
     "title": "கேளுங்கள்"
@@ -4442,7 +4444,7 @@
       "line2": "டெல் அவிவ், இஸ்ரேல் 6100000"
     },
     "free": "இலவசம்",
-    "premiumPrice": "$7.99/மாதம்",
+    "premiumPrice": "$6.99/மாதம்",
     "familyPrice": "$12.99/மாதம்",
     "remaining": "மீதமுள்ளது",
     "subscription": {
@@ -4910,7 +4912,7 @@
     "kids": "👶 குழந்தைகள்",
     "readAloud": "சத்தமாக வாசி",
     "smartSearch": "Smart Search",
-    "premiumRequired": "Smart Search க்கு Premium சந்தா தேவை",
+    "premiumRequired": "Smart Search க்கு Plus சந்தா தேவை",
     "searchFailed": "தேடல் தோல்வியடைந்தது",
     "premiumFeature": "Premium அம்சம்",
     "smartSearchDescription": "Smart Search இயற்கை மொழி வினவல்களைப் புரிந்துகொள்ளவும், நீங்கள் தேடுவதைத் துல்லியமாகக் கண்டறியவும் AI ஐப் பயன்படுத்துகிறது.",
@@ -5211,13 +5213,30 @@
     "subscription": {
       "title": "சந்தா",
       "currentPlan": "தற்போதைய திட்டம்",
+      "status": "நிலை",
+      "since": "உறுப்பினர் தொடக்கம்",
+      "renews": "புதுப்பிக்கும் தேதி",
+      "featuresIncluded": "சேர்க்கப்பட்ட சேவைகள்",
+      "featureAI": "19 AI சேவைகள்",
+      "featureAIFree": "50 AI க்ரெடிட் (ஒரு முறை)",
+      "featureAIPlus": "வரம்பில்லா AI சேவைகள்",
+      "featureWidgets": "விட்ஜெட்",
+      "featureWidgetsFree": "1 விட்ஜெட்",
+      "featureWidgetsPlus": "வரம்பில்லா விட்ஜெட்",
+      "featureProfiles": "குடும்ப ப்ரோபைல்",
+      "featureProfilesFree": "1 ப்ரோபைல்",
+      "featureProfilesPlus": "வரம்பில்லா ப்ரோபைல்",
+      "featureSupport": "முன்னுரிமை ஆதரவு",
+      "manageOnGooglePlay": "Google Play-ல் எண்ணுக",
+      "manageOnAppStore": "App Store-ல் எண்ணுக",
+      "upgradePlan": "திட்டத்தை மேம்படுத்துங்கள்",
       "availablePlans": "கிடைக்கும் திட்டங்கள்",
-      "changePlan": "திட்டத்தை மாற்று",
+      "changePlan": "திட்டத்தை மாற்றுங்கள்",
       "billingHistory": "பில்லிங் வரலாறு",
-      "manageViaStore": "App Store வழியாக நிர்வகி",
-      "autoRenew": "தானியங்கி புதுப்பிப்பு",
-      "promoCode": "விளம்பர குறியீடு",
-      "cancelSubscription": "சந்தாவை ரத்து செய்"
+      "manageViaStore": "App Store மூலம் எண்ணுக",
+      "autoRenew": "தானியங்கி புதுப்பிக்கும்",
+      "promoCode": "ப்ரோமோ கோட்",
+      "cancelSubscription": "சந்தாவை ரத்து செய்யுங்கள்"
     },
     "aboutSettings": {
       "title": "பற்றி",
@@ -5253,59 +5272,31 @@
     }
   },
   "subscribe": {
-    "title": "உங்கள் திட்டத்தைத் தேர்ந்தெடுக்கவும்",
-    "subtitle": "எந்த திட்டத்திற்கும் 7 நாள் இலவச சோதனை. எப்போது வேண்டுமானாலும் ரத்து செய்யலாம்.",
-    "monthly": "மாதாந்திர",
-    "yearly": "வருடாந்திர",
+    "title": "உங்கள் திட்டத்தை தேர்வு செய்யுங்கள்",
+    "subtitle": "எப்போது வேண்டுமானாலும் ரத்து செய்யலாம்।",
+    "monthly": "மாதாந்தம்",
+    "yearly": "வருடாந்தம்",
+    "save2Months": "2 மாதங்கள் சேமிப்பு",
     "popular": "மிகவும் பிரபலமான",
     "period": "/மாதம்",
-    "select": "திட்டத்தைத் தேர்ந்தெடு",
-    "startTrial": "இலவச சோதனையைத் தொடங்கு",
-    "viewComparison": "முழு ஒப்பீட்டைக் காண்க",
-    "viewCards": "திட்டங்களைக் காண்க",
-    "premiumShowcase": {
-      "title": "பிரீமியம் நுண்ணறிவை அனுபவிக்கவும்",
-      "subtitle": "நீங்கள் பார்க்கும் விதத்திற்கு ஏற்ப AI-இயக்கப்படும் அம்சங்கள்",
-      "videoTitle": "செயலில் விட்ஜெட்களைப் பார்க்கவும்",
-      "videoDescription": "மிதக்கும் விட்ஜெட்களுக்கான எங்கள் 2-நிமிட அறிமுகத்தைப் பார்க்கவும்",
-      "widgetTitle": "இன்டராக்டிவ் லைவ் டெமோ",
-      "widgetDescription": "Kan11 உடன் இழுக்கவும், அளவை மாற்றவும், பல்பணிகள் செய்யவும்",
-      "aiAssistant": {
-        "title": "AI ஸ்மார்ட் உதவியாளர்",
-        "description": "இயந்திர கற்றல் மூலம் இயக்கப்படும் தனிப்பயனாக்கப்பட்ட பரிந்துரைகள்"
-      },
-      "floatingWidgets": {
-        "title": "மிதக்கும் விட்ஜெட்கள்",
-        "description": "உள்ளடக்கத்தை உலாவும் போது பல சேனல்களைப் பார்க்கவும்"
-      },
-      "a11y": {
-        "playVideo": "விட்ஜெட்கள் அறிமுக வீடியோவை இயக்கவும்",
-        "playVideoHint": "முழு திரை வீடியோ ஆர்ப்பாட்டத்தைத் திறக்கிறது"
-      },
-      "badges": {
-        "aiPowered": "AI மூலம் இயக்கப்படுகிறது",
-        "interactiveDemo": "இன்டராக்டிவ் டெமோ"
-      }
-    },
-    "comparison": {
-      "title": "திட்டங்களை ஒப்பிடவும்",
-      "subtitle": "உங்களுக்கு ஏற்ற திட்டத்தைக் கண்டறியவும்",
-      "features": "அம்சங்கள்",
-      "perMonth": "/மாதம்",
-      "scrollHint": "← அனைத்து திட்டங்களையும் பார்க்க உருட்டவும் →",
-      "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
-      }
-    },
-    "save2Months": "2 மாதங்கள் சேமிக்கவும்",
-    "selected": "தேர்ந்தெடுக்கப்பட்டது",
-    "processing": "செயலாக்குகிறது...",
     "perYear": "/வருடம்",
-    "noCharge": "சோதனை காலத்தில் உங்கள் கிரெடிட் கார்டு கட்டணம் விதிக்கப்படாது",
-    "noProductSelected": "No product selected"
+    "select": "திட்டத்தை தேர்வு செய்யுங்கள்",
+    "selected": "தேர்வு செய்யப்பட்டது",
+    "processing": "செயலபடுத்துகிறது...",
+    "viewComparison": "முழு ஒப்பீட்டை காண்க",
+    "viewCards": "திட்டங்களை காண்க",
+    "noProductSelected": "தயாரிப்பு தேர்வு செய்யப்படவில்லை",
+    "comparison": {
+      "title": "திட்டங்களை ஒப்பிடுக",
+      "subtitle": "உங்களுக்கு சரியான திட்டத்தை கண்டறியுங்கள்",
+      "features": "சேவைகள்",
+      "perMonth": "/மாதம்",
+      "categories": {
+        "ai": "AI சேவைகள்",
+        "platform": "பளத்தளம்",
+        "support": "ஆதரவு"
+      }
+    }
   },
   "subtitles": {
     "nikud": "நிகுத்",
@@ -6838,7 +6829,7 @@
       "notAuthenticated": "அங்கீகரிக்கப்படவில்லை",
       "notAuthenticatedMessage": "மீண்டும் உள்நுழையவும்",
       "notAuthenticatedAction": "நேரடி டப்பிங்கைப் பயன்படுத்த உள்நுழையவும்",
-      "premiumRequired": "Premium Feature",
+      "premiumRequired": "Plus Feature",
       "premiumRequiredMessage": "நேரடி டப்பிங்கிற்கு பிரீமியம் சந்தா தேவை",
       "premiumRequiredAction": "இந்த அம்சத்தை அணுக பிரீமியத்திற்கு மேம்படுத்தவும்",
       "channelUnavailable": "Not Available",
@@ -6953,11 +6944,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing"
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing"
   },
   "video": {
     "watchTrailer": "டிரெய்லர் பார்",
@@ -7553,7 +7544,7 @@
         "success": "Email verified successfully! Redirecting to login...",
         "verifyPrompt": "Please verify your email to activate your account and credits.",
         "verifying": "Verifying your email...",
-        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 500 AI credits to test our advanced features.",
+        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 50 AI credits to test our advanced features.",
         "welcomeTitle": "Welcome to Bayit+ Beta 500!"
       }
     }
@@ -10028,13 +10019,13 @@
     },
     "intro": {
       "title": "Bayit+-க்கு வரவேற்கிறோம்",
-      "subtitle": "AI உடன் உங்கள் உள்ளடக்கத்தை மேம்படுத்தவும்",
-      "bullet1": "பல மொழிகளில் AI டப்பிங்",
-      "bullet2": "இலக்கணக் கருவிகளுடன் ஸ்மார்ட் வசனங்கள்",
-      "bullet3": "AI-இயக்கப்படும் காட்சி தேடல்",
-      "bullet4": "மாதம் 50 இலவச AI கிரெடிட்கள்",
-      "seePlans": "திட்டங்களைக் காணுங்கள்",
-      "maybeLater": "பின்னர் இருக்கலாம்"
+      "subtitle": "AI மூலம் உங்கள் உள்ளடக்கத்தை மேம்படுத்துங்கள்",
+      "bullet1": "டப்பிங் மற்றும் உபதலைப்பு (8 AI சேவைகள்)",
+      "bullet2": "தேடல் மற்றும் கண்டுபிடிப்பு (3 AI சேவைகள்)",
+      "bullet3": "மொழி கருவிகள் (4 AI சேவைகள்)",
+      "bullet4": "ஆக்கபூர்வமான மற்றும் இன்டராக்டிவ் (4 AI சேவைகள்)",
+      "seePlans": "திட்டங்களை காண்க",
+      "maybeLater": "பிறகு"
     }
   },
   "navigation": {
@@ -10185,5 +10176,18 @@
     "voice": {
       "noActiveChannels": "செயலில் AI சேனல்கள் இல்லை"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus சேவை",
+      "featureRequires": "{{feature}}-க்கு Plus தேவை",
+      "upgradeList": "19 AI சேவைகள், வரம்பில்லா விட்ஜெட், வரம்பில்லா ப்ரோபைல், முன்னுரிமை ஆதரவு திறக்குங்கள்",
+      "subscribeNow": "இப்போதே சந்தா செலுத்துங்கள்",
+      "hasAccess": "உங்களுக்கு அணுகல் உள்ளது"
+    },
+    "title": "சந்தா",
+    "choosePlan": "திட்டத்தை தேர்வு செய்யுங்கள்",
+    "subscribe": "திட்டத்தை தேர்வு செய்யுங்கள்",
+    "loadingPlans": "Loading plans..."
   }
 }

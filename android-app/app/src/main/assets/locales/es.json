@@ -60,7 +60,7 @@
     "pause": "Pausar",
     "tryAgain": "Reintentar",
     "filters": "Filters",
-    "upgrade": "Upgrade to Premium",
+    "upgrade": "Upgrade to Plus",
     "refresh": "Actualizar"
   },
   "demo": {
@@ -491,7 +491,7 @@
     "password": "Contraseña",
     "name": "Nombre",
     "guest": "Invitado",
-    "premium": "Premium",
+    "premium": "Plus",
     "basic": "Básico"
   },
   "flows": {
@@ -676,7 +676,7 @@
       "line2": "Tel Aviv, Israel 6100000"
     },
     "free": "Gratis",
-    "premiumPrice": "$7.99/mes",
+    "premiumPrice": "$6.99/mes",
     "familyPrice": "$12.99/mes",
     "remaining": "restante",
     "tabs": {
@@ -862,7 +862,35 @@
     "replayTour": "Repetir el tour de características",
     "autoTranslateDescription": "Automatically translate chat messages to your preferred language",
     "autoTranslate": "Auto-translate messages",
-    "chatTranslation": "Chat Translation"
+    "chatTranslation": "Chat Translation",
+    "subscription": {
+      "title": "Suscripcion",
+      "currentPlan": "Plan Actual",
+      "status": "Estado",
+      "since": "Miembro desde",
+      "renews": "Se renueva el",
+      "featuresIncluded": "Funciones Incluidas",
+      "featureAI": "19 Funciones de IA",
+      "featureAIFree": "50 Creditos de IA (unico)",
+      "featureAIPlus": "Funciones de IA Ilimitadas",
+      "featureWidgets": "Widgets",
+      "featureWidgetsFree": "1 Widget",
+      "featureWidgetsPlus": "Widgets Ilimitados",
+      "featureProfiles": "Perfiles Familiares",
+      "featureProfilesFree": "1 Perfil",
+      "featureProfilesPlus": "Perfiles Ilimitados",
+      "featureSupport": "Soporte Prioritario",
+      "manageOnGooglePlay": "Administrar en Google Play",
+      "manageOnAppStore": "Administrar en App Store",
+      "upgradePlan": "Mejorar Plan",
+      "availablePlans": "Planes Disponibles",
+      "changePlan": "Cambiar Plan",
+      "billingHistory": "Historial de Facturacion",
+      "manageViaStore": "Administrar via App Store",
+      "autoRenew": "Renovacion Automatica",
+      "promoCode": "Codigo Promocional",
+      "cancelSubscription": "Cancelar Suscripcion"
+    }
   },
   "voice": {
     "panelTitle": "Asistente de voz",
@@ -1010,10 +1038,10 @@
       "volume": "Volumen"
     },
     "dubbing": {
-      "notNow": "Ahora no",
-      "premiumMessage": "El doblaje en vivo requiere una suscripcion Premium o Beta 500",
-      "premiumTitle": "Funcion Premium",
-      "upgrade": "Mejorar",
+      "notNow": "Ahora No",
+      "premiumMessage": "El doblaje en vivo requiere una suscripcion Plus",
+      "premiumTitle": "Funcion Plus",
+      "upgrade": "Mejorar a Plus",
       "voiceTitle": "Voz de doblaje",
       "settings_title": "Configuración de Doblaje en Vivo",
       "target_language": "Idioma de Destino"
@@ -2861,119 +2889,86 @@
     }
   },
   "plans": {
-    "basic": {
-      "name": "Básico",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "Todo el contenido VOD",
-        "Radio y Podcasts",
-        "Ver en 1 dispositivo",
-        "Calidad SD"
-      ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
+        "Plataforma BYOC (TV en Vivo, Radio, Podcasts)",
+        "50 Creditos de IA (unico)",
+        "1 Widget",
+        "1 Perfil Familiar"
       ]
     },
-    "premium": {
-      "name": "Premium",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
       "features": [
-        "Todo el contenido VOD",
-        "Canales en vivo",
-        "Radio y Podcasts",
-        "Asistente AI inteligente",
-        "Ver en 2 dispositivos",
-        "Calidad HD"
+        "19 Funciones de IA - Ilimitadas",
+        "Widgets Ilimitados",
+        "Perfiles Familiares Ilimitados",
+        "Soporte Prioritario"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "aiCategories": {
+        "dubbingSubtitles": "Doblaje y Subtitulos",
+        "dubbingSubtitlesCount": "8 funciones",
+        "searchDiscovery": "Busqueda y Descubrimiento",
+        "searchDiscoveryCount": "3 funciones",
+        "languageTools": "Herramientas de Idioma",
+        "languageToolsCount": "4 funciones",
+        "creativeInteractive": "Creativo e Interactivo",
+        "creativeInteractiveCount": "4 funciones"
+      }
     },
-    "family": {
-      "name": "Familiar",
-      "features": [
-        "Todo el contenido VOD",
-        "Canales en vivo",
-        "Radio y Podcasts",
-        "Asistente AI inteligente",
-        "Ver en 4 dispositivos",
-        "Calidad 4K",
-        "5 perfiles familiares",
-        "Descargar sin conexión"
-      ],
-      "notIncluded": []
-    },
-    "batchActions": {
-      "selectedCount": "{{count}} seleccionados",
-      "selectedCount_one": "{{count}} seleccionado",
-      "selectedCount_other": "{{count}} seleccionados",
-      "clear": "Limpiar"
-    },
-    "costDashboard": {
-      "title": "Panel de Costos",
-      "costBreakdown": "Desglose de Costos",
-      "loadingBreakdown": "Cargando desglose...",
-      "aiCosts": "Costos de IA",
-      "infrastructure": "Infraestructura",
-      "thirdParty": "Terceros",
-      "thirdPartyApis": "APIs de Terceros",
-      "translation": "Traducción",
-      "search": "Búsqueda",
-      "percentOfTotal": "% del total",
-      "components": "Componentes",
-      "topSpenders": {
-        "title": "Top 20 Usuarios (Mensual)",
-        "loading": "Cargando usuarios principales...",
-        "rank": "Rango",
-        "userId": "ID de Usuario",
-        "costRange": "Rango de Costos",
-        "privacyNote": "Los IDs de usuario están encriptados y los costos se muestran en rangos para proteger la privacidad."
-      },
+    "comparison": {
+      "title": "Comparar Planes",
+      "subtitle": "Encuentra el plan perfecto para tus necesidades",
       "categories": {
-        "permanent": "Permanente",
-        "transient": "Variable",
-        "permanentVsTransient": "Permanente vs Variable",
-        "permanentFixed": "Permanente (Fijo)",
-        "transientVariable": "Variable (Uso)",
-        "permanentDesc": "Costos de infraestructura que ocurren mensualmente sin importar el uso",
-        "transientDesc": "Costos basados en uso que fluctúan con la actividad de la plataforma",
-        "detailedBreakdown": "Desglose Detallado",
-        "costItem": "Elemento de Costo",
-        "category": "Categoría",
-        "amount": "Monto"
+        "ai": "Funciones de IA",
+        "platform": "Plataforma",
+        "support": "Soporte"
       },
-      "timeline": {
-        "title": "Línea de Tiempo de Costos",
-        "loading": "Cargando línea de tiempo...",
-        "amountLabel": "Monto ($)",
-        "revenue": "Ingresos",
-        "totalCost": "Costo Total",
-        "netProfit": "Ganancia Neta",
-        "showingData": "Mostrando datos de {{start}} a {{end}}"
+      "features": {
+        "aiFeatures": "Funciones de IA (19 en total)",
+        "widgets": "Widgets",
+        "familyProfiles": "Perfiles Familiares",
+        "customerSupport": "Soporte al Cliente"
       },
-      "plSummary": {
-        "netProfitLoss": "Ganancia/Pérdida Neta",
-        "margin": "margen",
-        "revenue": "INGRESOS",
-        "totalCosts": "COSTOS TOTALES"
+      "values": {
+        "fiftyCredits": "50 creditos (unico)",
+        "unlimited": "Ilimitado",
+        "emailSupport": "Email",
+        "prioritySupport": "Prioritario"
       }
     }
   },
   "subscribe": {
-    "title": "Elige tu plan",
-    "subtitle": "7 días de prueba gratis para cualquier plan. Cancela en cualquier momento.",
+    "title": "Elige tu Plan",
+    "subtitle": "Cancela en cualquier momento.",
     "monthly": "Mensual",
     "yearly": "Anual",
     "save2Months": "Ahorra 2 meses",
-    "popular": "Más Popular",
+    "popular": "Mas Popular",
     "period": "/mes",
-    "perYear": "/año",
-    "select": "Seleccionar plan",
+    "perYear": "/ano",
+    "select": "Seleccionar Plan",
     "selected": "Seleccionado",
     "processing": "Procesando...",
-    "startTrial": "Comenzar Prueba Gratis",
-    "noCharge": "Tu tarjeta de crédito no será cobrada durante el período de prueba"
+    "viewComparison": "Ver Comparacion Completa",
+    "viewCards": "Ver Planes",
+    "noProductSelected": "Ningun producto seleccionado",
+    "comparison": {
+      "title": "Comparar Planes",
+      "subtitle": "Encuentra el plan perfecto para ti",
+      "features": "Caracteristicas",
+      "perMonth": "/mes",
+      "categories": {
+        "ai": "Funciones de IA",
+        "platform": "Plataforma",
+        "support": "Soporte"
+      }
+    }
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -4869,13 +4864,26 @@
     },
     "intro": {
       "title": "Bienvenido a Bayit+",
-      "subtitle": "Desbloquea el poder total del streaming israelí con funciones impulsadas por IA",
-      "bullet1": "Doblaje en IA en tu idioma",
-      "bullet2": "Subtítulos inteligentes con consejos de gramática",
-      "bullet3": "Búsqueda de escenas impulsada por IA",
-      "bullet4": "500 créditos Beta de IA incluidos",
-      "seePlans": "Ver planes",
-      "maybeLater": "Quizás después"
+      "subtitle": "Mejora tu contenido con IA",
+      "bullet1": "Doblaje y Subtitulos (8 funciones de IA)",
+      "bullet2": "Busqueda y Descubrimiento (3 funciones de IA)",
+      "bullet3": "Herramientas de Idioma (4 funciones de IA)",
+      "bullet4": "Creativo e Interactivo (4 funciones de IA)",
+      "seePlans": "Ver Planes",
+      "maybeLater": "Quizas Despues"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Funcion Plus",
+      "featureRequires": "{{feature}} requiere Plus",
+      "upgradeList": "Desbloquea 19 funciones de IA, widgets ilimitados, perfiles ilimitados y soporte prioritario",
+      "subscribeNow": "Suscribirse Ahora",
+      "hasAccess": "Tienes acceso"
+    },
+    "title": "Suscripcion",
+    "choosePlan": "Seleccionar Plan",
+    "subscribe": "Seleccionar Plan",
+    "loadingPlans": "Loading plans..."
   }
 }

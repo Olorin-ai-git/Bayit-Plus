@@ -247,8 +247,8 @@
     "exampleQuery3": "[ta] Find documentaries about history on Channel 11",
     "scheduleRecording": "[ta] Schedule Recording",
     "tryThese": "[ta] Try these examples",
-    "premiumRequiredMessage": "[ta] Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
-    "premiumRequired": "[ta] Premium Feature",
+    "premiumRequiredMessage": "[ta] Smart Search uses AI to understand your questions. Upgrade to Plus to access this feature.",
+    "premiumRequired": "[ta] Plus Feature",
     "recordingFailed": "[ta] Failed to start/schedule recording",
     "recordProgram": "[ta] Record Program",
     "il": "[ta] IL",
@@ -590,7 +590,7 @@
     "downloads": "[ta] Downloads",
     "securityNote": "[ta] Your account is secured with encrypted authentication",
     "noRecentActivity": "[ta] No recent activity",
-    "premiumPrice": "[ta] $7.99/month",
+    "premiumPrice": "[ta] $6.99/month",
     "hours": "[ta] hours",
     "aiAssistant": "[ta] AI Assistant",
     "accountInfo": "[ta] Account Information",
@@ -657,7 +657,35 @@
     "pushNotifications": "[ta] Push Notifications",
     "visibleSections": "[ta] Visible Sections",
     "sectionHidden": "[ta] Section hidden",
-    "tapToShow": "[ta] Tap to show"
+    "tapToShow": "[ta] Tap to show",
+    "subscription": {
+      "title": "சந்தா",
+      "currentPlan": "தற்போதைய திட்டம்",
+      "status": "நிலை",
+      "since": "உறுப்பினர் தொடக்கம்",
+      "renews": "புதுப்பிக்கும் தேதி",
+      "featuresIncluded": "சேர்க்கப்பட்ட சேவைகள்",
+      "featureAI": "19 AI சேவைகள்",
+      "featureAIFree": "50 AI க்ரெடிட் (ஒரு முறை)",
+      "featureAIPlus": "வரம்பில்லா AI சேவைகள்",
+      "featureWidgets": "விட்ஜெட்",
+      "featureWidgetsFree": "1 விட்ஜெட்",
+      "featureWidgetsPlus": "வரம்பில்லா விட்ஜெட்",
+      "featureProfiles": "குடும்ப ப்ரோபைல்",
+      "featureProfilesFree": "1 ப்ரோபைல்",
+      "featureProfilesPlus": "வரம்பில்லா ப்ரோபைல்",
+      "featureSupport": "முன்னுரிமை ஆதரவு",
+      "manageOnGooglePlay": "Google Play-ல் எண்ணுக",
+      "manageOnAppStore": "App Store-ல் எண்ணுக",
+      "upgradePlan": "திட்டத்தை மேம்படுத்துங்கள்",
+      "availablePlans": "கிடைக்கும் திட்டங்கள்",
+      "changePlan": "திட்டத்தை மாற்றுங்கள்",
+      "billingHistory": "பில்லிங் வரலாறு",
+      "manageViaStore": "App Store மூலம் எண்ணுக",
+      "autoRenew": "தானியங்கி புதுப்பிக்கும்",
+      "promoCode": "ப்ரோமோ கோட்",
+      "cancelSubscription": "சந்தாவை ரத்து செய்யுங்கள்"
+    }
   },
   "player": {
     "loading": "ஏற்றுகிறது...",
@@ -734,10 +762,10 @@
       "volume": "[ta] Volume"
     },
     "dubbing": {
-      "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
-      "premiumTitle": "Premium Feature",
-      "upgrade": "Upgrade",
+      "notNow": "இப்போது வேண்டாம்",
+      "premiumMessage": "நேரடி டப்பிங்கிற்கு Plus சந்தா தேவை",
+      "premiumTitle": "Plus சேவை",
+      "upgrade": "Plus-க்கு மேம்படுத்துங்கள்",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "நேரடி டப்பிங் அமைப்புகள்",
       "target_language": "இலக்கு மொழி"
@@ -1032,19 +1060,31 @@
     "recommendations": "[ta] Here are some recommendations:"
   },
   "subscribe": {
-    "title": "உங்கள் திட்டத்தைத் தேர்ந்தெடுக்கவும்",
-    "subtitle": "எந்த திட்டத்திற்கும் 7 நாள் இலவச சோதனை. எப்போது வேண்டுமானாலும் ரத்து செய்யலாம்.",
-    "monthly": "மாதாந்திர",
-    "yearly": "வருடாந்திர",
+    "title": "உங்கள் திட்டத்தை தேர்வு செய்யுங்கள்",
+    "subtitle": "எப்போது வேண்டுமானாலும் ரத்து செய்யலாம்।",
+    "monthly": "மாதாந்தம்",
+    "yearly": "வருடாந்தம்",
+    "save2Months": "2 மாதங்கள் சேமிப்பு",
     "popular": "மிகவும் பிரபலமான",
     "period": "/மாதம்",
-    "select": "திட்டத்தைத் தேர்ந்தெடு",
-    "startTrial": "இலவச சோதனையைத் தொடங்கு",
-    "selected": "[ta] Selected",
-    "processing": "[ta] Processing...",
-    "save2Months": "[ta] Save 2 months",
-    "noCharge": "[ta] Your credit card won't be charged during the trial period",
-    "perYear": "[ta] /year"
+    "perYear": "/வருடம்",
+    "select": "திட்டத்தை தேர்வு செய்யுங்கள்",
+    "selected": "தேர்வு செய்யப்பட்டது",
+    "processing": "செயலபடுத்துகிறது...",
+    "viewComparison": "முழு ஒப்பீட்டை காண்க",
+    "viewCards": "திட்டங்களை காண்க",
+    "noProductSelected": "தயாரிப்பு தேர்வு செய்யப்படவில்லை",
+    "comparison": {
+      "title": "திட்டங்களை ஒப்பிடுக",
+      "subtitle": "உங்களுக்கு சரியான திட்டத்தை கண்டறியுங்கள்",
+      "features": "சேவைகள்",
+      "perMonth": "/மாதம்",
+      "categories": {
+        "ai": "AI சேவைகள்",
+        "platform": "பளத்தளம்",
+        "support": "ஆதரவு"
+      }
+    }
   },
   "footer": {
     "brandDescription": "USA இல் உங்கள் வீடு. ஹீப்ரூவில் TV ஒளிபரப்புகள், VOD, வானொலி மற்றும் பாட்காஸ்ட்கள்.",
@@ -1271,93 +1311,58 @@
     }
   },
   "plans": {
-    "basic": {
-      "name": "அடிப்படை",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "அனைத்து VOD உள்ளடக்கம்",
-        "வானொலி & பாட்காஸ்ட்கள்",
-        "1 சாதனத்தில் பார்",
-        "SD தரம்"
-      ],
-      "notIncluded": "[ta] ['Live channels', 'AI Assistant', 'Offline viewing']"
+        "BYOC பளத்தளம் (நேரலை TV, ரேடியோ, பாட்காஸ்ட்)",
+        "50 AI க்ரெடிட் (ஒரு முறை)",
+        "1 விட்ஜெட்",
+        "1 குடும்ப ப்ரோபைல்"
+      ]
     },
-    "premium": {
-      "name": "பிரீமியம்",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
       "features": [
-        "அனைத்து VOD உள்ளடக்கம்",
-        "நேரலை சேனல்கள்",
-        "வானொலி & பாட்காஸ்ட்கள்",
-        "ஸ்மார்ட் AI உதவியாளர்",
-        "2 சாதனங்களில் பார்",
-        "HD தரம்"
+        "19 AI சேவைகள் - வரம்பில்லா",
+        "வரம்பில்லா விட்ஜெட்",
+        "வரம்பில்லா குடும்ப ப்ரோபைல்",
+        "முன்னுரிமை ஆதரவு"
       ],
-      "notIncluded": "[ta] ['Offline viewing', 'Family profiles']"
+      "aiCategories": {
+        "dubbingSubtitles": "டப்பிங் மற்றும் உபதலைப்பு",
+        "dubbingSubtitlesCount": "8 சேவைகள்",
+        "searchDiscovery": "தேடல் மற்றும் கண்டுபிடிப்பு",
+        "searchDiscoveryCount": "3 சேவைகள்",
+        "languageTools": "மொழி கருவிகள்",
+        "languageToolsCount": "4 சேவைகள்",
+        "creativeInteractive": "ஆக்கபூர்வமான மற்றும் இன்டராக்டிவ்",
+        "creativeInteractiveCount": "4 சேவைகள்"
+      }
     },
-    "family": {
-      "name": "குடும்பம்",
-      "features": [
-        "அனைத்து VOD உள்ளடக்கம்",
-        "நேரலை சேனல்கள்",
-        "4 சாதனங்களில் பார்",
-        "4K தரம்",
-        "5 குடும்ப சுயவிவரங்கள்"
-      ],
-      "notIncluded": "[ta] []"
-    },
-    "costDashboard": {
-      "topSpenders": {
-        "privacyNote": "[ta] User IDs are hashed and costs are aggregated into ranges for privacy protection.",
-        "title": "[ta] Top 20 Spenders (Monthly)",
-        "userId": "[ta] User ID",
-        "rank": "[ta] Rank",
-        "loading": "[ta] Loading top spenders...",
-        "costRange": "[ta] Cost Range"
-      },
+    "comparison": {
+      "title": "திட்டங்களை ஒப்பிடுக",
+      "subtitle": "உங்கள் தேவைகளுக்கு சரியான திட்டத்தை கண்டறியுங்கள்",
       "categories": {
-        "transient": "[ta] Transient",
-        "permanentFixed": "[ta] Permanent (Fixed)",
-        "category": "[ta] Category",
-        "amount": "[ta] Amount",
-        "detailedBreakdown": "[ta] Detailed Breakdown",
-        "transientDesc": "[ta] Usage-based costs that fluctuate with platform activity",
-        "permanentDesc": "[ta] Infrastructure costs that occur monthly regardless of usage",
-        "permanent": "[ta] Permanent",
-        "transientVariable": "[ta] Transient (Variable)",
-        "permanentVsTransient": "[ta] Permanent vs Transient",
-        "costItem": "[ta] Cost Item"
+        "ai": "AI சேவைகள்",
+        "platform": "பளத்தளம்",
+        "support": "ஆதரவு"
       },
-      "timeline": {
-        "amountLabel": "[ta] Amount ($)",
-        "loading": "[ta] Loading timeline...",
-        "showingData": "[ta] Showing data from {{start}} to {{end}}",
-        "netProfit": "[ta] Net Profit",
-        "title": "[ta] Cost Timeline",
-        "totalCost": "[ta] Total Cost",
-        "revenue": "[ta] Revenue"
+      "features": {
+        "aiFeatures": "AI சேவைகள் (மொத்தம் 19)",
+        "widgets": "விட்ஜெட்",
+        "familyProfiles": "குடும்ப ப்ரோபைல்",
+        "customerSupport": "வாடிக்கையாளர் ஆதரவு"
       },
-      "plSummary": {
-        "revenue": "[ta] REVENUE",
-        "totalCosts": "[ta] TOTAL COSTS",
-        "netProfitLoss": "[ta] Net Profit/Loss",
-        "margin": "[ta] margin"
-      },
-      "aiCosts": "[ta] AI Costs",
-      "percentOfTotal": "[ta] % of total",
-      "search": "[ta] Search",
-      "thirdPartyApis": "[ta] Third-party APIs",
-      "thirdParty": "[ta] Third-party",
-      "title": "[ta] Cost Dashboard",
-      "components": "[ta] Components",
-      "loadingBreakdown": "[ta] Loading breakdown...",
-      "translation": "[ta] Translation",
-      "costBreakdown": "[ta] Cost Breakdown",
-      "infrastructure": "[ta] Infrastructure"
-    },
-    "batchActions": {
-      "selectedCount_one": "[ta] {{count}} selected",
-      "clear": "[ta] Clear",
-      "selectedCount_other": "[ta] {{count}} selected",
-      "selectedCount": "[ta] {{count}} selected"
+      "values": {
+        "fiftyCredits": "50 க்ரெடிட் (ஒரு முறை)",
+        "unlimited": "வரம்பில்லா",
+        "emailSupport": "மின்னஞ்சல்",
+        "prioritySupport": "முன்னுரிமை"
+      }
     }
   },
   "admin": {
@@ -4865,13 +4870,26 @@
     },
     "intro": {
       "title": "Bayit+-க்கு வரவேற்கிறோம்",
-      "subtitle": "AI-இயக்கப்பட்ட அம்சங்களுடன் இஸ்ரேலி ஸ்ட்ரீமிங்கின் முழு சக்தியை திறக்கவும்",
-      "bullet1": "உங்கள் மொழியில் AI டப்பிங்",
-      "bullet2": "இலக்கண குறிப்புகளுடன் ஸ்மார்ட் சப்டைட்டில்கள்",
-      "bullet3": "AI-இயக்கப்பட்ட காட்சி தேடல்",
-      "bullet4": "500 பீட்டா AI கிரெடிட்கள் சேர்க்கப்பட்டுள்ளன",
-      "seePlans": "திட்டங்களைப் பார்க்கவும்",
-      "maybeLater": "ஒருவேளை பிறகு"
+      "subtitle": "AI மூலம் உங்கள் உள்ளடக்கத்தை மேம்படுத்துங்கள்",
+      "bullet1": "டப்பிங் மற்றும் உபதலைப்பு (8 AI சேவைகள்)",
+      "bullet2": "தேடல் மற்றும் கண்டுபிடிப்பு (3 AI சேவைகள்)",
+      "bullet3": "மொழி கருவிகள் (4 AI சேவைகள்)",
+      "bullet4": "ஆக்கபூர்வமான மற்றும் இன்டராக்டிவ் (4 AI சேவைகள்)",
+      "seePlans": "திட்டங்களை காண்க",
+      "maybeLater": "பிறகு"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus சேவை",
+      "featureRequires": "{{feature}}-க்கு Plus தேவை",
+      "upgradeList": "19 AI சேவைகள், வரம்பில்லா விட்ஜெட், வரம்பில்லா ப்ரோபைல், முன்னுரிமை ஆதரவு திறக்குங்கள்",
+      "subscribeNow": "இப்போதே சந்தா செலுத்துங்கள்",
+      "hasAccess": "உங்களுக்கு அணுகல் உள்ளது"
+    },
+    "title": "சந்தா",
+    "choosePlan": "திட்டத்தை தேர்வு செய்யுங்கள்",
+    "subscribe": "திட்டத்தை தேர்வு செய்யுங்கள்",
+    "loadingPlans": "Loading plans..."
   }
 }

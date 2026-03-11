@@ -3959,56 +3959,52 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "Live TV Channels",
-        "Radio & Podcasts",
-        "Audiobooks",
-        "50 AI Credits/month"
+        "BYOC প্ল্যাটফর্ম (লাইভ টিভি, রেডিও, পডকাস্ট)",
+        "50 AI ক্রেডিট (একবার)",
+        "1 উইজেট",
+        "1 পরিবার প্রোফাইল"
       ]
     },
     "plus": {
       "name": "Plus",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 AI Credits/month",
-        "Unlimited AI Dubbing",
-        "Smart Subtitles",
-        "AI Scene Search",
-        "AI Catch-Up",
-        "Talk-Back to Characters",
-        "4 Simultaneous Devices",
-        "Priority Support"
-      ]
+        "19 AI বৈশিষ্ট্য - সীমাহীন",
+        "সীমাহীন উইজেট",
+        "সীমাহীন পরিবার প্রোফাইল",
+        "অগ্রাধিকার সমর্থন"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "ডাবিং ও সাবটাইটেল",
+        "dubbingSubtitlesCount": "8 বৈশিষ্ট্য",
+        "searchDiscovery": "অনুসন্ধান ও আবিষ্কার",
+        "searchDiscoveryCount": "3 বৈশিষ্ট্য",
+        "languageTools": "ভাষা সরঞ্জাম",
+        "languageToolsCount": "4 বৈশিষ্ট্য",
+        "creativeInteractive": "সৃজনশীল ও ইন্টারেক্টিভ",
+        "creativeInteractiveCount": "4 বৈশিষ্ট্য"
+      }
     },
     "comparison": {
-      "title": "Compare Plans",
-      "subtitle": "Find the perfect plan for your needs",
+      "title": "প্ল্যান তুলনা করুন",
+      "subtitle": "আপনার প্রয়োজনের জন্য সেরা প্ল্যান খুঁজুন",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "AI বৈশিষ্ট্য",
+        "platform": "প্ল্যাটফর্ম",
+        "support": "সমর্থন"
       },
       "features": {
-        "liveChannels": "Live TV Channels",
-        "radioPodcasts": "Radio & Podcasts",
-        "audiobooks": "Audiobooks",
-        "byocPlexIptv": "Plex & IPTV Integration",
-        "aiCredits": "AI Credits",
-        "aiDubbing": "AI Dubbing",
-        "aiSubtitles": "Smart Subtitles",
-        "aiSearch": "AI Scene Search",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "Talk-Back to Characters",
-        "simultaneousDevices": "Simultaneous Devices",
-        "customerSupport": "Customer Support"
+        "aiFeatures": "AI বৈশিষ্ট্য (মোট 19)",
+        "widgets": "উইজেট",
+        "familyProfiles": "পরিবার প্রোফাইল",
+        "customerSupport": "গ্রাহক সমর্থন"
       },
       "values": {
-        "fiftyCredits": "50/month",
-        "fiveHundredCredits": "500/month",
-        "creditBased": "Credit-based",
-        "emailSupport": "Email",
-        "prioritySupport": "Priority"
+        "fiftyCredits": "50 ক্রেডিট (একবার)",
+        "unlimited": "সীমাহীন",
+        "emailSupport": "ইমেইল",
+        "prioritySupport": "অগ্রাধিকার"
       }
     }
   },
@@ -4180,7 +4176,13 @@
       "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
       "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
     },
-    "invalidEpisodeUrl": "Invalid episode URL"
+    "invalidEpisodeUrl": "Invalid episode URL",
+    "dubbing": {
+      "premiumTitle": "Plus বৈশিষ্ট্য",
+      "premiumMessage": "লাইভ ডাবিং-এর জন্য Plus সদস্যতা প্রয়োজন",
+      "upgrade": "Plus-এ আপগ্রেড করুন",
+      "notNow": "এখন নয়"
+    }
   },
   "listen": {
     "title": "শুনুন"
@@ -4354,7 +4356,7 @@
       "line2": "তেল আভিভ, ইসরায়েল 6100000"
     },
     "free": "বিনামূল্যে",
-    "premiumPrice": "$7.99/মাস",
+    "premiumPrice": "$6.99/মাস",
     "familyPrice": "$12.99/মাস",
     "remaining": "বাকি",
     "subscription": {
@@ -4822,7 +4824,7 @@
     "kids": "👶 শিশুরা",
     "readAloud": "জোরে পড়ুন",
     "smartSearch": "Smart Search",
-    "premiumRequired": "Smart Search এর জন্য Premium সাবস্ক্রিপশন প্রয়োজন",
+    "premiumRequired": "Smart Search এর জন্য Plus সাবস্ক্রিপশন প্রয়োজন",
     "searchFailed": "অনুসন্ধান ব্যর্থ হয়েছে",
     "premiumFeature": "Premium বৈশিষ্ট্য",
     "smartSearchDescription": "Smart Search স্বাভাবিক ভাষার প্রশ্ন বুঝতে এবং আপনি যা খুঁজছেন তা সঠিকভাবে খুঁজে পেতে AI ব্যবহার করে।",
@@ -5121,15 +5123,32 @@
       "large": "বড়"
     },
     "subscription": {
-      "title": "সাবস্ক্রিপশন",
+      "title": "সদস্যতা",
       "currentPlan": "বর্তমান প্ল্যান",
+      "status": "অবস্থা",
+      "since": "সদস্য থেকে",
+      "renews": "নবায়ন তারিখ",
+      "featuresIncluded": "অন্তর্ভুক্ত বৈশিষ্ট্য",
+      "featureAI": "19 AI বৈশিষ্ট্য",
+      "featureAIFree": "50 AI ক্রেডিট (একবার)",
+      "featureAIPlus": "সীমাহীন AI বৈশিষ্ট্য",
+      "featureWidgets": "উইজেট",
+      "featureWidgetsFree": "1 উইজেট",
+      "featureWidgetsPlus": "সীমাহীন উইজেট",
+      "featureProfiles": "পরিবার প্রোফাইল",
+      "featureProfilesFree": "1 প্রোফাইল",
+      "featureProfilesPlus": "সীমাহীন প্রোফাইল",
+      "featureSupport": "অগ্রাধিকার সমর্থন",
+      "manageOnGooglePlay": "Google Play-এ পরিচালনা করুন",
+      "manageOnAppStore": "App Store-এ পরিচালনা করুন",
+      "upgradePlan": "প্ল্যান আপগ্রেড করুন",
       "availablePlans": "উপলব্ধ প্ল্যান",
       "changePlan": "প্ল্যান পরিবর্তন করুন",
       "billingHistory": "বিলিং ইতিহাস",
-      "manageViaStore": "App Store এর মাধ্যমে পরিচালনা করুন",
-      "autoRenew": "স্বয়ংক্রিয় নবায়ন",
+      "manageViaStore": "App Store থেকে পরিচালনা করুন",
+      "autoRenew": "স্বয়ংক্রিয় নবায়ন",
       "promoCode": "প্রোমো কোড",
-      "cancelSubscription": "সাবস্ক্রিপশন বাতিল করুন"
+      "cancelSubscription": "সদস্যতা বাতিল করুন"
     },
     "aboutSettings": {
       "title": "সম্পর্কে",
@@ -5166,58 +5185,30 @@
   },
   "subscribe": {
     "title": "আপনার প্ল্যান বেছে নিন",
-    "subtitle": "যেকোনো প্ল্যানে ৭ দিনের বিনামূল্যে ট্রায়াল। যেকোনো সময় বাতিল করুন।",
+    "subtitle": "যেকোনো সময়ে বাতিল করুন।",
     "monthly": "মাসিক",
     "yearly": "বার্ষিক",
-    "popular": "সবচেয়ে জনপ্রিয়",
+    "save2Months": "2 মাস সাশ্রয় করুন",
+    "popular": "সবচেয়ে জনপ্রিয়",
     "period": "/মাস",
-    "select": "প্ল্যান নির্বাচন করুন",
-    "startTrial": "বিনামূল্যে ট্রায়াল শুরু করুন",
-    "viewComparison": "সম্পূর্ণ তুলনা দেখুন",
-    "viewCards": "পরিকল্পনা দেখুন",
-    "premiumShowcase": {
-      "title": "প্রিমিয়াম ইন্টেলিজেন্স অভিজ্ঞতা করুন",
-      "subtitle": "AI-চালিত বৈশিষ্ট্যগুলি যা আপনার দেখার পদ্ধতির সাথে খাপ খায়",
-      "videoTitle": "কার্যকলাপে উইজেট দেখুন",
-      "videoDescription": "ফ্লোটিং উইজেটগুলির জন্য আমাদের 2-মিনিটের পরিচিতি দেখুন",
-      "widgetTitle": "ইন্টারঅ্যাক্টিভ লাইভ ডেমো",
-      "widgetDescription": "Kan11 এর সাথে টেনে আনুন, আকার পরিবর্তন করুন এবং মাল্টিটাস্ক করুন",
-      "aiAssistant": {
-        "title": "AI স্মার্ট সহায়ক",
-        "description": "মেশিন লার্নিং দ্বারা চালিত ব্যক্তিগত সুপারিশ"
-      },
-      "floatingWidgets": {
-        "title": "ফ্লোটিং উইজেট",
-        "description": "কন্টেন্ট ব্রাউজ করার সময় একাধিক চ্যানেল দেখুন"
-      },
-      "a11y": {
-        "playVideo": "উইজেট পরিচিতি ভিডিও চালান",
-        "playVideoHint": "সম্পূর্ণ স্ক্রীন ভিডিও প্রদর্শনী খোলে"
-      },
-      "badges": {
-        "aiPowered": "AI দ্বারা চালিত",
-        "interactiveDemo": "ইন্টারঅ্যাক্টিভ ডেমো"
-      }
-    },
-    "comparison": {
-      "title": "পরিকল্পনা তুলনা করুন",
-      "subtitle": "আপনার জন্য নিখুঁত পরিকল্পনা খুঁজুন",
-      "features": "বৈশিষ্ট্যসমূহ",
-      "perMonth": "/মাস",
-      "scrollHint": "← সমস্ত পরিকল্পনা দেখতে স্ক্রোল করুন →",
-      "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
-      }
-    },
-    "save2Months": "২ মাস সাশ্রয় করুন",
     "perYear": "/বছর",
+    "select": "প্ল্যান নির্বাচন করুন",
     "selected": "নির্বাচিত",
-    "processing": "প্রক্রিয়াকরণ হচ্ছে...",
-    "noCharge": "ট্রায়াল সময়কালে আপনার ক্রেডিট কার্ড চার্জ হবে না",
-    "noProductSelected": "No product selected"
+    "processing": "প্রক্রিয়াকরण...",
+    "viewComparison": "সম্পূর্ণ তুলনা দেখুন",
+    "viewCards": "প্ল্যান দেখুন",
+    "noProductSelected": "কোনো পণ্য নির্বাচিত নয়",
+    "comparison": {
+      "title": "প্ল্যান তুলনা করুন",
+      "subtitle": "আপনার জন্য সেরা প্ল্যান খুঁজুন",
+      "features": "বৈশিষ্ট্য",
+      "perMonth": "/মাস",
+      "categories": {
+        "ai": "AI বৈশিষ্ট্য",
+        "platform": "প্ল্যাটফর্ম",
+        "support": "সমর্থন"
+      }
+    }
   },
   "subtitles": {
     "nikud": "নিকুদ",
@@ -6744,7 +6735,7 @@
       "notAuthenticated": "প্রমাণীকৃত নয়",
       "notAuthenticatedMessage": "আবার সাইন ইন করুন",
       "notAuthenticatedAction": "লাইভ ডাবিং ব্যবহার করতে সাইন ইন করুন",
-      "premiumRequired": "Premium Feature",
+      "premiumRequired": "Plus Feature",
       "premiumRequiredMessage": "লাইভ ডাবিংয়ের জন্য প্রিমিয়াম সাবস্ক্রিপশন প্রয়োজন",
       "premiumRequiredAction": "এই বৈশিষ্ট্য অ্যাক্সেস করতে প্রিমিয়ামে আপগ্রেড করুন",
       "channelUnavailable": "Not Available",
@@ -6859,11 +6850,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing"
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing"
   },
   "video": {
     "watchTrailer": "ট্রেলার দেখুন",
@@ -7404,7 +7395,7 @@
         "success": "Email verified successfully! Redirecting to login...",
         "verifyPrompt": "Please verify your email to activate your account and credits.",
         "verifying": "Verifying your email...",
-        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 500 AI credits to test our advanced features.",
+        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 50 AI credits to test our advanced features.",
         "welcomeTitle": "Welcome to Bayit+ Beta 500!"
       }
     },
@@ -9936,13 +9927,13 @@
     },
     "intro": {
       "title": "Bayit+-এ স্বাগতম",
-      "subtitle": "AI দিয়ে আপনার কন্টেন্ট উন্নত করুন",
-      "bullet1": "একাধিক ভাষায় AI ডাবিং",
-      "bullet2": "ব্যাকরণ টুল সহ স্মার্ট সাবটাইটেল",
-      "bullet3": "AI-চালিত দৃশ্য অনুসন্ধান",
-      "bullet4": "প্রতি মাসে 50টি বিনামূল্যে AI ক্রেডিট",
-      "seePlans": "পরিকল্পনা দেখুন",
-      "maybeLater": "হয়তো পরে"
+      "subtitle": "AI দিয়ে আপনার কন্টেন্ট উন্নত করুন",
+      "bullet1": "ডাবিং ও সাবটাইটেল (8 AI বৈশিষ্ট্য)",
+      "bullet2": "অনুসন্ধান ও আবিষ্কার (3 AI বৈশিষ্ট্য)",
+      "bullet3": "ভাষা সরঞ্জাম (4 AI বৈশিষ্ট্য)",
+      "bullet4": "সৃজনশীল ও ইন্টারেক্টিভ (4 AI বৈশিষ্ট্য)",
+      "seePlans": "প্ল্যান দেখুন",
+      "maybeLater": "পরে হয়তো"
     }
   },
   "navigation": {
@@ -10093,5 +10084,18 @@
     "voice": {
       "noActiveChannels": "কোনো সক্রিয় AI চ্যানেল উপলব্ধ নেই"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus বৈশিষ্ট্য",
+      "featureRequires": "{{feature}}-এর জন্য Plus প্রয়োজন",
+      "upgradeList": "19 AI বৈশিষ্ট্য, সীমাহীন উইজেট, সীমাহীন প্রোফাইল ও অগ্রাধিকার সমর্থন আনলক করুন",
+      "subscribeNow": "এখনই সদস্যতা নিন",
+      "hasAccess": "আপনার এক্সেস আছে"
+    },
+    "title": "সদস্যতা",
+    "choosePlan": "প্ল্যান নির্বাচন করুন",
+    "subscribe": "প্ল্যান নির্বাচন করুন",
+    "loadingPlans": "Loading plans..."
   }
 }

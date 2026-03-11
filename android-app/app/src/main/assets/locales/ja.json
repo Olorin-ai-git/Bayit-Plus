@@ -792,10 +792,10 @@
     "scheduleRecording": "[ja] Schedule Recording",
     "tryThese": "[ja] Try these examples",
     "gridView": "[ja] Grid View",
-    "premiumRequiredMessage": "[ja] Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
+    "premiumRequiredMessage": "[ja] Smart Search uses AI to understand your questions. Upgrade to Plus to access this feature.",
     "listView": "[ja] List View",
     "localTime": "[ja] Local Time",
-    "premiumRequired": "[ja] Premium Feature",
+    "premiumRequired": "[ja] Plus Feature",
     "recordingFailed": "[ja] Failed to start/schedule recording",
     "recordProgram": "[ja] Record Program",
     "il": "[ja] IL",
@@ -1402,7 +1402,7 @@
     "downloads": "[ja] Downloads",
     "securityNote": "[ja] Your account is secured with encrypted authentication",
     "noRecentActivity": "[ja] No recent activity",
-    "premiumPrice": "[ja] $7.99/month",
+    "premiumPrice": "[ja] $6.99/month",
     "hours": "[ja] hours",
     "aiAssistant": "[ja] AI Assistant",
     "accountInfo": "[ja] Account Information",
@@ -1418,7 +1418,7 @@
     "subscriptionButton": "[ja] Subscription",
     "watchlist": "[ja] Watchlist",
     "updatePassword": "[ja] Update your password",
-    "upgrade": "[ja] Upgrade to Premium",
+    "upgrade": "[ja] Upgrade to Plus",
     "remaining": "[ja] remaining",
     "yesterday": "[ja] Yesterday",
     "admin": "[ja] Admin",
@@ -1524,7 +1524,35 @@
     "hiddenSections": "[ja] Hidden Sections",
     "visibleSections": "[ja] Visible Sections",
     "sectionHidden": "[ja] Section hidden",
-    "tapToShow": "[ja] Tap to show"
+    "tapToShow": "[ja] Tap to show",
+    "subscription": {
+      "title": "サブスクリプション",
+      "currentPlan": "現在のプラン",
+      "status": "ステータス",
+      "since": "登録日",
+      "renews": "更新日",
+      "featuresIncluded": "含まれる機能",
+      "featureAI": "19 AI機能",
+      "featureAIFree": "50 AIクレジット（一回限り）",
+      "featureAIPlus": "無制限AI機能",
+      "featureWidgets": "ウィジェット",
+      "featureWidgetsFree": "1ウィジェット",
+      "featureWidgetsPlus": "無制限ウィジェット",
+      "featureProfiles": "ファミリープロフィール",
+      "featureProfilesFree": "1プロフィール",
+      "featureProfilesPlus": "無制限プロフィール",
+      "featureSupport": "優先サポート",
+      "manageOnGooglePlay": "Google Playで管理",
+      "manageOnAppStore": "App Storeで管理",
+      "upgradePlan": "プランをアップグレード",
+      "availablePlans": "利用可能なプラン",
+      "changePlan": "プランを変更",
+      "billingHistory": "請求履歴",
+      "manageViaStore": "App Storeで管理",
+      "autoRenew": "自動更新",
+      "promoCode": "プロモコード",
+      "cancelSubscription": "サブスクリプションをキャンセル"
+    }
   },
   "player": {
     "play": "再生",
@@ -1653,10 +1681,10 @@
       "volume": "[ja] Volume"
     },
     "dubbing": {
-      "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
-      "premiumTitle": "Premium Feature",
-      "upgrade": "Upgrade",
+      "notNow": "今はしない",
+      "premiumMessage": "ライブ吹替えにはPlusサブスクリプションが必要です",
+      "premiumTitle": "Plus機能",
+      "upgrade": "Plusにアップグレード",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "ライブ吹き替え設定",
       "target_language": "ターゲット言語"
@@ -2206,52 +2234,31 @@
     "recommendations": "[ja] Here are some recommendations:"
   },
   "subscribe": {
-    "title": "サブスクリプション",
-    "subtitle": "プランを選択",
-    "choosePlan": "プランを選択",
-    "currentPlan": "現在のプラン",
-    "upgradePlan": "プランをアップグレード",
-    "downgradePlan": "プランをダウングレード",
-    "cancelPlan": "プランをキャンセル",
-    "freeTrial": "無料トライアル",
-    "startTrial": "トライアルを開始",
-    "trialEnds": "トライアル終了日",
+    "title": "プランを選択",
+    "subtitle": "いつでもキャンセル可能。",
     "monthly": "月額",
     "yearly": "年額",
-    "lifetime": "買い切り",
-    "perMonth": "/月",
+    "save2Months": "2ヶ月分お得",
+    "popular": "一番人気",
+    "period": "/月",
     "perYear": "/年",
-    "savePercent": "{{percent}}%オフ",
-    "mostPopular": "人気",
-    "bestValue": "お得",
-    "features": "機能",
-    "included": "含まれる機能",
-    "notIncluded": "含まれない機能",
-    "compare": "プランを比較",
-    "faq": "よくある質問",
-    "termsApply": "利用規約が適用されます",
-    "cancelAnytime": "いつでもキャンセル可能",
-    "noCommitment": "契約義務なし",
-    "securePayment": "安全な支払い",
-    "moneyBackGuarantee": "返金保証",
-    "paymentMethods": "お支払い方法",
-    "creditCard": "クレジットカード",
-    "paypal": "PayPal",
-    "applePay": "Apple Pay",
-    "googlePay": "Google Pay",
-    "subscribe": "登録",
+    "select": "プランを選択",
+    "selected": "選択済み",
     "processing": "処理中...",
-    "success": "登録完了！",
-    "error": "エラーが発生しました",
-    "tryAgain": "もう一度お試しください",
-    "alreadySubscribed": "既に登録されています",
-    "manageSubscription": "サブスクリプション管理",
-    "selected": "[ja] Selected",
-    "popular": "[ja] Most Popular",
-    "select": "[ja] Select Plan",
-    "period": "[ja] /month",
-    "save2Months": "[ja] Save 2 months",
-    "noCharge": "[ja] Your credit card won't be charged during the trial period"
+    "viewComparison": "全体を比較",
+    "viewCards": "プランを見る",
+    "noProductSelected": "製品が選択されていません",
+    "comparison": {
+      "title": "プランを比較",
+      "subtitle": "あなたに最適なプランを見つけましょう",
+      "features": "機能",
+      "perMonth": "/月",
+      "categories": {
+        "ai": "AI機能",
+        "platform": "プラットフォーム",
+        "support": "サポート"
+      }
+    }
   },
   "footer": {
     "about": "会社概要",
@@ -2586,100 +2593,58 @@
     }
   },
   "plans": {
-    "title": "プラン",
-    "subtitle": "最適なプランを選択",
-    "free": "無料",
-    "basic": {
-      "notIncluded": "[ja] ['Live channels', 'AI Assistant', 'Offline viewing']",
-      "features": "[ja] ['All VOD content', 'Radio & Podcasts', 'Watch on 1 device', 'SD quality']",
-      "name": "[ja] Basic"
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
+      "features": [
+        "BYOCプラットフォーム（ライブTV、ラジオ、ポッドキャスト）",
+        "50 AIクレジット（一回限り）",
+        "1ウィジェット",
+        "1ファミリープロフィール"
+      ]
     },
-    "standard": "スタンダード",
-    "premium": {
-      "features": "[ja] ['All VOD content', 'Live channels', 'Radio & Podcasts', 'Smart AI Assistant', 'Watch on 2 devices', 'HD quality']",
-      "name": "[ja] Premium",
-      "notIncluded": "[ja] ['Offline viewing', 'Family profiles']"
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
+      "features": [
+        "19のAI機能 - 無制限",
+        "無制限ウィジェット",
+        "無制限ファミリープロフィール",
+        "優先サポート"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "吹替えと字幕",
+        "dubbingSubtitlesCount": "8機能",
+        "searchDiscovery": "検索と発見",
+        "searchDiscoveryCount": "3機能",
+        "languageTools": "言語ツール",
+        "languageToolsCount": "4機能",
+        "creativeInteractive": "クリエイティブとインタラクティブ",
+        "creativeInteractiveCount": "4機能"
+      }
     },
-    "family": {
-      "name": "[ja] Family",
-      "notIncluded": "[ja] []",
-      "features": "[ja] ['All VOD content', 'Live channels', 'Radio & Podcasts', 'Smart AI Assistant', 'Watch on 4 devices', '4K quality', '5 family profiles', 'Download for offline']"
-    },
-    "student": "学生",
-    "features": "機能",
-    "adFree": "広告なし",
-    "hdQuality": "HD画質",
-    "uhdQuality": "4K UHD画質",
-    "downloads": "ダウンロード",
-    "screens": "同時視聴画面数",
-    "profiles": "プロフィール数",
-    "liveTV": "ライブTV",
-    "dvr": "クラウドDVR",
-    "dvrHours": "DVR時間数",
-    "unlimitedDvr": "無制限DVR",
-    "skipAds": "広告スキップ",
-    "earlyAccess": "早期アクセス",
-    "exclusiveContent": "限定コンテンツ",
-    "prioritySupport": "優先サポート",
-    "compare": "プランを比較",
-    "selectPlan": "プランを選択",
-    "currentPlan": "現在のプラン",
-    "upgrade": "アップグレード",
-    "downgrade": "ダウングレード",
-    "costDashboard": {
-      "topSpenders": {
-        "privacyNote": "[ja] User IDs are hashed and costs are aggregated into ranges for privacy protection.",
-        "title": "[ja] Top 20 Spenders (Monthly)",
-        "userId": "[ja] User ID",
-        "rank": "[ja] Rank",
-        "loading": "[ja] Loading top spenders...",
-        "costRange": "[ja] Cost Range"
-      },
+    "comparison": {
+      "title": "プランを比較",
+      "subtitle": "あなたに最適なプランを見つけましょう",
       "categories": {
-        "transient": "[ja] Transient",
-        "permanentFixed": "[ja] Permanent (Fixed)",
-        "category": "[ja] Category",
-        "amount": "[ja] Amount",
-        "detailedBreakdown": "[ja] Detailed Breakdown",
-        "transientDesc": "[ja] Usage-based costs that fluctuate with platform activity",
-        "permanentDesc": "[ja] Infrastructure costs that occur monthly regardless of usage",
-        "permanent": "[ja] Permanent",
-        "transientVariable": "[ja] Transient (Variable)",
-        "permanentVsTransient": "[ja] Permanent vs Transient",
-        "costItem": "[ja] Cost Item"
+        "ai": "AI機能",
+        "platform": "プラットフォーム",
+        "support": "サポート"
       },
-      "timeline": {
-        "amountLabel": "[ja] Amount ($)",
-        "loading": "[ja] Loading timeline...",
-        "showingData": "[ja] Showing data from {{start}} to {{end}}",
-        "netProfit": "[ja] Net Profit",
-        "title": "[ja] Cost Timeline",
-        "totalCost": "[ja] Total Cost",
-        "revenue": "[ja] Revenue"
+      "features": {
+        "aiFeatures": "AI機能（19種類）",
+        "widgets": "ウィジェット",
+        "familyProfiles": "ファミリープロフィール",
+        "customerSupport": "カスタマーサポート"
       },
-      "plSummary": {
-        "revenue": "[ja] REVENUE",
-        "totalCosts": "[ja] TOTAL COSTS",
-        "netProfitLoss": "[ja] Net Profit/Loss",
-        "margin": "[ja] margin"
-      },
-      "aiCosts": "[ja] AI Costs",
-      "percentOfTotal": "[ja] % of total",
-      "search": "[ja] Search",
-      "thirdPartyApis": "[ja] Third-party APIs",
-      "thirdParty": "[ja] Third-party",
-      "title": "[ja] Cost Dashboard",
-      "components": "[ja] Components",
-      "loadingBreakdown": "[ja] Loading breakdown...",
-      "translation": "[ja] Translation",
-      "costBreakdown": "[ja] Cost Breakdown",
-      "infrastructure": "[ja] Infrastructure"
-    },
-    "batchActions": {
-      "selectedCount_one": "[ja] {{count}} selected",
-      "clear": "[ja] Clear",
-      "selectedCount_other": "[ja] {{count}} selected",
-      "selectedCount": "[ja] {{count}} selected"
+      "values": {
+        "fiftyCredits": "50クレジット（一回限り）",
+        "unlimited": "無制限",
+        "emailSupport": "メール",
+        "prioritySupport": "優先"
+      }
     }
   },
   "admin": {
@@ -6211,13 +6176,26 @@
     },
     "intro": {
       "title": "Bayit+へようこそ",
-      "subtitle": "AI搭載機能でイスラエルのストリーミングの全機能を解放しましょう",
-      "bullet1": "あなたの言語でのAIダビング",
-      "bullet2": "文法ヒント付きスマート字幕",
-      "bullet3": "AIによるシーン検索",
-      "bullet4": "500ベータAIクレジット付き",
+      "subtitle": "AIでコンテンツを強化",
+      "bullet1": "吹替えと字幕（8 AI機能）",
+      "bullet2": "検索と発見（3 AI機能）",
+      "bullet3": "言語ツール（4 AI機能）",
+      "bullet4": "クリエイティブとインタラクティブ（4 AI機能）",
       "seePlans": "プランを見る",
       "maybeLater": "後で"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus機能",
+      "featureRequires": "{{feature}}にPlusが必要です",
+      "upgradeList": "19のAI機能、無制限ウィジェット、無制限プロフィール、優先サポートを解除",
+      "subscribeNow": "今すぐ登録",
+      "hasAccess": "アクセス可能"
+    },
+    "title": "サブスクリプション",
+    "choosePlan": "プランを選択",
+    "subscribe": "プランを選択",
+    "loadingPlans": "Loading plans..."
   }
 }

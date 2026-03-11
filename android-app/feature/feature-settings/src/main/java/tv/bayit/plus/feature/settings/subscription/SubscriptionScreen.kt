@@ -151,12 +151,15 @@ private fun SubscriptionContent(
                 Column {
                     Text(text = bayitString("settings.subscription.featuresIncluded"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
-                    FeatureRow(text = bayitString("settings.subscription.featureLiveTV"))
-                    FeatureRow(text = bayitString("settings.subscription.featureVOD"))
-                    FeatureRow(text = bayitString("settings.subscription.featureRadio"))
-                    FeatureRow(text = bayitString("settings.subscription.featureDownloads"))
-                    if (state.isBetaUser) {
-                        FeatureRow(text = bayitString("settings.subscription.featureBeta500"))
+                    if (state.plan.lowercase() == "plus") {
+                        FeatureRow(text = bayitString("settings.subscription.featureAIPlus"))
+                        FeatureRow(text = bayitString("settings.subscription.featureWidgetsPlus"))
+                        FeatureRow(text = bayitString("settings.subscription.featureProfilesPlus"))
+                        FeatureRow(text = bayitString("settings.subscription.featureSupport"))
+                    } else {
+                        FeatureRow(text = bayitString("settings.subscription.featureAIFree"))
+                        FeatureRow(text = bayitString("settings.subscription.featureWidgetsFree"))
+                        FeatureRow(text = bayitString("settings.subscription.featureProfilesFree"))
                     }
                 }
             }

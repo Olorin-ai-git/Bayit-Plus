@@ -4110,56 +4110,52 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "Live TV Channels",
-        "Radio & Podcasts",
-        "Audiobooks",
-        "50 AI Credits/month"
+        "BYOC प्लेटफॉर्म (लाइव टीवी, रेडियो, पॉडकास्ट)",
+        "50 AI क्रेडिट (एक बार)",
+        "1 विजेट",
+        "1 फैमिली प्रोफाइल"
       ]
     },
     "plus": {
       "name": "Plus",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 AI Credits/month",
-        "Unlimited AI Dubbing",
-        "Smart Subtitles",
-        "AI Scene Search",
-        "AI Catch-Up",
-        "Talk-Back to Characters",
-        "4 Simultaneous Devices",
-        "Priority Support"
-      ]
+        "19 AI सुविधाएं - असीमित",
+        "असीमित विजेट",
+        "असीमित फैमिली प्रोफाइल",
+        "प्राथमिकता समर्थन"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "डबिंग और उपशीर्षक",
+        "dubbingSubtitlesCount": "8 सुविधाएं",
+        "searchDiscovery": "खोज और खोज",
+        "searchDiscoveryCount": "3 सुविधाएं",
+        "languageTools": "भाषा उपकरण",
+        "languageToolsCount": "4 सुविधाएं",
+        "creativeInteractive": "रचनात्मक और इंटरैक्टिव",
+        "creativeInteractiveCount": "4 सुविधाएं"
+      }
     },
     "comparison": {
-      "title": "Compare Plans",
-      "subtitle": "Find the perfect plan for your needs",
+      "title": "प्लान की तुलना करें",
+      "subtitle": "अपनी जरूरतों के लिए सही प्लान खोजें",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "AI सुविधाएं",
+        "platform": "प्लेटफॉर्म",
+        "support": "समर्थन"
       },
       "features": {
-        "liveChannels": "Live TV Channels",
-        "radioPodcasts": "Radio & Podcasts",
-        "audiobooks": "Audiobooks",
-        "byocPlexIptv": "Plex & IPTV Integration",
-        "aiCredits": "AI Credits",
-        "aiDubbing": "AI Dubbing",
-        "aiSubtitles": "Smart Subtitles",
-        "aiSearch": "AI Scene Search",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "Talk-Back to Characters",
-        "simultaneousDevices": "Simultaneous Devices",
-        "customerSupport": "Customer Support"
+        "aiFeatures": "AI सुविधाएं (कुल 19)",
+        "widgets": "विजेट",
+        "familyProfiles": "फैमिली प्रोफाइल",
+        "customerSupport": "ग्राहक समर्थन"
       },
       "values": {
-        "fiftyCredits": "50/month",
-        "fiveHundredCredits": "500/month",
-        "creditBased": "Credit-based",
-        "emailSupport": "Email",
-        "prioritySupport": "Priority"
+        "fiftyCredits": "50 क्रेडिट (एक बार)",
+        "unlimited": "असीमित",
+        "emailSupport": "ईमेल",
+        "prioritySupport": "प्राथमिकता"
       }
     }
   },
@@ -4331,7 +4327,13 @@
       "timerExtended": "टाइमर {{minutes}} मिनट बढ़ाया गया",
       "timerCancelled": "स्लीप टाइमर रद्द किया गया"
     },
-    "invalidEpisodeUrl": "Invalid episode URL"
+    "invalidEpisodeUrl": "Invalid episode URL",
+    "dubbing": {
+      "premiumTitle": "Plus सुविधा",
+      "premiumMessage": "लाइव डबिंग के लिए Plus सदस्यता आवश्यक है",
+      "upgrade": "Plus में अपग्रेड करें",
+      "notNow": "अभी नहीं"
+    }
   },
   "listen": {
     "title": "सुनें"
@@ -4506,7 +4508,7 @@
       "line2": "तेल अवीव, इज़राइल 6100000"
     },
     "free": "मुफ्त",
-    "premiumPrice": "$7.99/महीना",
+    "premiumPrice": "$6.99/महीना",
     "familyPrice": "$12.99/महीना",
     "remaining": "शेष",
     "subscription": {
@@ -4973,7 +4975,7 @@
     "kids": "👶 बच्चे",
     "readAloud": "जोर से पढ़ें",
     "smartSearch": "Smart Search",
-    "premiumRequired": "Smart Search के लिए Premium सदस्यता आवश्यक है",
+    "premiumRequired": "Smart Search के लिए Plus सदस्यता आवश्यक है",
     "searchFailed": "खोज विफल रही",
     "premiumFeature": "Premium सुविधा",
     "smartSearchDescription": "Smart Search प्राकृतिक भाषा प्रश्नों को समझने और आप जो खोज रहे हैं उसे ठीक से खोजने के लिए AI का उपयोग करता है।",
@@ -5274,10 +5276,27 @@
     "subscription": {
       "title": "सदस्यता",
       "currentPlan": "वर्तमान प्लान",
+      "status": "स्थिति",
+      "since": "सदस्य तब से",
+      "renews": "नवीनीकरण तिथि",
+      "featuresIncluded": "शामिल सुविधाएं",
+      "featureAI": "19 AI सुविधाएं",
+      "featureAIFree": "50 AI क्रेडिट (एक बार)",
+      "featureAIPlus": "असीमित AI सुविधाएं",
+      "featureWidgets": "विजेट",
+      "featureWidgetsFree": "1 विजेट",
+      "featureWidgetsPlus": "असीमित विजेट",
+      "featureProfiles": "फैमिली प्रोफाइल",
+      "featureProfilesFree": "1 प्रोफाइल",
+      "featureProfilesPlus": "असीमित प्रोफाइल",
+      "featureSupport": "प्राथमिकता समर्थन",
+      "manageOnGooglePlay": "Google Play पर प्रबंधित करें",
+      "manageOnAppStore": "App Store पर प्रबंधित करें",
+      "upgradePlan": "प्लान अपग्रेड करें",
       "availablePlans": "उपलब्ध प्लान",
       "changePlan": "प्लान बदलें",
       "billingHistory": "बिलिंग इतिहास",
-      "manageViaStore": "App Store के माध्यम से प्रबंधित करें",
+      "manageViaStore": "App Store से प्रबंधित करें",
       "autoRenew": "स्वचालित नवीनीकरण",
       "promoCode": "प्रोमो कोड",
       "cancelSubscription": "सदस्यता रद्द करें"
@@ -5317,58 +5336,30 @@
   },
   "subscribe": {
     "title": "अपना प्लान चुनें",
-    "subtitle": "किसी भी प्लान के लिए 7 दिन का मुफ्त ट्रायल। कभी भी रद्द करें।",
+    "subtitle": "कभी भी रद्द करें।",
     "monthly": "मासिक",
     "yearly": "वार्षिक",
     "save2Months": "2 महीने बचाएं",
     "popular": "सबसे लोकप्रिय",
-    "period": "/महीना",
-    "perYear": "/वर्ष",
+    "period": "/माह",
+    "perYear": "/साल",
     "select": "प्लान चुनें",
-    "selected": "चयनित",
-    "processing": "प्रोसेसिंग...",
-    "startTrial": "मुफ्त ट्रायल शुरू करें",
-    "viewComparison": "पूर्ण तुलना देखें",
-    "viewCards": "योजनाएं देखें",
-    "premiumShowcase": {
-      "title": "प्रीमियम इंटेलिजेंस का अनुभव करें",
-      "subtitle": "एआई-संचालित सुविधाएँ जो आपके देखने के तरीके के अनुकूल होती हैं",
-      "videoTitle": "विजेट्स को क्रिया में देखें",
-      "videoDescription": "फ्लोटिंग विजेट्स के लिए हमारा 2-मिनट का परिचय देखें",
-      "widgetTitle": "इंटरैक्टिव लाइव डेमो",
-      "widgetDescription": "Kan11 के साथ ड्रैग करें, आकार बदलें और मल्टीटास्क करें",
-      "aiAssistant": {
-        "title": "एआई स्मार्ट असिस्टेंट",
-        "description": "मशीन लर्निंग द्वारा संचालित व्यक्तिगत सिफारिशें"
-      },
-      "floatingWidgets": {
-        "title": "फ्लोटिंग विजेट्स",
-        "description": "सामग्री ब्राउज़ करते समय कई चैनल देखें"
-      },
-      "a11y": {
-        "playVideo": "विजेट्स परिचय वीडियो चलाएं",
-        "playVideoHint": "पूर्ण स्क्रीन वीडियो प्रदर्शन खोलता है"
-      },
-      "badges": {
-        "aiPowered": "AI द्वारा संचालित",
-        "interactiveDemo": "इंटरैक्टिव डेमो"
-      }
-    },
+    "selected": "चुना गया",
+    "processing": "प्रसंस्करण...",
+    "viewComparison": "पूरी तुलना देखें",
+    "viewCards": "प्लान देखें",
+    "noProductSelected": "कोई उत्पाद नहीं चुना",
     "comparison": {
-      "title": "योजनाओं की तुलना करें",
-      "subtitle": "अपने लिए सही योजना खोजें",
-      "features": "विशेषताएं",
-      "perMonth": "/महीना",
-      "scrollHint": "← सभी योजनाओं को देखने के लिए स्क्रॉल करें →",
+      "title": "प्लान की तुलना करें",
+      "subtitle": "अपने लिए सही प्लान खोजें",
+      "features": "सुविधाएं",
+      "perMonth": "/माह",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "AI सुविधाएं",
+        "platform": "प्लेटफॉर्म",
+        "support": "समर्थन"
       }
-    },
-    "noCharge": "ट्रायल अवधि के दौरान आपके क्रेडिट कार्ड से शुल्क नहीं लिया जाएगा",
-    "noProductSelected": "No product selected"
+    }
   },
   "subtitles": {
     "off": "बंद",
@@ -6755,7 +6746,7 @@
       "notAuthenticated": "प्रमाणित नहीं",
       "notAuthenticatedMessage": "कृपया फिर से साइन इन करें",
       "notAuthenticatedAction": "लाइव डबिंग उपयोग करने के लिए साइन इन करें",
-      "premiumRequired": "Premium Feature",
+      "premiumRequired": "Plus Feature",
       "premiumRequiredMessage": "लाइव डबिंग के लिए प्रीमियम सब्सक्रिप्शन आवश्यक है",
       "premiumRequiredAction": "इस सुविधा का उपयोग करने के लिए प्रीमियम में अपग्रेड करें",
       "channelUnavailable": "Not Available",
@@ -6870,11 +6861,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing"
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing"
   },
   "video": {
     "watchTrailer": "ट्रेलर देखें",
@@ -7470,7 +7461,7 @@
         "success": "Email verified successfully! Redirecting to login...",
         "verifyPrompt": "Please verify your email to activate your account and credits.",
         "verifying": "Verifying your email...",
-        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 500 AI credits to test our advanced features.",
+        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 50 AI credits to test our advanced features.",
         "welcomeTitle": "Welcome to Bayit+ Beta 500!"
       }
     }
@@ -9955,13 +9946,13 @@
       "learnMore": "और जानें"
     },
     "intro": {
-      "title": "Bayit+ में आपका स्वागत है",
-      "subtitle": "AI के साथ अपनी सामग्री बेहतर बनाएं",
-      "bullet1": "कई भाषाओं में AI डबिंग",
-      "bullet2": "व्याकरण उपकरणों के साथ स्मार्ट उपशीर्षक",
-      "bullet3": "AI-संचालित दृश्य खोज",
-      "bullet4": "हर महीने 50 मुफ्त AI क्रेडिट",
-      "seePlans": "योजनाएं देखें",
+      "title": "Bayit+ में स्वागत है",
+      "subtitle": "AI के साथ अपनी सामग्री को बेहतर बनाएं",
+      "bullet1": "डबिंग और उपशीर्षक (8 AI सुविधाएं)",
+      "bullet2": "खोज और खोज (3 AI सुविधाएं)",
+      "bullet3": "भाषा उपकरण (4 AI सुविधाएं)",
+      "bullet4": "रचनात्मक और इंटरैक्टिव (4 AI सुविधाएं)",
+      "seePlans": "प्लान देखें",
       "maybeLater": "शायद बाद में"
     }
   },
@@ -10113,5 +10104,18 @@
     "voice": {
       "noActiveChannels": "कोई सक्रिय AI चैनल उपलब्ध नहीं"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus सुविधा",
+      "featureRequires": "{{feature}} के लिए Plus चाहिए",
+      "upgradeList": "19 AI सुविधाएं, असीमित विजेट, असीमित प्रोफाइल और प्राथमिकता समर्थन अनलॉक करें",
+      "subscribeNow": "अभी सदस्यता लें",
+      "hasAccess": "आपको एक्सेस है"
+    },
+    "title": "सदस्यता",
+    "choosePlan": "प्लान चुनें",
+    "subscribe": "प्लान चुनें",
+    "loadingPlans": "Loading plans..."
   }
 }

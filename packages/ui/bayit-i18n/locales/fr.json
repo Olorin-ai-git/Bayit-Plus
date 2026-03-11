@@ -14,7 +14,7 @@
     "password": "Mot de passe",
     "name": "Nom",
     "guest": "Invité",
-    "premium": "Premium",
+    "premium": "Plus",
     "basic": "Basique",
     "tapToLogin": "Appuyez pour vous connecter"
   },
@@ -4099,56 +4099,52 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "Live TV Channels",
-        "Radio & Podcasts",
-        "Audiobooks",
-        "50 AI Credits/month"
+        "Plateforme BYOC (TV en Direct, Radio, Podcasts)",
+        "50 Credits IA (unique)",
+        "1 Widget",
+        "1 Profil Familial"
       ]
     },
     "plus": {
       "name": "Plus",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 AI Credits/month",
-        "Unlimited AI Dubbing",
-        "Smart Subtitles",
-        "AI Scene Search",
-        "AI Catch-Up",
-        "Talk-Back to Characters",
-        "4 Simultaneous Devices",
-        "Priority Support"
-      ]
+        "19 Fonctions IA - Illimitees",
+        "Widgets Illimites",
+        "Profils Familiaux Illimites",
+        "Support Prioritaire"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "Doublage et Sous-titres",
+        "dubbingSubtitlesCount": "8 fonctions",
+        "searchDiscovery": "Recherche et Decouverte",
+        "searchDiscoveryCount": "3 fonctions",
+        "languageTools": "Outils Linguistiques",
+        "languageToolsCount": "4 fonctions",
+        "creativeInteractive": "Creatif et Interactif",
+        "creativeInteractiveCount": "4 fonctions"
+      }
     },
     "comparison": {
-      "title": "Compare Plans",
-      "subtitle": "Find the perfect plan for your needs",
+      "title": "Comparer les Plans",
+      "subtitle": "Trouvez le plan parfait pour vos besoins",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
+        "ai": "Fonctions IA",
+        "platform": "Plateforme",
         "support": "Support"
       },
       "features": {
-        "liveChannels": "Live TV Channels",
-        "radioPodcasts": "Radio & Podcasts",
-        "audiobooks": "Audiobooks",
-        "byocPlexIptv": "Plex & IPTV Integration",
-        "aiCredits": "AI Credits",
-        "aiDubbing": "AI Dubbing",
-        "aiSubtitles": "Smart Subtitles",
-        "aiSearch": "AI Scene Search",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "Talk-Back to Characters",
-        "simultaneousDevices": "Simultaneous Devices",
-        "customerSupport": "Customer Support"
+        "aiFeatures": "Fonctions IA (19 au total)",
+        "widgets": "Widgets",
+        "familyProfiles": "Profils Familiaux",
+        "customerSupport": "Support Client"
       },
       "values": {
-        "fiftyCredits": "50/month",
-        "fiveHundredCredits": "500/month",
-        "creditBased": "Credit-based",
+        "fiftyCredits": "50 credits (unique)",
+        "unlimited": "Illimite",
         "emailSupport": "Email",
-        "prioritySupport": "Priority"
+        "prioritySupport": "Prioritaire"
       }
     }
   },
@@ -4336,7 +4332,13 @@
       "timerExtended": "Minuterie prolongée de {{minutes}} minutes",
       "timerCancelled": "Minuterie de sommeil annulée"
     },
-    "invalidEpisodeUrl": "URL d'episode invalide"
+    "invalidEpisodeUrl": "URL d'episode invalide",
+    "dubbing": {
+      "premiumTitle": "Fonction Plus",
+      "premiumMessage": "Le doublage en direct necessite un abonnement Plus",
+      "upgrade": "Passer a Plus",
+      "notNow": "Pas Maintenant"
+    }
   },
   "listen": {
     "title": "Ecouter"
@@ -4999,7 +5001,7 @@
     "kids": "👶 Enfants",
     "readAloud": "Lire à Voix Haute",
     "smartSearch": "Recherche Intelligente",
-    "premiumRequired": "Abonnement Premium requis pour la Recherche Intelligente",
+    "premiumRequired": "Abonnement Plus requis pour la Recherche Intelligente",
     "searchFailed": "La recherche a échoué",
     "premiumFeature": "Fonctionnalité Premium",
     "smartSearchDescription": "La Recherche Intelligente utilise l'IA pour comprendre les requêtes en langage naturel et trouver exactement ce que vous cherchez.",
@@ -5299,14 +5301,31 @@
     },
     "subscription": {
       "title": "Abonnement",
-      "currentPlan": "Forfait actuel",
-      "availablePlans": "Forfaits disponibles",
-      "changePlan": "Changer de forfait",
-      "billingHistory": "Historique de facturation",
-      "manageViaStore": "Gerer via l'App Store",
-      "autoRenew": "Renouvellement automatique",
-      "promoCode": "Code promotionnel",
-      "cancelSubscription": "Annuler l'abonnement"
+      "currentPlan": "Plan Actuel",
+      "status": "Statut",
+      "since": "Membre depuis",
+      "renews": "Renouvellement le",
+      "featuresIncluded": "Fonctions Incluses",
+      "featureAI": "19 Fonctions IA",
+      "featureAIFree": "50 Credits IA (unique)",
+      "featureAIPlus": "Fonctions IA Illimitees",
+      "featureWidgets": "Widgets",
+      "featureWidgetsFree": "1 Widget",
+      "featureWidgetsPlus": "Widgets Illimites",
+      "featureProfiles": "Profils Familiaux",
+      "featureProfilesFree": "1 Profil",
+      "featureProfilesPlus": "Profils Illimites",
+      "featureSupport": "Support Prioritaire",
+      "manageOnGooglePlay": "Gerer sur Google Play",
+      "manageOnAppStore": "Gerer sur App Store",
+      "upgradePlan": "Ameliorer le Plan",
+      "availablePlans": "Plans Disponibles",
+      "changePlan": "Changer de Plan",
+      "billingHistory": "Historique de Facturation",
+      "manageViaStore": "Gerer via App Store",
+      "autoRenew": "Renouvellement Automatique",
+      "promoCode": "Code Promotionnel",
+      "cancelSubscription": "Annuler l'Abonnement"
     },
     "aboutSettings": {
       "title": "A propos",
@@ -5342,59 +5361,31 @@
     }
   },
   "subscribe": {
-    "title": "Choisissez votre forfait",
-    "subtitle": "7 jours d'essai gratuit pour tout forfait. Annulez à tout moment.",
+    "title": "Choisissez Votre Plan",
+    "subtitle": "Annulez a tout moment.",
     "monthly": "Mensuel",
     "yearly": "Annuel",
-    "save2Months": "Économisez 2 mois",
-    "popular": "Le plus populaire",
+    "save2Months": "Economisez 2 mois",
+    "popular": "Le Plus Populaire",
     "period": "/mois",
     "perYear": "/an",
-    "select": "Sélectionner le forfait",
-    "selected": "Sélectionné",
+    "select": "Choisir le Plan",
+    "selected": "Selectionne",
     "processing": "Traitement...",
-    "startTrial": "Commencer l'essai gratuit",
-    "noCharge": "Votre carte de crédit ne sera pas débitée pendant la période d'essai",
-    "viewComparison": "Voir la comparaison complète",
-    "viewCards": "Voir les forfaits",
-    "premiumShowcase": {
-      "title": "Découvrez l'Intelligence Premium",
-      "subtitle": "Fonctionnalités alimentées par l'IA qui s'adaptent à votre façon de regarder",
-      "videoTitle": "Voir les Widgets en Action",
-      "videoDescription": "Regardez notre introduction de 2 minutes aux widgets flottants",
-      "widgetTitle": "Démo Interactive en Direct",
-      "widgetDescription": "Faites glisser, redimensionnez et multitâchez avec Kan11",
-      "aiAssistant": {
-        "title": "Assistant Intelligent AI",
-        "description": "Recommandations personnalisées alimentées par l'apprentissage automatique"
-      },
-      "floatingWidgets": {
-        "title": "Widgets Flottants",
-        "description": "Regardez plusieurs chaînes tout en naviguant dans le contenu"
-      },
-      "a11y": {
-        "playVideo": "Lire la vidéo d'introduction aux widgets",
-        "playVideoHint": "Ouvre une démonstration vidéo en plein écran"
-      },
-      "badges": {
-        "aiPowered": "ALIMENTÉ PAR IA",
-        "interactiveDemo": "DÉMO INTERACTIVE"
-      }
-    },
+    "viewComparison": "Voir la Comparaison Complete",
+    "viewCards": "Voir les Plans",
+    "noProductSelected": "Aucun produit selectionne",
     "comparison": {
       "title": "Comparer les Plans",
       "subtitle": "Trouvez le plan parfait pour vous",
-      "features": "Fonctionnalités",
+      "features": "Fonctionnalites",
       "perMonth": "/mois",
-      "scrollHint": "← Faites défiler pour voir tous les plans →",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
+        "ai": "Fonctions IA",
+        "platform": "Plateforme",
         "support": "Support"
       }
-    },
-    "noProductSelected": "No product selected"
+    }
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -6532,7 +6523,7 @@
       "notAuthenticated": "Non authentifié",
       "notAuthenticatedMessage": "Veuillez vous reconnecter",
       "notAuthenticatedAction": "Connectez-vous pour utiliser le doublage en direct",
-      "premiumRequired": "Premium Feature",
+      "premiumRequired": "Plus Feature",
       "premiumRequiredMessage": "Le doublage en direct nécessite un abonnement Premium",
       "premiumRequiredAction": "Passez à Premium pour accéder à cette fonctionnalité",
       "channelUnavailable": "Not Available",
@@ -6647,11 +6638,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing"
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing"
   },
   "friends": {
     "title": "Amis & Adversaires",
@@ -8242,7 +8233,7 @@
         "success": "Email verified successfully! Redirecting to login...",
         "verifyPrompt": "Please verify your email to activate your account and credits.",
         "verifying": "Verifying your email...",
-        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 500 AI credits to test our advanced features.",
+        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 50 AI credits to test our advanced features.",
         "welcomeTitle": "Welcome to Bayit+ Beta 500!"
       }
     }
@@ -10864,13 +10855,13 @@
     },
     "intro": {
       "title": "Bienvenue sur Bayit+",
-      "subtitle": "Améliorez votre contenu avec l'IA",
-      "bullet1": "Doublage IA en plusieurs langues",
-      "bullet2": "Sous-titres intelligents avec outils de grammaire",
-      "bullet3": "Recherche de scènes par IA",
-      "bullet4": "50 crédits IA gratuits chaque mois",
-      "seePlans": "Voir les plans",
-      "maybeLater": "Peut-être plus tard"
+      "subtitle": "Ameliorez votre contenu avec l'IA",
+      "bullet1": "Doublage et Sous-titres (8 fonctions IA)",
+      "bullet2": "Recherche et Decouverte (3 fonctions IA)",
+      "bullet3": "Outils Linguistiques (4 fonctions IA)",
+      "bullet4": "Creatif et Interactif (4 fonctions IA)",
+      "seePlans": "Voir les Plans",
+      "maybeLater": "Peut-etre Plus Tard"
     }
   },
   "navigation": {
@@ -11021,5 +11012,18 @@
     "voice": {
       "noActiveChannels": "Aucun canal IA actif disponible"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Fonction Plus",
+      "featureRequires": "{{feature}} necessite Plus",
+      "upgradeList": "Debloquez 19 fonctions IA, widgets illimites, profils illimites et support prioritaire",
+      "subscribeNow": "S'abonner Maintenant",
+      "hasAccess": "Vous avez acces"
+    },
+    "title": "Abonnement",
+    "choosePlan": "Choisir le Plan",
+    "subscribe": "Choisir le Plan",
+    "loadingPlans": "Loading plans..."
   }
 }

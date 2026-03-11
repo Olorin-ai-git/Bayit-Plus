@@ -4519,56 +4519,52 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "Live TV Channels",
-        "Radio & Podcasts",
-        "Audiobooks",
-        "50 AI Credits/month"
+        "BYOC平台（直播电视、广播、播客）",
+        "50 AI积分（一次性）",
+        "1个小组件",
+        "1个家庭配置文件"
       ]
     },
     "plus": {
       "name": "Plus",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 AI Credits/month",
-        "Unlimited AI Dubbing",
-        "Smart Subtitles",
-        "AI Scene Search",
-        "AI Catch-Up",
-        "Talk-Back to Characters",
-        "4 Simultaneous Devices",
-        "Priority Support"
-      ]
+        "19项AI功能 - 无限制",
+        "无限小组件",
+        "无限家庭配置文件",
+        "优先支持"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "配音与字幕",
+        "dubbingSubtitlesCount": "8项功能",
+        "searchDiscovery": "搜索与发现",
+        "searchDiscoveryCount": "3项功能",
+        "languageTools": "语言工具",
+        "languageToolsCount": "4项功能",
+        "creativeInteractive": "创意与互动",
+        "creativeInteractiveCount": "4项功能"
+      }
     },
     "comparison": {
-      "title": "Compare Plans",
-      "subtitle": "Find the perfect plan for your needs",
+      "title": "比较方案",
+      "subtitle": "找到适合您的方案",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "AI功能",
+        "platform": "平台",
+        "support": "支持"
       },
       "features": {
-        "liveChannels": "Live TV Channels",
-        "radioPodcasts": "Radio & Podcasts",
-        "audiobooks": "Audiobooks",
-        "byocPlexIptv": "Plex & IPTV Integration",
-        "aiCredits": "AI Credits",
-        "aiDubbing": "AI Dubbing",
-        "aiSubtitles": "Smart Subtitles",
-        "aiSearch": "AI Scene Search",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "Talk-Back to Characters",
-        "simultaneousDevices": "Simultaneous Devices",
-        "customerSupport": "Customer Support"
+        "aiFeatures": "AI功能（19项）",
+        "widgets": "小组件",
+        "familyProfiles": "家庭配置文件",
+        "customerSupport": "客户支持"
       },
       "values": {
-        "fiftyCredits": "50/month",
-        "fiveHundredCredits": "500/month",
-        "creditBased": "Credit-based",
-        "emailSupport": "Email",
-        "prioritySupport": "Priority"
+        "fiftyCredits": "50积分（一次性）",
+        "unlimited": "无限制",
+        "emailSupport": "电子邮件",
+        "prioritySupport": "优先"
       }
     }
   },
@@ -4740,7 +4736,13 @@
       "timerExtended": "定时器延长{{minutes}}分钟",
       "timerCancelled": "睡眠定时器已取消"
     },
-    "invalidEpisodeUrl": "Invalid episode URL"
+    "invalidEpisodeUrl": "Invalid episode URL",
+    "dubbing": {
+      "premiumTitle": "Plus功能",
+      "premiumMessage": "实时配音需要Plus订阅",
+      "upgrade": "升级到Plus",
+      "notNow": "暂时不要"
+    }
   },
   "listen": {
     "title": "收听"
@@ -4867,7 +4869,7 @@
       "line2": "特拉维夫，以色列 6100000"
     },
     "free": "免费",
-    "premiumPrice": "$7.99/月",
+    "premiumPrice": "$6.99/月",
     "familyPrice": "$12.99/月",
     "remaining": "剩余",
     "tabs": {
@@ -5716,9 +5718,26 @@
     },
     "subscription": {
       "title": "订阅",
-      "currentPlan": "当前套餐",
-      "availablePlans": "可用套餐",
-      "changePlan": "更换套餐",
+      "currentPlan": "当前方案",
+      "status": "状态",
+      "since": "会员以来",
+      "renews": "续费日期",
+      "featuresIncluded": "包含的功能",
+      "featureAI": "19项AI功能",
+      "featureAIFree": "50 AI积分（一次性）",
+      "featureAIPlus": "无限AI功能",
+      "featureWidgets": "小组件",
+      "featureWidgetsFree": "1个小组件",
+      "featureWidgetsPlus": "无限小组件",
+      "featureProfiles": "家庭配置文件",
+      "featureProfilesFree": "1个配置文件",
+      "featureProfilesPlus": "无限配置文件",
+      "featureSupport": "优先支持",
+      "manageOnGooglePlay": "在Google Play管理",
+      "manageOnAppStore": "在App Store管理",
+      "upgradePlan": "升级方案",
+      "availablePlans": "可用方案",
+      "changePlan": "更改方案",
       "billingHistory": "账单历史",
       "manageViaStore": "通过App Store管理",
       "autoRenew": "自动续费",
@@ -5789,59 +5808,31 @@
     "recentGames": "最近游戏"
   },
   "subscribe": {
-    "title": "选择您的套餐",
-    "subtitle": "任何套餐7天免费试用。随时取消。",
+    "title": "选择您的方案",
+    "subtitle": "随时取消。",
     "monthly": "月付",
     "yearly": "年付",
-    "save2Months": "省2个月",
+    "save2Months": "节省2个月",
     "popular": "最受欢迎",
     "period": "/月",
     "perYear": "/年",
-    "select": "选择套餐",
+    "select": "选择方案",
     "selected": "已选择",
     "processing": "处理中...",
-    "startTrial": "开始免费试用",
-    "noCharge": "试用期间不会收取您的信用卡费用",
     "viewComparison": "查看完整比较",
-    "viewCards": "查看套餐",
-    "premiumShowcase": {
-      "title": "体验高级智能",
-      "subtitle": "AI驱动的功能，适应您的观看方式",
-      "videoTitle": "观看小部件实际操作",
-      "videoDescription": "观看我们2分钟的浮动小部件介绍",
-      "widgetTitle": "交互式实时演示",
-      "widgetDescription": "拖动、调整大小并与Kan11多任务处理",
-      "aiAssistant": {
-        "title": "AI智能助手",
-        "description": "由机器学习驱动的个性化推荐"
-      },
-      "floatingWidgets": {
-        "title": "浮动小部件",
-        "description": "浏览内容时观看多个频道"
-      },
-      "a11y": {
-        "playVideo": "播放小部件介绍视频",
-        "playVideoHint": "打开全屏视频演示"
-      },
-      "badges": {
-        "aiPowered": "AI驱动",
-        "interactiveDemo": "交互式演示"
-      }
-    },
+    "viewCards": "查看方案",
+    "noProductSelected": "未选择产品",
     "comparison": {
-      "title": "比较计划",
-      "subtitle": "找到最适合您的计划",
+      "title": "比较方案",
+      "subtitle": "找到适合您的方案",
       "features": "功能",
       "perMonth": "/月",
-      "scrollHint": "← 滚动查看所有计划 →",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "AI功能",
+        "platform": "平台",
+        "support": "支持"
       }
-    },
-    "noProductSelected": "No product selected"
+    }
   },
   "subtitles": {
     "nikud": "希伯来语标点",
@@ -6962,7 +6953,7 @@
       "notAuthenticated": "未认证",
       "notAuthenticatedMessage": "请重新登录",
       "notAuthenticatedAction": "登录以使用实时配音",
-      "premiumRequired": "Premium Feature",
+      "premiumRequired": "Plus Feature",
       "premiumRequiredMessage": "实时配音需要高级订阅",
       "premiumRequiredAction": "升级到高级版以使用此功能",
       "channelUnavailable": "Not Available",
@@ -7077,11 +7068,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing"
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing"
   },
   "taxonomy": {
     "sections": {
@@ -7479,7 +7470,7 @@
         "success": "Email verified successfully! Redirecting to login...",
         "verifyPrompt": "Please verify your email to activate your account and credits.",
         "verifying": "Verifying your email...",
-        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 500 AI credits to test our advanced features.",
+        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 50 AI credits to test our advanced features.",
         "welcomeTitle": "Welcome to Bayit+ Beta 500!"
       }
     }
@@ -9955,10 +9946,10 @@
     "intro": {
       "title": "欢迎来到Bayit+",
       "subtitle": "用AI增强您的内容",
-      "bullet1": "多语言AI配音",
-      "bullet2": "带语法工具的智能字幕",
-      "bullet3": "AI场景搜索",
-      "bullet4": "每月50个免费AI积分",
+      "bullet1": "配音与字幕（8项AI功能）",
+      "bullet2": "搜索与发现（3项AI功能）",
+      "bullet3": "语言工具（4项AI功能）",
+      "bullet4": "创意与互动（4项AI功能）",
       "seePlans": "查看方案",
       "maybeLater": "以后再说"
     }
@@ -10111,5 +10102,18 @@
     "voice": {
       "noActiveChannels": "没有可用的活跃AI频道"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus功能",
+      "featureRequires": "{{feature}}需要Plus",
+      "upgradeList": "解锹19项AI功能、无限小组件、无限配置文件和优先支持",
+      "subscribeNow": "立即订阅",
+      "hasAccess": "您已有访问权限"
+    },
+    "title": "订阅",
+    "choosePlan": "选择方案",
+    "subscribe": "选择方案",
+    "loadingPlans": "Loading plans..."
   }
 }

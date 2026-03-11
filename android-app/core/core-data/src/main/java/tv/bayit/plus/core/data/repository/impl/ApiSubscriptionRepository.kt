@@ -100,12 +100,11 @@ data class SubscriptionPlan(
     val name: String,
     val price: Double,
     @SerialName("priceYearly") val priceYearly: Double? = null,
-    val features: List<String> = emptyList(),
-    @SerialName("maxStreams") val maxStreams: Int = 1,
-    val quality: String = "hd",
-    @SerialName("includesLive") val includesLive: Boolean = false,
     @SerialName("includesAI") val includesAI: Boolean = false,
-    @SerialName("includesDownloads") val includesDownloads: Boolean = false,
+    @SerialName("aiCredits") val aiCredits: Int = 0,
+    @SerialName("maxWidgets") val maxWidgets: Int = 1,
+    @SerialName("maxProfiles") val maxProfiles: Int = 1,
+    @SerialName("prioritySupport") val prioritySupport: Boolean = false,
 )
 
 /** Current subscription response. */

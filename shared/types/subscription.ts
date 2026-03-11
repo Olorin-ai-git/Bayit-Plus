@@ -10,7 +10,7 @@ export enum PlanTier {
   PLUS = "plus",
 }
 
-export type FeatureCategory = "content" | "ai" | "streaming" | "support";
+export type FeatureCategory = "ai" | "platform" | "support";
 
 export type FeatureValue = boolean | string;
 
@@ -37,5 +37,5 @@ export interface SubscriptionMetadata {
   billingPeriod: "monthly" | "yearly";
   startDate: string;
   endDate?: string;
-  status: "active" | "cancelled" | "expired" | "trial";
+  status: "active" | "cancelled" | "expired";
 }

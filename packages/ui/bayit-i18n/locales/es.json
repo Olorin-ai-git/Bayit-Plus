@@ -14,7 +14,7 @@
     "password": "Contraseña",
     "name": "Nombre",
     "guest": "Invitado",
-    "premium": "Premium",
+    "premium": "Plus",
     "basic": "Básico",
     "tapToLogin": "Toca para iniciar sesión"
   },
@@ -4196,7 +4196,7 @@
     "premiumRequired": "Se requiere suscripción premium",
     "selectInputLanguage": "Seleccionar idioma de entrada",
     "maybeLater": "Maybe Later",
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing"
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing"
   },
   "empty": {
     "noContent": "No hay contenido disponible",
@@ -5276,56 +5276,52 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "Live TV Channels",
-        "Radio & Podcasts",
-        "Audiobooks",
-        "50 AI Credits/month"
+        "Plataforma BYOC (TV en Vivo, Radio, Podcasts)",
+        "50 Creditos de IA (unico)",
+        "1 Widget",
+        "1 Perfil Familiar"
       ]
     },
     "plus": {
       "name": "Plus",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 AI Credits/month",
-        "Unlimited AI Dubbing",
-        "Smart Subtitles",
-        "AI Scene Search",
-        "AI Catch-Up",
-        "Talk-Back to Characters",
-        "4 Simultaneous Devices",
-        "Priority Support"
-      ]
+        "19 Funciones de IA - Ilimitadas",
+        "Widgets Ilimitados",
+        "Perfiles Familiares Ilimitados",
+        "Soporte Prioritario"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "Doblaje y Subtitulos",
+        "dubbingSubtitlesCount": "8 funciones",
+        "searchDiscovery": "Busqueda y Descubrimiento",
+        "searchDiscoveryCount": "3 funciones",
+        "languageTools": "Herramientas de Idioma",
+        "languageToolsCount": "4 funciones",
+        "creativeInteractive": "Creativo e Interactivo",
+        "creativeInteractiveCount": "4 funciones"
+      }
     },
     "comparison": {
-      "title": "Compare Plans",
-      "subtitle": "Find the perfect plan for your needs",
+      "title": "Comparar Planes",
+      "subtitle": "Encuentra el plan perfecto para tus necesidades",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "Funciones de IA",
+        "platform": "Plataforma",
+        "support": "Soporte"
       },
       "features": {
-        "liveChannels": "Live TV Channels",
-        "radioPodcasts": "Radio & Podcasts",
-        "audiobooks": "Audiobooks",
-        "byocPlexIptv": "Plex & IPTV Integration",
-        "aiCredits": "AI Credits",
-        "aiDubbing": "AI Dubbing",
-        "aiSubtitles": "Smart Subtitles",
-        "aiSearch": "AI Scene Search",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "Talk-Back to Characters",
-        "simultaneousDevices": "Simultaneous Devices",
-        "customerSupport": "Customer Support"
+        "aiFeatures": "Funciones de IA (19 en total)",
+        "widgets": "Widgets",
+        "familyProfiles": "Perfiles Familiares",
+        "customerSupport": "Soporte al Cliente"
       },
       "values": {
-        "fiftyCredits": "50/month",
-        "fiveHundredCredits": "500/month",
-        "creditBased": "Credit-based",
+        "fiftyCredits": "50 creditos (unico)",
+        "unlimited": "Ilimitado",
         "emailSupport": "Email",
-        "prioritySupport": "Priority"
+        "prioritySupport": "Prioritario"
       }
     }
   },
@@ -5500,7 +5496,13 @@
       "timerExtended": "Temporizador extendido {{minutes}} minutos",
       "timerCancelled": "Temporizador de sueño cancelado"
     },
-    "invalidEpisodeUrl": "URL de episodio invalida"
+    "invalidEpisodeUrl": "URL de episodio invalida",
+    "dubbing": {
+      "premiumTitle": "Funcion Plus",
+      "premiumMessage": "El doblaje en vivo requiere una suscripcion Plus",
+      "upgrade": "Mejorar a Plus",
+      "notNow": "Ahora No"
+    }
   },
   "listen": {
     "title": "Escuchar"
@@ -5627,7 +5629,7 @@
       "line2": "Tel Aviv, Israel 6100000"
     },
     "free": "Gratis",
-    "premiumPrice": "$7.99/mes",
+    "premiumPrice": "$6.99/mes",
     "familyPrice": "$12.99/mes",
     "remaining": "restante",
     "tabs": {
@@ -6183,7 +6185,7 @@
     "kids": "👶 Niños",
     "readAloud": "Leer en Voz Alta",
     "smartSearch": "Búsqueda Inteligente",
-    "premiumRequired": "Se requiere suscripción Premium para Búsqueda Inteligente",
+    "premiumRequired": "Se requiere suscripción Plus para Búsqueda Inteligente",
     "searchFailed": "La búsqueda falló",
     "premiumFeature": "Función Premium",
     "smartSearchDescription": "La Búsqueda Inteligente utiliza IA para comprender consultas en lenguaje natural y encontrar exactamente lo que buscas.",
@@ -6487,6 +6489,23 @@
     "subscription": {
       "title": "Suscripcion",
       "currentPlan": "Plan Actual",
+      "status": "Estado",
+      "since": "Miembro desde",
+      "renews": "Se renueva el",
+      "featuresIncluded": "Funciones Incluidas",
+      "featureAI": "19 Funciones de IA",
+      "featureAIFree": "50 Creditos de IA (unico)",
+      "featureAIPlus": "Funciones de IA Ilimitadas",
+      "featureWidgets": "Widgets",
+      "featureWidgetsFree": "1 Widget",
+      "featureWidgetsPlus": "Widgets Ilimitados",
+      "featureProfiles": "Perfiles Familiares",
+      "featureProfilesFree": "1 Perfil",
+      "featureProfilesPlus": "Perfiles Ilimitados",
+      "featureSupport": "Soporte Prioritario",
+      "manageOnGooglePlay": "Administrar en Google Play",
+      "manageOnAppStore": "Administrar en App Store",
+      "upgradePlan": "Mejorar Plan",
       "availablePlans": "Planes Disponibles",
       "changePlan": "Cambiar Plan",
       "billingHistory": "Historial de Facturacion",
@@ -6559,59 +6578,31 @@
     "recentGames": "Juegos Recientes"
   },
   "subscribe": {
-    "title": "Elige tu plan",
-    "subtitle": "7 días de prueba gratis para cualquier plan. Cancela en cualquier momento.",
+    "title": "Elige tu Plan",
+    "subtitle": "Cancela en cualquier momento.",
     "monthly": "Mensual",
     "yearly": "Anual",
     "save2Months": "Ahorra 2 meses",
-    "popular": "Más Popular",
+    "popular": "Mas Popular",
     "period": "/mes",
-    "perYear": "/año",
-    "select": "Seleccionar plan",
+    "perYear": "/ano",
+    "select": "Seleccionar Plan",
     "selected": "Seleccionado",
     "processing": "Procesando...",
-    "startTrial": "Comenzar Prueba Gratis",
-    "noCharge": "Tu tarjeta de crédito no será cobrada durante el período de prueba",
-    "viewComparison": "Ver comparación completa",
-    "viewCards": "Ver planes",
-    "premiumShowcase": {
-      "title": "Experimenta la Inteligencia Premium",
-      "subtitle": "Funciones impulsadas por IA que se adaptan a tu forma de ver",
-      "videoTitle": "Ver Widgets en Acción",
-      "videoDescription": "Mira nuestra introducción de 2 minutos a los widgets flotantes",
-      "widgetTitle": "Demo Interactiva en Vivo",
-      "widgetDescription": "Arrastra, redimensiona y multitarea con Kan11",
-      "aiAssistant": {
-        "title": "Asistente Inteligente AI",
-        "description": "Recomendaciones personalizadas impulsadas por aprendizaje automático"
-      },
-      "floatingWidgets": {
-        "title": "Widgets Flotantes",
-        "description": "Mira múltiples canales mientras navegas por el contenido"
-      },
-      "a11y": {
-        "playVideo": "Reproducir vídeo de introducción a widgets",
-        "playVideoHint": "Abre demostración en vídeo a pantalla completa"
-      },
-      "badges": {
-        "aiPowered": "IMPULSADO POR IA",
-        "interactiveDemo": "DEMO INTERACTIVA"
-      }
-    },
+    "viewComparison": "Ver Comparacion Completa",
+    "viewCards": "Ver Planes",
+    "noProductSelected": "Ningun producto seleccionado",
     "comparison": {
       "title": "Comparar Planes",
       "subtitle": "Encuentra el plan perfecto para ti",
-      "features": "Características",
+      "features": "Caracteristicas",
       "perMonth": "/mes",
-      "scrollHint": "← Desplázate para ver todos los planes →",
       "categories": {
-        "content": "Content Access",
-        "ai": "AI Features",
-        "streaming": "Streaming",
-        "support": "Support"
+        "ai": "Funciones de IA",
+        "platform": "Plataforma",
+        "support": "Soporte"
       }
-    },
-    "noProductSelected": "No product selected"
+    }
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -10037,12 +10028,12 @@
     "intro": {
       "title": "Bienvenido a Bayit+",
       "subtitle": "Mejora tu contenido con IA",
-      "bullet1": "Doblaje IA en múltiples idiomas",
-      "bullet2": "Subtítulos inteligentes con herramientas de gramática",
-      "bullet3": "Búsqueda de escenas con IA",
-      "bullet4": "50 créditos de IA gratis cada mes",
-      "seePlans": "Ver planes",
-      "maybeLater": "Quizás después"
+      "bullet1": "Doblaje y Subtitulos (8 funciones de IA)",
+      "bullet2": "Busqueda y Descubrimiento (3 funciones de IA)",
+      "bullet3": "Herramientas de Idioma (4 funciones de IA)",
+      "bullet4": "Creativo e Interactivo (4 funciones de IA)",
+      "seePlans": "Ver Planes",
+      "maybeLater": "Quizas Despues"
     }
   },
   "navigation": {
@@ -10193,5 +10184,18 @@
     "voice": {
       "noActiveChannels": "No hay canales de IA activos disponibles"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Funcion Plus",
+      "featureRequires": "{{feature}} requiere Plus",
+      "upgradeList": "Desbloquea 19 funciones de IA, widgets ilimitados, perfiles ilimitados y soporte prioritario",
+      "subscribeNow": "Suscribirse Ahora",
+      "hasAccess": "Tienes acceso"
+    },
+    "title": "Suscripcion",
+    "choosePlan": "Seleccionar Plan",
+    "subscribe": "Seleccionar Plan",
+    "loadingPlans": "Loading plans..."
   }
 }

@@ -14,7 +14,7 @@
     "password": "Password",
     "name": "Name",
     "guest": "Guest",
-    "premium": "Premium",
+    "premium": "Plus",
     "basic": "Basic",
     "tapToLogin": "Tap to login"
   },
@@ -3646,7 +3646,7 @@
         "checkInbox": "Please check your inbox and click the verification link.",
         "expiresIn": "Link expires in {{hours}} hours",
         "welcomeTitle": "Welcome to Bayit+ Beta 500!",
-        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 500 AI credits to test our advanced features.",
+        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 50 AI credits to test our advanced features.",
         "verifyPrompt": "Please verify your email to activate your account and credits."
       }
     }
@@ -3722,7 +3722,7 @@
     "clearSelection": "Clear",
     "expand": "Expand",
     "collapse": "Collapse",
-    "upgrade": "Upgrade to Premium",
+    "upgrade": "Upgrade to Plus",
     "skip": "Skip",
     "dismiss": "Dismiss",
     "refresh": "Refresh",
@@ -3738,7 +3738,7 @@
     "watch": "Watch",
     "share": "Share",
     "noContent": "No content available",
-    "premium": "PREMIUM",
+    "premium": "PLUS",
     "poweredBy": "Powered by",
     "active": "Active",
     "copy": "Copy URL",
@@ -4266,9 +4266,9 @@
       "notAuthenticated": "Not Authenticated",
       "notAuthenticatedMessage": "Please sign in again",
       "notAuthenticatedAction": "Sign in to use live dubbing",
-      "premiumRequired": "Premium Feature",
-      "premiumRequiredMessage": "Live dubbing requires a Premium subscription",
-      "premiumRequiredAction": "Upgrade to Premium to access this feature",
+      "premiumRequired": "Plus Feature",
+      "premiumRequiredMessage": "Live dubbing requires a Plus subscription",
+      "premiumRequiredAction": "Upgrade to Plus to access this feature",
       "channelUnavailable": "Not Available",
       "channelUnavailableMessage": "Dubbing is not available for this channel",
       "audioCaptureError": "Microphone Error",
@@ -4306,7 +4306,7 @@
       "gimel": "Gimel (Advanced)",
       "active": "Simplified Hebrew Active",
       "clickToEnable": "Click to enable simplified Hebrew audio",
-      "premiumRequired": "Premium subscription required"
+      "premiumRequired": "Plus subscription required"
     },
     "active": "Live Dubbing Active",
     "clickToEnable": "Click to enable live dubbing",
@@ -4382,9 +4382,9 @@
       }
     },
     "noVoicesAvailable": "No voices available",
-    "premiumRequired": "Premium subscription required",
+    "premiumRequired": "Plus subscription required",
     "selectInputLanguage": "Select input language",
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing",
     "maybeLater": "Maybe Later"
   },
   "empty": {
@@ -4461,8 +4461,8 @@
     "smartSearchSubtitle": "Ask questions in natural language",
     "smartSearchPlaceholder": "e.g., Show me all shows with actress Tali Sharon tonight",
     "searchPlaceholder": "Search programs, channels, actors...",
-    "premiumRequired": "Premium Feature",
-    "premiumRequiredMessage": "Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
+    "premiumRequired": "Plus subscription required",
+    "premiumRequiredMessage": "Smart Search uses AI to understand your questions. Upgrade to Plus to access this feature.",
     "searchWithAI": "Search with AI",
     "searching": "Searching...",
     "tryThese": "Try these examples",
@@ -5446,56 +5446,50 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "Live TV Channels",
-        "Radio & Podcasts",
-        "Audiobooks",
-        "50 AI Credits/month"
-      ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+        "BYOC Platform (Live TV, Radio, Podcasts)",
+        "50 AI Credits (one-time)",
+        "1 Widget",
+        "1 Family Profile"
+      ]
     },
     "plus": {
       "name": "Plus",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 AI Credits/month",
-        "Unlimited AI Dubbing",
-        "Smart Subtitles",
-        "AI Scene Search",
-        "AI Catch-Up",
-        "Talk-Back to Characters",
-        "4 Simultaneous Devices",
+        "19 AI Features - Unlimited",
+        "Unlimited Widgets",
+        "Unlimited Family Profiles",
         "Priority Support"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "aiCategories": {
+        "dubbingSubtitles": "Dubbing & Subtitles",
+        "dubbingSubtitlesCount": "8 features",
+        "searchDiscovery": "Search & Discovery",
+        "searchDiscoveryCount": "3 features",
+        "languageTools": "Language Tools",
+        "languageToolsCount": "4 features",
+        "creativeInteractive": "Creative & Interactive",
+        "creativeInteractiveCount": "4 features"
+      }
     },
     "comparison": {
       "title": "Compare Plans",
       "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "content": "Content Access",
         "ai": "AI Features",
-        "streaming": "Streaming",
+        "platform": "Platform",
         "support": "Support"
       },
       "features": {
-        "liveChannels": "Live TV Channels",
-        "radioPodcasts": "Radio & Podcasts",
-        "audiobooks": "Audiobooks",
-        "byocPlexIptv": "Plex & IPTV Integration",
-        "aiCredits": "AI Credits",
-        "aiDubbing": "AI Dubbing",
-        "aiSubtitles": "Smart Subtitles",
-        "aiSearch": "AI Scene Search",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "Talk-Back to Characters",
-        "simultaneousDevices": "Simultaneous Devices",
+        "aiFeatures": "AI Features (19 total)",
+        "widgets": "Widgets",
+        "familyProfiles": "Family Profiles",
         "customerSupport": "Customer Support"
       },
       "values": {
-        "fiftyCredits": "50/month",
-        "fiveHundredCredits": "500/month",
-        "creditBased": "Credit-based",
+        "fiftyCredits": "50 credits (one-time)",
+        "unlimited": "Unlimited",
         "emailSupport": "Email",
         "prioritySupport": "Priority"
       }
@@ -5672,12 +5666,18 @@
       "timerExtended": "Timer extended by {{minutes}} minutes",
       "timerCancelled": "Sleep timer cancelled"
     },
-    "invalidEpisodeUrl": "Invalid episode URL"
+    "invalidEpisodeUrl": "Invalid episode URL",
+    "dubbing": {
+      "premiumTitle": "Plus Feature",
+      "premiumMessage": "Live dubbing requires a Plus subscription",
+      "upgrade": "Upgrade to Plus",
+      "notNow": "Not Now"
+    }
   },
   "podcast": {
     "selectLanguage": "Select Language",
     "switchToLanguage": "Switch to {{language}}",
-    "premiumRequiredForTranslation": "Premium subscription required for podcast translation",
+    "premiumRequiredForTranslation": "Plus subscription required for podcast translation",
     "player": {
       "switchingLanguage": "Switching..."
     },
@@ -5821,8 +5821,6 @@
       "line2": "Tel Aviv, Israel 6100000"
     },
     "free": "Free",
-    "premiumPrice": "$7.99/month",
-    "familyPrice": "$12.99/month",
     "remaining": "remaining",
     "tabs": {
       "personal": "Personal",
@@ -6059,7 +6057,7 @@
     "logout": "Log Out",
     "premium": "Premium",
     "basic": "Basic",
-    "upgrade": "Upgrade to Premium",
+    "upgrade": "Upgrade to Plus",
     "memberSince": "Member since",
     "aiAssistant": "AI Assistant",
     "voiceSettings": "Voice",
@@ -6085,8 +6083,8 @@
     "phoneVerified": "Phone verified",
     "phoneUnverified": "Phone not verified",
     "completeVerification": "Complete verification to unlock all features",
-    "unlockPremium": "Unlock Premium Features",
-    "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features",
+    "unlockPremium": "Unlock Plus Features",
+    "unlockPremiumDescription": "Upgrade to enjoy unlimited AI features",
     "unknown": "Unknown Player",
     "myDownloads": "My Downloads",
     "offlineContent": "Offline Content"
@@ -6373,11 +6371,11 @@
     "kids": "👶 Kids",
     "readAloud": "Read Aloud",
     "smartSearch": "Smart Search",
-    "premiumRequired": "Premium subscription required for Smart Search",
+    "premiumRequired": "Plus subscription required",
     "searchFailed": "Search failed",
-    "premiumFeature": "Premium Feature",
+    "premiumFeature": "Plus Feature",
     "smartSearchDescription": "Smart Search uses AI to understand natural language queries and find exactly what you're looking for.",
-    "upgradeToPremium": "Upgrade to Premium",
+    "upgradeToPremium": "Upgrade to Plus",
     "maybeLater": "Maybe Later",
     "smartSearchHint": "Ask in natural language and AI will find what you're looking for",
     "smartSearchPlaceholder": "e.g., 'Israeli comedies from the 90s with subtitles'",
@@ -6671,6 +6669,23 @@
     "subscription": {
       "title": "Subscription",
       "currentPlan": "Current Plan",
+      "status": "Status",
+      "since": "Member since",
+      "renews": "Renews on",
+      "featuresIncluded": "Features Included",
+      "featureAI": "19 AI Features",
+      "featureAIFree": "50 AI Credits (one-time)",
+      "featureAIPlus": "Unlimited AI Features",
+      "featureWidgets": "Widgets",
+      "featureWidgetsFree": "1 Widget",
+      "featureWidgetsPlus": "Unlimited Widgets",
+      "featureProfiles": "Family Profiles",
+      "featureProfilesFree": "1 Profile",
+      "featureProfilesPlus": "Unlimited Profiles",
+      "featureSupport": "Priority Support",
+      "manageOnGooglePlay": "Manage on Google Play",
+      "manageOnAppStore": "Manage on App Store",
+      "upgradePlan": "Upgrade Plan",
       "availablePlans": "Available Plans",
       "changePlan": "Change Plan",
       "billingHistory": "Billing History",
@@ -6859,7 +6874,7 @@
   },
   "subscribe": {
     "title": "Choose Your Plan",
-    "subtitle": "7 days free trial for any plan. Cancel anytime.",
+    "subtitle": "Cancel anytime.",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "save2Months": "Save 2 months",
@@ -6869,48 +6884,20 @@
     "select": "Select Plan",
     "selected": "Selected",
     "processing": "Processing...",
-    "startTrial": "Start Free Trial",
-    "noCharge": "Your credit card won't be charged during the trial period",
     "viewComparison": "View Full Comparison",
     "viewCards": "View Plans",
-    "premiumShowcase": {
-      "title": "Experience Premium Intelligence",
-      "subtitle": "AI-powered features that adapt to how you watch",
-      "videoTitle": "See Widgets in Action",
-      "videoDescription": "Watch our 2-minute intro to floating widgets",
-      "widgetTitle": "Interactive Live Demo",
-      "widgetDescription": "Drag, resize, and multitask with Kan11",
-      "aiAssistant": {
-        "title": "AI Smart Assistant",
-        "description": "Personalized recommendations powered by machine learning"
-      },
-      "floatingWidgets": {
-        "title": "Floating Widgets",
-        "description": "Watch multiple channels while browsing content"
-      },
-      "a11y": {
-        "playVideo": "Play widgets intro video",
-        "playVideoHint": "Opens full-screen video demonstration"
-      },
-      "badges": {
-        "aiPowered": "AI-POWERED",
-        "interactiveDemo": "INTERACTIVE DEMO"
-      }
-    },
+    "noProductSelected": "No product selected",
     "comparison": {
       "title": "Compare Plans",
       "subtitle": "Find the perfect plan for you",
       "features": "Features",
       "perMonth": "/mo",
-      "scrollHint": "← Scroll to see all plans →",
       "categories": {
-        "content": "Content Access",
         "ai": "AI Features",
-        "streaming": "Streaming",
+        "platform": "Platform",
         "support": "Support"
       }
-    },
-    "noProductSelected": "No product selected"
+    }
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -6945,7 +6932,7 @@
     "clickToEnable": "Click to enable live translation",
     "connectionError": "Live Translation Error",
     "inputLanguageTooltip": "Check Input Language",
-    "premiumRequired": "Premium subscription required",
+    "premiumRequired": "Plus subscription required",
     "selectInputLanguage": "Select input language",
     "translateActive": "Live Translation Active",
     "noEnglishSubtitles": "No English subtitles available for this content.",
@@ -9700,10 +9687,10 @@
     "intro": {
       "title": "Welcome to Bayit+",
       "subtitle": "Enhance your content with AI",
-      "bullet1": "AI dubbing in multiple languages",
-      "bullet2": "Smart subtitles with grammar tools",
-      "bullet3": "AI-powered scene search",
-      "bullet4": "50 free AI credits every month",
+      "bullet1": "Dubbing & Subtitles (8 AI features)",
+      "bullet2": "Search & Discovery (3 AI features)",
+      "bullet3": "Language Tools (4 AI features)",
+      "bullet4": "Creative & Interactive (4 AI features)",
       "seePlans": "See Plans",
       "maybeLater": "Maybe Later"
     }
@@ -9856,5 +9843,18 @@
     "voice": {
       "noActiveChannels": "No active AI channels available"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus Feature",
+      "featureRequires": "{{feature}} requires Plus",
+      "upgradeList": "Unlock 19 AI features, unlimited widgets, unlimited profiles, and priority support",
+      "subscribeNow": "Subscribe Now",
+      "hasAccess": "You have access"
+    },
+    "title": "Subscription",
+    "choosePlan": "Choose Plan",
+    "subscribe": "Subscribe",
+    "loadingPlans": "Loading plans..."
   }
 }

@@ -4,117 +4,41 @@ import { PlanFeature, PlanTier } from "../types/subscription";
  * Plan Feature Matrix
  *
  * Two-tier model: Free and Plus.
- * Bayit+ is an AI enhancement layer over Plex/IPTV.
- * Plus unlocks AI features (dubbing, subtitles, search, catch-up).
+ * Bayit+ is a BYOC platform. Plex/IPTV/Live TV/Radio/Podcasts are baseline
+ * for all users and NOT shown in the comparison table.
  *
- * Feature Value Types:
- * - boolean: true (included) / false (not included)
- * - string: specific value (translation key for display)
+ * Only differentiators between Free and Plus are listed here.
  */
 
 export const PLAN_FEATURES: PlanFeature[] = [
-  // ===== CONTENT ACCESS =====
+  // ===== AI FEATURES (19 total, grouped into 4 categories) =====
   {
-    id: "live_channels",
-    category: "content",
-    translationKey: "plans.comparison.features.liveChannels",
-    availability: {
-      [PlanTier.FREE]: true,
-      [PlanTier.PLUS]: true,
-    },
-  },
-  {
-    id: "radio_podcasts",
-    category: "content",
-    translationKey: "plans.comparison.features.radioPodcasts",
-    availability: {
-      [PlanTier.FREE]: true,
-      [PlanTier.PLUS]: true,
-    },
-  },
-  {
-    id: "audiobooks",
-    category: "content",
-    translationKey: "plans.comparison.features.audiobooks",
-    availability: {
-      [PlanTier.FREE]: true,
-      [PlanTier.PLUS]: true,
-    },
-  },
-  {
-    id: "byoc_plex_iptv",
-    category: "content",
-    translationKey: "plans.comparison.features.byocPlexIptv",
-    availability: {
-      [PlanTier.FREE]: true,
-      [PlanTier.PLUS]: true,
-    },
-  },
-
-  // ===== AI FEATURES =====
-  {
-    id: "ai_credits",
+    id: "ai_features",
     category: "ai",
-    translationKey: "plans.comparison.features.aiCredits",
+    translationKey: "plans.comparison.features.aiFeatures",
     availability: {
       [PlanTier.FREE]: "plans.comparison.values.fiftyCredits",
-      [PlanTier.PLUS]: "plans.comparison.values.fiveHundredCredits",
-    },
-  },
-  {
-    id: "ai_dubbing",
-    category: "ai",
-    translationKey: "plans.comparison.features.aiDubbing",
-    availability: {
-      [PlanTier.FREE]: "plans.comparison.values.creditBased",
-      [PlanTier.PLUS]: true,
-    },
-  },
-  {
-    id: "ai_subtitles",
-    category: "ai",
-    translationKey: "plans.comparison.features.aiSubtitles",
-    availability: {
-      [PlanTier.FREE]: "plans.comparison.values.creditBased",
-      [PlanTier.PLUS]: true,
-    },
-  },
-  {
-    id: "ai_search",
-    category: "ai",
-    translationKey: "plans.comparison.features.aiSearch",
-    availability: {
-      [PlanTier.FREE]: "plans.comparison.values.creditBased",
-      [PlanTier.PLUS]: true,
-    },
-  },
-  {
-    id: "ai_catchup",
-    category: "ai",
-    translationKey: "plans.comparison.features.aiCatchup",
-    availability: {
-      [PlanTier.FREE]: false,
-      [PlanTier.PLUS]: true,
-    },
-  },
-  {
-    id: "ai_talkback",
-    category: "ai",
-    translationKey: "plans.comparison.features.aiTalkback",
-    availability: {
-      [PlanTier.FREE]: false,
-      [PlanTier.PLUS]: true,
+      [PlanTier.PLUS]: "plans.comparison.values.unlimited",
     },
   },
 
-  // ===== STREAMING =====
+  // ===== PLATFORM =====
   {
-    id: "simultaneous_devices",
-    category: "streaming",
-    translationKey: "plans.comparison.features.simultaneousDevices",
+    id: "widgets",
+    category: "platform",
+    translationKey: "plans.comparison.features.widgets",
     availability: {
       [PlanTier.FREE]: "1",
-      [PlanTier.PLUS]: "4",
+      [PlanTier.PLUS]: "plans.comparison.values.unlimited",
+    },
+  },
+  {
+    id: "family_profiles",
+    category: "platform",
+    translationKey: "plans.comparison.features.familyProfiles",
+    availability: {
+      [PlanTier.FREE]: "1",
+      [PlanTier.PLUS]: "plans.comparison.values.unlimited",
     },
   },
 
@@ -129,3 +53,30 @@ export const PLAN_FEATURES: PlanFeature[] = [
     },
   },
 ];
+
+/**
+ * AI Feature Categories for grouped display on upgrade screens.
+ * Each category contains a count and translation key.
+ */
+export const AI_FEATURE_CATEGORIES = [
+  {
+    id: "dubbing_subtitles",
+    translationKey: "plans.plus.aiCategories.dubbingSubtitles",
+    count: 8,
+  },
+  {
+    id: "search_discovery",
+    translationKey: "plans.plus.aiCategories.searchDiscovery",
+    count: 3,
+  },
+  {
+    id: "language_tools",
+    translationKey: "plans.plus.aiCategories.languageTools",
+    count: 4,
+  },
+  {
+    id: "creative_interactive",
+    translationKey: "plans.plus.aiCategories.creativeInteractive",
+    count: 4,
+  },
+] as const;

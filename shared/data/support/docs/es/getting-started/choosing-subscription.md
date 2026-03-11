@@ -1,59 +1,55 @@
 # Elegir tu Suscripcion
 
-Bayit+ ofrece niveles de suscripcion flexibles para adaptarse a tus habitos de visualizacion y necesidades del hogar. Todos los planes incluyen acceso a nuestra biblioteca de contenido principal con diferentes caracteristicas y beneficios.
+Bayit+ es una plataforma BYOC (Trae Tu Propio Contenido) que mejora tu experiencia de Plex, IPTV, TV en Vivo, Radio y Podcasts con funciones de IA. Todos los usuarios tienen acceso completo a la plataforma. Plus desbloquea capacidades de IA ilimitadas.
 
-## Niveles de Suscripcion
+## Planes
 
-### Plan Basico
-- Transmision en 1 dispositivo a la vez
-- Calidad HD (720p)
-- Acceso a peliculas y series bajo demanda
-- Canales de TV en vivo
-- Experiencia con anuncios
+### Free (Gratis)
 
-### Plan Estandar
-- Transmision en 2 dispositivos simultaneamente
-- Calidad Full HD (1080p)
-- Experiencia sin anuncios
-- Grabacion DVR (25 horas de almacenamiento)
-- Descargas offline (10 titulos)
-- Acceso a podcasts y radio
+- Plataforma BYOC completa (TV en Vivo, Radio, Podcasts)
+- 50 creditos de IA (unico)
+- 1 Widget
+- 1 Perfil Familiar
+- Soporte por email
 
-### Plan Premium
-- Transmision en 4 dispositivos simultaneamente
-- 4K Ultra HD con soporte HDR
-- Audio Dolby Atmos donde este disponible
-- Grabacion DVR (100 horas de almacenamiento)
-- Descargas offline ilimitadas
-- Acceso anticipado a nuevos lanzamientos
-- Soporte al cliente prioritario
+### Plus ($6.99/mes o $49.90/ano)
 
-### Plan Familiar
-- Transmision en 6 dispositivos simultaneamente
-- Todas las caracteristicas Premium incluidas
-- Hasta 6 perfiles individuales
-- Controles parentales mejorados
-- Modo exclusivo para ninos con contenido curado
-- Comparticion familiar entre miembros del hogar
+- Todo lo incluido en Free
+- 19 Funciones de IA - Ilimitadas (sin sistema de creditos)
+- Widgets Ilimitados
+- Perfiles Familiares Ilimitados
+- Soporte Prioritario
+
+## Funciones de IA Incluidas con Plus
+
+Bayit+ ofrece 19 funciones de IA agrupadas en cuatro categorias:
+
+**Doblaje y Subtitulos (8 funciones):** Doblaje en Vivo, Subtitulos en Vivo, Subtitulos Interactivos, Espejo Fonetico, Puente Bilingue, Contexto Cultural, Constructor de Vocabulario, Glosario.
+
+**Busqueda y Descubrimiento (3 funciones):** Busqueda de Escenas IA, Busqueda LLM, Momentos VOD.
+
+**Herramientas de Idioma (4 funciones):** Companero IA, Voz Proactiva, Talk-Back, Pausa y Pregunta.
+
+**Creativo e Interactivo (4 funciones):** Trivia en Vivo, Mision Interactiva, Chatbot IA, Catch-Up.
 
 ## Comparacion de Planes
 
-| Caracteristica | Basico | Estandar | Premium | Familiar |
-|----------------|--------|----------|---------|----------|
-| Transmisiones simultaneas | 1 | 2 | 4 | 6 |
-| Calidad de video | HD | Full HD | 4K HDR | 4K HDR |
-| Almacenamiento DVR | - | 25 hrs | 100 hrs | 100 hrs |
-| Descargas offline | - | 10 | Ilimitadas | Ilimitadas |
-| Perfiles | 1 | 3 | 5 | 6 |
+| Caracteristica      | Free                | Plus        |
+| ------------------- | ------------------- | ----------- |
+| Plataforma BYOC     | Si                  | Si          |
+| Funciones de IA     | 50 creditos (unico) | Ilimitado   |
+| Widgets             | 1                   | Ilimitados  |
+| Perfiles Familiares | 1                   | Ilimitados  |
+| Soporte             | Email               | Prioritario |
 
 ## Como Suscribirse
 
 1. Inicia sesion en tu cuenta de Bayit+
 2. Navega a Configuracion y selecciona Suscripcion
-3. Revisa los planes disponibles y selecciona tu nivel preferido
+3. Elige Plus y selecciona facturacion mensual o anual
 4. Ingresa la informacion de pago
 5. Confirma tu suscripcion
 
 ## Cambiar tu Plan
 
-Puedes actualizar o reducir tu suscripcion en cualquier momento. Los cambios entran en vigencia al inicio de tu proximo ciclo de facturacion. Las actualizaciones pueden aplicarse inmediatamente con facturacion prorrateada.
+Puedes cancelar tu suscripcion Plus en cualquier momento. Tu acceso continua hasta el final del periodo de facturacion actual.

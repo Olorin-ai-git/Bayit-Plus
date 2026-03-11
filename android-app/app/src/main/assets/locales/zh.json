@@ -664,7 +664,7 @@
       "line2": "特拉维夫，以色列 6100000"
     },
     "free": "免费",
-    "premiumPrice": "$7.99/月",
+    "premiumPrice": "$6.99/月",
     "familyPrice": "$12.99/月",
     "remaining": "剩余",
     "tabs": {
@@ -858,7 +858,35 @@
     "resetConfirmMessage": "确定要将首页版块恢复为默认配置吗？",
     "sectionHidden": "版块已隐藏",
     "sectionShown": "版块已显示",
-    "replayTour": "重播功能导览"
+    "replayTour": "重播功能导览",
+    "subscription": {
+      "title": "订阅",
+      "currentPlan": "当前方案",
+      "status": "状态",
+      "since": "会员以来",
+      "renews": "续费日期",
+      "featuresIncluded": "包含的功能",
+      "featureAI": "19项AI功能",
+      "featureAIFree": "50 AI积分（一次性）",
+      "featureAIPlus": "无限AI功能",
+      "featureWidgets": "小组件",
+      "featureWidgetsFree": "1个小组件",
+      "featureWidgetsPlus": "无限小组件",
+      "featureProfiles": "家庭配置文件",
+      "featureProfilesFree": "1个配置文件",
+      "featureProfilesPlus": "无限配置文件",
+      "featureSupport": "优先支持",
+      "manageOnGooglePlay": "在Google Play管理",
+      "manageOnAppStore": "在App Store管理",
+      "upgradePlan": "升级方案",
+      "availablePlans": "可用方案",
+      "changePlan": "更改方案",
+      "billingHistory": "账单历史",
+      "manageViaStore": "通过App Store管理",
+      "autoRenew": "自动续费",
+      "promoCode": "促销代码",
+      "cancelSubscription": "取消订阅"
+    }
   },
   "help": {
     "subtitle": "我们能帮您什么？",
@@ -1086,10 +1114,10 @@
       "volume": "[zh] Volume"
     },
     "dubbing": {
-      "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
-      "premiumTitle": "Premium Feature",
-      "upgrade": "Upgrade",
+      "notNow": "暂时不要",
+      "premiumMessage": "实时配音需要Plus订阅",
+      "premiumTitle": "Plus功能",
+      "upgrade": "升级到Plus",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "实时配音设置",
       "target_language": "目标语言"
@@ -1492,173 +1520,86 @@
     }
   },
   "plans": {
-    "basic": {
-      "name": "基础版",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
+        "BYOC平台（直播电视、广播、播客）",
+        "50 AI积分（一次性）",
+        "1个小组件",
+        "1个家庭配置文件"
       ]
     },
-    "premium": {
-      "name": "高级版",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
       "features": [
-        "所有点播内容",
-        "直播频道",
-        "广播与播客",
-        "智能 AI 助手",
-        "2台设备观看",
-        "高清画质"
+        "19项AI功能 - 无限制",
+        "无限小组件",
+        "无限家庭配置文件",
+        "优先支持"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
-    },
-    "family": {
-      "name": "家庭版",
-      "features": [
-        "所有点播内容",
-        "直播频道",
-        "广播与播客",
-        "智能 AI 助手",
-        "4台设备观看",
-        "4K 画质",
-        "5个家庭档案",
-        "离线下载"
-      ],
-      "notIncluded": []
-    },
-    "transactions": {
-      "subtitle": "查看付款历史",
-      "exportCsv": "导出CSV",
-      "status": {
-        "completed": "已完成",
-        "pending": "待处理",
-        "failed": "失败",
-        "refunded": "已退款"
-      },
-      "columns": {
-        "id": "ID",
-        "user": "用户",
-        "amount": "金额",
-        "type": "类型",
-        "status": "状态",
-        "date": "日期"
-      },
-      "filters": {
-        "all": "全部"
-      },
-      "searchPlaceholder": "搜索交易...",
-      "emptyMessage": "未找到交易记录",
-      "details": "交易详情",
-      "email": "邮箱"
-    },
-    "refunds": {
-      "subtitle": "管理退款请求",
-      "approveModal": {
-        "title": "确认批准",
-        "message": "批准退款 {{amount}}？"
-      },
-      "confirmApprove": "批准退款 {{amount}}？",
-      "confirmDelete": "删除退款请求？",
-      "rejectModal": {
-        "title": "拒绝退款请求",
-        "message": "拒绝退款 {{amount}}",
-        "reasonLabel": "拒绝原因",
-        "reasonPlaceholder": "请输入拒绝原因...",
-        "submitButton": "拒绝请求"
-      },
-      "status": {
-        "pending": "待处理",
-        "approved": "已批准",
-        "rejected": "已拒绝"
-      },
-      "columns": {
-        "id": "ID",
-        "user": "用户",
-        "amount": "金额",
-        "reason": "原因",
-        "status": "状态",
-        "requestDate": "请求日期"
+      "aiCategories": {
+        "dubbingSubtitles": "配音与字幕",
+        "dubbingSubtitlesCount": "8项功能",
+        "searchDiscovery": "搜索与发现",
+        "searchDiscoveryCount": "3项功能",
+        "languageTools": "语言工具",
+        "languageToolsCount": "4项功能",
+        "creativeInteractive": "创意与互动",
+        "creativeInteractiveCount": "4项功能"
       }
     },
-    "batchActions": {
-      "selectedCount": "已选择 {{count}} 项",
-      "selectedCount_one": "已选择 {{count}} 项",
-      "selectedCount_other": "已选择 {{count}} 项",
-      "clear": "清除"
-    },
-    "costDashboard": {
-      "title": "成本仪表板",
-      "costBreakdown": "成本明细",
-      "loadingBreakdown": "加载明细中...",
-      "aiCosts": "AI 成本",
-      "infrastructure": "基础设施",
-      "thirdParty": "第三方",
-      "thirdPartyApis": "第三方 API",
-      "translation": "翻译",
-      "search": "搜索",
-      "percentOfTotal": "% 总计",
-      "components": "组件",
-      "topSpenders": {
-        "title": "月度消费前20名",
-        "loading": "加载消费排名...",
-        "rank": "排名",
-        "userId": "用户ID",
-        "costRange": "成本范围",
-        "privacyNote": "用户ID已加密，成本按范围汇总以保护隐私。"
-      },
+    "comparison": {
+      "title": "比较方案",
+      "subtitle": "找到适合您的方案",
       "categories": {
-        "permanent": "固定",
-        "transient": "可变",
-        "permanentVsTransient": "固定 vs 可变",
-        "permanentFixed": "固定 (基础设施)",
-        "transientVariable": "可变 (使用量)",
-        "permanentDesc": "每月发生的基础设施成本，与使用量无关",
-        "transientDesc": "随平台活动波动的基于使用量的成本",
-        "detailedBreakdown": "详细明细",
-        "costItem": "成本项目",
-        "category": "类别",
-        "amount": "金额"
+        "ai": "AI功能",
+        "platform": "平台",
+        "support": "支持"
       },
-      "timeline": {
-        "title": "成本时间线",
-        "loading": "加载时间线...",
-        "amountLabel": "金额 ($)",
-        "revenue": "收入",
-        "totalCost": "总成本",
-        "netProfit": "净利润",
-        "showingData": "显示 {{start}} 至 {{end}} 的数据"
+      "features": {
+        "aiFeatures": "AI功能（19项）",
+        "widgets": "小组件",
+        "familyProfiles": "家庭配置文件",
+        "customerSupport": "客户支持"
       },
-      "plSummary": {
-        "netProfitLoss": "净利润/亏损",
-        "margin": "利润率",
-        "revenue": "收入",
-        "totalCosts": "总成本"
+      "values": {
+        "fiftyCredits": "50积分（一次性）",
+        "unlimited": "无限制",
+        "emailSupport": "电子邮件",
+        "prioritySupport": "优先"
       }
     }
   },
   "subscribe": {
-    "title": "选择您的套餐",
-    "subtitle": "任何套餐7天免费试用。随时取消。",
+    "title": "选择您的方案",
+    "subtitle": "随时取消。",
     "monthly": "月付",
     "yearly": "年付",
-    "save2Months": "省2个月",
+    "save2Months": "节省2个月",
     "popular": "最受欢迎",
     "period": "/月",
     "perYear": "/年",
-    "select": "选择套餐",
+    "select": "选择方案",
     "selected": "已选择",
     "processing": "处理中...",
-    "startTrial": "开始免费试用",
-    "noCharge": "试用期间不会收取您的信用卡费用"
+    "viewComparison": "查看完整比较",
+    "viewCards": "查看方案",
+    "noProductSelected": "未选择产品",
+    "comparison": {
+      "title": "比较方案",
+      "subtitle": "找到适合您的方案",
+      "features": "功能",
+      "perMonth": "/月",
+      "categories": {
+        "ai": "AI功能",
+        "platform": "平台",
+        "support": "支持"
+      }
+    }
   },
   "notFound": {
     "title": "页面未找到",
@@ -4884,14 +4825,27 @@
       "search": "使用AI搜索查找场景"
     },
     "intro": {
-      "title": "欢迎使用 Bayit+",
-      "subtitle": "借助 AI 功能，解锁以色列流媒体的全部力量",
-      "bullet1": "用您的语言进行 AI 配音",
-      "bullet2": "带语法提示的智能字幕",
-      "bullet3": "AI 驱动的场景搜索",
-      "bullet4": "包含 500 个 Beta AI 积分",
-      "seePlans": "查看计划",
-      "maybeLater": "也许稍后"
+      "title": "欢迎来到Bayit+",
+      "subtitle": "用AI增强您的内容",
+      "bullet1": "配音与字幕（8项AI功能）",
+      "bullet2": "搜索与发现（3项AI功能）",
+      "bullet3": "语言工具（4项AI功能）",
+      "bullet4": "创意与互动（4项AI功能）",
+      "seePlans": "查看方案",
+      "maybeLater": "以后再说"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus功能",
+      "featureRequires": "{{feature}}需要Plus",
+      "upgradeList": "解锹19项AI功能、无限小组件、无限配置文件和优先支持",
+      "subscribeNow": "立即订阅",
+      "hasAccess": "您已有访问权限"
+    },
+    "title": "订阅",
+    "choosePlan": "选择方案",
+    "subscribe": "选择方案",
+    "loadingPlans": "Loading plans..."
   }
 }

@@ -3598,7 +3598,7 @@
         "checkInbox": "אנא בדוק את תיבת הדואר שלך ולחץ על קישור האימות.",
         "expiresIn": "הקישור יפוג בעוד {{hours}} שעות",
         "welcomeTitle": "ברוכים הבאים ל-Bayit+ Beta 500!",
-        "welcomeMessage": "תודה שהצטרפת לתוכנית הבטא הבלעדית שלנו. קיבלת 500 קרדיטים של AI לבדיקת התכונות המתקדמות שלנו.",
+        "welcomeMessage": "תודה שהצטרפת לתוכנית הבטא הבלעדית שלנו. קיבלת 50 קרדיטים של AI לבדיקת התכונות המתקדמות שלנו.",
         "verifyPrompt": "אנא אמת את האימייל שלך כדי להפעיל את החשבון והקרדיטים שלך."
       },
       "aiSearch": {
@@ -3716,7 +3716,7 @@
     "clearSelection": "נקה",
     "expand": "הרחב",
     "collapse": "כווץ",
-    "upgrade": "שדרג לפרימיום",
+    "upgrade": "שדרגו לפלוס",
     "skip": "דלג",
     "dismiss": "סגור",
     "refresh": "רענן",
@@ -3732,7 +3732,7 @@
     "watch": "צפה",
     "share": "שתף",
     "noContent": "אין תוכן להצגה",
-    "premium": "פרימיום",
+    "premium": "פלוס",
     "poweredBy": "מופעל על ידי",
     "filters": "מסננים",
     "active": "פעיל",
@@ -4263,9 +4263,9 @@
       "notAuthenticated": "לא מאומת",
       "notAuthenticatedMessage": "אנא התחבר שוב",
       "notAuthenticatedAction": "היכנס כדי להשתמש בדיבוב חי",
-      "premiumRequired": "תכונת Premium",
-      "premiumRequiredMessage": "דיבוב חי דורש מנוי Premium",
-      "premiumRequiredAction": "שדרג ל-Premium כדי לגשת לתכונה זו",
+      "premiumRequired": "תכונת פלוס",
+      "premiumRequiredMessage": "דיבוב חי דורש מנוי פלוס",
+      "premiumRequiredAction": "שדרגו לפלוס לגישה לתכונה זו",
       "channelUnavailable": "לא זמין",
       "channelUnavailableMessage": "דיבוב אינו זמין לערוץ זה",
       "audioCaptureError": "שגיאת מיקרופון",
@@ -4379,10 +4379,10 @@
       }
     },
     "noVoicesAvailable": "אין קולות זמינים",
-    "premiumRequired": "נדרש מנוי פרימיום",
+    "premiumRequired": "נדרש מנוי פלוס",
     "selectInputLanguage": "בחר שפת קלט",
     "maybeLater": "Maybe Later",
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing"
+    "upgradeForDubbing": "שדרגו לפלוס לגישה לדיבוב חי"
   },
   "empty": {
     "noContent": "אין תוכן זמין",
@@ -5455,56 +5455,52 @@
       "monthlyPrice": "0",
       "yearlyPrice": "0",
       "features": [
-        "ערוצי טלוויזיה חיה",
-        "רדיו ופודקאסטים",
-        "ספרי שמע",
-        "50 קרדיטים AI/חודש"
+        "פלטפורמת BYOC (טלוויזיה חיה, רדיו, פודקאסטים)",
+        "50 קרדיטי AI (חד פעמי)",
+        "ווידג'ט אחד",
+        "פרופיל משפחתי אחד"
       ]
     },
     "plus": {
       "name": "פלוס",
       "monthlyPrice": "6.99",
-      "yearlyPrice": "69.90",
+      "yearlyPrice": "49.90",
       "features": [
-        "500 קרדיטים AI/חודש",
-        "דיבוב AI ללא הגבלה",
-        "כתוביות חכמות",
-        "חיפוש סצנות AI",
-        "AI Catch-Up",
-        "דיבור עם דמויות",
-        "4 מכשירים בו-זמנית",
-        "תמיכה מועדפת"
-      ]
+        "19 תכונות AI - ללא הגבלה",
+        "ווידג'טים ללא הגבלה",
+        "פרופילים משפחתיים ללא הגבלה",
+        "תמיכה בעדיפות"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "דיבוב וכתוביות",
+        "dubbingSubtitlesCount": "8 תכונות",
+        "searchDiscovery": "חיפוש וגילוי",
+        "searchDiscoveryCount": "3 תכונות",
+        "languageTools": "כלי שפה",
+        "languageToolsCount": "4 תכונות",
+        "creativeInteractive": "יצירתי ואינטראקטיבי",
+        "creativeInteractiveCount": "4 תכונות"
+      }
     },
     "comparison": {
-      "title": "השווה מסלולים",
-      "subtitle": "מצא את המסלול המושלם עבורך",
+      "title": "השוואת מסלולים",
+      "subtitle": "מצאו את המסלול המושלם עבורכם",
       "categories": {
-        "content": "גישה לתוכן",
         "ai": "תכונות AI",
-        "streaming": "סטרימינג",
+        "platform": "פלטפורמה",
         "support": "תמיכה"
       },
       "features": {
-        "liveChannels": "ערוצי טלוויזיה חיה",
-        "radioPodcasts": "רדיו ופודקאסטים",
-        "audiobooks": "ספרי שמע",
-        "byocPlexIptv": "אינטגרציית Plex ו-IPTV",
-        "aiCredits": "קרדיטים AI",
-        "aiDubbing": "דיבוב AI",
-        "aiSubtitles": "כתוביות חכמות",
-        "aiSearch": "חיפוש סצנות AI",
-        "aiCatchup": "AI Catch-Up",
-        "aiTalkback": "דיבור עם דמויות",
-        "simultaneousDevices": "מכשירים בו-זמניים",
+        "aiFeatures": "תכונות AI (19 סה\"כ)",
+        "widgets": "ווידג'טים",
+        "familyProfiles": "פרופילים משפחתיים",
         "customerSupport": "תמיכת לקוחות"
       },
       "values": {
-        "fiftyCredits": "50/חודש",
-        "fiveHundredCredits": "500/חודש",
-        "creditBased": "מבוסס קרדיטים",
+        "fiftyCredits": "50 קרדיטים (חד פעמי)",
+        "unlimited": "ללא הגבלה",
         "emailSupport": "אימייל",
-        "prioritySupport": "מועדף"
+        "prioritySupport": "עדיפות"
       }
     }
   },
@@ -5685,7 +5681,13 @@
       "timerExtended": "הטיימר הוארך ב-{{minutes}} דקות",
       "timerCancelled": "טיימר שינה בוטל"
     },
-    "invalidEpisodeUrl": "כתובת פרק לא תקינה"
+    "invalidEpisodeUrl": "כתובת פרק לא תקינה",
+    "dubbing": {
+      "premiumTitle": "תכונת Plus",
+      "premiumMessage": "דיבוב חי דורש מנוי Plus",
+      "upgrade": "שדרג ל-Plus",
+      "notNow": "לא עכשיו"
+    }
   },
   "listen": {
     "title": "האזנה"
@@ -5812,8 +5814,6 @@
       "line2": "תל אביב, ישראל 6100000"
     },
     "free": "חינם",
-    "premiumPrice": "₪29.90/חודש",
-    "familyPrice": "₪49.90/חודש",
     "remaining": "נותרו",
     "tabs": {
       "personal": "אישי",
@@ -6025,7 +6025,7 @@
     "logout": "התנתק",
     "premium": "פרימיום",
     "basic": "בסיסי",
-    "upgrade": "שדרג לפרימיום",
+    "upgrade": "שדרגו לפלוס",
     "memberSince": "חבר מאז",
     "aiAssistant": "עוזר AI",
     "voiceSettings": "קול",
@@ -6051,8 +6051,8 @@
     "phoneVerified": "הטלפון אומת",
     "phoneUnverified": "הטלפון לא אומת",
     "completeVerification": "השלם אימות כדי לפתוח את כל התכונות",
-    "unlockPremium": "פתח תכונות פרימיום",
-    "unlockPremiumDescription": "שדרג כדי ליהנות מתוכן ותכונות בלעדיות",
+    "unlockPremium": "שחררו תכונות פלוס",
+    "unlockPremiumDescription": "שדרגו להנות מתכונות AI ללא הגבלה",
     "devices": {
       "registeredDevices": "מכשירים רשומים",
       "description": "נהל מכשירים שיש להם גישה לחשבונך. תוכל לנתק מכשירים כדי לפנות חריצי סטרימינג.",
@@ -6662,13 +6662,30 @@
     "subscription": {
       "title": "מנוי",
       "currentPlan": "מסלול נוכחי",
+      "status": "סטטוס",
+      "since": "חבר מאז",
+      "renews": "מתחדש ב",
+      "featuresIncluded": "תכונות כלולות",
+      "featureAI": "19 תכונות AI",
+      "featureAIFree": "50 קרדיטי AI (חד פעמי)",
+      "featureAIPlus": "תכונות AI ללא הגבלה",
+      "featureWidgets": "ווידג'טים",
+      "featureWidgetsFree": "ווידג'ט אחד",
+      "featureWidgetsPlus": "ווידג'טים ללא הגבלה",
+      "featureProfiles": "פרופילים משפחתיים",
+      "featureProfilesFree": "פרופיל אחד",
+      "featureProfilesPlus": "פרופילים ללא הגבלה",
+      "featureSupport": "תמיכה בעדיפות",
+      "manageOnGooglePlay": "ניהול ב-Google Play",
+      "manageOnAppStore": "ניהול ב-App Store",
+      "upgradePlan": "שדרגו מסלול",
       "availablePlans": "מסלולים זמינים",
-      "changePlan": "שנה מסלול",
+      "changePlan": "שנו מסלול",
       "billingHistory": "היסטוריית חיובים",
-      "manageViaStore": "נהל דרך App Store",
+      "manageViaStore": "ניהול דרך חנות האפליקציות",
       "autoRenew": "חידוש אוטומטי",
       "promoCode": "קוד קופון",
-      "cancelSubscription": "בטל מנוי"
+      "cancelSubscription": "ביטול מנוי"
     },
     "aboutSettings": {
       "title": "אודות",
@@ -6734,59 +6751,31 @@
     "recentGames": "משחקים אחרונים"
   },
   "subscribe": {
-    "title": "בחר את המסלול שלך",
-    "subtitle": "7 ימי ניסיון חינם לכל מסלול. בטל בכל עת.",
+    "title": "בחרו את המסלול שלכם",
+    "subtitle": "בטלו בכל עת.",
     "monthly": "חודשי",
     "yearly": "שנתי",
     "save2Months": "חסכו 2 חודשים",
     "popular": "הכי פופולרי",
-    "period": "לחודש",
-    "perYear": "לשנה",
+    "period": "/חודש",
+    "perYear": "/שנה",
     "select": "בחר מסלול",
     "selected": "נבחר",
     "processing": "מעבד...",
-    "startTrial": "התחל ניסיון חינם",
-    "noCharge": "לא יחויב כרטיס האשראי במהלך תקופת הניסיון",
     "viewComparison": "הצג השוואה מלאה",
     "viewCards": "הצג מסלולים",
-    "premiumShowcase": {
-      "title": "חווה אינטליגנציה פרימיום",
-      "subtitle": "תכונות מבוססות בינה מלאכותית שמתאימות את עצמן לאופן הצפייה שלך",
-      "videoTitle": "ראה ווידג'טים בפעולה",
-      "videoDescription": "צפה במבוא של דקותיים לווידג'טים צפים",
-      "widgetTitle": "הדגמה חיה אינטראקטיבית",
-      "widgetDescription": "גרור, שנה גודל ובצע ריבוי משימות עם כאן 11",
-      "aiAssistant": {
-        "title": "עוזר חכם AI",
-        "description": "המלצות מותאמות אישית המופעלות על ידי למידת מכונה"
-      },
-      "floatingWidgets": {
-        "title": "ווידג'טים צפים",
-        "description": "צפה במספר ערוצים תוך כדי גלישה בתוכן"
-      },
-      "a11y": {
-        "playVideo": "הפעל סרטון הצגת ווידג'טים",
-        "playVideoHint": "פותח הדגמת וידאו במסך מלא"
-      },
-      "badges": {
-        "aiPowered": "מופעל על ידי AI",
-        "interactiveDemo": "הדגמה אינטראקטיבית"
-      }
-    },
+    "noProductSelected": "לא נבחר מוצר",
     "comparison": {
       "title": "השוואת מסלולים",
-      "subtitle": "מצא את המסלול המושלם עבורך",
+      "subtitle": "מצאו את המסלול המושלם עבורכם",
       "features": "תכונות",
-      "perMonth": "/חודש",
-      "scrollHint": "→ גלול כדי לראות את כל המסלולים ←",
+      "perMonth": "/חו'",
       "categories": {
-        "content": "גישה לתוכן",
         "ai": "תכונות AI",
-        "streaming": "סטרימינג",
+        "platform": "פלטפורמה",
         "support": "תמיכה"
       }
-    },
-    "noProductSelected": "No product selected"
+    }
   },
   "subtitles": {
     "nikud": "ניקוד",
@@ -10038,34 +10027,34 @@
     "badge": {
       "creditsRemaining": "{{count}} קרדיטים נותרו",
       "unlimited": "AI ללא הגבלה",
-      "subscribedLabel": "מנוי Plus",
-      "getUnlimited": "קבלו ללא הגבלה עם Plus",
+      "subscribedLabel": "חבר פלוס",
+      "getUnlimited": "קבלו ללא הגבלה עם פלוס",
       "upgradeNow": "שדרגו עכשיו",
-      "creditLow": "הקרדיטים עומדים להיגמר",
-      "subscribeAtWeb": "הירשם ל-Plus ב-bayit.tv"
+      "creditLow": "הקרדיטים אוזלים",
+      "subscribeAtWeb": "הרשמו ב-bayit.tv"
     },
     "toast": {
       "creditUsed": "קרדיט נוצל",
       "remaining": "{{count}} נותרו",
-      "getUnlimited": "קבלו ללא הגבלה עם Plus"
+      "getUnlimited": "קבלו ללא הגבלה עם פלוס"
     },
     "feature": {
       "dubbing": "צפו באנגלית עם דיבוב AI",
       "subtitles": "כתוביות חכמות עם דקדוק וסלנג",
       "search": "מצאו סצנות עם חיפוש AI",
-      "catchup": "AI Catch-Up: לא מפספסים רגע",
-      "talkback": "דברו עם הדמויות האהובות",
+      "catchup": "AI Catch-Up: לא תפספסו רגע",
+      "talkback": "דברו עם הדמויות האהובות עליכם",
       "learnMore": "למידע נוסף"
     },
     "intro": {
-      "title": "ברוכים הבאים ל-Bayit+",
-      "subtitle": "שפרו את התוכן שלכם עם AI",
-      "bullet1": "דיבוב AI במגוון שפות",
-      "bullet2": "כתוביות חכמות עם כלי דקדוק",
-      "bullet3": "חיפוש סצנות מונע AI",
-      "bullet4": "50 קרדיטי AI חינם כל חודש",
+      "title": "ברוכים הבאים לבית+",
+      "subtitle": "שדרגו את התוכן שלכם עם AI",
+      "bullet1": "דיבוב וכתוביות (8 תכונות AI)",
+      "bullet2": "חיפוש וגילוי (3 תכונות AI)",
+      "bullet3": "כלי שפה (4 תכונות AI)",
+      "bullet4": "יצירתי ואינטראקטיבי (4 תכונות AI)",
       "seePlans": "ראו מסלולים",
-      "maybeLater": "אולי מאוחר יותר"
+      "maybeLater": "אולי אחר כך"
     }
   },
   "navigation": {
@@ -10215,6 +10204,15 @@
     },
     "voice": {
       "noActiveChannels": "אין ערוצי AI פעילים זמינים"
+    }
+  },
+  "subscription": {
+    "gate": {
+      "title": "תכונת פלוס",
+      "featureRequires": "{{feature}} דורש פלוס",
+      "upgradeList": "שחררו 19 תכונות AI, ווידג'טים ללא הגבלה, פרופילים ללא הגבלה ותמיכה בעדיפות",
+      "subscribeNow": "הרשמו עכשיו",
+      "hasAccess": "יש לכם גישה"
     }
   }
 }

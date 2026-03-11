@@ -53,7 +53,7 @@
     "clearSelection": "Clear",
     "expand": "Expand",
     "collapse": "Collapse",
-    "upgrade": "Upgrade to Premium",
+    "upgrade": "Upgrade to Plus",
     "skip": "Skip",
     "thisContent": "this content",
     "backToHome": "Back to Home",
@@ -296,8 +296,8 @@
     "smartSearchSubtitle": "Ask questions in natural language",
     "smartSearchPlaceholder": "e.g., Show me all shows with actress Tali Sharon tonight",
     "searchPlaceholder": "Search programs, channels, actors...",
-    "premiumRequired": "Premium Feature",
-    "premiumRequiredMessage": "Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
+    "premiumRequired": "Plus Feature",
+    "premiumRequiredMessage": "Smart Search uses AI to understand your questions. Upgrade to Plus to access this feature.",
     "searchWithAI": "Search with AI",
     "searching": "Searching...",
     "tryThese": "Try these examples",
@@ -490,7 +490,7 @@
     "password": "Password",
     "name": "Name",
     "guest": "Guest",
-    "premium": "Premium",
+    "premium": "Plus",
     "basic": "Basic"
   },
   "flows": {
@@ -664,7 +664,7 @@
       "line2": "Tel Aviv, Israel 6100000"
     },
     "free": "Free",
-    "premiumPrice": "$7.99/month",
+    "premiumPrice": "$6.99/month",
     "familyPrice": "$12.99/month",
     "remaining": "remaining",
     "tabs": {
@@ -777,7 +777,7 @@
     "logout": "Log Out",
     "premium": "Premium",
     "basic": "Basic",
-    "upgrade": "Upgrade to Premium",
+    "upgrade": "Upgrade to Plus",
     "memberSince": "Member since",
     "aiAssistant": "AI Assistant",
     "voiceSettings": "Voice",
@@ -803,7 +803,7 @@
     "phoneVerified": "Phone verified",
     "phoneUnverified": "Phone not verified",
     "completeVerification": "Complete verification to unlock all features",
-    "unlockPremium": "Unlock Premium Features",
+    "unlockPremium": "Unlock Plus Features",
     "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features"
   },
   "voiceMode": {
@@ -858,7 +858,35 @@
     "resetConfirmMessage": "Are you sure you want to reset home page sections to their default configuration?",
     "sectionHidden": "Section hidden",
     "sectionShown": "Section shown",
-    "replayTour": "Replay Feature Tour"
+    "replayTour": "Replay Feature Tour",
+    "subscription": {
+      "title": "Subscription",
+      "currentPlan": "Current Plan",
+      "status": "Status",
+      "since": "Member since",
+      "renews": "Renews on",
+      "featuresIncluded": "Features Included",
+      "featureAI": "19 AI Features",
+      "featureAIFree": "50 AI Credits (one-time)",
+      "featureAIPlus": "Unlimited AI Features",
+      "featureWidgets": "Widgets",
+      "featureWidgetsFree": "1 Widget",
+      "featureWidgetsPlus": "Unlimited Widgets",
+      "featureProfiles": "Family Profiles",
+      "featureProfilesFree": "1 Profile",
+      "featureProfilesPlus": "Unlimited Profiles",
+      "featureSupport": "Priority Support",
+      "manageOnGooglePlay": "Manage on Google Play",
+      "manageOnAppStore": "Manage on App Store",
+      "upgradePlan": "Upgrade Plan",
+      "availablePlans": "Available Plans",
+      "changePlan": "Change Plan",
+      "billingHistory": "Billing History",
+      "manageViaStore": "Manage via App Store",
+      "autoRenew": "Auto-Renew",
+      "promoCode": "Promo Code",
+      "cancelSubscription": "Cancel Subscription"
+    }
   },
   "help": {
     "subtitle": "How can we help you?",
@@ -1087,9 +1115,9 @@
     },
     "dubbing": {
       "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
-      "premiumTitle": "Premium Feature",
-      "upgrade": "Upgrade",
+      "premiumMessage": "Live dubbing requires a Plus subscription",
+      "premiumTitle": "Plus Feature",
+      "upgrade": "Upgrade to Plus",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "Live Dubbing Settings",
       "target_language": "Target Language"
@@ -2931,108 +2959,63 @@
     }
   },
   "plans": {
-    "basic": {
-      "name": "Basic",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "All VOD content",
-        "Radio & Podcasts",
-        "Watch on 1 device",
-        "SD quality"
-      ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
+        "BYOC Platform (Live TV, Radio, Podcasts)",
+        "50 AI Credits (one-time)",
+        "1 Widget",
+        "1 Family Profile"
       ]
     },
-    "premium": {
-      "name": "Premium",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
       "features": [
-        "All VOD content",
-        "Live channels",
-        "Radio & Podcasts",
-        "Smart AI Assistant",
-        "Watch on 2 devices",
-        "HD quality"
+        "19 AI Features - Unlimited",
+        "Unlimited Widgets",
+        "Unlimited Family Profiles",
+        "Priority Support"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "aiCategories": {
+        "dubbingSubtitles": "Dubbing & Subtitles",
+        "dubbingSubtitlesCount": "8 features",
+        "searchDiscovery": "Search & Discovery",
+        "searchDiscoveryCount": "3 features",
+        "languageTools": "Language Tools",
+        "languageToolsCount": "4 features",
+        "creativeInteractive": "Creative & Interactive",
+        "creativeInteractiveCount": "4 features"
+      }
     },
-    "family": {
-      "name": "Family",
-      "features": [
-        "All VOD content",
-        "Live channels",
-        "Radio & Podcasts",
-        "Smart AI Assistant",
-        "Watch on 4 devices",
-        "4K quality",
-        "5 family profiles",
-        "Download for offline"
-      ],
-      "notIncluded": []
-    },
-    "batchActions": {
-      "selectedCount": "{{count}} selected",
-      "selectedCount_one": "{{count}} selected",
-      "selectedCount_other": "{{count}} selected",
-      "clear": "Clear"
-    },
-    "costDashboard": {
-      "title": "Cost Dashboard",
-      "costBreakdown": "Cost Breakdown",
-      "loadingBreakdown": "Loading breakdown...",
-      "aiCosts": "AI Costs",
-      "infrastructure": "Infrastructure",
-      "thirdParty": "Third-party",
-      "thirdPartyApis": "Third-party APIs",
-      "translation": "Translation",
-      "search": "Search",
-      "percentOfTotal": "% of total",
-      "components": "Components",
-      "topSpenders": {
-        "title": "Top 20 Spenders (Monthly)",
-        "loading": "Loading top spenders...",
-        "rank": "Rank",
-        "userId": "User ID",
-        "costRange": "Cost Range",
-        "privacyNote": "User IDs are hashed and costs are aggregated into ranges for privacy protection."
-      },
+    "comparison": {
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "permanent": "Permanent",
-        "transient": "Transient",
-        "permanentVsTransient": "Permanent vs Transient",
-        "permanentFixed": "Permanent (Fixed)",
-        "transientVariable": "Transient (Variable)",
-        "permanentDesc": "Infrastructure costs that occur monthly regardless of usage",
-        "transientDesc": "Usage-based costs that fluctuate with platform activity",
-        "detailedBreakdown": "Detailed Breakdown",
-        "costItem": "Cost Item",
-        "category": "Category",
-        "amount": "Amount"
+        "ai": "AI Features",
+        "platform": "Platform",
+        "support": "Support"
       },
-      "timeline": {
-        "title": "Cost Timeline",
-        "loading": "Loading timeline...",
-        "amountLabel": "Amount ($)",
-        "revenue": "Revenue",
-        "totalCost": "Total Cost",
-        "netProfit": "Net Profit",
-        "showingData": "Showing data from {{start}} to {{end}}"
+      "features": {
+        "aiFeatures": "AI Features (19 total)",
+        "widgets": "Widgets",
+        "familyProfiles": "Family Profiles",
+        "customerSupport": "Customer Support"
       },
-      "plSummary": {
-        "netProfitLoss": "Net Profit/Loss",
-        "margin": "margin",
-        "revenue": "REVENUE",
-        "totalCosts": "TOTAL COSTS"
+      "values": {
+        "fiftyCredits": "50 credits (one-time)",
+        "unlimited": "Unlimited",
+        "emailSupport": "Email",
+        "prioritySupport": "Priority"
       }
     }
   },
   "subscribe": {
     "title": "Choose Your Plan",
-    "subtitle": "7 days free trial for any plan. Cancel anytime.",
+    "subtitle": "Cancel anytime.",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "save2Months": "Save 2 months",
@@ -3042,8 +3025,20 @@
     "select": "Select Plan",
     "selected": "Selected",
     "processing": "Processing...",
-    "startTrial": "Start Free Trial",
-    "noCharge": "Your credit card won't be charged during the trial period"
+    "viewComparison": "View Full Comparison",
+    "viewCards": "View Plans",
+    "noProductSelected": "No product selected",
+    "comparison": {
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for you",
+      "features": "Features",
+      "perMonth": "/mo",
+      "categories": {
+        "ai": "AI Features",
+        "platform": "Platform",
+        "support": "Support"
+      }
+    }
   },
   "notFound": {
     "title": "Page Not Found",
@@ -3286,7 +3281,7 @@
     "clickToEnable": "Click to enable live translation",
     "connectionError": "Live Translation Error",
     "inputLanguageTooltip": "Check Input Language",
-    "premiumRequired": "Premium subscription required",
+    "premiumRequired": "Plus subscription required",
     "selectInputLanguage": "Select input language",
     "translateActive": "Live Translation Active",
     "noEnglishSubtitles": "No English subtitles available for this content.",
@@ -4092,7 +4087,7 @@
     "availability": {
       "ready": "Ready",
       "setupNeeded": "Setup Needed",
-      "premiumRequired": "Premium Required",
+      "premiumRequired": "Plus Required",
       "notAvailable": "Not Available",
       "platformOnly": "Other Platform"
     },
@@ -4208,7 +4203,7 @@
     },
     "prereq": {
       "avatar": "Create your AI character",
-      "subscription": "Premium subscription required",
+      "subscription": "Plus subscription required",
       "microphone": "Microphone access needed",
       "contentType": "Select your content preferences",
       "preference": "Set your language preferences",
@@ -4892,13 +4887,26 @@
     },
     "intro": {
       "title": "Welcome to Bayit+",
-      "subtitle": "Unlock the full power of Israeli streaming with AI-powered features",
-      "bullet1": "AI Dubbing in your language",
-      "bullet2": "Smart subtitles with grammar tips",
-      "bullet3": "AI-powered scene search",
-      "bullet4": "500 Beta AI credits included",
+      "subtitle": "Enhance your content with AI",
+      "bullet1": "Dubbing & Subtitles (8 AI features)",
+      "bullet2": "Search & Discovery (3 AI features)",
+      "bullet3": "Language Tools (4 AI features)",
+      "bullet4": "Creative & Interactive (4 AI features)",
       "seePlans": "See Plans",
       "maybeLater": "Maybe Later"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Plus Feature",
+      "featureRequires": "{{feature}} requires Plus",
+      "upgradeList": "Unlock 19 AI features, unlimited widgets, unlimited profiles, and priority support",
+      "subscribeNow": "Subscribe Now",
+      "hasAccess": "You have access"
+    },
+    "title": "Subscription",
+    "choosePlan": "Choose Plan",
+    "subscribe": "Subscribe",
+    "loadingPlans": "Loading plans..."
   }
 }

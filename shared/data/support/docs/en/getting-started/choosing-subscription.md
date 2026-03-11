@@ -1,59 +1,55 @@
 # Choosing Your Subscription
 
-Bayit+ offers flexible subscription tiers to match your viewing habits and household needs. All plans include access to our core content library with varying features and benefits.
+Bayit+ is a BYOC (Bring Your Own Content) platform that enhances your Plex, IPTV, Live TV, Radio, and Podcasts with AI-powered features. All users get full access to the core platform. Plus unlocks unlimited AI capabilities.
 
-## Subscription Tiers
+## Plans
 
-### Basic Plan
-- Stream on 1 device at a time
-- HD quality (720p)
-- Access to on-demand movies and TV shows
-- Live TV channels
-- Ad-supported experience
+### Free
 
-### Standard Plan
-- Stream on 2 devices simultaneously
-- Full HD quality (1080p)
-- Ad-free viewing experience
-- DVR recording (25 hours storage)
-- Offline downloads (10 titles)
-- Podcast and radio access
+- Full BYOC platform (Live TV, Radio, Podcasts)
+- 50 AI credits (one-time)
+- 1 Widget
+- 1 Family Profile
+- Email support
 
-### Premium Plan
-- Stream on 4 devices simultaneously
-- 4K Ultra HD with HDR support
-- Dolby Atmos audio where available
-- DVR recording (100 hours storage)
-- Unlimited offline downloads
-- Early access to new releases
-- Priority customer support
+### Plus ($6.99/month or $49.90/year)
 
-### Family Plan
-- Stream on 6 devices simultaneously
-- All Premium features included
-- Up to 6 individual profiles
-- Enhanced parental controls
-- Kids-only mode with curated content
-- Family sharing across household members
+- Everything in Free
+- 19 AI Features - Unlimited (no credit system)
+- Unlimited Widgets
+- Unlimited Family Profiles
+- Priority Support
+
+## AI Features Included with Plus
+
+Bayit+ offers 19 AI features grouped into four categories:
+
+**Dubbing & Subtitles (8 features):** Live Dubbing, Live Subtitles, Interactive Subtitles, Phonetic Mirror, Bilingual Bridge, Cultural Context, Vocabulary Builder, Glossary.
+
+**Search & Discovery (3 features):** AI Scene Search, LLM Search, VOD Moments.
+
+**Language Tools (4 features):** AI Companion, Proactive Voice, Talk-Back, Pause & Ask.
+
+**Creative & Interactive (4 features):** Live Trivia, Interactive Mission, AI Chatbot, Catch-Up.
 
 ## Comparing Plans
 
-| Feature | Basic | Standard | Premium | Family |
-|---------|-------|----------|---------|--------|
-| Simultaneous streams | 1 | 2 | 4 | 6 |
-| Video quality | HD | Full HD | 4K HDR | 4K HDR |
-| DVR storage | - | 25 hrs | 100 hrs | 100 hrs |
-| Offline downloads | - | 10 | Unlimited | Unlimited |
-| Profiles | 1 | 3 | 5 | 6 |
+| Feature         | Free                  | Plus      |
+| --------------- | --------------------- | --------- |
+| BYOC Platform   | Yes                   | Yes       |
+| AI Features     | 50 credits (one-time) | Unlimited |
+| Widgets         | 1                     | Unlimited |
+| Family Profiles | 1                     | Unlimited |
+| Support         | Email                 | Priority  |
 
 ## How to Subscribe
 
 1. Sign in to your Bayit+ account
 2. Navigate to Settings and select Subscription
-3. Review available plans and select your preferred tier
+3. Choose Plus and select monthly or yearly billing
 4. Enter payment information
 5. Confirm your subscription
 
 ## Changing Your Plan
 
-You can upgrade or downgrade your subscription at any time. Changes take effect at the start of your next billing cycle. Upgrades can be applied immediately with prorated billing.
+You can cancel your Plus subscription at any time. Your access continues until the end of the current billing period.

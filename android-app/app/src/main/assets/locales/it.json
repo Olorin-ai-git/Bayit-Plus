@@ -265,7 +265,7 @@
     "lowStorage": "[it] Low Storage Warning",
     "exampleQuery2": "[it] What comedy shows are airing this week?",
     "smartSearchPlaceholder": "[it] e.g., Show me all shows with actress Tali Sharon tonight",
-    "premiumRequiredMessage": "[it] Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature."
+    "premiumRequiredMessage": "[it] Smart Search uses AI to understand your questions. Upgrade to Plus to access this feature."
   },
   "home": {
     "continueWatching": "Continua a guardare",
@@ -448,7 +448,7 @@
     "password": "Password",
     "name": "Nome",
     "guest": "Ospite",
-    "premium": "Premium",
+    "premium": "Plus",
     "basic": "Base"
   },
   "settings": {
@@ -495,7 +495,35 @@
     "sectionHidden": "[it] Section hidden",
     "sectionShown": "[it] Section shown",
     "tapToShow": "[it] Tap to show",
-    "configureSections": "[it] Configure which sections appear on your home page"
+    "configureSections": "[it] Configure which sections appear on your home page",
+    "subscription": {
+      "title": "Abbonamento",
+      "currentPlan": "Piano Attuale",
+      "status": "Stato",
+      "since": "Membro dal",
+      "renews": "Rinnovo il",
+      "featuresIncluded": "Funzioni Incluse",
+      "featureAI": "19 Funzioni IA",
+      "featureAIFree": "50 Crediti IA (una tantum)",
+      "featureAIPlus": "Funzioni IA Illimitate",
+      "featureWidgets": "Widget",
+      "featureWidgetsFree": "1 Widget",
+      "featureWidgetsPlus": "Widget Illimitati",
+      "featureProfiles": "Profili Familiari",
+      "featureProfilesFree": "1 Profilo",
+      "featureProfilesPlus": "Profili Illimitati",
+      "featureSupport": "Supporto Prioritario",
+      "manageOnGooglePlay": "Gestisci su Google Play",
+      "manageOnAppStore": "Gestisci su App Store",
+      "upgradePlan": "Aggiorna Piano",
+      "availablePlans": "Piani Disponibili",
+      "changePlan": "Cambia Piano",
+      "billingHistory": "Cronologia Fatturazione",
+      "manageViaStore": "Gestisci via App Store",
+      "autoRenew": "Rinnovo Automatico",
+      "promoCode": "Codice Promozionale",
+      "cancelSubscription": "Annulla Abbonamento"
+    }
   },
   "player": {
     "loading": "Caricamento...",
@@ -585,10 +613,10 @@
       "volume": "[it] Volume"
     },
     "dubbing": {
-      "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
-      "premiumTitle": "Premium Feature",
-      "upgrade": "Upgrade",
+      "notNow": "Non Ora",
+      "premiumMessage": "Il doppiaggio in diretta richiede un abbonamento Plus",
+      "premiumTitle": "Funzione Plus",
+      "upgrade": "Passa a Plus",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "Impostazioni Doppiaggio in Diretta",
       "target_language": "Lingua di Destinazione"
@@ -760,119 +788,86 @@
     "watched": "[it] watched"
   },
   "plans": {
-    "basic": {
-      "name": "Base",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "Tutti i contenuti VOD",
-        "Radio e Podcast",
-        "Guarda su 1 dispositivo",
-        "Qualità SD"
-      ],
-      "notIncluded": [
-        "Canali in diretta",
-        "Assistente AI",
-        "Visione offline"
+        "Piattaforma BYOC (TV in Diretta, Radio, Podcast)",
+        "50 Crediti IA (una tantum)",
+        "1 Widget",
+        "1 Profilo Familiare"
       ]
     },
-    "premium": {
-      "name": "Premium",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
       "features": [
-        "Tutti i contenuti VOD",
-        "Canali in diretta",
-        "Radio e Podcast",
-        "Assistente AI intelligente",
-        "Guarda su 2 dispositivi",
-        "Qualità HD"
+        "19 Funzioni IA - Illimitate",
+        "Widget Illimitati",
+        "Profili Familiari Illimitati",
+        "Supporto Prioritario"
       ],
-      "notIncluded": [
-        "Visione offline",
-        "Profili familiari"
-      ]
+      "aiCategories": {
+        "dubbingSubtitles": "Doppiaggio e Sottotitoli",
+        "dubbingSubtitlesCount": "8 funzioni",
+        "searchDiscovery": "Ricerca e Scoperta",
+        "searchDiscoveryCount": "3 funzioni",
+        "languageTools": "Strumenti Linguistici",
+        "languageToolsCount": "4 funzioni",
+        "creativeInteractive": "Creativo e Interattivo",
+        "creativeInteractiveCount": "4 funzioni"
+      }
     },
-    "family": {
-      "name": "Famiglia",
-      "features": [
-        "Tutti i contenuti VOD",
-        "Canali in diretta",
-        "Radio e Podcast",
-        "Assistente AI intelligente",
-        "Guarda su 4 dispositivi",
-        "Qualità 4K",
-        "5 profili familiari",
-        "Download offline"
-      ],
-      "notIncluded": []
-    },
-    "costDashboard": {
-      "plSummary": {
-        "netProfitLoss": "[it] Net Profit/Loss",
-        "totalCosts": "[it] TOTAL COSTS",
-        "margin": "[it] margin",
-        "revenue": "[it] REVENUE"
-      },
-      "timeline": {
-        "totalCost": "[it] Total Cost",
-        "showingData": "[it] Showing data from {{start}} to {{end}}",
-        "netProfit": "[it] Net Profit",
-        "title": "[it] Cost Timeline",
-        "revenue": "[it] Revenue",
-        "amountLabel": "[it] Amount ($)",
-        "loading": "[it] Loading timeline..."
-      },
+    "comparison": {
+      "title": "Confronta i Piani",
+      "subtitle": "Trova il piano perfetto per le tue esigenze",
       "categories": {
-        "transientVariable": "[it] Transient (Variable)",
-        "permanentDesc": "[it] Infrastructure costs that occur monthly regardless of usage",
-        "permanent": "[it] Permanent",
-        "transient": "[it] Transient",
-        "permanentVsTransient": "[it] Permanent vs Transient",
-        "permanentFixed": "[it] Permanent (Fixed)",
-        "costItem": "[it] Cost Item",
-        "category": "[it] Category",
-        "amount": "[it] Amount",
-        "detailedBreakdown": "[it] Detailed Breakdown",
-        "transientDesc": "[it] Usage-based costs that fluctuate with platform activity"
+        "ai": "Funzioni IA",
+        "platform": "Piattaforma",
+        "support": "Supporto"
       },
-      "thirdParty": "[it] Third-party",
-      "title": "[it] Cost Dashboard",
-      "topSpenders": {
-        "privacyNote": "[it] User IDs are hashed and costs are aggregated into ranges for privacy protection.",
-        "title": "[it] Top 20 Spenders (Monthly)",
-        "userId": "[it] User ID",
-        "costRange": "[it] Cost Range",
-        "rank": "[it] Rank",
-        "loading": "[it] Loading top spenders..."
+      "features": {
+        "aiFeatures": "Funzioni IA (19 in totale)",
+        "widgets": "Widget",
+        "familyProfiles": "Profili Familiari",
+        "customerSupport": "Supporto Clienti"
       },
-      "search": "[it] Search",
-      "translation": "[it] Translation",
-      "components": "[it] Components",
-      "thirdPartyApis": "[it] Third-party APIs",
-      "costBreakdown": "[it] Cost Breakdown",
-      "loadingBreakdown": "[it] Loading breakdown...",
-      "infrastructure": "[it] Infrastructure",
-      "aiCosts": "[it] AI Costs",
-      "percentOfTotal": "[it] % of total"
-    },
-    "batchActions": {
-      "selectedCount": "[it] {{count}} selected",
-      "selectedCount_one": "[it] {{count}} selected",
-      "clear": "[it] Clear",
-      "selectedCount_other": "[it] {{count}} selected"
+      "values": {
+        "fiftyCredits": "50 crediti (una tantum)",
+        "unlimited": "Illimitato",
+        "emailSupport": "Email",
+        "prioritySupport": "Prioritario"
+      }
     }
   },
   "subscribe": {
-    "title": "Scegli il tuo piano",
-    "subtitle": "7 giorni di prova gratuita per qualsiasi piano. Annulla quando vuoi.",
+    "title": "Scegli il Tuo Piano",
+    "subtitle": "Annulla in qualsiasi momento.",
     "monthly": "Mensile",
     "yearly": "Annuale",
     "save2Months": "Risparmia 2 mesi",
-    "popular": "Più popolare",
+    "popular": "Piu Popolare",
     "period": "/mese",
     "perYear": "/anno",
-    "select": "Seleziona piano",
+    "select": "Seleziona Piano",
     "selected": "Selezionato",
     "processing": "Elaborazione...",
-    "startTrial": "Inizia prova gratuita",
-    "noCharge": "La tua carta non verrà addebitata durante il periodo di prova"
+    "viewComparison": "Confronto Completo",
+    "viewCards": "Vedi Piani",
+    "noProductSelected": "Nessun prodotto selezionato",
+    "comparison": {
+      "title": "Confronta i Piani",
+      "subtitle": "Trova il piano perfetto per te",
+      "features": "Funzionalita",
+      "perMonth": "/mese",
+      "categories": {
+        "ai": "Funzioni IA",
+        "platform": "Piattaforma",
+        "support": "Supporto"
+      }
+    }
   },
   "footer": {
     "brandDescription": "La tua casa negli USA. Trasmissioni TV, VOD, radio e podcast in ebraico.",
@@ -2790,7 +2785,7 @@
     "notifications": "[it] Notifications",
     "security": "[it] Security",
     "notificationSettings": "[it] Notification Settings",
-    "premiumPrice": "[it] $7.99/month",
+    "premiumPrice": "[it] $6.99/month",
     "guest": "[it] Guest",
     "hours": "[it] hours",
     "address": {
@@ -2815,7 +2810,7 @@
     "basic": "[it] Basic",
     "recentActivity": "[it] Recent Activity",
     "updatePassword": "[it] Update your password",
-    "upgrade": "[it] Upgrade to Premium",
+    "upgrade": "[it] Upgrade to Plus",
     "lastLogin": "[it] Last login",
     "role": "[it] Role",
     "premium": "[it] Premium",
@@ -4886,13 +4881,26 @@
     },
     "intro": {
       "title": "Benvenuto su Bayit+",
-      "subtitle": "Sblocca tutta la potenza dello streaming israeliano con funzionalità AI",
-      "bullet1": "Doppiaggio AI nella tua lingua",
-      "bullet2": "Sottotitoli intelligenti con consigli grammaticali",
-      "bullet3": "Ricerca scene con AI",
-      "bullet4": "500 crediti AI Beta inclusi",
-      "seePlans": "Vedi piani",
-      "maybeLater": "Forse più tardi"
+      "subtitle": "Migliora i tuoi contenuti con l'IA",
+      "bullet1": "Doppiaggio e Sottotitoli (8 funzioni IA)",
+      "bullet2": "Ricerca e Scoperta (3 funzioni IA)",
+      "bullet3": "Strumenti Linguistici (4 funzioni IA)",
+      "bullet4": "Creativo e Interattivo (4 funzioni IA)",
+      "seePlans": "Vedi Piani",
+      "maybeLater": "Forse Dopo"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Funzione Plus",
+      "featureRequires": "{{feature}} richiede Plus",
+      "upgradeList": "Sblocca 19 funzioni IA, widget illimitati, profili illimitati e supporto prioritario",
+      "subscribeNow": "Abbonati Ora",
+      "hasAccess": "Hai accesso"
+    },
+    "title": "Abbonamento",
+    "choosePlan": "Seleziona Piano",
+    "subscribe": "Seleziona Piano",
+    "loadingPlans": "Loading plans..."
   }
 }

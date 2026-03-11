@@ -869,7 +869,35 @@
     "resetConfirmMessage": "האם אתה בטוח שברצונך לאפס את סעיפי דף הבית לתצורה המקורית?",
     "sectionHidden": "הסעיף הוסתר",
     "sectionShown": "הסעיף מוצג",
-    "replayTour": "הצג מחדש את סיור התכונות"
+    "replayTour": "הצג מחדש את סיור התכונות",
+    "subscription": {
+      "title": "מנוי",
+      "currentPlan": "מסלול נוכחי",
+      "status": "סטטוס",
+      "since": "חבר מאז",
+      "renews": "מתחדש ב",
+      "featuresIncluded": "תכונות כלולות",
+      "featureAI": "19 תכונות AI",
+      "featureAIFree": "50 קרדיטי AI (חד פעמי)",
+      "featureAIPlus": "תכונות AI ללא הגבלה",
+      "featureWidgets": "ווידג'טים",
+      "featureWidgetsFree": "ווידג'ט אחד",
+      "featureWidgetsPlus": "ווידג'טים ללא הגבלה",
+      "featureProfiles": "פרופילים משפחתיים",
+      "featureProfilesFree": "פרופיל אחד",
+      "featureProfilesPlus": "פרופילים ללא הגבלה",
+      "featureSupport": "תמיכה בעדיפות",
+      "manageOnGooglePlay": "ניהול ב-Google Play",
+      "manageOnAppStore": "ניהול ב-App Store",
+      "upgradePlan": "שדרגו מסלול",
+      "availablePlans": "מסלולים זמינים",
+      "changePlan": "שנו מסלול",
+      "billingHistory": "היסטוריית חיובים",
+      "manageViaStore": "ניהול דרך חנות האפליקציות",
+      "autoRenew": "חידוש אוטומטי",
+      "promoCode": "קוד קופון",
+      "cancelSubscription": "ביטול מנוי"
+    }
   },
   "help": {
     "subtitle": "איך נוכל לעזור לך?",
@@ -1105,9 +1133,9 @@
     },
     "dubbing": {
       "notNow": "לא עכשיו",
-      "premiumMessage": "דיבוב חי דורש מנוי פרימיום או בטא 500",
-      "premiumTitle": "תכונת פרימיום",
-      "upgrade": "שדרג",
+      "premiumMessage": "דיבוב חי דורש מנוי Plus",
+      "premiumTitle": "תכונת Plus",
+      "upgrade": "שדרג ל-Plus",
       "voiceTitle": "קול דיבוב",
       "settings_title": "הגדרות דיבוב חי",
       "target_language": "שפת יעד"
@@ -2956,119 +2984,86 @@
     }
   },
   "plans": {
-    "basic": {
-      "name": "בסיסי",
+    "free": {
+      "name": "חינם",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "כל תוכן ה-VOD",
-        "רדיו ופודקאסטים",
-        "צפייה על מכשיר אחד",
-        "איכות SD"
-      ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
+        "פלטפורמת BYOC (טלוויזיה חיה, רדיו, פודקאסטים)",
+        "50 קרדיטי AI (חד פעמי)",
+        "ווידג'ט אחד",
+        "פרופיל משפחתי אחד"
       ]
     },
-    "premium": {
-      "name": "פרימיום",
+    "plus": {
+      "name": "פלוס",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
       "features": [
-        "כל תוכן ה-VOD",
-        "ערוצי שידור חי",
-        "רדיו ופודקאסטים",
-        "עוזר AI חכם",
-        "צפייה על 2 מכשירים",
-        "איכות HD"
+        "19 תכונות AI - ללא הגבלה",
+        "ווידג'טים ללא הגבלה",
+        "פרופילים משפחתיים ללא הגבלה",
+        "תמיכה בעדיפות"
       ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
+      "aiCategories": {
+        "dubbingSubtitles": "דיבוב וכתוביות",
+        "dubbingSubtitlesCount": "8 תכונות",
+        "searchDiscovery": "חיפוש וגילוי",
+        "searchDiscoveryCount": "3 תכונות",
+        "languageTools": "כלי שפה",
+        "languageToolsCount": "4 תכונות",
+        "creativeInteractive": "יצירתי ואינטראקטיבי",
+        "creativeInteractiveCount": "4 תכונות"
+      }
     },
-    "family": {
-      "name": "משפחתי",
-      "features": [
-        "כל תוכן ה-VOD",
-        "ערוצי שידור חי",
-        "רדיו ופודקאסטים",
-        "עוזר AI חכם",
-        "צפייה על 4 מכשירים",
-        "איכות 4K",
-        "5 פרופילים משפחתיים",
-        "הורדה לצפייה אופליין"
-      ],
-      "notIncluded": []
-    },
-    "batchActions": {
-      "selectedCount": "{{count}} נבחרו",
-      "selectedCount_one": "{{count}} נבחר",
-      "selectedCount_other": "{{count}} נבחרו",
-      "clear": "נקה"
-    },
-    "costDashboard": {
-      "title": "לוח עלויות",
-      "costBreakdown": "פירוט עלויות",
-      "loadingBreakdown": "טוען פירוט...",
-      "aiCosts": "עלויות AI",
-      "infrastructure": "תשתית",
-      "thirdParty": "צד שלישי",
-      "thirdPartyApis": "ממשקי API של צד שלישי",
-      "translation": "תרגום",
-      "search": "חיפוש",
-      "percentOfTotal": "% מהסה״כ",
-      "components": "רכיבים",
-      "topSpenders": {
-        "title": "20 המשתמשים המובילים (חודשי)",
-        "loading": "טוען משתמשים מובילים...",
-        "rank": "דירוג",
-        "userId": "מזהה משתמש",
-        "costRange": "טווח עלויות",
-        "privacyNote": "מזהי המשתמשים מוצפנים והעלויות מוצגות בטווחים להגנת הפרטיות."
-      },
+    "comparison": {
+      "title": "השוואת מסלולים",
+      "subtitle": "מצאו את המסלול המושלם עבורכם",
       "categories": {
-        "permanent": "קבוע",
-        "transient": "משתנה",
-        "permanentVsTransient": "קבוע מול משתנה",
-        "permanentFixed": "קבוע (תשתית)",
-        "transientVariable": "משתנה (שימוש)",
-        "permanentDesc": "עלויות תשתית שמתרחשות מדי חודש ללא קשר לשימוש",
-        "transientDesc": "עלויות תלויות שימוש שמשתנות עם פעילות הפלטפורמה",
-        "detailedBreakdown": "פירוט מפורט",
-        "costItem": "פריט עלות",
-        "category": "קטגוריה",
-        "amount": "סכום"
+        "ai": "תכונות AI",
+        "platform": "פלטפורמה",
+        "support": "תמיכה"
       },
-      "timeline": {
-        "title": "ציר זמן עלויות",
-        "loading": "טוען ציר זמן...",
-        "amountLabel": "סכום ($)",
-        "revenue": "הכנסות",
-        "totalCost": "סה״כ עלויות",
-        "netProfit": "רווח נקי",
-        "showingData": "מציג נתונים מ-{{start}} עד {{end}}"
+      "features": {
+        "aiFeatures": "תכונות AI (19 סה\"כ)",
+        "widgets": "ווידג'טים",
+        "familyProfiles": "פרופילים משפחתיים",
+        "customerSupport": "תמיכת לקוחות"
       },
-      "plSummary": {
-        "netProfitLoss": "רווח/הפסד נקי",
-        "margin": "מרווח",
-        "revenue": "הכנסות",
-        "totalCosts": "סה״כ עלויות"
+      "values": {
+        "fiftyCredits": "50 קרדיטים (חד פעמי)",
+        "unlimited": "ללא הגבלה",
+        "emailSupport": "אימייל",
+        "prioritySupport": "עדיפות"
       }
     }
   },
   "subscribe": {
-    "title": "בחר את המסלול שלך",
-    "subtitle": "7 ימי ניסיון חינם לכל מסלול. בטל בכל עת.",
+    "title": "בחרו את המסלול שלכם",
+    "subtitle": "בטלו בכל עת.",
     "monthly": "חודשי",
     "yearly": "שנתי",
     "save2Months": "חסכו 2 חודשים",
     "popular": "הכי פופולרי",
-    "period": "לחודש",
-    "perYear": "לשנה",
+    "period": "/חודש",
+    "perYear": "/שנה",
     "select": "בחר מסלול",
     "selected": "נבחר",
     "processing": "מעבד...",
-    "startTrial": "התחל ניסיון חינם",
-    "noCharge": "לא יחויב כרטיס האשראי במהלך תקופת הניסיון"
+    "viewComparison": "הצג השוואה מלאה",
+    "viewCards": "הצג מסלולים",
+    "noProductSelected": "לא נבחר מוצר",
+    "comparison": {
+      "title": "השוואת מסלולים",
+      "subtitle": "מצאו את המסלול המושלם עבורכם",
+      "features": "תכונות",
+      "perMonth": "/חו'",
+      "categories": {
+        "ai": "תכונות AI",
+        "platform": "פלטפורמה",
+        "support": "תמיכה"
+      }
+    }
   },
   "notFound": {
     "title": "הדף לא נמצא",
@@ -4878,14 +4873,23 @@
       "search": "מצאו סצנות עם חיפוש AI"
     },
     "intro": {
-      "title": "ברוך הבא ל-Bayit+",
-      "subtitle": "פתח את הכוח המלא של הסטרימינג הישראלי עם תכונות מבוססות AI",
-      "bullet1": "דיבוב AI בשפה שלך",
-      "bullet2": "כתוביות חכמות עם טיפים דקדוקיים",
-      "bullet3": "חיפוש סצנות מבוסס AI",
-      "bullet4": "500 קרדיטי AI בטא כלולים",
-      "seePlans": "ראה תוכניות",
-      "maybeLater": "אולי מאוחר יותר"
+      "title": "ברוכים הבאים לבית+",
+      "subtitle": "שדרגו את התוכן שלכם עם AI",
+      "bullet1": "דיבוב וכתוביות (8 תכונות AI)",
+      "bullet2": "חיפוש וגילוי (3 תכונות AI)",
+      "bullet3": "כלי שפה (4 תכונות AI)",
+      "bullet4": "יצירתי ואינטראקטיבי (4 תכונות AI)",
+      "seePlans": "ראו מסלולים",
+      "maybeLater": "אולי אחר כך"
+    }
+  },
+  "subscription": {
+    "gate": {
+      "title": "תכונת פלוס",
+      "featureRequires": "{{feature}} דורש פלוס",
+      "upgradeList": "שחררו 19 תכונות AI, ווידג'טים ללא הגבלה, פרופילים ללא הגבלה ותמיכה בעדיפות",
+      "subscribeNow": "הרשמו עכשיו",
+      "hasAccess": "יש לכם גישה"
     }
   }
 }

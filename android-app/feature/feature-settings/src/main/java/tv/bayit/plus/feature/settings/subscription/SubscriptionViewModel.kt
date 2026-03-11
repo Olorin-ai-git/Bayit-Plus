@@ -89,8 +89,8 @@ class SubscriptionViewModel @Inject constructor(
         private const val PLAY_SUBSCRIPTION_DEEPLINK =
             "https://play.google.com/store/account/subscriptions?package=tv.bayit.plus"
 
-        /** Beta 500 program total credit allocation per user. */
-        internal const val BETA_CREDITS_TOTAL = 500
+        /** Free tier one-time AI credit allocation per user. */
+        internal const val BETA_CREDITS_TOTAL = 50
     }
 }
 

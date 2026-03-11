@@ -490,7 +490,7 @@
     "password": "Mot de passe",
     "name": "Nom",
     "guest": "Invité",
-    "premium": "Premium",
+    "premium": "Plus",
     "basic": "Basique"
   },
   "settings": {
@@ -537,7 +537,35 @@
     "resetConfirmMessage": "Êtes-vous sûr de vouloir réinitialiser les sections de la page d'accueil ?",
     "sectionHidden": "Section masquée",
     "sectionShown": "Section affichée",
-    "replayTour": "Revoir la visite des fonctionnalités"
+    "replayTour": "Revoir la visite des fonctionnalités",
+    "subscription": {
+      "title": "Abonnement",
+      "currentPlan": "Plan Actuel",
+      "status": "Statut",
+      "since": "Membre depuis",
+      "renews": "Renouvellement le",
+      "featuresIncluded": "Fonctions Incluses",
+      "featureAI": "19 Fonctions IA",
+      "featureAIFree": "50 Credits IA (unique)",
+      "featureAIPlus": "Fonctions IA Illimitees",
+      "featureWidgets": "Widgets",
+      "featureWidgetsFree": "1 Widget",
+      "featureWidgetsPlus": "Widgets Illimites",
+      "featureProfiles": "Profils Familiaux",
+      "featureProfilesFree": "1 Profil",
+      "featureProfilesPlus": "Profils Illimites",
+      "featureSupport": "Support Prioritaire",
+      "manageOnGooglePlay": "Gerer sur Google Play",
+      "manageOnAppStore": "Gerer sur App Store",
+      "upgradePlan": "Ameliorer le Plan",
+      "availablePlans": "Plans Disponibles",
+      "changePlan": "Changer de Plan",
+      "billingHistory": "Historique de Facturation",
+      "manageViaStore": "Gerer via App Store",
+      "autoRenew": "Renouvellement Automatique",
+      "promoCode": "Code Promotionnel",
+      "cancelSubscription": "Annuler l'Abonnement"
+    }
   },
   "player": {
     "loading": "Chargement...",
@@ -627,10 +655,10 @@
       "volume": "Volume"
     },
     "dubbing": {
-      "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
-      "premiumTitle": "Premium Feature",
-      "upgrade": "Upgrade",
+      "notNow": "Pas Maintenant",
+      "premiumMessage": "Le doublage en direct necessite un abonnement Plus",
+      "premiumTitle": "Fonction Plus",
+      "upgrade": "Passer a Plus",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "Paramètres de Doublage en Direct",
       "target_language": "Langue Cible"
@@ -802,173 +830,86 @@
     "watched": "watched"
   },
   "plans": {
-    "basic": {
-      "name": "Basique",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "Tout le contenu VOD",
-        "Radio et Podcasts",
-        "Regarder sur 1 appareil",
-        "Qualité SD"
-      ],
-      "notIncluded": [
-        "Chaînes en direct",
-        "Assistant IA",
-        "Visionnage hors ligne"
+        "Plateforme BYOC (TV en Direct, Radio, Podcasts)",
+        "50 Credits IA (unique)",
+        "1 Widget",
+        "1 Profil Familial"
       ]
     },
-    "premium": {
-      "name": "Premium",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
       "features": [
-        "Tout le contenu VOD",
-        "Chaînes en direct",
-        "Radio et Podcasts",
-        "Assistant IA intelligent",
-        "Regarder sur 2 appareils",
-        "Qualité HD"
+        "19 Fonctions IA - Illimitees",
+        "Widgets Illimites",
+        "Profils Familiaux Illimites",
+        "Support Prioritaire"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
-    },
-    "family": {
-      "name": "Famille",
-      "features": [
-        "Tout le contenu VOD",
-        "Chaînes en direct",
-        "Radio et Podcasts",
-        "Assistant IA intelligent",
-        "Regarder sur 4 appareils",
-        "Qualité 4K",
-        "5 profils familiaux",
-        "Téléchargement hors ligne"
-      ],
-      "notIncluded": []
-    },
-    "transactions": {
-      "subtitle": "Afficher l'historique des paiements",
-      "exportCsv": "Exporter CSV",
-      "status": {
-        "completed": "Terminé",
-        "pending": "En attente",
-        "failed": "Échoué",
-        "refunded": "Remboursé"
-      },
-      "columns": {
-        "id": "ID",
-        "user": "Utilisateur",
-        "amount": "Montant",
-        "type": "Type",
-        "status": "Statut",
-        "date": "Date"
-      },
-      "filters": {
-        "all": "Tout"
-      },
-      "searchPlaceholder": "Rechercher une transaction...",
-      "emptyMessage": "Aucune transaction trouvée",
-      "details": "Détails de la Transaction",
-      "email": "E-mail"
-    },
-    "refunds": {
-      "subtitle": "Gérer les demandes de remboursement",
-      "approveModal": {
-        "title": "Confirmer l'Approbation",
-        "message": "Approuver le remboursement de {{amount}} ?"
-      },
-      "confirmApprove": "Approuver le remboursement de {{amount}} ?",
-      "confirmDelete": "Supprimer la demande de remboursement ?",
-      "rejectModal": {
-        "title": "Rejeter la Demande de Remboursement",
-        "message": "Rejet du remboursement de {{amount}}",
-        "reasonLabel": "Motif du Rejet",
-        "reasonPlaceholder": "Veuillez entrer le motif du rejet...",
-        "submitButton": "Rejeter la Demande"
-      },
-      "status": {
-        "pending": "En attente",
-        "approved": "Approuvé",
-        "rejected": "Rejeté"
-      },
-      "columns": {
-        "id": "ID",
-        "user": "Utilisateur",
-        "amount": "Montant",
-        "reason": "Motif",
-        "status": "Statut",
-        "requestDate": "Date de Demande"
+      "aiCategories": {
+        "dubbingSubtitles": "Doublage et Sous-titres",
+        "dubbingSubtitlesCount": "8 fonctions",
+        "searchDiscovery": "Recherche et Decouverte",
+        "searchDiscoveryCount": "3 fonctions",
+        "languageTools": "Outils Linguistiques",
+        "languageToolsCount": "4 fonctions",
+        "creativeInteractive": "Creatif et Interactif",
+        "creativeInteractiveCount": "4 fonctions"
       }
     },
-    "batchActions": {
-      "selectedCount": "{{count}} sélectionné(s)",
-      "selectedCount_one": "{{count}} sélectionné",
-      "selectedCount_other": "{{count}} sélectionnés",
-      "clear": "Effacer"
-    },
-    "costDashboard": {
-      "title": "Tableau des Coûts",
-      "costBreakdown": "Répartition des Coûts",
-      "loadingBreakdown": "Chargement de la répartition...",
-      "aiCosts": "Coûts IA",
-      "infrastructure": "Infrastructure",
-      "thirdParty": "Tiers",
-      "thirdPartyApis": "APIs Tiers",
-      "translation": "Traduction",
-      "search": "Recherche",
-      "percentOfTotal": "% du total",
-      "components": "Composants",
-      "topSpenders": {
-        "title": "Top 20 Utilisateurs (Mensuel)",
-        "loading": "Chargement des meilleurs utilisateurs...",
-        "rank": "Rang",
-        "userId": "ID Utilisateur",
-        "costRange": "Plage de Coûts",
-        "privacyNote": "Les IDs utilisateurs sont chiffrés et les coûts sont regroupés par tranches pour protéger la vie privée."
-      },
+    "comparison": {
+      "title": "Comparer les Plans",
+      "subtitle": "Trouvez le plan parfait pour vos besoins",
       "categories": {
-        "permanent": "Permanent",
-        "transient": "Variable",
-        "permanentVsTransient": "Permanent vs Variable",
-        "permanentFixed": "Permanent (Fixe)",
-        "transientVariable": "Variable (Usage)",
-        "permanentDesc": "Coûts d'infrastructure mensuels indépendants de l'utilisation",
-        "transientDesc": "Coûts basés sur l'utilisation qui fluctuent avec l'activité de la plateforme",
-        "detailedBreakdown": "Répartition Détaillée",
-        "costItem": "Élément de Coût",
-        "category": "Catégorie",
-        "amount": "Montant"
+        "ai": "Fonctions IA",
+        "platform": "Plateforme",
+        "support": "Support"
       },
-      "timeline": {
-        "title": "Chronologie des Coûts",
-        "loading": "Chargement de la chronologie...",
-        "amountLabel": "Montant ($)",
-        "revenue": "Revenus",
-        "totalCost": "Coût Total",
-        "netProfit": "Profit Net",
-        "showingData": "Affichage des données de {{start}} à {{end}}"
+      "features": {
+        "aiFeatures": "Fonctions IA (19 au total)",
+        "widgets": "Widgets",
+        "familyProfiles": "Profils Familiaux",
+        "customerSupport": "Support Client"
       },
-      "plSummary": {
-        "netProfitLoss": "Profit/Perte Net(te)",
-        "margin": "marge",
-        "revenue": "REVENUS",
-        "totalCosts": "COÛTS TOTAUX"
+      "values": {
+        "fiftyCredits": "50 credits (unique)",
+        "unlimited": "Illimite",
+        "emailSupport": "Email",
+        "prioritySupport": "Prioritaire"
       }
     }
   },
   "subscribe": {
-    "title": "Choisissez votre forfait",
-    "subtitle": "7 jours d'essai gratuit pour tout forfait. Annulez à tout moment.",
+    "title": "Choisissez Votre Plan",
+    "subtitle": "Annulez a tout moment.",
     "monthly": "Mensuel",
     "yearly": "Annuel",
-    "save2Months": "Économisez 2 mois",
-    "popular": "Le plus populaire",
+    "save2Months": "Economisez 2 mois",
+    "popular": "Le Plus Populaire",
     "period": "/mois",
     "perYear": "/an",
-    "select": "Sélectionner le forfait",
-    "selected": "Sélectionné",
+    "select": "Choisir le Plan",
+    "selected": "Selectionne",
     "processing": "Traitement...",
-    "startTrial": "Commencer l'essai gratuit",
-    "noCharge": "Votre carte de crédit ne sera pas débitée pendant la période d'essai"
+    "viewComparison": "Voir la Comparaison Complete",
+    "viewCards": "Voir les Plans",
+    "noProductSelected": "Aucun produit selectionne",
+    "comparison": {
+      "title": "Comparer les Plans",
+      "subtitle": "Trouvez le plan parfait pour vous",
+      "features": "Fonctionnalites",
+      "perMonth": "/mois",
+      "categories": {
+        "ai": "Fonctions IA",
+        "platform": "Plateforme",
+        "support": "Support"
+      }
+    }
   },
   "footer": {
     "brandDescription": "Votre maison aux États-Unis. Émissions TV, VOD, radio et podcasts en hébreu.",
@@ -2846,7 +2787,7 @@
     "morningRitual": "Morning Ritual",
     "name": "Name",
     "favorites": "Favorites",
-    "premiumPrice": "$7.99/month",
+    "premiumPrice": "$6.99/month",
     "admin": "Admin",
     "connectedDevices": "Connected Devices",
     "profileDetails": "Profile Details",
@@ -2855,7 +2796,7 @@
     "uploadSuccess": "Avatar updated successfully!",
     "title": "My Profile",
     "premium": "Premium",
-    "upgrade": "Upgrade to Premium",
+    "upgrade": "Upgrade to Plus",
     "updatePassword": "Update your password",
     "uploadFailed": "Failed to upload avatar. Please try again.",
     "voiceSettings": "Voice",
@@ -4885,13 +4826,26 @@
     },
     "intro": {
       "title": "Bienvenue sur Bayit+",
-      "subtitle": "Profitez de la pleine puissance du streaming israélien avec des fonctionnalités IA",
-      "bullet1": "Doublage IA dans votre langue",
-      "bullet2": "Sous-titres intelligents avec conseils de grammaire",
-      "bullet3": "Recherche de scènes par IA",
-      "bullet4": "500 crédits IA Bêta inclus",
-      "seePlans": "Voir les offres",
-      "maybeLater": "Peut-être plus tard"
+      "subtitle": "Ameliorez votre contenu avec l'IA",
+      "bullet1": "Doublage et Sous-titres (8 fonctions IA)",
+      "bullet2": "Recherche et Decouverte (3 fonctions IA)",
+      "bullet3": "Outils Linguistiques (4 fonctions IA)",
+      "bullet4": "Creatif et Interactif (4 fonctions IA)",
+      "seePlans": "Voir les Plans",
+      "maybeLater": "Peut-etre Plus Tard"
     }
+  },
+  "subscription": {
+    "gate": {
+      "title": "Fonction Plus",
+      "featureRequires": "{{feature}} necessite Plus",
+      "upgradeList": "Debloquez 19 fonctions IA, widgets illimites, profils illimites et support prioritaire",
+      "subscribeNow": "S'abonner Maintenant",
+      "hasAccess": "Vous avez acces"
+    },
+    "title": "Abonnement",
+    "choosePlan": "Choisir le Plan",
+    "subscribe": "Choisir le Plan",
+    "loadingPlans": "Loading plans..."
   }
 }
