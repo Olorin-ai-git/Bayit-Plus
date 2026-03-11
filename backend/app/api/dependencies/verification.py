@@ -35,45 +35,34 @@ async def require_verified_user(
     return current_user
 
 
-async def can_watch_vod(current_user: User = Depends(require_verified_user)) -> User:
-    """
-    Require Premium or Family plan, or admin role.
-
-    Feature gate for VOD content access.
-    """
-    if current_user.is_admin_role():
-        return current_user
-
-    if not current_user.can_access_premium_features():
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "error": "premium_required",
-                "message": "Upgrade to Premium or Family to watch VOD content",
-            },
-        )
-
-    return current_user
-
-
 async def can_create_widgets(
     current_user: User = Depends(require_verified_user),
 ) -> User:
     """
-    Require Premium plan or higher, or admin role.
-
-    Feature gate for widget creation.
+    Check widget creation limit: free=1, plus=unlimited, admin=unlimited.
     """
-    if current_user.is_admin_role():
+    if current_user.is_admin_role() or current_user.subscription_tier == "plus":
         return current_user
 
-    if current_user.subscription_tier != "plus":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "error": "plus_required",
-                "message": "Upgrade to Plus to create widgets",
-            },
-        )
+    from app.models.subscription import SUBSCRIPTION_PLANS
+
+    plan = SUBSCRIPTION_PLANS.get(current_user.subscription_tier or "free")
+    max_widgets = plan.max_widgets if plan else 1
+
+    if max_widgets > 0:
+        from app.api.routes.widgets import Widget, WidgetType
+        existing_count = await Widget.find(
+            {"user_id": str(current_user.id), "type": WidgetType.PERSONAL}
+        ).count()
+        if existing_count >= max_widgets:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={
+                    "error": "widget_limit_reached",
+                    "message": "Upgrade to Plus for unlimited widgets",
+                    "current": existing_count,
+                    "limit": max_widgets,
+                },
+            )
 
     return current_user

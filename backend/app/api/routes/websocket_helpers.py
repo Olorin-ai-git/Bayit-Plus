@@ -104,13 +104,13 @@ async def check_subscription_tier(
         await websocket.send_json(
             {
                 "type": "error",
-                "message": "Premium subscription required for live dubbing",
+                "message": "Plus subscription required for live dubbing",
                 "recoverable": False,
             }
         )
-        await websocket.close(code=4003, reason="Premium subscription required")
+        await websocket.close(code=4003, reason="Plus subscription required")
         logger.info(
-            f"Premium subscription denied for user {user.id} ({user.subscription_tier})"
+            f"Plus subscription denied for user {user.id} ({user.subscription_tier})"
         )
         return False
     return True

@@ -162,8 +162,8 @@ async def websocket_live_dubbing(
         await websocket.close(code=4029, reason="Rate limit exceeded")
         return
 
-    # Step 6: Check subscription tier (Premium feature)
-    if not await check_subscription_tier(websocket, user, ["premium", "family"]):
+    # Step 6: Check subscription tier (Plus feature)
+    if not await check_subscription_tier(websocket, user, ["plus"]):
         return
 
     # Step 6.5: Enforce per-user concurrent session limit

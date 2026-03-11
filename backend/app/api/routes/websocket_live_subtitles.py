@@ -510,8 +510,8 @@ async def websocket_live_subtitles(
         await websocket.close(code=4029, reason="Rate limit exceeded")
         return
 
-    # Check subscription tier (Premium feature)
-    if not await check_subscription_tier(websocket, user, ["premium", "family"]):
+    # Check subscription tier (Plus feature)
+    if not await check_subscription_tier(websocket, user, ["plus"]):
         return
 
     # Verify channel (BYOC bypass or standard lookup)

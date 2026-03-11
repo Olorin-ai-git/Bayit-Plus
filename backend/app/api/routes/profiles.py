@@ -14,7 +14,7 @@ from app.models.user import User
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-PROFILE_LIMITS = {"basic": 1, "premium": 3, "family": 5}
+PROFILE_LIMITS = {"free": 1, "plus": 0}  # 0 = unlimited
 
 
 class PinVerify(BaseModel):
@@ -40,14 +40,15 @@ async def create_profile(
     profile_data: ProfileCreate, current_user: User = Depends(get_current_active_user),
 ):
     """Create a new profile."""
-    tier = current_user.subscription_tier or "basic"
+    tier = current_user.subscription_tier or "free"
     limit = PROFILE_LIMITS.get(tier, 1)
-    existing_count = await Profile.find({"user_id": str(current_user.id)}).count()
-    if existing_count >= limit:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Profile limit reached ({limit}). Upgrade subscription for more profiles.",
-        )
+    if limit > 0:
+        existing_count = await Profile.find({"user_id": str(current_user.id)}).count()
+        if existing_count >= limit:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Profile limit reached. Upgrade to Plus for unlimited profiles.",
+            )
     existing_name = await Profile.find_one(
         {"user_id": str(current_user.id), "name": profile_data.name}
 )

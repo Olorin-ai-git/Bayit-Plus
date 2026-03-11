@@ -10,57 +10,35 @@ class SubscriptionPlan(BaseModel):
     name: str
     price: float
     price_yearly: float
-    features: list[str]
-    max_streams: int
-    quality: str  # sd, hd, 4k
-    includes_live: bool
     includes_ai: bool
-    includes_downloads: bool
+    ai_credits: int  # 0 = unlimited, >0 = one-time credit grant
+    max_widgets: int  # 0 = unlimited
+    max_profiles: int  # 0 = unlimited
+    priority_support: bool
 
 
 SUBSCRIPTION_PLANS = {
     "free": SubscriptionPlan(
         id="free",
-        name="חינם",
+        name="Free",
         price=0,
         price_yearly=0,
-        features=[
-            "כל ערוצי השידור החי",
-            "רדיו ופודקאסטים",
-            "ספרי שמע",
-            "חיבור תוכן BYOC",
-            "צפייה על מכשיר אחד",
-            "איכות HD",
-            "50 קרדיטי AI בחודש",
-        ],
-        max_streams=1,
-        quality="hd",
-        includes_live=True,
         includes_ai=False,
-        includes_downloads=False,
+        ai_credits=50,
+        max_widgets=1,
+        max_profiles=1,
+        priority_support=False,
     ),
     "plus": SubscriptionPlan(
         id="plus",
-        name="פלוס",
+        name="Plus",
         price=6.99,
-        price_yearly=49.99,
-        features=[
-            "כל ערוצי השידור החי",
-            "רדיו ופודקאסטים",
-            "ספרי שמע",
-            "חיבור תוכן BYOC",
-            "עוזר AI חכם",
-            "דיבוב AI בזמן אמת",
-            "צפייה על 4 מכשירים",
-            "איכות 4K",
-            "500 קרדיטי AI בחודש",
-            "הורדה לצפייה אופליין",
-        ],
-        max_streams=4,
-        quality="4k",
-        includes_live=True,
+        price_yearly=49.90,
         includes_ai=True,
-        includes_downloads=True,
+        ai_credits=0,
+        max_widgets=0,
+        max_profiles=0,
+        priority_support=True,
     ),
 }
 

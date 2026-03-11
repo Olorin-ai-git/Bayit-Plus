@@ -45,7 +45,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_podcast_episodes, admin_podcasts,
                                 admin_radio_stations, admin_subtitle_sync, admin_taxonomy,
                                 admin_uploads, admin_widgets,
-                                admin_youngsters_content, audiobooks, audible_integration,
+                                admin_youngsters_content, audiobooks,
                                 auth, auth_proxy, avatar_dialogue, avatar_studio, chapters, chat,
                                 mfa, mobile_auth,
                                 channel_chat, chess, chess_chat, chess_invite, children, content, content_taxonomy,
@@ -61,9 +61,9 @@ def register_all_routers(app: FastAPI) -> None:
                                 onboarding, onboarding_tour, party, password_reset, payments,
                                 playback_session, podcasts, profile_controls, profile_stats,
                                 profiles, profiles_me, profiles_preferences, user_settings,
-                                radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
+                                radio,
                                 ritual, search,
-                                security_settings, series_recording_rules,
+                                security_settings,
                                 search_analytics, search_llm, search_scenes,
                                 search_suggestions, stats, subscriptions,
                                 subtitle_preferences, support,
@@ -138,7 +138,6 @@ def register_all_routers(app: FastAPI) -> None:
     # Device code authentication routes (TV login - RFC 8628)
     from app.api.routes import device_code
     # Internal cron endpoints (Cloud Scheduler)
-    from app.api.routes import credit_refill
     # Discover tab config (AI features hub)
     from app.api.routes import discover
     from app.api.routes import discover_characters
@@ -299,27 +298,6 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(
         continue_watching_router, prefix=f"{prefix}/user", tags=["user", "continue-watching"]
     )
-    app.include_router(
-        recordings.router, prefix=f"{prefix}/recordings", tags=["recordings"]
-    )
-    app.include_router(
-        recording_queries.router, prefix=f"{prefix}/recordings", tags=["recordings"]
-    )
-    app.include_router(
-        recording_schedules.router,
-        prefix=f"{prefix}/recordings",
-        tags=["recording-schedules"],
-    )
-    app.include_router(
-        recording_schedule_queries.router,
-        prefix=f"{prefix}/recordings",
-        tags=["recording-schedules"],
-    )
-    app.include_router(
-        series_recording_rules.router,
-        prefix=f"{prefix}/recordings",
-        tags=["series-recording-rules"],
-    )
     # IMPORTANT: Register /me routes BEFORE /{profile_id} to avoid path variable capture
     app.include_router(profiles_me.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
@@ -346,11 +324,6 @@ def register_all_routers(app: FastAPI) -> None:
         playback_session.router,
         prefix=f"{prefix}/playback/session",
         tags=["playback", "session"],
-    )
-    app.include_router(
-        audible_integration.router,
-        prefix=prefix,
-        tags=["audible-integration"],
     )
     logger.debug("Registered user routes")
 
@@ -698,15 +671,7 @@ def register_all_routers(app: FastAPI) -> None:
     )
     logger.debug("Registered Zeh Ani routes (mesh, consent, v2v, triggers, mirror, highlights, whatsapp, movie-interactions)")
 
-    # ============================================
-    # Internal / Cron Routes (Cloud Scheduler)
-    # ============================================
-    app.include_router(
-        credit_refill.router,
-        prefix=prefix,
-        tags=["internal"],
-    )
-    logger.debug("Registered internal cron routes (credit-refill)")
+    logger.debug("Registered all feature routes")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

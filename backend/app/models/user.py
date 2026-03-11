@@ -448,7 +448,7 @@ class User(Document):
         return not self.is_admin_role() and not self.is_verified
 
     def can_access_premium_features(self) -> bool:
-        """Check if user can access Plus-tier features (downloads, 4K)."""
+        """Check if user has Plus subscription or admin role."""
         if self.is_admin_role():
             return True
         return self.subscription_tier == "plus"
@@ -461,24 +461,6 @@ class User(Document):
             self.phone_verified = True
         else:
             self.is_verified = self.email_verified and self.phone_verified
-
-    def get_concurrent_stream_limit(self) -> int:
-        """
-        Get the concurrent stream limit based on subscription tier.
-
-        Returns:
-            Maximum number of concurrent streams allowed for user's subscription.
-            Defaults to 1 (free plan) if no subscription tier is set.
-        """
-        from app.models.subscription import SUBSCRIPTION_PLANS
-
-        if self.is_admin_role():
-            return SUBSCRIPTION_PLANS["plus"].max_streams
-
-        if self.subscription_tier and self.subscription_tier in SUBSCRIPTION_PLANS:
-            return SUBSCRIPTION_PLANS[self.subscription_tier].max_streams
-
-        return SUBSCRIPTION_PLANS["free"].max_streams
 
 
 class TokenResponse(BaseModel):

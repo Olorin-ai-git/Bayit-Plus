@@ -43,10 +43,8 @@ async def get_chapters(
     if not current_user:
         raise HTTPException(status_code=401, detail="Authentication required for chapter generation")
 
-    if not current_user.is_admin_role():
-        if current_user.subscription_tier != "plus":
-            if not current_user.is_beta_user:
-                raise HTTPException(status_code=403, detail="ai_feature_requires_premium")
+    if not current_user.is_admin_role() and not current_user.can_access_premium_features():
+        raise HTTPException(status_code=403, detail="ai_feature_requires_plus")
 
     # Check if content exists
     content = await Content.get(content_id)

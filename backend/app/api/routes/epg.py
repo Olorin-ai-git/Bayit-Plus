@@ -296,29 +296,22 @@ async def get_next_program(channel_id: str):
 
 @router.get("/catchup/{program_id}/stream")
 async def get_catchup_stream(
-    program_id: str, current_user: User = Depends(get_current_premium_user)
+    program_id: str, current_user: User = Depends(require_ai_access)
 ):
     """
-    Get catch-up TV stream for a past program (Premium Feature)
-
-    Enables time-shifted playback of programs that have already aired,
-    using DVR-style recordings.
+    Get catch-up TV stream for a past program (AI feature).
 
     Path Parameters:
     - program_id: EPG program ID
 
     Returns:
     - stream_url: Video stream URL
-    - seek_seconds: Seek position in recording (seconds from start)
+    - seek_seconds: Seek position
     - duration_seconds: Program duration
     - subtitle_url: Subtitle file URL (if available)
     - metadata: Program information
 
-    Requires: Premium subscription
-
-    Availability:
-    - Programs within 7-day retention period
-    - Only if recording exists for that time slot
+    Requires: Plus subscription or AI credits
     """
     try:
         result = await catchup_service.get_catchup_stream(

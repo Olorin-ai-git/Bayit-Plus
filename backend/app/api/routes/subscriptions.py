@@ -34,12 +34,11 @@ async def get_plans():
                 "name": plan.name,
                 "price": plan.price,
                 "priceYearly": plan.price_yearly,
-                "features": plan.features,
-                "maxStreams": plan.max_streams,
-                "quality": plan.quality,
-                "includesLive": plan.includes_live,
                 "includesAI": plan.includes_ai,
-                "includesDownloads": plan.includes_downloads,
+                "aiCredits": plan.ai_credits,
+                "maxWidgets": plan.max_widgets,
+                "maxProfiles": plan.max_profiles,
+                "prioritySupport": plan.priority_support,
             }
             for plan in SUBSCRIPTION_PLANS.values()
         ]
@@ -132,7 +131,6 @@ async def create_checkout(
             success_url=f"{settings.BACKEND_CORS_ORIGINS[0]}/subscribe/success?session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url=f"{settings.BACKEND_CORS_ORIGINS[0]}/subscribe",
             subscription_data={
-                "trial_period_days": 7,
                 "metadata": {
                     "user_id": str(current_user.id),
                     "plan_id": request.plan_id,
@@ -306,7 +304,6 @@ async def handle_checkout_completed(session: dict):
     user.subscription_tier = plan_id
     user.subscription_status = stripe_sub.status
     user.subscription_end_date = datetime.fromtimestamp(stripe_sub.current_period_end)
-    user.max_concurrent_streams = plan.max_streams if plan else 1
     await user.save()
 
 
@@ -353,5 +350,4 @@ async def handle_subscription_deleted(stripe_sub: dict):
     if user:
         user.subscription_tier = "free"
         user.subscription_status = None
-        user.max_concurrent_streams = SUBSCRIPTION_PLANS["free"].max_streams
         await user.save()
