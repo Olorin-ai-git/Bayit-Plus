@@ -10,11 +10,19 @@ from app.core.config import settings
 if (
     not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
     and settings.GOOGLE_APPLICATION_CREDENTIALS
+    and os.path.isfile(settings.GOOGLE_APPLICATION_CREDENTIALS)
 ):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
         settings.GOOGLE_APPLICATION_CREDENTIALS
     )
     logger.info("Set GOOGLE_APPLICATION_CREDENTIALS from settings")
+elif settings.GOOGLE_APPLICATION_CREDENTIALS and not os.path.isfile(
+    settings.GOOGLE_APPLICATION_CREDENTIALS
+):
+    logger.warning(
+        "GOOGLE_APPLICATION_CREDENTIALS file not found: %s (using ADC)",
+        settings.GOOGLE_APPLICATION_CREDENTIALS,
+    )
 
 # Conditional imports and feature flags
 try:

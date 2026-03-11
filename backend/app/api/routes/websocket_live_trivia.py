@@ -123,7 +123,8 @@ async def websocket_live_trivia(websocket: WebSocket, channel_id: str):
         # Process transcript chunks and generate trivia
         try:
             await process_trivia_stream(
-                websocket, orchestrator, session, user, channel_id
+                websocket, orchestrator, session, user, channel_id,
+                channel=channel,
             )
         except WebSocketDisconnect:
             logger.info(f"Trivia session ended: user={user.id}, channel={channel_id}")

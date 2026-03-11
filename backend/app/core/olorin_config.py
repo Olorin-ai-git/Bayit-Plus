@@ -1463,6 +1463,11 @@ class LiveTriviaConfig(BaseSettings):
         le=1800,
         description="TTL for topic mention tracking in Redis (seconds)",
     )
+    ner_provider: str = Field(
+        default="hybrid",
+        pattern="^(spacy|hybrid)$",
+        description="NER provider: 'spacy' (fast) or 'hybrid' (spaCy + AI validation)",
+    )
 
     class Config:
         env_prefix = "LIVE_TRIVIA_"

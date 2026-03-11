@@ -18,10 +18,10 @@ from app.core.logging_config import get_logger
 from app.core.redis_client import get_redis_client
 from app.models.live_trivia import LiveTriviaSession
 from app.models.trivia import TriviaFactModel
-from app.services.live_trivia.fact_cache import FactCache
+from app.services.live_trivia.fact_cache import FactCache, InMemoryFactCache
 from app.services.live_trivia.fact_extractor import FactExtractionService
 from app.services.live_trivia.fact_generation_pipeline import FactGenerationPipeline
-from app.services.live_trivia.mention_tracker import MentionTracker
+from app.services.live_trivia.mention_tracker import InMemoryMentionTracker, MentionTracker
 from app.services.live_trivia.session_manager import SessionManager
 from app.services.live_trivia.session_validator import SessionValidator
 from app.services.live_trivia.topic_detector import TopicDetectionService
@@ -81,33 +81,50 @@ class LiveTriviaOrchestrator:
         self._bus_callbacks: Dict[str, Callable] = {}
 
     async def _ensure_redis(self) -> None:
-        """Ensure Redis client and helper managers are initialized."""
+        """Ensure Redis client and helper managers are initialized.
+
+        Falls back to in-memory implementations when Redis is
+        unavailable (local dev without Redis).
+        """
         if not self._redis_initialized:
             redis_client = await get_redis_client()
-            # Access low-level Redis client for raw string operations
-            self.redis = redis_client._client
+            raw_redis = redis_client._client
 
-            # Initialize helper managers with Redis client
-            self.fact_cache = FactCache(
-                redis_client=self.redis,
-                cache_ttl_seconds=self.config.fact_cache_ttl_seconds
-            )
-            self.mention_tracker = MentionTracker(
-                redis_client=self.redis,
-                topic_cooldown_minutes=self.config.topic_cooldown_minutes,
-                mention_ttl_seconds=self.config.mention_ttl_seconds
-            )
+            if raw_redis is not None:
+                self.redis = raw_redis
+                self.fact_cache = FactCache(
+                    redis_client=raw_redis,
+                    cache_ttl_seconds=self.config.fact_cache_ttl_seconds,
+                )
+                self.mention_tracker = MentionTracker(
+                    redis_client=raw_redis,
+                    topic_cooldown_minutes=self.config.topic_cooldown_minutes,
+                    mention_ttl_seconds=self.config.mention_ttl_seconds,
+                )
+            else:
+                logger.warning(
+                    "Redis unavailable — using in-memory trivia caches"
+                )
+                self.redis = None
+                self.fact_cache = InMemoryFactCache(
+                    cache_ttl_seconds=self.config.fact_cache_ttl_seconds,
+                )
+                self.mention_tracker = InMemoryMentionTracker(
+                    topic_cooldown_minutes=self.config.topic_cooldown_minutes,
+                    mention_ttl_seconds=self.config.mention_ttl_seconds,
+                )
+
             self.session_validator = SessionValidator(
                 session_manager=self.session_manager,
                 mention_tracker=self.mention_tracker,
                 max_facts_per_session=self.config.max_facts_per_session,
-                min_interval_seconds=self.config.min_interval_seconds
+                min_interval_seconds=self.config.min_interval_seconds,
             )
             self.fact_pipeline = FactGenerationPipeline(
                 web_search=self.web_search,
                 fact_extractor=self.fact_extractor,
                 fact_cache=self.fact_cache,
-                topic_tracker=self.topic_tracker
+                topic_tracker=self.topic_tracker,
             )
 
             self._redis_initialized = True

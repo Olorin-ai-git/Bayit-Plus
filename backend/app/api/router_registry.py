@@ -673,6 +673,28 @@ def register_all_routers(app: FastAPI) -> None:
 
     logger.debug("Registered all feature routes")
 
+    # ============================================
+    # WebSocket routes (also served by ws-gateway in production)
+    # ============================================
+    try:
+        from app.api.routes import (
+            websocket_live_dubbing,
+            websocket_live_subtitles,
+            websocket_live_trivia,
+        )
+        app.include_router(
+            websocket_live_dubbing.router, prefix=prefix, tags=["websocket", "live-dubbing"]
+        )
+        app.include_router(
+            websocket_live_subtitles.router, prefix=prefix, tags=["websocket", "live-subtitles"]
+        )
+        app.include_router(
+            websocket_live_trivia.router, prefix=prefix, tags=["websocket", "live-trivia"]
+        )
+        logger.debug("Registered WebSocket live routes (dubbing, subtitles, trivia)")
+    except ImportError as e:
+        logger.warning("WebSocket live routes not available: %s", e)
+
     logger.info(f"All API routers registered with prefix {prefix}")
 
 

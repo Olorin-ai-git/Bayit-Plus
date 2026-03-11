@@ -1,21 +1,20 @@
 """
 Topic Detection Service
 
-Detects topics/entities from live stream transcripts using spaCy NER
-and validates relevance using Claude AI.
-
-Hybrid approach:
-1. spaCy for fast entity extraction (PERSON, GPE, ORG, EVENT)
-2. Claude for relevance validation and confidence scoring
+Detects topics/entities from live stream transcripts.
+- English: spaCy NER + optional Claude validation
+- Hebrew/other: Claude-based extraction (no spaCy model available)
 """
 
 import hashlib
+import json
 import logging
 from typing import Dict, List, Optional, Tuple
 
 from anthropic import AsyncAnthropic
 
 from app.core.config import settings
+from app.services.live_trivia.input_sanitizer import sanitize_input
 from app.services.live_trivia.topic_validator import TopicValidator
 
 logger = logging.getLogger(__name__)
@@ -24,86 +23,64 @@ logger = logging.getLogger(__name__)
 class TopicDetectionService:
     """Service for detecting and validating topics from transcripts."""
 
-    # Entity type mapping (spaCy → our types)
+    # Entity type mapping (spaCy label -> our types)
     ENTITY_TYPE_MAP = {
         "PERSON": "person",
-        "GPE": "place",  # Geopolitical entity
+        "GPE": "place",
         "ORG": "organization",
         "EVENT": "event",
-        "LOC": "place",  # Location
-        "FAC": "place",  # Facility
-        "NORP": "organization",  # Nationalities or religious/political groups
+        "LOC": "place",
+        "FAC": "place",
+        "NORP": "organization",
     }
 
     def __init__(self, anthropic_client: Optional[AsyncAnthropic] = None):
         """Initialize topic detector with optional injected Anthropic client."""
-        anthropic_client = anthropic_client or AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
-        self._spacy_models = {}
+        self._anthropic = anthropic_client or AsyncAnthropic(
+            api_key=settings.ANTHROPIC_API_KEY
+        )
+        self._spacy_models: Dict = {}
         self._load_spacy_models()
-        self.spacy_confidence_baseline = settings.olorin.live_trivia.spacy_confidence_baseline
+        self._config = settings.olorin.live_trivia
+        self.spacy_confidence_baseline = self._config.spacy_confidence_baseline
         self.validator = TopicValidator(
-            anthropic_client=anthropic_client,
-            claude_model=settings.olorin.live_trivia.claude_model,
-            max_tokens=settings.olorin.live_trivia.claude_max_tokens_short,
-            temperature=settings.olorin.live_trivia.claude_temperature_validation
+            anthropic_client=self._anthropic,
+            claude_model=self._config.claude_model,
+            max_tokens=self._config.claude_max_tokens_short,
+            temperature=self._config.claude_temperature_validation,
         )
 
     def _load_spacy_models(self) -> None:
-        """Load spaCy models for supported languages (lazy loading)."""
+        """Load available spaCy models."""
         import spacy
 
-        try:
-            # English model (primary)
-            self._spacy_models["en"] = spacy.load("en_core_web_sm")
-            logger.info("Loaded spaCy English model")
-        except OSError:
-            logger.warning("English spaCy model not found. Run: python -m spacy download en_core_web_sm")
-
-        try:
-            # Hebrew model
-            self._spacy_models["he"] = spacy.load("he_core_web_sm")
-            logger.info("Loaded spaCy Hebrew model")
-        except OSError:
-            logger.warning("Hebrew spaCy model not found. Run: python -m spacy download he_core_web_sm")
-
-    def _get_spacy_model(self, language: str):
-        """Get spaCy model for language, default to English."""
-        return self._spacy_models.get(language, self._spacy_models.get("en"))
+        for lang, model_name in [("en", "en_core_web_sm"), ("he", "he_core_web_sm")]:
+            try:
+                self._spacy_models[lang] = spacy.load(model_name)
+                logger.info("Loaded spaCy %s model", lang)
+            except OSError:
+                logger.warning(
+                    "spaCy model %s not available, will use Claude NER for %s",
+                    model_name,
+                    lang,
+                )
 
     def detect_entities(
-        self,
-        transcript: str,
-        language: str = "en"
+        self, transcript: str, language: str = "en"
     ) -> List[Tuple[str, str, float]]:
-        """
-        Extract entities from transcript using spaCy NER.
-
-        Args:
-            transcript: Text to analyze
-            language: Language code (en, he)
-
-        Returns:
-            List of (entity_text, entity_type, confidence) tuples
-        """
-        nlp = self._get_spacy_model(language)
+        """Extract entities using spaCy NER (English only typically)."""
+        nlp = self._spacy_models.get(language, self._spacy_models.get("en"))
         if not nlp:
-            logger.warning(f"No spaCy model available for language: {language}")
             return []
 
         doc = nlp(transcript)
         entities = []
-
         for ent in doc.ents:
-            # Map spaCy entity type to our types
-            entity_type = self.ENTITY_TYPE_MAP.get(ent.label_, None)
+            entity_type = self.ENTITY_TYPE_MAP.get(ent.label_)
             if entity_type:
-                # spaCy doesn't provide confidence directly, use configured baseline
-                entities.append((
-                    ent.text.strip(),
-                    entity_type,
-                    self.spacy_confidence_baseline
-                ))
-
+                entities.append(
+                    (ent.text.strip(), entity_type, self.spacy_confidence_baseline)
+                )
         return entities
 
     def generate_topic_hash(self, topic_text: str, entity_type: str) -> str:
@@ -111,63 +88,121 @@ class TopicDetectionService:
         normalized = f"{entity_type}:{topic_text.lower().strip()}"
         return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
+    async def _extract_entities_with_claude(
+        self, transcript: str, language: str
+    ) -> List[Dict]:
+        """
+        Use Claude to extract notable named entities from transcript.
+        Combined NER + validation in a single call (no separate validation needed).
+        """
+        safe_text = sanitize_input(transcript, max_length=500)
+        if not safe_text.strip():
+            return []
+
+        prompt = f"""Extract notable named entities from this {language} transcript.
+Return ONLY entities that are well-known (famous people, countries, organizations,
+major events) and suitable for generating educational trivia facts.
+
+Transcript: {safe_text}
+
+Return a JSON array. Each element: {{"name": "entity name", "type": "person|place|organization|event", "confidence": 0.0-1.0}}
+Return empty array [] if no notable entities found. JSON only, no markdown."""
+
+        try:
+            message = await self._anthropic.messages.create(
+                model=self._config.claude_model,
+                max_tokens=self._config.claude_max_tokens_short,
+                temperature=0.0,
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+            response_text = message.content[0].text.strip()
+
+            # Strip markdown code blocks if present
+            if response_text.startswith("```"):
+                lines = response_text.split("\n")
+                lines = [l for l in lines if not l.strip().startswith("```")]
+                response_text = "\n".join(lines).strip()
+
+            entities = json.loads(response_text)
+            if not isinstance(entities, list):
+                return []
+
+            topics = []
+            for ent in entities:
+                name = ent.get("name", "").strip()
+                ent_type = ent.get("type", "person")
+                confidence = float(ent.get("confidence", 0.7))
+
+                if not name or confidence < 0.5:
+                    continue
+
+                topic_hash = self.generate_topic_hash(name, ent_type)
+                topics.append(
+                    {
+                        "topic_text": name,
+                        "entity_type": ent_type,
+                        "confidence_score": confidence,
+                        "topic_hash": topic_hash,
+                        "is_validated": True,
+                    }
+                )
+
+                logger.info(
+                    "Claude NER: %s (%s) confidence=%.2f", name, ent_type, confidence
+                )
+
+            return topics
+
+        except Exception as e:
+            logger.error("Claude entity extraction failed: %s", e)
+            return []
+
     async def detect_topics(
         self,
         transcript: str,
         language: str = "en",
-        validate_with_ai: bool = True
+        validate_with_ai: bool = True,
     ) -> List[Dict]:
         """
-        Detect topics from transcript with optional AI validation.
+        Detect topics from transcript.
 
-        Args:
-            transcript: Transcript text to analyze
-            language: Language code (en, he)
-            validate_with_ai: Use Claude for validation (default: True)
+        For languages without a spaCy model (Hebrew), uses Claude directly
+        for entity extraction + validation in a single call.
 
-        Returns:
-            List of topic dicts with keys:
-            - topic_text: str
-            - entity_type: str
-            - confidence_score: float
-            - topic_hash: str
-            - is_validated: bool
+        For English (with spaCy), uses spaCy NER + optional Claude validation.
         """
-        # Step 1: Extract entities with spaCy
-        entities = self.detect_entities(transcript, language)
+        # If no spaCy model for this language, use Claude for full NER
+        if language not in self._spacy_models:
+            return await self._extract_entities_with_claude(transcript, language)
 
+        # spaCy NER path (English)
+        entities = self.detect_entities(transcript, language)
         if not entities:
             return []
 
         topics = []
-
-        # Step 2: Validate with AI (if enabled)
         for entity_text, entity_type, base_confidence in entities:
             topic_hash = self.generate_topic_hash(entity_text, entity_type)
 
             if validate_with_ai:
-                # AI validation
                 is_relevant, ai_confidence = await self.validator.validate_topic(
-                    entity_text,
-                    entity_type,
-                    transcript
+                    entity_text, entity_type, transcript
                 )
-
                 if not is_relevant:
                     continue
-
-                # Combine spaCy and AI confidence
                 final_confidence = (base_confidence + ai_confidence) / 2.0
             else:
                 final_confidence = base_confidence
-                is_relevant = True
 
-            topics.append({
-                "topic_text": entity_text,
-                "entity_type": entity_type,
-                "confidence_score": final_confidence,
-                "topic_hash": topic_hash,
-                "is_validated": validate_with_ai,
-            })
+            topics.append(
+                {
+                    "topic_text": entity_text,
+                    "entity_type": entity_type,
+                    "confidence_score": final_confidence,
+                    "topic_hash": topic_hash,
+                    "is_validated": validate_with_ai,
+                }
+            )
 
         return topics

@@ -82,7 +82,18 @@ Respond with JSON:
                 ]
             )
 
-            response_text = message.content[0].text
+            response_text = message.content[0].text.strip()
+
+            # Strip markdown code blocks if present
+            if response_text.startswith("```"):
+                lines = response_text.split("\n")
+                # Remove first line (```json) and last line (```)
+                lines = [
+                    line for line in lines
+                    if not line.strip().startswith("```")
+                ]
+                response_text = "\n".join(lines).strip()
+
             result = json.loads(response_text)
 
             is_relevant = result.get("is_relevant", False)

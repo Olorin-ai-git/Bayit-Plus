@@ -27,6 +27,7 @@ from app.services.live_dubbing.stream_audio_capture import StreamAudioCapture
 from app.services.live_feature_quota_service import live_feature_quota_service
 from app.services.live_translation import LiveTranslationService
 from app.services.rate_limiter_live import get_rate_limiter
+from app.services.transcript_bus import TranscriptEvent, get_transcript_bus
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -413,6 +414,13 @@ async def websocket_live_subtitles(
     - Rate limits connections and audio chunks per user
     - Validates channel and subscription tier
     """
+    logger.info(
+        "Subtitle WS connection attempt: channel=%s, source=%s, target=%s, "
+        "audio_source=%s, platform=%s, client=%s",
+        channel_id, source_lang, target_lang, audio_source, platform,
+        websocket.client,
+    )
+
     # SECURITY: Step 0 - Enforce wss:// in production (allow ws:// for localhost)
     # Cloud Run terminates TLS at the load balancer, so the ASGI scope sees
     # ws:// even though clients connect over wss://. Check X-Forwarded-Proto
@@ -617,6 +625,13 @@ async def websocket_live_subtitles(
             f"(predictive: {enable_predictive}, byoc: {is_byoc})"
         )
 
+        # Create transcript bus channel so trivia/highlights can subscribe
+        transcript_bus = get_transcript_bus()
+        try:
+            await transcript_bus.create_channel(str(effective_channel_id))
+        except Exception as bus_err:
+            logger.warning("Failed to create transcript bus channel: %s", bus_err)
+
         # Select audio source: client-sent or server-captured
         audio_capture = None
         if audio_source == "server":
@@ -660,6 +675,29 @@ async def websocket_live_subtitles(
                         logger.error("Max consecutive send errors reached, closing connection")
                         raise
 
+                # Publish final transcripts to bus for trivia/highlights
+                # Isolated from subtitle flow — bus errors must never break translation
+                if subtitle_type == "final":
+                    try:
+                        original_text = subtitle_cue.get("original_text", "")
+                        if original_text.strip():
+                            event = TranscriptEvent(
+                                channel_id=str(effective_channel_id),
+                                session_id=str(user.id),
+                                text=original_text,
+                                text_translated=subtitle_cue.get("text"),
+                                source_lang=source_lang,
+                                target_lang=target_lang,
+                                timestamp=time.time(),
+                                is_partial=False,
+                                confidence=1.0,
+                            )
+                            transcript_bus.publish_nowait(
+                                str(effective_channel_id), event
+                            )
+                    except Exception as bus_err:
+                        logger.debug("Bus publish failed: %s", bus_err)
+
         except WebSocketDisconnect:
             logger.info(
                 f"Live subtitle session ended: user={user.id}, channel={channel_id}"
@@ -701,6 +739,10 @@ async def websocket_live_subtitles(
         finally:
             if audio_capture is not None:
                 await audio_capture.stop()
+            try:
+                await transcript_bus.end_channel(str(effective_channel_id))
+            except Exception as bus_err:
+                logger.debug("Bus end_channel failed: %s", bus_err)
     except Exception as e:
         logger.error(f"Failed to initialize service: {str(e)}")
         await end_quota_session(session, UsageSessionStatus.ERROR)
