@@ -53,6 +53,7 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
             onNavigateToBYOCSettings = { navController.navigate(Route.BYOCSettings) },
             onNavigateToBYOCPlayer = { id, _ -> navController.navigate(Route.Player(contentId = id, contentType = "byoc")) },
             onNavigateToFeatureTour = { navController.navigate(Route.FeatureTour) },
+            onNavigateToSubscribe = { navController.navigate(Route.Subscribe) },
         )
     }
     composable<Route.LiveTV> {

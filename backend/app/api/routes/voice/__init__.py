@@ -7,6 +7,7 @@ from fastapi import APIRouter
 
 from .unified import router as unified_router
 from .web_search import router as web_search_router
+from .proactive import router as proactive_router
 
 router = APIRouter()
 
@@ -17,3 +18,7 @@ router.include_router(unified_router)
 # Include voice web search endpoint
 # POST "/web-search" - voice_web_search_endpoint
 router.include_router(web_search_router)
+
+# Include proactive voice recommendations endpoint
+# POST "/proactive/suggest" - proactive_suggest
+router.include_router(proactive_router)

@@ -1,12 +1,13 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitVoice
 import SwiftUI
 
 /// Multi-step voice onboarding flow: welcome, permissions, language selection.
 /// Guides users through microphone/speech permissions and preferred language setup.
 struct VoiceOnboardingView: View {
-
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: VoiceOnboardingViewModel
 
     init(speechService: SpeechRecognitionService) {
@@ -41,7 +42,7 @@ struct VoiceOnboardingView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Skip") { viewModel.skip() }
+                Button(localization.t("common.skip")) { viewModel.skip() }
                     .font(.system(size: DesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -94,18 +95,18 @@ struct VoiceOnboardingView: View {
         VStack(spacing: DesignTokens.Spacing.md) {
             switch viewModel.currentStep {
             case .welcome:
-                GlassButton("Get Started", variant: .primary) {
+                GlassButton(localization.t("onboarding.getStarted"), variant: .primary) {
                     viewModel.advance()
                 }
 
             case .permissions:
                 if viewModel.permissions.allGranted {
-                    GlassButton("Continue", variant: .primary) {
+                    GlassButton(localization.t("common.continue"), variant: .primary) {
                         viewModel.advance()
                     }
                 } else {
                     GlassButton(
-                        "Grant Permissions",
+                        localization.t("voice.grantPermissions"),
                         variant: .primary,
                         isLoading: viewModel.isRequestingPermissions
                     ) {
@@ -114,7 +115,7 @@ struct VoiceOnboardingView: View {
                 }
 
             case .languageSelect:
-                GlassButton("Complete Setup", variant: .primary) {
+                GlassButton(localization.t("onboarding.completeSetup"), variant: .primary) {
                     viewModel.advance()
                 }
 

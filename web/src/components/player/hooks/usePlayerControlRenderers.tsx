@@ -12,7 +12,16 @@ import ChromecastButton from "../controls/ChromecastButton";
 import CatchUpButton from "../catchup/CatchUpButton";
 import PiPButton from "../controls/PiPButton";
 import LiveFeatureButton from "../controls/LiveFeatureButton";
-import { MessageCircle, Lightbulb, SkipBack, SkipForward } from "lucide-react";
+import {
+  MessageCircle,
+  Lightbulb,
+  SkipBack,
+  SkipForward,
+  BookOpen,
+  Languages,
+  Mic,
+  Swords,
+} from "lucide-react";
 import { colors } from "@olorin/design-tokens";
 import liveSubtitleService from "@/services/liveSubtitleService";
 import {
@@ -127,6 +136,30 @@ interface UsePlayerControlRenderersParams {
     onNextInteraction: () => void;
   };
 
+  // Cultural Context (VOD)
+  culturalContext?: {
+    enabled: boolean;
+    toggleEnabled: () => void;
+  };
+
+  // Bilingual Bridge (VOD)
+  bilingualBridge?: {
+    enabled: boolean;
+    toggleEnabled: () => void;
+  };
+
+  // Talk Back (VOD)
+  talkBack?: {
+    enabled: boolean;
+    toggleEnabled: () => void;
+  };
+
+  // Interactive Mission (VOD)
+  interactiveMission?: {
+    hasActiveMission: boolean;
+    toggleMission: () => void;
+  };
+
   // Callbacks
   onShowUpgrade?: () => void;
   onHoveredButtonChange?: (button: string | null) => void;
@@ -181,6 +214,10 @@ export function usePlayerControlRenderers({
   liveTrivia,
   catchUp,
   vodInteraction,
+  culturalContext,
+  bilingualBridge,
+  talkBack,
+  interactiveMission,
   onShowUpgrade,
   onHoveredButtonChange,
 }: UsePlayerControlRenderersParams) {
@@ -580,6 +617,86 @@ export function usePlayerControlRenderers({
     [isLive, vodInteraction, t],
   );
 
+  const renderCulturalContextButton = useCallback(
+    () =>
+      !isLive && culturalContext ? (
+        <LiveFeatureButton
+          label={t("player.culturalContext", "Cultural Context")}
+          icon={
+            <BookOpen
+              size={18}
+              color={
+                culturalContext.enabled ? colors.text : colors.textSecondary
+              }
+            />
+          }
+          isActive={culturalContext.enabled}
+          onPress={culturalContext.toggleEnabled}
+        />
+      ) : null,
+    [isLive, culturalContext, t],
+  );
+
+  const renderBilingualBridgeButton = useCallback(
+    () =>
+      !isLive && bilingualBridge ? (
+        <LiveFeatureButton
+          label={t("player.bilingualBridge", "Bilingual Bridge")}
+          icon={
+            <Languages
+              size={18}
+              color={
+                bilingualBridge.enabled ? colors.text : colors.textSecondary
+              }
+            />
+          }
+          isActive={bilingualBridge.enabled}
+          onPress={bilingualBridge.toggleEnabled}
+        />
+      ) : null,
+    [isLive, bilingualBridge, t],
+  );
+
+  const renderTalkBackButton = useCallback(
+    () =>
+      !isLive && talkBack ? (
+        <LiveFeatureButton
+          label={t("player.talkBack", "Talk Back")}
+          icon={
+            <Mic
+              size={18}
+              color={talkBack.enabled ? colors.text : colors.textSecondary}
+            />
+          }
+          isActive={talkBack.enabled}
+          onPress={talkBack.toggleEnabled}
+        />
+      ) : null,
+    [isLive, talkBack, t],
+  );
+
+  const renderInteractiveMissionButton = useCallback(
+    () =>
+      !isLive && interactiveMission ? (
+        <LiveFeatureButton
+          label={t("player.interactiveMission", "Interactive Mission")}
+          icon={
+            <Swords
+              size={18}
+              color={
+                interactiveMission.hasActiveMission
+                  ? colors.text
+                  : colors.textSecondary
+              }
+            />
+          }
+          isActive={interactiveMission.hasActiveMission}
+          onPress={interactiveMission.toggleMission}
+        />
+      ) : null,
+    [isLive, interactiveMission, t],
+  );
+
   return useMemo(
     () => ({
       renderWatchPartyButton,
@@ -598,6 +715,10 @@ export function usePlayerControlRenderers({
       renderInteractButton,
       renderPreviousInteractionButton,
       renderNextInteractionButton,
+      renderCulturalContextButton,
+      renderBilingualBridgeButton,
+      renderTalkBackButton,
+      renderInteractiveMissionButton,
     }),
     [
       renderWatchPartyButton,
@@ -616,6 +737,10 @@ export function usePlayerControlRenderers({
       renderInteractButton,
       renderPreviousInteractionButton,
       renderNextInteractionButton,
+      renderCulturalContextButton,
+      renderBilingualBridgeButton,
+      renderTalkBackButton,
+      renderInteractiveMissionButton,
     ],
   );
 }

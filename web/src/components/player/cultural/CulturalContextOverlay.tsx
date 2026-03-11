@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
-import { logger } from '@bayit/shared-utils/logger';
-import { api } from '@/services/api';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { colors, spacing, fontSize, borderRadius } from "@olorin/design-tokens";
+import { logger } from "@bayit/shared-utils/logger";
+import api from "@/services/api";
 
 interface CulturalReference {
   reference_id: string;
@@ -38,7 +38,7 @@ const CulturalContextOverlay: React.FC<CulturalContextOverlayProps> = ({
   const [loading, setLoading] = useState(false);
   const detectionCache = useRef<Map<string, CulturalReference[]>>(new Map());
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-  const lastDetectedText = useRef<string>('');
+  const lastDetectedText = useRef<string>("");
 
   const detectReferences = useCallback(
     async (text: string) => {
@@ -55,7 +55,7 @@ const CulturalContextOverlay: React.FC<CulturalContextOverlayProps> = ({
 
       try {
         setLoading(true);
-        const response = await api.post<DetectionResponse>('/cultural/detect', {
+        const response = await api.post<DetectionResponse>("/cultural/detect", {
           text,
           language,
         });
@@ -65,18 +65,18 @@ const CulturalContextOverlay: React.FC<CulturalContextOverlayProps> = ({
         setReferences(detectedRefs);
         lastDetectedText.current = text;
 
-        logger.debug('Cultural references detected', {
+        logger.debug("Cultural references detected", {
           count: detectedRefs.length,
           language,
         });
       } catch (error) {
-        logger.error('Failed to detect cultural references', { error });
+        logger.error("Failed to detect cultural references", { error });
         setReferences([]);
       } finally {
         setLoading(false);
       }
     },
-    [language, enabled]
+    [language, enabled],
   );
 
   useEffect(() => {
@@ -103,9 +103,9 @@ const CulturalContextOverlay: React.FC<CulturalContextOverlayProps> = ({
   const handleBadgePress = useCallback(
     (referenceId: string) => {
       onReferenceSelect(referenceId);
-      logger.debug('Cultural reference selected', { referenceId });
+      logger.debug("Cultural reference selected", { referenceId });
     },
-    [onReferenceSelect]
+    [onReferenceSelect],
   );
 
   if (!enabled || references.length === 0) {
@@ -151,24 +151,24 @@ const getCategoryColor = (category: string): string => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     bottom: spacing.xl,
     left: 0,
     right: 0,
-    alignItems: 'center',
-    pointerEvents: 'box-none',
+    alignItems: "center",
+    pointerEvents: "box-none",
   },
   badgeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.sm,
-    justifyContent: 'center',
+    justifyContent: "center",
     maxWidth: 600,
     paddingHorizontal: spacing.md,
   },
   badge: {
     padding: spacing.xs,
-    cursor: 'pointer',
+    cursor: "pointer",
   },
   badgePressed: {
     opacity: 0.7,

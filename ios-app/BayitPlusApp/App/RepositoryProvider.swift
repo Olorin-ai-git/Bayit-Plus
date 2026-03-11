@@ -61,6 +61,7 @@ final class RepositoryProvider {
     let movieInteraction: any MovieInteractionRepository
     let tvLogin: any TVLoginRepository
     let discover: any DiscoverRepository
+    let proactiveSuggestion: any ProactiveSuggestionRepository
     let webSocketManager: WebSocketManager
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
@@ -122,6 +123,7 @@ final class RepositoryProvider {
         movieInteraction = APIMovieInteractionRepository(client: client)
         tvLogin = APITVLoginRepository(client: client)
         discover = APIDiscoverRepository(client: client)
+        proactiveSuggestion = APIProactiveSuggestionRepository(client: client)
         self.webSocketManager = webSocketManager
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration

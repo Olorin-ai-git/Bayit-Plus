@@ -121,6 +121,10 @@ struct TVHomeView: View {
             // Live now channels with EPG (independent loader)
             TVLiveNowRow()
 
+            // Plus subscription feature promotion
+            TVPlusFeatureCardView(feature: "dubbing")
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
             // BYOC content shelves
             TVPlexRow()
             TVYouTubeRow()

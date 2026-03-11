@@ -1,11 +1,26 @@
 #if os(tvOS)
     import BayitDesignSystem
     import BayitLocalization
+    import BayitMedia
     import SwiftUI
 
     // MARK: - TVMainTabView + Button & Sheet Helpers
 
     extension TVMainTabView {
+        // MARK: - Proactive Suggestion Navigation
+
+        func handleProactiveSuggestion(_ suggestion: ProactiveSuggestion) {
+            guard let contentId = suggestion.action?.payload?["contentId"],
+                  let contentType = suggestion.action?.payload?["contentType"]
+            else {
+                return
+            }
+            coordinator.presentPlayer(
+                contentId: contentId,
+                contentType: TVContentTypeMapper.map(contentType)
+            )
+        }
+
         var languageButton: some View {
             Button {
                 showLanguagePicker = true

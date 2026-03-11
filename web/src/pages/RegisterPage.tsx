@@ -1,19 +1,23 @@
-import { useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { Link, useNavigate } from 'react-router-dom';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, ChevronDown, Globe, Check } from 'lucide-react';
-import { useAuthStore } from '@bayit/shared-stores';
-import { colors, spacing } from '@olorin/design-tokens';
-import { AnimatedLogo } from '@bayit/shared';
-import { GlassInput } from '@bayit/shared/ui';
-import { useDirection } from '@/hooks/useDirection';
-import { languages } from '@bayit/i18n';
+import { useState } from "react";
+import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
+import { Link, useNavigate } from "react-router-dom";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import { useTranslation } from "react-i18next";
+import { Eye, EyeOff, ChevronDown, Globe, Check } from "lucide-react";
+import { useAuthStore } from "@bayit/shared-stores";
+import { colors, spacing } from "@olorin/design-tokens";
+import { AnimatedLogo } from "@bayit/shared";
+import { GlassInput } from "@bayit/shared/ui";
+import { useDirection } from "@/hooks/useDirection";
+import { languages } from "@bayit/i18n";
+import {
+  PlusIntroModal,
+  hasSeenPlusIntro,
+} from "@/components/subscription/PlusIntroModal";
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
-const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+const IS_TV_BUILD = typeof __TV__ !== "undefined" && __TV__;
 
 export default function RegisterPage() {
   const { t, i18n } = useTranslation();
@@ -21,17 +25,19 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const { register, loginWithGoogle, isLoading } = useAuthStore();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [showPlusIntro, setShowPlusIntro] = useState(false);
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage =
+    languages.find((lang) => lang.code === i18n.language) || languages[0];
   const currentLanguageLabel = t(`settings.languages.${i18n.language}`);
 
   const handleLanguageChange = (langCode: string) => {
@@ -40,35 +46,35 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async () => {
-    setError('');
+    setError("");
 
     if (!name.trim()) {
-      setError(t('register.errors.nameRequired'));
+      setError(t("register.errors.nameRequired"));
       return;
     }
 
     if (!email.trim()) {
-      setError(t('register.errors.emailRequired'));
+      setError(t("register.errors.emailRequired"));
       return;
     }
 
     if (!password) {
-      setError(t('register.errors.passwordRequired'));
+      setError(t("register.errors.passwordRequired"));
       return;
     }
 
     if (password.length < 8) {
-      setError(t('register.errors.passwordTooShort'));
+      setError(t("register.errors.passwordTooShort"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError(t('register.errors.passwordMismatch'));
+      setError(t("register.errors.passwordMismatch"));
       return;
     }
 
     if (!acceptTerms) {
-      setError(t('register.errors.acceptTerms'));
+      setError(t("register.errors.acceptTerms"));
       return;
     }
 
@@ -78,29 +84,41 @@ export default function RegisterPage() {
       // Check if payment is required (payment-first flow)
       if ((response as any)?.requires_payment) {
         // Payment required - redirect handled by PaymentPendingGuard
-        // Just navigate to home and guard will show payment page
-        navigate('/', { replace: true });
+        navigate("/", { replace: true });
+      } else if (!hasSeenPlusIntro()) {
+        setShowPlusIntro(true);
       } else {
-        // No payment required (legacy viewer flow or admin)
-        navigate('/', { replace: true });
+        navigate("/", { replace: true });
       }
     } catch (err: any) {
-      setError(err.message || t('register.errors.registrationFailed'));
+      setError(err.message || t("register.errors.registrationFailed"));
     }
   };
 
   const handleGoogleLogin = async () => {
-    setError('');
+    setError("");
     try {
       await loginWithGoogle();
-      navigate('/', { replace: true });
+      if (!hasSeenPlusIntro()) {
+        setShowPlusIntro(true);
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (err: any) {
-      setError(err.message || t('register.errors.googleFailed'));
+      setError(err.message || t("register.errors.googleFailed"));
     }
   };
 
+  const handlePlusIntroDismiss = () => {
+    setShowPlusIntro(false);
+    navigate("/", { replace: true });
+  };
+
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollContent}
+    >
       <View style={styles.container}>
         {/* Background gradient effects */}
         <View style={styles.bgGradient1} />
@@ -108,13 +126,20 @@ export default function RegisterPage() {
         <View style={styles.bgGradient3} />
 
         {/* Language Selector - Top Right */}
-        <View style={[styles.languageSelector, isRTL ? styles.languageSelectorRTL : styles.languageSelectorLTR]}>
+        <View
+          style={[
+            styles.languageSelector,
+            isRTL ? styles.languageSelectorRTL : styles.languageSelectorLTR,
+          ]}
+        >
           <Pressable
             style={styles.languageButton}
             onPress={() => setShowLanguageMenu(!showLanguageMenu)}
           >
             <Globe size={18} color={colors.textSecondary} />
-            <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguageLabel}</Text>
+            <Text style={styles.languageButtonText}>
+              {currentLanguage.flag} {currentLanguageLabel}
+            </Text>
             <ChevronDown size={16} color={colors.textSecondary} />
           </Pressable>
 
@@ -125,15 +150,19 @@ export default function RegisterPage() {
                   key={lang.code}
                   style={[
                     styles.languageMenuItem,
-                    lang.code === i18n.language && styles.languageMenuItemActive
+                    lang.code === i18n.language &&
+                      styles.languageMenuItemActive,
                   ]}
                   onPress={() => handleLanguageChange(lang.code)}
                 >
                   <Text style={styles.languageMenuItemFlag}>{lang.flag}</Text>
-                  <Text style={[
-                    styles.languageMenuItemText,
-                    lang.code === i18n.language && styles.languageMenuItemTextActive
-                  ]}>
+                  <Text
+                    style={[
+                      styles.languageMenuItemText,
+                      lang.code === i18n.language &&
+                        styles.languageMenuItemTextActive,
+                    ]}
+                  >
                     {t(`settings.languages.${lang.code}`)}
                   </Text>
                 </Pressable>
@@ -145,7 +174,7 @@ export default function RegisterPage() {
         {/* Main Content */}
         <View style={styles.mainContent}>
           {/* Logo */}
-          <Link to="/" style={{ textDecoration: 'none' }}>
+          <Link to="/" style={{ textDecoration: "none" }}>
             <View style={styles.logoContainer}>
               <AnimatedLogo size="large" />
             </View>
@@ -153,10 +182,8 @@ export default function RegisterPage() {
 
           {/* Register Card */}
           <View style={styles.registerCard}>
-            <Text style={styles.title}>{t('register.title')}</Text>
-            <Text style={styles.subtitle}>
-              {t('register.subtitle')}
-            </Text>
+            <Text style={styles.title}>{t("register.title")}</Text>
+            <Text style={styles.subtitle}>{t("register.subtitle")}</Text>
 
             {/* Error Message */}
             {error && (
@@ -166,24 +193,28 @@ export default function RegisterPage() {
             )}
 
             {/* Name Input */}
-            <View style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}>
+            <View
+              style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}
+            >
               <GlassInput
-                label={t('register.name')}
+                label={t("register.name")}
                 value={name}
                 onChangeText={setName}
-                placeholder={t('register.namePlaceholder')}
+                placeholder={t("register.namePlaceholder")}
                 autoCapitalize="words"
                 autoComplete="name"
               />
             </View>
 
             {/* Email Input */}
-            <View style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}>
+            <View
+              style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}
+            >
               <GlassInput
-                label={t('register.email')}
+                label={t("register.email")}
                 value={email}
                 onChangeText={setEmail}
-                placeholder={t('register.emailPlaceholder')}
+                placeholder={t("register.emailPlaceholder")}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
@@ -191,18 +222,26 @@ export default function RegisterPage() {
             </View>
 
             {/* Password Input */}
-            <View style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}>
+            <View
+              style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}
+            >
               <GlassInput
-                label={t('register.password')}
+                label={t("register.password")}
                 value={password}
                 onChangeText={setPassword}
-                placeholder={t('register.passwordPlaceholder')}
+                placeholder={t("register.passwordPlaceholder")}
                 rightIcon={
                   <Pressable onPress={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
-                      <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                      <EyeOff
+                        size={IS_TV_BUILD ? 28 : 20}
+                        color={colors.textMuted}
+                      />
                     ) : (
-                      <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                      <Eye
+                        size={IS_TV_BUILD ? 28 : 20}
+                        color={colors.textMuted}
+                      />
                     )}
                   </Pressable>
                 }
@@ -212,18 +251,28 @@ export default function RegisterPage() {
             </View>
 
             {/* Confirm Password Input */}
-            <View style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}>
+            <View
+              style={IS_TV_BUILD ? styles.inputWrapperTV : styles.inputWrapper}
+            >
               <GlassInput
-                label={t('register.confirmPassword')}
+                label={t("register.confirmPassword")}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
-                placeholder={t('register.confirmPasswordPlaceholder')}
+                placeholder={t("register.confirmPasswordPlaceholder")}
                 rightIcon={
-                  <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  <Pressable
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
                     {showConfirmPassword ? (
-                      <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                      <EyeOff
+                        size={IS_TV_BUILD ? 28 : 20}
+                        color={colors.textMuted}
+                      />
                     ) : (
-                      <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                      <Eye
+                        size={IS_TV_BUILD ? 28 : 20}
+                        color={colors.textMuted}
+                      />
                     )}
                   </Pressable>
                 }
@@ -237,23 +286,28 @@ export default function RegisterPage() {
               style={[styles.termsContainer, isRTL && styles.termsContainerRTL]}
               onPress={() => setAcceptTerms(!acceptTerms)}
             >
-              <View style={[
-                styles.checkbox,
-                acceptTerms && styles.checkboxActive
-              ]}>
-                {acceptTerms && <Check size={14} color="#000" strokeWidth={3} />}
+              <View
+                style={[styles.checkbox, acceptTerms && styles.checkboxActive]}
+              >
+                {acceptTerms && (
+                  <Check size={14} color="#000" strokeWidth={3} />
+                )}
               </View>
               <View style={styles.termsTextContainer}>
                 <Text style={styles.termsText}>
-                  {t('register.acceptTerms')}{' '}
-                  <Link to="/terms" style={{ textDecoration: 'none' }}>
-                    <Text style={styles.termsLink}>{t('register.termsOfService')}</Text>
+                  {t("register.acceptTerms")}{" "}
+                  <Link to="/terms" style={{ textDecoration: "none" }}>
+                    <Text style={styles.termsLink}>
+                      {t("register.termsOfService")}
+                    </Text>
                   </Link>
                 </Text>
                 <Text style={styles.termsText}>
-                  {t('register.and')}{' '}
-                  <Link to="/privacy" style={{ textDecoration: 'none' }}>
-                    <Text style={styles.termsLink}>{t('register.privacyPolicy')}</Text>
+                  {t("register.and")}{" "}
+                  <Link to="/privacy" style={{ textDecoration: "none" }}>
+                    <Text style={styles.termsLink}>
+                      {t("register.privacyPolicy")}
+                    </Text>
                   </Link>
                 </Text>
               </View>
@@ -261,14 +315,19 @@ export default function RegisterPage() {
 
             {/* Register Button */}
             <Pressable
-              style={[styles.registerButton, isLoading && styles.registerButtonDisabled]}
+              style={[
+                styles.registerButton,
+                isLoading && styles.registerButtonDisabled,
+              ]}
               onPress={handleSubmit}
               disabled={isLoading}
             >
               {isLoading ? (
                 <GlassLoadingSpinner size="small" />
               ) : (
-                <Text style={styles.registerButtonText}>{t('register.submit')}</Text>
+                <Text style={styles.registerButtonText}>
+                  {t("register.submit")}
+                </Text>
               )}
             </Pressable>
 
@@ -276,7 +335,7 @@ export default function RegisterPage() {
             {!IS_TV_BUILD && (
               <View style={styles.divider}>
                 <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>{t('login.or')}</Text>
+                <Text style={styles.dividerText}>{t("login.or")}</Text>
                 <View style={styles.dividerLine} />
               </View>
             )}
@@ -284,7 +343,10 @@ export default function RegisterPage() {
             {/* Google Sign Up Button - hide on TV since OAuth redirects don't work */}
             {!IS_TV_BUILD && (
               <Pressable
-                style={[styles.googleButton, isLoading && styles.googleButtonDisabled]}
+                style={[
+                  styles.googleButton,
+                  isLoading && styles.googleButtonDisabled,
+                ]}
                 onPress={handleGoogleLogin}
                 disabled={isLoading}
               >
@@ -307,28 +369,27 @@ export default function RegisterPage() {
                   />
                 </svg>
                 <Text style={styles.googleButtonText}>
-                  {t('register.continueWithGoogle')}
+                  {t("register.continueWithGoogle")}
                 </Text>
               </Pressable>
             )}
 
             {/* Login Link */}
             <View
-              style={[
-                styles.loginContainer,
-                isRTL && styles.loginContainerRTL
-              ]}
+              style={[styles.loginContainer, isRTL && styles.loginContainerRTL]}
             >
-              <Text style={styles.loginText}>
-                {t('register.haveAccount')}
-              </Text>
-              <Link to="/login" style={{ textDecoration: 'none' }}>
-                <Text style={styles.loginLink}>{t('register.signIn')}</Text>
+              <Text style={styles.loginText}>{t("register.haveAccount")}</Text>
+              <Link to="/login" style={{ textDecoration: "none" }}>
+                <Text style={styles.loginLink}>{t("register.signIn")}</Text>
               </Link>
             </View>
           </View>
         </View>
       </View>
+      <PlusIntroModal
+        visible={showPlusIntro}
+        onDismiss={handlePlusIntroDismiss}
+      />
     </ScrollView>
   );
 }
@@ -343,49 +404,49 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    minHeight: '100vh',
+    minHeight: "100vh",
     backgroundColor: colors.background,
-    position: 'relative',
-    overflow: 'hidden',
+    position: "relative",
+    overflow: "hidden",
   },
   // Background gradient effects
   bgGradient1: {
-    position: 'absolute',
+    position: "absolute",
     width: 600,
     height: 600,
     borderRadius: 300,
-    backgroundColor: 'rgba(147, 51, 234, 0.08)',
+    backgroundColor: "rgba(147, 51, 234, 0.08)",
     top: -200,
     right: -200,
     // Use filter instead of blur for React Native Web compatibility
-    filter: 'blur(120px)',
+    filter: "blur(120px)",
   },
   bgGradient2: {
-    position: 'absolute',
+    position: "absolute",
     width: 400,
     height: 400,
     borderRadius: 200,
-    backgroundColor: 'rgba(139, 92, 246, 0.06)',
+    backgroundColor: "rgba(139, 92, 246, 0.06)",
     bottom: -100,
     left: -100,
-    filter: 'blur(100px)',
+    filter: "blur(100px)",
   },
   bgGradient3: {
-    position: 'absolute',
+    position: "absolute",
     width: 300,
     height: 300,
     borderRadius: 150,
-    backgroundColor: 'rgba(147, 51, 234, 0.04)',
-    top: '50%',
-    left: '50%',
+    backgroundColor: "rgba(147, 51, 234, 0.04)",
+    top: "50%",
+    left: "50%",
     // Use marginLeft/marginTop for translate
     marginLeft: -150,
     marginTop: -150,
-    filter: 'blur(80px)',
+    filter: "blur(80px)",
   },
   // Language Selector
   languageSelector: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.lg,
     zIndex: 100,
   },
@@ -396,49 +457,49 @@ const styles = StyleSheet.create({
     left: spacing.lg,
   },
   languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   languageButtonText: {
     color: colors.textSecondary,
     fontSize: 14,
   },
   languageMenu: {
-    position: 'absolute',
-    top: '100%',
+    position: "absolute",
+    top: "100%",
     right: 0,
     marginTop: spacing.sm,
-    backgroundColor: 'rgba(20, 20, 30, 0.95)',
+    backgroundColor: "rgba(20, 20, 30, 0.95)",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'auto',
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    overflow: "auto",
     minWidth: 160,
     maxHeight: 320,
     // Use filter instead of backdrop-blur
-    filter: 'blur(0)',
-    backdropFilter: 'blur(20px)',
-    shadowColor: '#000',
+    filter: "blur(0)",
+    backdropFilter: "blur(20px)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.5,
     shadowRadius: 40,
   },
   languageMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
   },
   languageMenuItemActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: "rgba(107, 33, 168, 0.3)",
   },
   languageMenuItemFlag: {
     fontSize: 18,
@@ -449,61 +510,61 @@ const styles = StyleSheet.create({
   },
   languageMenuItemTextActive: {
     color: colors.primary.DEFAULT,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Main Content
   mainContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: spacing.lg,
     paddingVertical: spacing.xl * 1.5,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: spacing.xl,
   },
   // Register Card
   registerCard: {
-    width: '100%',
+    width: "100%",
     maxWidth: 420,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: "rgba(255, 255, 255, 0.08)",
     padding: spacing.xl * 1.5,
-    backdropFilter: 'blur(20px)',
-    shadowColor: '#000',
+    backdropFilter: "blur(20px)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 32,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.text,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.xs,
   },
   subtitle: {
     fontSize: 15,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.xl,
   },
   // Error Message
   errorContainer: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: "rgba(239, 68, 68, 0.15)",
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderColor: "rgba(239, 68, 68, 0.3)",
     borderRadius: 8,
     padding: spacing.md,
     marginBottom: spacing.lg,
   },
   errorText: {
-    color: '#ef4444',
+    color: "#ef4444",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
   // Input Wrappers
   inputWrapper: {
@@ -514,24 +575,24 @@ const styles = StyleSheet.create({
   },
   // Terms Checkbox
   termsContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: spacing.sm,
     marginBottom: spacing.lg,
     marginTop: spacing.sm,
   },
   termsContainerRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   checkbox: {
     width: 22,
     height: 22,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 2,
   },
   checkboxActive: {
@@ -540,7 +601,7 @@ const styles = StyleSheet.create({
   },
   termsTextContainer: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   termsText: {
     fontSize: 13,
@@ -548,7 +609,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   termsLink: {
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.primary.DEFAULT,
   },
   // Register Button
@@ -556,28 +617,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.md,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minHeight: 52,
   },
   registerButtonDisabled: {
     opacity: 0.7,
   },
   registerButtonText: {
-    color: '#000',
+    color: "#000",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Divider
   divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: spacing.lg,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   dividerText: {
     color: colors.textMuted,
@@ -586,13 +647,13 @@ const styles = StyleSheet.create({
   },
   // Google Button
   googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: "rgba(255, 255, 255, 0.15)",
     paddingVertical: spacing.md,
     borderRadius: 8,
     minHeight: 52,
@@ -603,21 +664,21 @@ const styles = StyleSheet.create({
   googleButtonText: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   // Login Link
   loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.sm,
     marginTop: spacing.xl,
     paddingTop: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    borderTopColor: "rgba(255, 255, 255, 0.08)",
   },
   loginContainerRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   loginText: {
     fontSize: 14,
@@ -625,7 +686,7 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.primary.DEFAULT,
   },
 });

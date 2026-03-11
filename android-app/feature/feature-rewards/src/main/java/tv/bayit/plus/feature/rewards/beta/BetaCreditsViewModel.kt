@@ -21,6 +21,13 @@ class BetaCreditsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<BetaCreditsUiState>(BetaCreditsUiState.Loading)
     val uiState: StateFlow<BetaCreditsUiState> = _uiState.asStateFlow()
 
+    private val _creditFeedback = MutableStateFlow<CreditFeedbackState?>(null)
+    val creditFeedback: StateFlow<CreditFeedbackState?> = _creditFeedback.asStateFlow()
+
+    companion object {
+        private const val LOW_CREDIT_THRESHOLD = 50
+    }
+
     init {
         loadCredits()
     }
@@ -47,7 +54,7 @@ class BetaCreditsViewModel @Inject constructor(
             when (val result = betaCreditsRepository.redeemCredits(amount, featureId)) {
                 is BayitResult.Success -> {
                     logger.info("Credits redeemed", mapOf("featureId" to featureId))
-                    loadCredits()
+                    loadCreditsWithFeedback()
                 }
                 is BayitResult.Error -> {
                     logger.error("Credit redemption failed", result.exception, mapOf("featureId" to featureId))
@@ -55,6 +62,30 @@ class BetaCreditsViewModel @Inject constructor(
                 }
                 is BayitResult.Loading -> Unit
             }
+        }
+    }
+
+    fun dismissCreditFeedback() {
+        _creditFeedback.value = null
+    }
+
+    private fun loadCreditsWithFeedback() {
+        viewModelScope.launch {
+            when (val balanceResult = betaCreditsRepository.getBalance()) {
+                is BayitResult.Success -> {
+                    val remaining = balanceResult.data
+                    _creditFeedback.value = CreditFeedbackState(
+                        remaining = remaining,
+                        isLow = remaining <= LOW_CREDIT_THRESHOLD,
+                    )
+                    logger.info("Credit feedback emitted", mapOf("remaining" to remaining.toString(), "isLow" to (remaining <= LOW_CREDIT_THRESHOLD).toString()))
+                }
+                is BayitResult.Error -> {
+                    logger.error("Failed to fetch balance for feedback", balanceResult.exception)
+                }
+                is BayitResult.Loading -> Unit
+            }
+            loadCredits()
         }
     }
 
@@ -118,3 +149,8 @@ sealed interface BetaCreditsUiState {
 
     data class Error(val message: String) : BetaCreditsUiState
 }
+
+data class CreditFeedbackState(
+    val remaining: Int,
+    val isLow: Boolean,
+)

@@ -56,7 +56,9 @@ final class TVRepositoryProvider {
     let zehAniRepository: any ZehAniRepository
     let movieInteraction: any MovieInteractionRepository
     let avatarOutfitRepository: any AvatarOutfitRepository
+    let talkBack: any TalkBackRepository
     let discover: any DiscoverRepository
+    let proactiveSuggestion: any ProactiveSuggestionRepository
     let webSocketManager: WebSocketManager
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
@@ -117,7 +119,9 @@ final class TVRepositoryProvider {
         zehAniRepository = APIZehAniRepository(client: client)
         movieInteraction = APIMovieInteractionRepository(client: client)
         avatarOutfitRepository = APIAvatarOutfitRepository(client: client)
+        talkBack = APITalkBackRepository(client: client)
         discover = APIDiscoverRepository(client: client)
+        proactiveSuggestion = APIProactiveSuggestionRepository(client: client)
         self.webSocketManager = webSocketManager
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration

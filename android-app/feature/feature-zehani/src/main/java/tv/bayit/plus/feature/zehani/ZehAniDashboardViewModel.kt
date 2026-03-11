@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ProfileRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
@@ -20,6 +21,7 @@ class ZehAniDashboardViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val zehAniRepository: ZehAniRepository,
     internal val tooltipManager: TooltipManager,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -50,7 +52,7 @@ class ZehAniDashboardViewModel @Inject constructor(
             val profiles = (profilesResult as? BayitResult.Success)?.data.orEmpty()
             val profileId = profiles.firstOrNull()?.id ?: run {
                 logger.error("No profiles found for Zeh Ani dashboard", IllegalStateException("No profiles"))
-                _uiState.value = ZehAniDashboardUiState.Error("No profile found")
+                _uiState.value = ZehAniDashboardUiState.Error(stringProvider.string("error.zehAni.noProfileFound"))
                 return@launch
             }
 

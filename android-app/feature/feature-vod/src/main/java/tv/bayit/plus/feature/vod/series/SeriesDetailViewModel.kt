@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.download.BayitDownloadManager
 import tv.bayit.plus.core.data.repository.MediaRepository
@@ -26,6 +27,7 @@ class SeriesDetailViewModel @Inject constructor(
     private val seriesRepository: SeriesRepository,
     private val mediaRepository: MediaRepository,
     private val downloadManager: BayitDownloadManager,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -92,7 +94,7 @@ class SeriesDetailViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     val detail = result.data as? SeriesDetail
                     if (detail == null) {
-                        _uiState.value = SeriesDetailUiState.Error("Series not found")
+                        _uiState.value = SeriesDetailUiState.Error(stringProvider.string("error.vod.seriesNotFound"))
                         return@launch
                     }
                     logger.info("Series detail loaded", mapOf("seriesId" to seriesId, "title" to detail.title.orEmpty()))

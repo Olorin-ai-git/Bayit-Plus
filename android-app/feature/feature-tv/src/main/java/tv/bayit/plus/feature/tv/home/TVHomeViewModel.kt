@@ -11,10 +11,12 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.byoc.BYOCSourceManager
 import tv.bayit.plus.core.byoc.models.BYOCContentItem
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.data.repository.BetaCreditsRepository
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
 import tv.bayit.plus.core.data.repository.PodcastRepository
 import tv.bayit.plus.core.data.repository.RadioRepository
+import tv.bayit.plus.core.data.repository.SubscriptionRepository
 import tv.bayit.plus.core.model.ContentItem
 import javax.inject.Inject
 
@@ -37,7 +39,12 @@ data class TVContentRowData(
 
 sealed interface TVHomeUiState {
     data object Loading : TVHomeUiState
-    data class Success(val rows: List<TVContentRowData>) : TVHomeUiState
+    data class Success(
+        val rows: List<TVContentRowData>,
+        val remainingCredits: Int = 0,
+        val totalCredits: Int = 0,
+        val isPlusSubscriber: Boolean = false,
+    ) : TVHomeUiState
     data class Error(val message: String) : TVHomeUiState
 }
 
@@ -48,6 +55,8 @@ class TVHomeViewModel @Inject constructor(
     private val radioRepository: RadioRepository,
     private val podcastRepository: PodcastRepository,
     private val byocSourceManager: BYOCSourceManager,
+    private val subscriptionRepository: SubscriptionRepository,
+    private val betaCreditsRepository: BetaCreditsRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TVHomeUiState>(TVHomeUiState.Loading)
@@ -73,6 +82,8 @@ class TVHomeViewModel @Inject constructor(
                 val podcasts = async { podcastRepository.getPodcasts() }
 
                 val byocItems = byocSourceManager.contentItems.value
+                val subscription = async { subscriptionRepository.getCurrentSubscription() }
+                val credits = async { betaCreditsRepository.getBalance() }
 
                 val rows = buildRows(
                     featured = (featured.await() as? BayitResult.Success)?.data,
@@ -83,11 +94,25 @@ class TVHomeViewModel @Inject constructor(
                     podcasts = (podcasts.await() as? BayitResult.Success)?.data,
                     byoc = byocItems.map { it.toContentItem() },
                 )
-                _uiState.value = TVHomeUiState.Success(rows)
+
+                val isPlus = subscription.await() is BayitResult.Success
+                val balance = (credits.await() as? BayitResult.Success)?.data ?: 0
+
+                _uiState.value = TVHomeUiState.Success(
+                    rows = rows,
+                    remainingCredits = balance,
+                    totalCredits = BETA_CREDITS_TOTAL,
+                    isPlusSubscriber = isPlus,
+                )
             } catch (e: Exception) {
                 _uiState.value = TVHomeUiState.Error(e.message ?: "Failed to load content")
             }
         }
+    }
+
+    companion object {
+        /** Beta 500 program total credit allocation per user. */
+        internal const val BETA_CREDITS_TOTAL = 500
     }
 
     private fun buildRows(

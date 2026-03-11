@@ -58,6 +58,8 @@ internal fun HomeSuccessContent(
     onRefresh: () -> Unit,
     onNavigateToSubscribe: () -> Unit = {},
     onDismissShabbatBanner: () -> Unit = {},
+    isPlusSubscriber: Boolean = false,
+    onNavigateToSubscribe: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var isBannerDismissed by remember { mutableStateOf(false) }
@@ -178,6 +180,15 @@ internal fun HomeSuccessContent(
                         channels = uiState.liveChannels,
                         onChannelClick = onChannelClick,
                         onShowAllClick = onLiveTVShowAll,
+                    )
+                }
+            }
+
+            if (!isPlusSubscriber) {
+                item(key = "plus_feature_dubbing") {
+                    PlusFeatureCard(
+                        feature = PlusFeature.DUBBING,
+                        onNavigateToSubscribe = onNavigateToSubscribe,
                     )
                 }
             }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,47 +9,106 @@ import {
 import { useTranslation } from "react-i18next";
 import { colors, spacing, borderRadius } from "@olorin/design-tokens";
 import { renderIcon } from "@olorin/shared-icons/web";
+import api from "@/services/api";
+import { useProfileStore } from "@/stores/profileStore";
+import logger from "@bayit/shared-utils/logger";
+
+const suggestionsLogger = logger.scope("ProactiveSuggestions");
 
 export interface ProactiveSuggestion {
   id: string;
-  textKey: string;
-  iconName: string;
-  command: string;
+  content_id: string;
+  content_type: string;
+  title: string | null;
+  thumbnail_url: string | null;
+  reason: string | null;
+  reason_type: string;
+  confidence: number;
 }
 
-export const DEFAULT_VOICE_SUGGESTIONS: ProactiveSuggestion[] = [
-  {
-    id: "live",
-    textKey: "voice.suggestion.watchLive",
-    iconName: "playTv",
-    command: "go to live",
-  },
-  {
-    id: "search",
-    textKey: "voice.suggestion.search",
-    iconName: "search",
-    command: "go to search",
-  },
-  {
-    id: "radio",
-    textKey: "voice.suggestion.listenRadio",
-    iconName: "radio",
-    command: "go to radio",
-  },
-];
+interface ProactiveApiResponse {
+  suggestions: ProactiveSuggestion[];
+  next_poll_seconds: number;
+  credits_remaining?: number;
+}
 
 interface ProactiveSuggestionsProps {
-  suggestions: ProactiveSuggestion[];
   onSelect: (suggestion: ProactiveSuggestion) => void;
 }
 
 export const ProactiveSuggestions: React.FC<ProactiveSuggestionsProps> = ({
-  suggestions,
   onSelect,
 }) => {
   const { t } = useTranslation();
+  const activeProfile = useProfileStore((state) => state.activeProfile);
+  const [suggestions, setSuggestions] = useState<ProactiveSuggestion[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(true);
 
-  if (suggestions.length === 0) return null;
+  const clearPollTimer = () => {
+    if (pollTimerRef.current !== null) {
+      clearTimeout(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+  };
+
+  const fetchSuggestions = useCallback(async () => {
+    try {
+      const body: Record<string, unknown> = { platform: "web" };
+      if (activeProfile?.id) {
+        body.profile_id = activeProfile.id;
+      }
+
+      const data = (await api.post<ProactiveApiResponse>(
+        "/voice/proactive/suggest",
+        body,
+      )) as ProactiveApiResponse;
+
+      if (!mountedRef.current) return;
+
+      setSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
+      setHasError(false);
+
+      suggestionsLogger.debug("Proactive suggestions fetched", {
+        count: data.suggestions.length,
+        nextPollSeconds: data.next_poll_seconds,
+        creditsRemaining: data.credits_remaining,
+      });
+
+      if (data.next_poll_seconds > 0) {
+        clearPollTimer();
+        pollTimerRef.current = setTimeout(() => {
+          if (mountedRef.current) {
+            fetchSuggestions();
+          }
+        }, data.next_poll_seconds * 1000);
+      }
+    } catch (err) {
+      if (!mountedRef.current) return;
+      suggestionsLogger.warn("Failed to fetch proactive suggestions", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setHasError(true);
+      setSuggestions([]);
+    } finally {
+      if (mountedRef.current) {
+        setIsLoading(false);
+      }
+    }
+  }, [activeProfile?.id]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    fetchSuggestions();
+    return () => {
+      mountedRef.current = false;
+      clearPollTimer();
+    };
+  }, [fetchSuggestions]);
+
+  if (isLoading || hasError || suggestions.length === 0) return null;
 
   return (
     <ScrollView
@@ -59,13 +118,15 @@ export const ProactiveSuggestions: React.FC<ProactiveSuggestionsProps> = ({
     >
       {suggestions.map((s) => (
         <TouchableOpacity
-          key={s.id}
+          key={s.content_id}
           onPress={() => onSelect(s)}
           activeOpacity={0.7}
           style={styles.chip}
         >
-          {renderIcon(s.iconName, "sm", "secondary")}
-          <Text style={styles.chipText}>{t(s.textKey)}</Text>
+          {renderIcon(s.reason_type, "sm", "secondary")}
+          <Text style={styles.chipText}>
+            {s.title ?? t(`voice.reasonType.${s.reason_type}`, s.reason_type)}
+          </Text>
         </TouchableOpacity>
       ))}
     </ScrollView>

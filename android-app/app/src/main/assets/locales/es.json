@@ -4846,5 +4846,36 @@
       "hasGlb": "Has GLB",
       "status": "Status: {{value}}"
     }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} creditos restantes",
+      "unlimited": "IA ilimitada",
+      "subscribedLabel": "Miembro Plus",
+      "getUnlimited": "Obtener ilimitado con Plus",
+      "upgradeNow": "Actualizar ahora",
+      "creditLow": "Creditos agotandose",
+      "subscribeAtWeb": "Suscribete en bayit.tv"
+    },
+    "toast": {
+      "creditUsed": "Credito utilizado",
+      "remaining": "{{count}} restantes",
+      "getUnlimited": "Obtener ilimitado con Plus"
+    },
+    "feature": {
+      "dubbing": "Ver en ingles con doblaje AI",
+      "subtitles": "Subtitulos inteligentes con gramatica y jerga",
+      "search": "Buscar escenas con AI Search"
+    },
+    "intro": {
+      "title": "Bienvenido a Bayit+",
+      "subtitle": "Desbloquea el poder total del streaming israelí con funciones impulsadas por IA",
+      "bullet1": "Doblaje en IA en tu idioma",
+      "bullet2": "Subtítulos inteligentes con consejos de gramática",
+      "bullet3": "Búsqueda de escenas impulsada por IA",
+      "bullet4": "500 créditos Beta de IA incluidos",
+      "seePlans": "Ver planes",
+      "maybeLater": "Quizás después"
+    }
   }
 }

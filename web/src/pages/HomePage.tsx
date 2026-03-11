@@ -45,6 +45,7 @@ import { isSeriesContent } from "@/utils/contentHelpers";
 import { useFeaturedAudiobooksCarousel } from "@/hooks/useFeaturedAudiobooksCarousel";
 import { useUserGeolocation } from "@/hooks/useUserGeolocation";
 import { CreditsBadge } from "@/components/subscription/CreditsBadge";
+import { PlusFeatureCard } from "@/components/subscription/PlusFeatureCard";
 
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== "undefined" && __TV__;
@@ -478,6 +479,9 @@ export default function HomePage() {
           )
         )}
 
+        {/* Plus feature promotion - dubbing */}
+        <PlusFeatureCard feature="dubbing" />
+
         {/* Sections in desired order: near-you, trending, Jerusalem, Tel Aviv, then all other categories */}
         {categoriesLoading ? (
           <>
@@ -502,6 +506,9 @@ export default function HomePage() {
                 }}
               />
             </View>
+
+            {/* Plus feature promotion - search */}
+            <PlusFeatureCard feature="search" />
 
             {/* Youngsters Section */}
             {youngstersLoading ? (

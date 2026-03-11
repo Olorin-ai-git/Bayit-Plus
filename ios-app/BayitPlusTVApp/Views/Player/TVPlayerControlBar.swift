@@ -37,7 +37,7 @@ struct TVPlayerControlBar: View {
             subtitleButton
 
             if contentType == .liveTV {
-                controlButton(icon: "waveform", label: localization.t("player.dubbing"), action: onDubbing)
+                controlButton(icon: "waveform", label: localization.t("player.dubbing.label"), action: onDubbing)
             }
 
             controlButton(icon: "list.bullet", label: localization.t("player.chapters"), action: onChapters)

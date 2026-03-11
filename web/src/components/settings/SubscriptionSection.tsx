@@ -1,6 +1,6 @@
 /**
  * SubscriptionSection
- * Subscription management: current plan, upgrade, billing history.
+ * Subscription management: current plan, credit balance, upgrade, billing history.
  */
 
 import { useState, useEffect } from "react";
@@ -9,7 +9,13 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useDirection } from "@/hooks/useDirection";
 import { GlassButton } from "@bayit/shared/ui";
-import { CreditCard, Crown, Receipt, ArrowUpCircle } from "lucide-react";
+import {
+  CreditCard,
+  Crown,
+  Receipt,
+  ArrowUpCircle,
+  Sparkles,
+} from "lucide-react";
 import { colors, spacing, fontSize } from "@olorin/design-tokens";
 import { SettingSection } from "./shared/SettingSection";
 import { SettingRow } from "./shared/SettingRow";
@@ -23,6 +29,11 @@ interface SubscriptionInfo {
   billing_period: string;
 }
 
+interface CreditBalance {
+  remaining_credits: number;
+  total_credits: number;
+}
+
 export function SubscriptionSection() {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
@@ -30,6 +41,7 @@ export function SubscriptionSection() {
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(
     null,
   );
+  const [credits, setCredits] = useState<CreditBalance | null>(null);
 
   useEffect(() => {
     loadSubscription();
@@ -37,8 +49,12 @@ export function SubscriptionSection() {
 
   const loadSubscription = async () => {
     try {
-      const data = await api.get("/subscriptions/current");
-      setSubscription(data as unknown as SubscriptionInfo);
+      const [subData, creditData] = await Promise.all([
+        api.get("/subscriptions/current"),
+        api.get("/beta/credits/balance"),
+      ]);
+      setSubscription(subData as unknown as SubscriptionInfo);
+      setCredits(creditData as unknown as CreditBalance);
     } catch (error) {
       logger.error("Failed to load subscription", "SubscriptionSection", error);
     }
@@ -46,19 +62,30 @@ export function SubscriptionSection() {
 
   const planDisplay = subscription?.plan_name ?? t("settings.freePlan", "Free");
   const statusDisplay = subscription?.status ?? t("settings.active", "Active");
+  const isFree =
+    !subscription || subscription.plan_name.toLowerCase() === "free";
 
   return (
     <SettingSection
       title={t("settings.subscription", "Subscription")}
       isRTL={isRTL}
     >
-      <SettingRow
-        type="value"
-        icon={Crown}
-        label={t("settings.currentPlan", "Current Plan")}
-        value={planDisplay}
-        isRTL={isRTL}
-      />
+      <View style={styles.planRow}>
+        <SettingRow
+          type="value"
+          icon={Crown}
+          label={t("settings.currentPlan", "Current Plan")}
+          value={planDisplay}
+          isRTL={isRTL}
+        />
+        {isFree && (
+          <View style={styles.upgradeBadge}>
+            <Text style={styles.upgradeBadgeText}>
+              {t("settings.upgrade", "Upgrade")}
+            </Text>
+          </View>
+        )}
+      </View>
       <SettingRow
         type="value"
         icon={CreditCard}
@@ -66,6 +93,17 @@ export function SubscriptionSection() {
         value={statusDisplay}
         isRTL={isRTL}
       />
+      {credits && (
+        <SettingRow
+          type="value"
+          icon={Sparkles}
+          label={t("plus.badge.creditsRemaining", {
+            count: credits.remaining_credits,
+          })}
+          value={`${credits.remaining_credits} / ${credits.total_credits}`}
+          isRTL={isRTL}
+        />
+      )}
       {subscription?.renews_at && (
         <SettingRow
           type="value"
@@ -101,10 +139,20 @@ export function SubscriptionSection() {
 }
 
 const styles = StyleSheet.create({
-  actions: {
-    marginTop: spacing.md,
-    gap: spacing.sm,
+  planRow: { flexDirection: "row", alignItems: "center" },
+  upgradeBadge: {
+    marginLeft: spacing.sm,
+    backgroundColor: colors.warning,
+    borderRadius: 4,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
   },
+  upgradeBadgeText: {
+    color: colors.warningText ?? colors.text,
+    fontSize: fontSize.xs,
+    fontWeight: "700",
+  },
+  actions: { marginTop: spacing.md, gap: spacing.sm },
   upgradeText: {
     color: colors.text,
     fontSize: fontSize.sm,

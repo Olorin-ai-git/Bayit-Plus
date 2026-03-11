@@ -53,6 +53,10 @@ interface RightControlsProps {
   renderInteractButton?: () => React.ReactNode;
   renderPreviousInteractionButton?: () => React.ReactNode;
   renderNextInteractionButton?: () => React.ReactNode;
+  renderCulturalContextButton?: () => React.ReactNode;
+  renderBilingualBridgeButton?: () => React.ReactNode;
+  renderTalkBackButton?: () => React.ReactNode;
+  renderInteractiveMissionButton?: () => React.ReactNode;
   liveFeatureError?: string | null;
   onDismissLiveFeatureError?: () => void;
 }
@@ -89,6 +93,10 @@ export default function RightControls({
   renderInteractButton,
   renderPreviousInteractionButton,
   renderNextInteractionButton,
+  renderCulturalContextButton,
+  renderBilingualBridgeButton,
+  renderTalkBackButton,
+  renderInteractiveMissionButton,
   liveFeatureError,
   onDismissLiveFeatureError,
 }: RightControlsProps) {
@@ -247,6 +255,20 @@ export default function RightControls({
         renderPreviousInteractionButton()}
       {!isLive && renderInteractButton && renderInteractButton()}
       {!isLive && renderNextInteractionButton && renderNextInteractionButton()}
+
+      {/* Cultural Context (VOD) */}
+      {!isLive && renderCulturalContextButton && renderCulturalContextButton()}
+
+      {/* Bilingual Bridge (VOD) */}
+      {!isLive && renderBilingualBridgeButton && renderBilingualBridgeButton()}
+
+      {/* Talk Back (VOD) */}
+      {!isLive && renderTalkBackButton && renderTalkBackButton()}
+
+      {/* Interactive Mission (VOD) */}
+      {!isLive &&
+        renderInteractiveMissionButton &&
+        renderInteractiveMissionButton()}
 
       {/* Regular Settings button for VOD */}
       {onSettingsToggle && (

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.WatchPartyRepository
 import tv.bayit.plus.core.model.WatchParty
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WatchPartyViewModel @Inject constructor(
     private val watchPartyRepository: WatchPartyRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -49,7 +51,7 @@ class WatchPartyViewModel @Inject constructor(
                         logger.info("Watch party created", mapOf("partyId" to party.id))
                         _uiState.value = WatchPartyUiState.Created(party)
                     } else {
-                        _uiState.value = WatchPartyUiState.Error("Unexpected response format")
+                        _uiState.value = WatchPartyUiState.Error(stringProvider.string("error.social.unexpectedResponse"))
                     }
                 }
                 is BayitResult.Error -> {
@@ -76,7 +78,7 @@ class WatchPartyViewModel @Inject constructor(
                         logger.info("Joined watch party", mapOf("partyId" to party.id))
                         _uiState.value = WatchPartyUiState.Joined(party)
                     } else {
-                        _uiState.value = WatchPartyUiState.Error("Unexpected response format")
+                        _uiState.value = WatchPartyUiState.Error(stringProvider.string("error.social.unexpectedResponse"))
                     }
                 }
                 is BayitResult.Error -> {

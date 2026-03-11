@@ -163,6 +163,8 @@ struct RouteDestinationResolver {
             CharacterDialogueView(profileId: profileId, contentId: contentId, characterName: characterName)
         case let .tvLogin(sessionId, token, expires):
             TVLoginView(sessionId: sessionId, token: token, expires: expires)
+        case let .interactiveMission(missionId, profileId):
+            InteractiveMissionPlayerView(missionId: missionId, profileId: profileId)
         default:
             ErrorStateView(
                 message: "Screen not available",

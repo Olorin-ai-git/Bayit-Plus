@@ -71,7 +71,7 @@ fun BreadcrumbRow(
         entries.forEachIndexed { index, entry ->
             val isLast = index == entries.lastIndex
             BreadcrumbItem(
-                label = entry.label,
+                label = bayitString(entry.label),
                 isActive = isLast,
                 onClick = if (isLast) null else { { onEntryClick(entry) } },
             )

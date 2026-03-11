@@ -25,7 +25,7 @@ extension NotificationSettingsView {
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .multilineTextAlignment(.center)
 
-                GlassButton("Enable Notifications") {
+                GlassButton(localization.t("settings.enableNotifications")) {
                     showPermissionAlert = true
                 }
             }
@@ -87,7 +87,7 @@ extension NotificationSettingsView {
 
                 Spacer()
 
-                Button("Dismiss") {
+                Button(localization.t("common.dismiss")) {
                     error = nil
                 }
                 .font(.system(size: DesignTokens.FontSize.sm))
@@ -141,7 +141,7 @@ extension NotificationSettingsView {
                 logger.info("Unsubscribed from topic", context: ["topic": topic.rawValue])
             }
         } catch {
-            self.error = "Failed to update subscription. Please try again."
+            self.error = localization.t("settings.subscriptionUpdateFailed")
             logger.error("Failed to toggle subscription", error: error, context: [
                 "topic": topic.rawValue,
                 "action": subscribe ? "subscribe" : "unsubscribe",

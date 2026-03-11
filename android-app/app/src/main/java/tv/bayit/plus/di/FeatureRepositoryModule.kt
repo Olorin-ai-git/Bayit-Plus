@@ -51,4 +51,8 @@ object FeatureRepositoryModule {
 
     @Provides @Singleton
     fun provideWidgetRepository(client: BayitApiClient): WidgetRepository = ApiWidgetRepository(client)
+
+    @Provides @Singleton
+    fun provideProactiveVoiceRepository(client: BayitApiClient): ProactiveVoiceRepository =
+        ApiProactiveVoiceRepository(client)
 }

@@ -4856,5 +4856,36 @@
       "hasGlb": "Has GLB",
       "status": "Status: {{value}}"
     }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} קרדיטים נותרו",
+      "unlimited": "AI ללא הגבלה",
+      "subscribedLabel": "מנוי Plus",
+      "getUnlimited": "קבלו ללא הגבלה עם Plus",
+      "upgradeNow": "שדרגו עכשיו",
+      "creditLow": "הקרדיטים עומדים להיגמר",
+      "subscribeAtWeb": "הירשמו ב-bayit.tv"
+    },
+    "toast": {
+      "creditUsed": "קרדיט נוצל",
+      "remaining": "{{count}} נותרו",
+      "getUnlimited": "קבלו ללא הגבלה עם Plus"
+    },
+    "feature": {
+      "dubbing": "צפו באנגלית עם דיבוב AI",
+      "subtitles": "כתוביות חכמות עם דקדוק וסלנג",
+      "search": "מצאו סצנות עם חיפוש AI"
+    },
+    "intro": {
+      "title": "ברוך הבא ל-Bayit+",
+      "subtitle": "פתח את הכוח המלא של הסטרימינג הישראלי עם תכונות מבוססות AI",
+      "bullet1": "דיבוב AI בשפה שלך",
+      "bullet2": "כתוביות חכמות עם טיפים דקדוקיים",
+      "bullet3": "חיפוש סצנות מבוסס AI",
+      "bullet4": "500 קרדיטי AI בטא כלולים",
+      "seePlans": "ראה תוכניות",
+      "maybeLater": "אולי מאוחר יותר"
+    }
   }
 }

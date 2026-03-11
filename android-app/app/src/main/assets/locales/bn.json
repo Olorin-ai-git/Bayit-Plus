@@ -4842,5 +4842,36 @@
       "hasGlb": "Has GLB",
       "status": "Status: {{value}}"
     }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} ক্রেডিট বাকি",
+      "unlimited": "সীমাহীন AI",
+      "subscribedLabel": "Plus সদস্য",
+      "getUnlimited": "Plus দিয়ে সীমাহীন পান",
+      "upgradeNow": "এখনই আপগ্রেড করুন",
+      "creditLow": "ক্রেডিট কমে যাচ্ছে",
+      "subscribeAtWeb": "bayit.tv-এ সাবস্ক্রাইব করুন"
+    },
+    "toast": {
+      "creditUsed": "ক্রেডিট ব্যবহৃত",
+      "remaining": "{{count}} বাকি",
+      "getUnlimited": "Plus দিয়ে সীমাহীন পান"
+    },
+    "feature": {
+      "dubbing": "AI ডাবিং দিয়ে ইংরেজিতে দেখুন",
+      "subtitles": "ব্যাকরণ ও স্ল্যাং সহ স্মার্ট সাবটাইটেল",
+      "search": "AI Search দিয়ে দৃশ্য খুঁজুন"
+    },
+    "intro": {
+      "title": "Bayit+-এ স্বাগতম",
+      "subtitle": "AI-চালিত বৈশিষ্ট্য সহ ইসরায়েলি স্ট্রিমিংয়ের পূর্ণ শক্তি উন্মুক্ত করুন",
+      "bullet1": "আপনার ভাষায় AI ডাবিং",
+      "bullet2": "ব্যাকরণ টিপস সহ স্মার্ট সাবটাইটেল",
+      "bullet3": "AI-চালিত দৃশ্য অনুসন্ধান",
+      "bullet4": "৫০০ বেটা AI ক্রেডিট অন্তর্ভুক্ত",
+      "seePlans": "প্ল্যান দেখুন",
+      "maybeLater": "পরে হয়তো"
+    }
   }
 }

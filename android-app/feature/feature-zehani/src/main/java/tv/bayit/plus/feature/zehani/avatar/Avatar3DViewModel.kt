@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.StarStoryRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
@@ -20,6 +21,7 @@ class Avatar3DViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
     private val starStoryRepository: StarStoryRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -59,7 +61,7 @@ class Avatar3DViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     val avatarId = result.data.firstOrNull()?.avatarId
                     if (avatarId == null) {
-                        _uiState.value = Avatar3DUiState.Error("No avatar found for this profile")
+                        _uiState.value = Avatar3DUiState.Error(stringProvider.string("error.zehAni.noAvatarForProfile"))
                         return@launch
                     }
                     loadAvatar3D(avatarId)

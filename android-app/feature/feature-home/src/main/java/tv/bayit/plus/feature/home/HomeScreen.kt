@@ -51,6 +51,8 @@ internal fun HomeScreen(
     sourceManager: BYOCSourceManager? = null,
     onRefresh: () -> Unit,
     onDismissShabbatBanner: () -> Unit = {},
+    isPlusSubscriber: Boolean = false,
+    onNavigateToSubscribe: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
@@ -87,6 +89,8 @@ internal fun HomeScreen(
             sourceManager = sourceManager,
             onRefresh = onRefresh,
             onDismissShabbatBanner = onDismissShabbatBanner,
+            isPlusSubscriber = isPlusSubscriber,
+            onNavigateToSubscribe = onNavigateToSubscribe,
             modifier = modifier,
         )
         is HomeUiState.Error -> ErrorSection(

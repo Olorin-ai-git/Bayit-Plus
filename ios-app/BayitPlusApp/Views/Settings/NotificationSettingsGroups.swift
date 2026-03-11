@@ -24,7 +24,7 @@ struct NotificationPermissionBanner: View {
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .multilineTextAlignment(.center)
 
-                GlassButton("Enable Notifications") {
+                GlassButton(localization.t("settings.enableNotifications")) {
                     onEnable()
                 }
             }
@@ -91,6 +91,7 @@ struct NotificationTopicToggles: View {
 
 /// Error banner with dismiss action for notification settings.
 struct NotificationErrorBanner: View {
+    @Environment(LocalizationManager.self) private var localization
     let message: String
     let onDismiss: () -> Void
 
@@ -106,7 +107,7 @@ struct NotificationErrorBanner: View {
 
                 Spacer()
 
-                Button("Dismiss") {
+                Button(localization.t("common.dismiss")) {
                     onDismiss()
                 }
                 .font(.system(size: DesignTokens.FontSize.sm))

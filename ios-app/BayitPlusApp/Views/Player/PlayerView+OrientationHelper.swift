@@ -95,6 +95,14 @@ extension PlayerView {
                 )
             }
             Task { await initializeInteractiveMoments() }
+
+            if talkBackVM == nil {
+                let vm = TalkBackViewModel(
+                    repository: repositories.talkBack
+                )
+                talkBackVM = vm
+                Task { await vm.loadPoints(contentId: contentId) }
+            }
         }
 
         if mediaContentType.isLive,

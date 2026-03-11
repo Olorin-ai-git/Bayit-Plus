@@ -45,6 +45,7 @@ fun HomeRoute(
     onNavigateToBYOCSettings: () -> Unit = {},
     onNavigateToBYOCPlayer: (String, String) -> Unit = { _, _ -> },
     onNavigateToFeatureTour: () -> Unit = {},
+    onNavigateToSubscribe: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -130,6 +131,7 @@ fun HomeRoute(
             },
             onRefresh = viewModel::refresh,
             onDismissShabbatBanner = viewModel::dismissShabbatBanner,
+            onNavigateToSubscribe = onNavigateToSubscribe,
             modifier = Modifier.weight(1f),
         )
     }

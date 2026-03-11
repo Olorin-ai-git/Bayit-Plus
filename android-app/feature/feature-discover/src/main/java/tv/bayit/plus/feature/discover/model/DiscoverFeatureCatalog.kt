@@ -503,7 +503,7 @@ object DiscoverFeatureCatalog {
             taglineKey = "discover.feature.proactive_voice.tagline",
             descriptionKey = "discover.feature.proactive_voice.description",
             iconName = "waveform",
-            platforms = iosOnly,
+            platforms = bothPlatforms,
             prerequisites = listOf(
                 FeaturePrerequisite(
                     id = "proactive_voice_preference",

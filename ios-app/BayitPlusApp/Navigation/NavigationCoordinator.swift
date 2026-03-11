@@ -140,7 +140,8 @@ public final class NavigationCoordinator {
              .zehAniContacts, .zehAniFeedback,
              .zehAniAvatarSettings,
              .zehAniMovieInteractions, .zehAniMovieCharacters,
-             .zehAniCharacterDialogue:
+             .zehAniCharacterDialogue,
+             .interactiveMission:
             pushToCurrentTab(route)
         }
     }

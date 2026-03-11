@@ -41,10 +41,12 @@ final class AICompanionViewModel {
     private(set) var words: [VocabularyWord] = []
 
     private let repository: any ChatRepository
+    private let talkBackRepository: any TalkBackRepository
     private let logger = BayitLogger(category: "AICompanionViewModel")
 
-    init(repository: any ChatRepository) {
+    init(repository: any ChatRepository, talkBackRepository: any TalkBackRepository) {
         self.repository = repository
+        self.talkBackRepository = talkBackRepository
     }
 
     func selectTab(_ tab: Tab) {
@@ -106,19 +108,24 @@ final class AICompanionViewModel {
         showResults = false
     }
 
-    func loadVocabulary(contentId: String) async {
+    func loadVocabulary(profileId: String) async {
         isVocabularyLoading = true
 
         do {
-            let request = ChatRequest(
-                message: "companion_vocabulary",
-                conversationId: nil,
-                context: "companion_vocab:\(contentId)",
-                language: nil
-            )
-            let response = try await repository.sendMessage(request)
-            contextText = response.response
-            logger.info("Companion vocabulary loaded", context: ["contentId": contentId])
+            let items = try await talkBackRepository.fetchVocabulary(profileId: profileId)
+            words = items.map { item in
+                VocabularyWord(
+                    id: item.word,
+                    term: item.word,
+                    definition: item.translation,
+                    language: "he",
+                    pronunciation: item.transliteration
+                )
+            }
+            logger.info("Vocabulary loaded", context: [
+                "profileId": profileId,
+                "count": String(items.count),
+            ])
         } catch {
             logger.error("Vocabulary load failed", error: error)
         }

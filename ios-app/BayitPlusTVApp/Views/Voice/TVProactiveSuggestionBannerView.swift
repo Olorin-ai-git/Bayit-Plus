@@ -3,69 +3,70 @@ import BayitLocalization
 import SwiftUI
 
 /// tvOS proactive suggestion banner. Visual only — no TTS on Apple TV.
+///
+/// Renders when the ViewModel has a visible suggestion and slides in from
+/// the top with a spring animation. Accept navigates to the suggested content;
+/// Dismiss suppresses that content ID for the session.
 struct TVProactiveSuggestionBannerView: View {
     @Environment(LocalizationManager.self) private var localization
 
-    let engine: ProactiveSuggestionEngine
+    let viewModel: TVProactiveSuggestionViewModel
     var onExecute: ((ProactiveSuggestion) -> Void)?
 
     var body: some View {
-        if engine.currentSuggestion != nil {
-            bannerContent
+        if viewModel.isVisible, let suggestion = viewModel.suggestion {
+            bannerContent(suggestion: suggestion)
                 .transition(.move(edge: .top).combined(with: .opacity))
                 .animation(
                     .spring(response: 0.5, dampingFraction: 0.7),
-                    value: engine.currentSuggestion?.id
+                    value: viewModel.suggestion?.id
                 )
         }
     }
 
     // MARK: - Banner Content
 
-    @ViewBuilder
-    private var bannerContent: some View {
-        if let suggestion = engine.currentSuggestion {
-            VStack(spacing: TVDesignTokens.Spacing.md) {
-                HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    priorityIcon(for: suggestion.priority)
+    private func bannerContent(suggestion: ProactiveSuggestion) -> some View {
+        VStack(spacing: TVDesignTokens.Spacing.md) {
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                priorityIcon(for: suggestion.priority)
 
-                    VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                        typeLabel(for: suggestion.type)
+                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
+                    typeLabel(for: suggestion.type)
 
-                        Text(suggestion.message ?? "")
-                            .font(.system(size: TVDesignTokens.FontSize.base))
-                            .foregroundStyle(DesignTokens.Text.primary)
-                            .lineLimit(2)
-                    }
-
-                    Spacer()
+                    Text(suggestion.message ?? "")
+                        .font(.system(size: TVDesignTokens.FontSize.base))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                        .lineLimit(2)
                 }
 
-                HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    Spacer()
-
-                    GlassButton(localization.t("common.dismiss"), variant: .secondary, size: .medium) {
-                        engine.dismissSuggestion()
-                    }
-                    .tvFocusStyle()
-                    .accessibilityLabel("Dismiss suggestion")
-
-                    GlassButton(localization.t("common.accept"), variant: .primary, size: .medium) {
-                        onExecute?(suggestion)
-                        engine.dismissSuggestion()
-                    }
-                    .tvFocusStyle()
-                    .accessibilityLabel("Accept suggestion")
-                }
+                Spacer()
             }
-            .padding(TVDesignTokens.Spacing.lg)
-            .background(DesignTokens.Glass.bgMedium)
-            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
-            .padding(.horizontal, TVDesignTokens.Spacing.xl)
-            .padding(.top, TVDesignTokens.Spacing.md)
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel("Suggestion: \(suggestion.message ?? "")")
+
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                Spacer()
+
+                GlassButton(localization.t("common.dismiss"), variant: .secondary, size: .medium) {
+                    viewModel.dismiss()
+                }
+                .tvFocusStyle()
+                .accessibilityLabel("Dismiss suggestion")
+
+                GlassButton(localization.t("common.accept"), variant: .primary, size: .medium) {
+                    onExecute?(suggestion)
+                    viewModel.execute()
+                }
+                .tvFocusStyle()
+                .accessibilityLabel("Accept suggestion")
+            }
         }
+        .padding(TVDesignTokens.Spacing.lg)
+        .background(DesignTokens.Glass.bgMedium)
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.top, TVDesignTokens.Spacing.md)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Suggestion: \(suggestion.message ?? "")")
     }
 
     // MARK: - Priority Icon

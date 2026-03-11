@@ -71,7 +71,7 @@
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.secondary)
 
-                TextField("https://example.com/embed", text: $iframeUrl)
+                TextField(localization.t("widgets.iframeUrlPlaceholder"), text: $iframeUrl)
                     .font(.system(size: DesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .keyboardType(.URL)
@@ -80,7 +80,7 @@
                     .background(DesignTokens.Glass.bgLight)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
 
-                TextField("iFrame Title (optional)", text: $iframeTitle)
+                TextField(localization.t("widgets.iframeTitlePlaceholder"), text: $iframeTitle)
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .padding(DesignTokens.Spacing.md)

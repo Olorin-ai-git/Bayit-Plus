@@ -70,6 +70,9 @@ struct PlayerView: View {
     @State var hasVoiceClone = false
     @State var hasInteractiveCharacters = false
 
+    /// TalkBack state
+    @State var talkBackVM: TalkBackViewModel?
+
     // Shared interaction state (Phase 3 WS4)
     @State var sharedVM: SharedInteractionViewModel?
     @State var showSharedInteraction = false

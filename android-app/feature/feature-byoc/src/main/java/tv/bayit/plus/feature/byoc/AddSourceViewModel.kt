@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.byoc.BYOCSourceManager
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import javax.inject.Inject
 
@@ -23,6 +24,7 @@ enum class SourceInputType { M3U, XTREAM }
 @HiltViewModel
 class AddSourceViewModel @Inject constructor(
     private val sourceManager: BYOCSourceManager,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -31,7 +33,7 @@ class AddSourceViewModel @Inject constructor(
 
     fun addM3USource(name: String, url: String) {
         if (name.isBlank() || url.isBlank()) {
-            _uiState.value = AddSourceUiState.Error("Name and URL are required")
+            _uiState.value = AddSourceUiState.Error(stringProvider.string("error.byoc.nameUrlRequired"))
             return
         }
         viewModelScope.launch {
@@ -42,14 +44,14 @@ class AddSourceViewModel @Inject constructor(
                 _uiState.value = AddSourceUiState.Success
             } catch (e: Exception) {
                 logger.error("Failed to add M3U source", error = e)
-                _uiState.value = AddSourceUiState.Error(e.message ?: "Failed to add source")
+                _uiState.value = AddSourceUiState.Error(e.message ?: stringProvider.string("error.byoc.addSourceFailed"))
             }
         }
     }
 
     fun addXtreamSource(name: String, server: String, username: String, password: String) {
         if (name.isBlank() || server.isBlank() || username.isBlank() || password.isBlank()) {
-            _uiState.value = AddSourceUiState.Error("All fields are required")
+            _uiState.value = AddSourceUiState.Error(stringProvider.string("error.byoc.allFieldsRequired"))
             return
         }
         viewModelScope.launch {
@@ -60,7 +62,7 @@ class AddSourceViewModel @Inject constructor(
                 _uiState.value = AddSourceUiState.Success
             } catch (e: Exception) {
                 logger.error("Failed to add Xtream source", error = e)
-                _uiState.value = AddSourceUiState.Error(e.message ?: "Failed to add source")
+                _uiState.value = AddSourceUiState.Error(e.message ?: stringProvider.string("error.byoc.addSourceFailed"))
             }
         }
     }

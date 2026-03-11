@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PhoneticMirrorRepository
 import tv.bayit.plus.core.data.repository.PracticePhrase
@@ -25,6 +26,7 @@ class V2VPracticeViewModel @Inject constructor(
     private val zehAniRepository: ZehAniRepository,
     private val phoneticMirrorRepository: PhoneticMirrorRepository,
     private val starStoryRepository: StarStoryRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -122,7 +124,7 @@ class V2VPracticeViewModel @Inject constructor(
     private fun submitAttempt(text: String, audioData: ByteArray) {
         viewModelScope.launch {
             if (resolvedAvatarId.isBlank()) {
-                _uiState.value = V2VPracticeUiState.Error("No avatar available for voice transform")
+                _uiState.value = V2VPracticeUiState.Error(stringProvider.string("error.zehAni.noAvatarForVoice"))
                 return@launch
             }
             _uiState.value = V2VPracticeUiState.Analyzing

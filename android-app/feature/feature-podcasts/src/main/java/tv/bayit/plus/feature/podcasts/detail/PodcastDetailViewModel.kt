@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PodcastRepository
 import tv.bayit.plus.core.media.AudioPlaybackManager
@@ -22,6 +23,7 @@ class PodcastDetailViewModel @Inject constructor(
     internal val podcastRepository: PodcastRepository,
     private val audioPlaybackManager: AudioPlaybackManager,
     private val sleepTimerManager: SleepTimerManager,
+    internal val stringProvider: BayitStringProvider,
     internal val logger: BayitLogger,
 ) : ViewModel() {
 

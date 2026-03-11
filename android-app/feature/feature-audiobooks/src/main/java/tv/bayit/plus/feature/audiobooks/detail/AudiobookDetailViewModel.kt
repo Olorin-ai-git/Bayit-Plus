@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.AudiobookRepository
 import tv.bayit.plus.core.model.Audiobook
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class AudiobookDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val audiobookRepository: AudiobookRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -52,7 +54,7 @@ class AudiobookDetailViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     val audiobook = result.data as? Audiobook
                     if (audiobook == null) {
-                        _uiState.value = AudiobookDetailUiState.Error("Audiobook not found")
+                        _uiState.value = AudiobookDetailUiState.Error(stringProvider.string("error.audiobooks.notFound"))
                         return@launch
                     }
                     logger.info("Audiobook detail loaded", mapOf(

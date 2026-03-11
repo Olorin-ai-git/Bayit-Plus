@@ -444,6 +444,25 @@ export default function VideoPlayer({
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [isTTSPlaying, setIsTTSPlaying] = useState(false);
 
+  // Cultural Context toggle (VOD)
+  const [culturalContextEnabled, setCulturalContextEnabled] = useState(false);
+  const handleCulturalReferenceSelect = useCallback((referenceId: string) => {
+    logger.info("Cultural reference selected", "VideoPlayer", { referenceId });
+  }, []);
+
+  // Bilingual Bridge toggle (VOD)
+  const [bilingualBridgeEnabled, setBilingualBridgeEnabled] = useState(false);
+
+  // Talk Back toggle (VOD) — sessionId derived from playback session
+  const [talkBackEnabled, setTalkBackEnabled] = useState(false);
+
+  // Interactive Mission (VOD)
+  const [activeMissionId, setActiveMissionId] = useState<string | null>(null);
+  const handleMissionComplete = useCallback(() => {
+    setActiveMissionId(null);
+    logger.info("Interactive mission completed", "VideoPlayer");
+  }, []);
+
   // Collect live feature errors for unified banner display
   const [dismissedError, setDismissedError] = useState<string | null>(null);
   const liveFeatureError = useMemo(() => {
@@ -544,6 +563,10 @@ export default function VideoPlayer({
     renderInteractButton,
     renderPreviousInteractionButton,
     renderNextInteractionButton,
+    renderCulturalContextButton,
+    renderBilingualBridgeButton,
+    renderTalkBackButton,
+    renderInteractiveMissionButton,
   } = usePlayerControlRenderers({
     user,
     contentId,
@@ -627,6 +650,31 @@ export default function VideoPlayer({
             onNextInteraction,
           }
         : undefined,
+    culturalContext: !isLive
+      ? {
+          enabled: culturalContextEnabled,
+          toggleEnabled: () => setCulturalContextEnabled((v) => !v),
+        }
+      : undefined,
+    bilingualBridge: !isLive
+      ? {
+          enabled: bilingualBridgeEnabled,
+          toggleEnabled: () => setBilingualBridgeEnabled((v) => !v),
+        }
+      : undefined,
+    talkBack: !isLive
+      ? {
+          enabled: talkBackEnabled,
+          toggleEnabled: () => setTalkBackEnabled((v) => !v),
+        }
+      : undefined,
+    interactiveMission: !isLive
+      ? {
+          hasActiveMission: activeMissionId !== null,
+          toggleMission: () =>
+            setActiveMissionId((prev) => (prev ? null : contentId || null)),
+        }
+      : undefined,
   });
 
   return (
@@ -680,6 +728,15 @@ export default function VideoPlayer({
         isCasting={cast.unified.isConnected}
         userEmail={user?.email}
         isPlaying={state.isPlaying}
+        culturalContextEnabled={culturalContextEnabled}
+        onCulturalReferenceSelect={handleCulturalReferenceSelect}
+        bilingualBridgeEnabled={bilingualBridgeEnabled}
+        profileId={user?.id}
+        onHoveredButtonChange={setHoveredButton}
+        talkBackEnabled={talkBackEnabled}
+        talkBackSessionId={sessionId || undefined}
+        activeMissionId={activeMissionId}
+        onMissionComplete={handleMissionComplete}
       />
 
       <VideoPlayerPanels
@@ -750,6 +807,10 @@ export default function VideoPlayer({
         renderInteractButton={renderInteractButton}
         renderPreviousInteractionButton={renderPreviousInteractionButton}
         renderNextInteractionButton={renderNextInteractionButton}
+        renderCulturalContextButton={renderCulturalContextButton}
+        renderBilingualBridgeButton={renderBilingualBridgeButton}
+        renderTalkBackButton={renderTalkBackButton}
+        renderInteractiveMissionButton={renderInteractiveMissionButton}
         liveFeatureError={liveFeatureError}
         onDismissLiveFeatureError={handleDismissLiveFeatureError}
       />

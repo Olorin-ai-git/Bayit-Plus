@@ -36,6 +36,9 @@ extension HomeView {
             LiveTVRow(channels: vm.liveChannels, coordinator: coordinator)
         }
 
+        PlusFeatureCardView(feature: .dubbing)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
         BYOCShelfRow()
 
         if !vm.radioStations.isEmpty {
@@ -53,6 +56,10 @@ extension HomeView {
         }
 
         citySections(vm)
+
+        PlusFeatureCardView(feature: .search)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
         categoryRows(vm)
     }
 

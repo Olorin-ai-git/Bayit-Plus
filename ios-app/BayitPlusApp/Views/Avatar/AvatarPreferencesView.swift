@@ -49,7 +49,7 @@ struct AvatarPreferencesView: View {
 
     private var styleSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            sectionHeader(title: "Style", icon: "paintbrush")
+            sectionHeader(title: localization.t("avatar.style"), icon: "paintbrush")
 
             LazyVGrid(
                 columns: [GridItem(.flexible()), GridItem(.flexible())],
@@ -95,7 +95,7 @@ struct AvatarPreferencesView: View {
     // MARK: - Save
 
     private var saveButton: some View {
-        GlassButton("Save Preferences", variant: .primary) {
+        GlassButton(localization.t("common.savePreferences"), variant: .primary) {
             viewModel.updatePreferences(
                 style: selectedStyle,
                 voice: selectedVoice,
