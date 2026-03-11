@@ -11986,5 +11986,38 @@
         "almost": "もうすぐ完了..."
       }
     }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "残り%dクレジット",
+      "unlimited": "無制限AI",
+      "subscribedLabel": "Plusメンバー",
+      "getUnlimited": "Plusで無制限に",
+      "upgradeNow": "今すぐアップグレード",
+      "creditLow": "クレジット残りわずか"
+    },
+    "toast": {
+      "creditUsed": "クレジット使用",
+      "remaining": "残り%d",
+      "getUnlimited": "Plusで無制限に"
+    },
+    "feature": {
+      "dubbing": "AIダビングで英語で視聴",
+      "subtitles": "文法・スラング対応スマート字幕",
+      "search": "AI検索でシーンを探す",
+      "catchup": "AIキャッチアップ：見逃しなし",
+      "talkback": "お気に入りのキャラクターと会話",
+      "learnMore": "詳細を見る"
+    },
+    "intro": {
+      "title": "Bayit+へようこそ",
+      "subtitle": "AIでコンテンツを強化",
+      "bullet1": "多言語AIダビング",
+      "bullet2": "文法ツール付きスマート字幕",
+      "bullet3": "AIシーン検索",
+      "bullet4": "毎月50AIクレジット無料",
+      "seePlans": "プランを見る",
+      "maybeLater": "後で"
+    }
   }
 }

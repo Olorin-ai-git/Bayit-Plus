@@ -6226,17 +6226,8 @@
   "plans": {
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -11055,6 +11046,39 @@
         "frames": "正在捕捉角色外貌...",
         "almost": "即将完成..."
       }
+    }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "剩余%d积分",
+      "unlimited": "无限AI",
+      "subscribedLabel": "Plus会员",
+      "getUnlimited": "升级Plus获取无限",
+      "upgradeNow": "立即升级",
+      "creditLow": "积分即将用完"
+    },
+    "toast": {
+      "creditUsed": "已使用积分",
+      "remaining": "剩余%d",
+      "getUnlimited": "升级Plus获取无限"
+    },
+    "feature": {
+      "dubbing": "AI配音英语观看",
+      "subtitles": "语法和俚语智能字幕",
+      "search": "AI搜索查找场景",
+      "catchup": "AI追赶：不错过任何精彩",
+      "talkback": "与喜爱的角色对话",
+      "learnMore": "了解更多"
+    },
+    "intro": {
+      "title": "欢迎来到Bayit+",
+      "subtitle": "用AI增强您的内容",
+      "bullet1": "多语言AI配音",
+      "bullet2": "带语法工具的智能字幕",
+      "bullet3": "AI场景搜索",
+      "bullet4": "每月50个免费AI积分",
+      "seePlans": "查看方案",
+      "maybeLater": "以后再说"
     }
   }
 }

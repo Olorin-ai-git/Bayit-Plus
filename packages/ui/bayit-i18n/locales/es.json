@@ -9949,5 +9949,38 @@
     "languageCurrent": "Idioma: {{lang}}, toca para cambiar",
     "selectLanguage": "Seleccionar idioma",
     "homeLogo": "Bayit+"
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} créditos restantes",
+      "unlimited": "IA ilimitada",
+      "subscribedLabel": "Miembro Plus",
+      "getUnlimited": "Obtén ilimitado con Plus",
+      "upgradeNow": "Mejorar ahora",
+      "creditLow": "Créditos agotándose"
+    },
+    "toast": {
+      "creditUsed": "Crédito usado",
+      "remaining": "{{count}} restantes",
+      "getUnlimited": "Obtén ilimitado con Plus"
+    },
+    "feature": {
+      "dubbing": "Mira en inglés con doblaje IA",
+      "subtitles": "Subtítulos inteligentes con gramática y jerga",
+      "search": "Encuentra escenas con búsqueda IA",
+      "catchup": "IA Catch-Up: no te pierdas nada",
+      "talkback": "Habla con tus personajes favoritos",
+      "learnMore": "Más información"
+    },
+    "intro": {
+      "title": "Bienvenido a Bayit+",
+      "subtitle": "Mejora tu contenido con IA",
+      "bullet1": "Doblaje IA en múltiples idiomas",
+      "bullet2": "Subtítulos inteligentes con herramientas de gramática",
+      "bullet3": "Búsqueda de escenas con IA",
+      "bullet4": "50 créditos de IA gratis cada mes",
+      "seePlans": "Ver planes",
+      "maybeLater": "Quizás después"
+    }
   }
 }

@@ -10372,5 +10372,38 @@
         "almost": "Almost ready..."
       }
     }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "%d credits remaining",
+      "unlimited": "Unlimited AI",
+      "subscribedLabel": "Plus Member",
+      "getUnlimited": "Get unlimited with Plus",
+      "upgradeNow": "Upgrade Now",
+      "creditLow": "Credits running low"
+    },
+    "toast": {
+      "creditUsed": "Credit used",
+      "remaining": "%d remaining",
+      "getUnlimited": "Get unlimited with Plus"
+    },
+    "feature": {
+      "dubbing": "Watch in English with AI Dubbing",
+      "subtitles": "Smart Subtitles with grammar & slang",
+      "search": "Find scenes with AI Search",
+      "catchup": "AI Catch-Up: never miss a moment",
+      "talkback": "Talk back to your favorite characters",
+      "learnMore": "Learn More"
+    },
+    "intro": {
+      "title": "Welcome to Bayit+",
+      "subtitle": "Enhance your content with AI",
+      "bullet1": "AI dubbing in multiple languages",
+      "bullet2": "Smart subtitles with grammar tools",
+      "bullet3": "AI-powered scene search",
+      "bullet4": "50 free AI credits every month",
+      "seePlans": "See Plans",
+      "maybeLater": "Maybe Later"
+    }
   }
 }

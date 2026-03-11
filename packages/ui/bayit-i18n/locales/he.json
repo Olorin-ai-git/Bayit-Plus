@@ -9972,5 +9972,38 @@
     "languageCurrent": "שפה: {{lang}}, הקש לשינוי",
     "selectLanguage": "בחר שפה",
     "homeLogo": "בית+"
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} קרדיטים נותרו",
+      "unlimited": "AI ללא הגבלה",
+      "subscribedLabel": "מנוי Plus",
+      "getUnlimited": "קבלו ללא הגבלה עם Plus",
+      "upgradeNow": "שדרגו עכשיו",
+      "creditLow": "הקרדיטים עומדים להיגמר"
+    },
+    "toast": {
+      "creditUsed": "קרדיט נוצל",
+      "remaining": "{{count}} נותרו",
+      "getUnlimited": "קבלו ללא הגבלה עם Plus"
+    },
+    "feature": {
+      "dubbing": "צפו באנגלית עם דיבוב AI",
+      "subtitles": "כתוביות חכמות עם דקדוק וסלנג",
+      "search": "מצאו סצנות עם חיפוש AI",
+      "catchup": "AI Catch-Up: לא מפספסים רגע",
+      "talkback": "דברו עם הדמויות האהובות",
+      "learnMore": "למידע נוסף"
+    },
+    "intro": {
+      "title": "ברוכים הבאים ל-Bayit+",
+      "subtitle": "שפרו את התוכן שלכם עם AI",
+      "bullet1": "דיבוב AI במגוון שפות",
+      "bullet2": "כתוביות חכמות עם כלי דקדוק",
+      "bullet3": "חיפוש סצנות מונע AI",
+      "bullet4": "50 קרדיטי AI חינם כל חודש",
+      "seePlans": "ראו מסלולים",
+      "maybeLater": "אולי מאוחר יותר"
+    }
   }
 }
