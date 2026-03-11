@@ -125,6 +125,20 @@ def register_ws_routes(app: FastAPI) -> None:
     except ImportError:
         logger.warning("websocket_live_layer not available")
 
+    # REST endpoints co-located with live WS routes (status/availability checks)
+    # In production, the LB routes all /api/v1/live/* to this gateway.
+    try:
+        from app.api.routes import live_dubbing, live_quota
+        app.include_router(
+            live_dubbing.router, prefix=prefix, tags=["live-dubbing-rest"]
+        )
+        app.include_router(
+            live_quota.router, prefix=prefix, tags=["live-quota-rest"]
+        )
+        logger.info("Live REST routes registered on gateway (dubbing, quota)")
+    except ImportError as e:
+        logger.warning("live REST routes not available: %s", e)
+
     logger.info("Phase 4b routes registered: single-user WS routes")
 
     # ============================================

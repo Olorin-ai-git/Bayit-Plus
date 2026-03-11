@@ -54,8 +54,7 @@ struct ZehAniHubView: View {
                     featureKey: "zeh_ani_avatar",
                     titleKey: "tooltip.zehAni.title",
                     descriptionKey: "tooltip.zehAni.description",
-                    arrowDirection: .top,
-                    tooltipManager: tooltipManager
+                    arrowDirection: .top
                 )
 
                 featureCard(

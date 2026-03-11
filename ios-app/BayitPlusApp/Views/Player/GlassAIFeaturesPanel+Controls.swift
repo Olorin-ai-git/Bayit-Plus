@@ -54,8 +54,7 @@
                 featureKey: "live_dubbing",
                 titleKey: "tooltip.dubbing.title",
                 descriptionKey: "tooltip.dubbing.description",
-                arrowDirection: .bottom,
-                tooltipManager: tooltipManager
+                arrowDirection: .bottom
             )
         }
 

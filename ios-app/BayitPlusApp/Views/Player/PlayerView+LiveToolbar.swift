@@ -56,8 +56,7 @@
                         featureKey: "catchup",
                         titleKey: "tooltip.catchup.title",
                         descriptionKey: "tooltip.catchup.description",
-                        arrowDirection: .top,
-                        tooltipManager: resolvedTooltipManager
+                        arrowDirection: .top
                     )
                 }
 

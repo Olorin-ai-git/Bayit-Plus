@@ -41,14 +41,35 @@ async def lifespan(gateway_app: FastAPI):
     logger.info("Starting Bayit+ WebSocket Gateway...")
 
     # Connect to MongoDB (same cluster as monolith)
-    try:
-        await connect_to_mongo()
-        database = get_database()
-        await database.command("ping")
-        logger.info("MongoDB connection established (ws-gateway)")
-    except Exception as e:
-        logger.error("MongoDB connection failed: %s", e, exc_info=True)
-        logger.error("Gateway will start in DEGRADED mode")
+    # Retry up to 3 times — locally, an unreachable Atlas shard can cause the
+    # first attempt to time out before the driver falls back to healthy nodes.
+    max_retries = int(os.getenv("MONGODB_CONNECT_RETRIES", "3"))
+    for attempt in range(1, max_retries + 1):
+        try:
+            await connect_to_mongo()
+            database = get_database()
+            await database.command("ping")
+            logger.info("MongoDB connection established (ws-gateway)")
+            break
+        except Exception as e:
+            logger.warning(
+                "MongoDB connection attempt %d/%d failed: %s",
+                attempt, max_retries, e,
+            )
+            if attempt < max_retries:
+                # Reset singleton so next attempt creates a fresh client
+                from olorin_shared.database.mongodb import _mongodb_connection
+                import olorin_shared.database.mongodb as _db_mod
+                if _db_mod._mongodb_connection is not None:
+                    try:
+                        await _db_mod._mongodb_connection.close()
+                    except Exception:
+                        pass
+                    _db_mod._mongodb_connection = None
+                await asyncio.sleep(2)
+            else:
+                logger.error("MongoDB connection failed after %d attempts", max_retries)
+                logger.error("Gateway will start in DEGRADED mode")
 
     # Initialize Redis client and pub/sub
     async def init_redis():

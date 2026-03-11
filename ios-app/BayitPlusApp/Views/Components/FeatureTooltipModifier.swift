@@ -9,8 +9,8 @@ struct FeatureTooltipModifier: ViewModifier {
     let titleKey: String
     let descriptionKey: String
     let arrowDirection: TooltipArrowDirection
-    let tooltipManager: TooltipManager
 
+    @Environment(TooltipManager.self) var tooltipManager
     @Environment(LocalizationManager.self) var localization
     @State private var showTooltip = false
 
@@ -66,15 +66,13 @@ extension View {
         featureKey: String,
         titleKey: String,
         descriptionKey: String,
-        arrowDirection: TooltipArrowDirection = .top,
-        tooltipManager: TooltipManager
+        arrowDirection: TooltipArrowDirection = .top
     ) -> some View {
         modifier(FeatureTooltipModifier(
             featureKey: featureKey,
             titleKey: titleKey,
             descriptionKey: descriptionKey,
-            arrowDirection: arrowDirection,
-            tooltipManager: tooltipManager
+            arrowDirection: arrowDirection
         ))
     }
 }

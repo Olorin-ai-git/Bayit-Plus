@@ -2,8 +2,12 @@
 # =============================================================================
 # Discover Tab E2E Test Orchestrator
 # =============================================================================
-# Starts local backend, seeds test data, runs platform tests in parallel,
-# collects results into a unified report.
+# Starts local backend + ws-gateway, seeds test data, runs platform tests in
+# parallel, collects results into a unified report.
+#
+# The WebSocket Gateway (port 8001) handles all /api/v1/ws/* routes including
+# live dubbing, live subtitles, trivia, and other real-time features.
+# The backend monolith (port 8000) handles REST endpoints.
 #
 # Usage:
 #   ./scripts/test-discover.sh                          # All platforms
@@ -13,6 +17,7 @@
 #   ./scripts/test-discover.sh --platform android        # Android only
 #   ./scripts/test-discover.sh --feature pause_ask       # Single feature, all platforms
 #   ./scripts/test-discover.sh --skip-backend            # Skip backend startup (already running)
+#   ./scripts/test-discover.sh --skip-gateway            # Skip ws-gateway startup (already running)
 #   ./scripts/test-discover.sh --skip-seed               # Skip data seeding
 # =============================================================================
 
@@ -27,13 +32,17 @@ ANDROID_DIR="$PROJECT_ROOT/android-app"
 REPORT_DIR="/tmp/discover-e2e-report"
 REPORT_FILE="$REPORT_DIR/report.txt"
 BACKEND_PID=""
+WS_GATEWAY_PID=""
 
 PLATFORM="all"
 FEATURE="all"
 SKIP_BACKEND=false
+SKIP_GATEWAY=false
 SKIP_SEED=false
 BACKEND_PORT=8000
+WS_GATEWAY_PORT=8001
 BACKEND_HEALTH_URL="http://localhost:${BACKEND_PORT}/api/v1/health"
+WS_GATEWAY_HEALTH_URL="http://localhost:${WS_GATEWAY_PORT}/health"
 
 IOS_SIMULATOR="iPhone 17 Pro"
 TVOS_SIMULATOR="Apple TV 4K (3rd generation)"
@@ -49,12 +58,18 @@ while [[ $# -gt 0 ]]; do
         --platform) PLATFORM="$2"; shift 2 ;;
         --feature) FEATURE="$2"; shift 2 ;;
         --skip-backend) SKIP_BACKEND=true; shift ;;
+        --skip-gateway) SKIP_GATEWAY=true; shift ;;
         --skip-seed) SKIP_SEED=true; shift ;;
         *) log "Unknown arg: $1"; shift ;;
     esac
 done
 
 cleanup() {
+    if [[ -n "$WS_GATEWAY_PID" ]] && kill -0 "$WS_GATEWAY_PID" 2>/dev/null; then
+        log "Stopping ws-gateway (PID $WS_GATEWAY_PID)..."
+        kill "$WS_GATEWAY_PID" 2>/dev/null || true
+        wait "$WS_GATEWAY_PID" 2>/dev/null || true
+    fi
     if [[ -n "$BACKEND_PID" ]] && kill -0 "$BACKEND_PID" 2>/dev/null; then
         log "Stopping backend (PID $BACKEND_PID)..."
         kill "$BACKEND_PID" 2>/dev/null || true
@@ -100,6 +115,46 @@ start_backend() {
         sleep 1
     done
     log "Backend ready"
+}
+
+# =============================================================================
+# Phase 1b: WebSocket Gateway
+# =============================================================================
+WS_GATEWAY_DIR="$PROJECT_ROOT/bayit-ws-gateway"
+
+start_ws_gateway() {
+    if [[ "$SKIP_GATEWAY" == true ]]; then
+        log "Skipping ws-gateway startup (--skip-gateway)"
+        return
+    fi
+
+    log_section "Starting WebSocket Gateway"
+
+    if curl -sf "$WS_GATEWAY_HEALTH_URL" > /dev/null 2>&1; then
+        log "WS gateway already running on port $WS_GATEWAY_PORT"
+        return
+    fi
+
+    # The ws-gateway overlays main.py + router_registry.py on the backend's app/
+    # Same strategy as Docker: run from backend dir with gateway files patched in
+    cd "$BACKEND_DIR"
+    poetry run python "$SCRIPT_DIR/start-ws-gateway.py" \
+        --port "$WS_GATEWAY_PORT" \
+        --gateway-dir "$WS_GATEWAY_DIR" &
+    WS_GATEWAY_PID=$!
+    log "WS gateway starting (PID $WS_GATEWAY_PID)..."
+
+    local retries=0
+    local max_retries=30
+    while ! curl -sf "$WS_GATEWAY_HEALTH_URL" > /dev/null 2>&1; do
+        retries=$((retries + 1))
+        if [[ $retries -ge $max_retries ]]; then
+            log "WS gateway failed to start after ${max_retries}s"
+            exit 1
+        fi
+        sleep 1
+    done
+    log "WS gateway ready"
 }
 
 # =============================================================================
@@ -274,6 +329,7 @@ echo ""
 } > "$REPORT_FILE"
 
 start_backend
+start_ws_gateway
 seed_data
 
 log_section "Running Platform Tests"

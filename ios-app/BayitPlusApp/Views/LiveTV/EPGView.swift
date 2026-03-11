@@ -56,8 +56,7 @@ struct EPGView: View {
             featureKey: "epg_catchup",
             titleKey: "tooltip.catchup.title",
             descriptionKey: "tooltip.catchup.description",
-            arrowDirection: .bottom,
-            tooltipManager: tooltipManager
+            arrowDirection: .bottom
         )
     }
 

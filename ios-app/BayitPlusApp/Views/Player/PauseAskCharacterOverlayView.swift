@@ -29,8 +29,7 @@
                         featureKey: "vod_pause_ask",
                         titleKey: "tooltip.pauseAndAsk.title",
                         descriptionKey: "tooltip.pauseAndAsk.description",
-                        arrowDirection: .bottom,
-                        tooltipManager: tooltipManager
+                        arrowDirection: .bottom
                     )
 
                 characterGrid

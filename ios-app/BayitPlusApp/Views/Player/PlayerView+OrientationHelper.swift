@@ -62,12 +62,6 @@ extension PlayerView {
         }
     }
 
-    // MARK: - Resolved Tooltip Manager
-
-    var resolvedTooltipManager: TooltipManager {
-        tooltipManager
-    }
-
     // MARK: - Playback Rate Label
 
     var playbackRateLabel: String {

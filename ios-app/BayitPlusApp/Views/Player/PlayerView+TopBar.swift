@@ -126,8 +126,7 @@ extension PlayerView {
                     featureKey: "pause_and_ask",
                     titleKey: "tooltip.pauseAndAsk.title",
                     descriptionKey: "tooltip.pauseAndAsk.description",
-                    arrowDirection: .top,
-                    tooltipManager: resolvedTooltipManager
+                    arrowDirection: .top
                 )
             }
 

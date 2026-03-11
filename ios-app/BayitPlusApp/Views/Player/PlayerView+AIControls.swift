@@ -32,8 +32,7 @@
                 onSubtitlesTap: { toggleLiveTranslation() },
                 onSplitSubtitlesTap: { toggleSplitSubtitles() },
                 onDubbingTap: { toggleLiveDubbing() },
-                onTriviaTap: { toggleLiveTrivia() },
-                tooltipManager: resolvedTooltipManager
+                onTriviaTap: { toggleLiveTrivia() }
             )
         }
 

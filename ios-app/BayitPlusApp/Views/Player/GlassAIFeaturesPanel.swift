@@ -28,7 +28,6 @@
         let onSplitSubtitlesTap: () -> Void
         let onDubbingTap: () -> Void
         let onTriviaTap: () -> Void
-        let tooltipManager: TooltipManager
 
         private let panelHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 56 : 48
 
