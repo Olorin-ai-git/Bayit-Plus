@@ -18,6 +18,7 @@
         @Environment(TVAudioPlaybackManager.self) var audioPlaybackManager
 
         @State var showVoiceAssistant = false
+        @State private var showPlusIntro = false
         @State private var isHandlingUnauthorized = false
         @State private var networkMonitor = NetworkMonitor()
         @State private var multiUserService = TVMultiUserService()
@@ -88,6 +89,18 @@
                 }
             }
             .overlay { TVNetworkBannerView(isConnected: networkMonitor.isConnected) }
+            .overlay {
+                if showPlusIntro {
+                    TVPlusIntroOverlayView(
+                        onSeePlans: {
+                            showPlusIntro = false
+                            coordinator.fullscreenRoute = .subscriptionGate
+                        },
+                        onDismiss: { showPlusIntro = false }
+                    )
+                    .transition(.opacity)
+                }
+            }
             .environment(networkMonitor)
             .environment(onboardingPrefs)
             .environment(byocManager)
@@ -137,6 +150,9 @@
                 if isAuthenticated {
                     withAnimation {
                         coordinator.showingAuth = false
+                    }
+                    if !TVPlusIntroOverlayView.hasBeenSeen {
+                        showPlusIntro = true
                     }
                 } else if !coordinator.showingSplash {
                     withAnimation {
