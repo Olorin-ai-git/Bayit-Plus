@@ -10,9 +10,9 @@ import logging
 from typing import Optional, Tuple
 
 from beanie import PydanticObjectId
-from jose import JWTError, jwt
 
 from app.core.config import settings
+from app.core.security import decode_token
 from app.models.content import LiveChannel
 from app.models.live_dubbing import LiveDubbingSession
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
@@ -29,24 +29,22 @@ _active_sessions_local: dict[str, set[str]] = {}
 
 async def get_user_from_token(token: str) -> Optional[User]:
     """Validate JWT token and return user."""
-    try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
-        user_id = payload.get("sub")
-        if not user_id:
-            return None
-
-        # RS256 tokens: sub is auth service user ID, not Bayit+ _id
-        user = await User.find_one({"auth_service_user_id": user_id})
-        if user is None:
-            user = await User.get(user_id)
-        if not user or not user.is_active:
-            return None
-
-        return user
-    except JWTError:
+    payload = await decode_token(token)
+    if payload is None:
         return None
+
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+
+    # RS256 tokens: sub is auth service user ID, not Bayit+ _id
+    user = await User.find_one({"auth_service_user_id": user_id})
+    if user is None:
+        user = await User.get(user_id)
+    if not user or not user.is_active:
+        return None
+
+    return user
 
 
 async def check_authentication_message(websocket) -> Tuple[Optional[str], bool]:
