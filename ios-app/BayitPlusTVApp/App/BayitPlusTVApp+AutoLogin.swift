@@ -49,7 +49,7 @@ extension BayitPlusTVApp {
                 id: response.userId ?? "",
                 email: response.email ?? email,
                 displayName: response.name ?? "",
-                photoURL: response.avatar,
+                photoURL: response.avatar.flatMap { URL(string: $0) },
                 role: role,
                 isActive: true,
                 subscription: nil,
