@@ -6310,11 +6310,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -6499,7 +6495,15 @@
     "scenes": "Escenas",
     "translate": "Traducir",
     "split": "Dividir",
-    "dubbing": "Doblaje",
+    "dubbing": {
+      "label": "Doblaje",
+      "feature": {
+        "realtime": "Real-time dubbing in multiple languages",
+        "voices": "Professional voice selection",
+        "lowLatency": "Low-latency audio streaming",
+        "highQuality": "High-quality audio"
+      }
+    },
     "dialogue": {
       "talkToCharacter": "Hablar con personaje",
       "selectCharacter": "Seleccionar personaje",

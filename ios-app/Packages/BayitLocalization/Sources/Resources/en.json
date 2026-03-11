@@ -6151,7 +6151,15 @@
       "typeQuestion": "Type your question",
       "voiceMode": "Voice Mode"
     },
-    "dubbing": "Dubbing",
+    "dubbing": {
+      "label": "Dubbing",
+      "feature": {
+        "realtime": "Real-time dubbing in multiple languages",
+        "voices": "Professional voice selection",
+        "lowLatency": "Low-latency audio streaming",
+        "highQuality": "High-quality audio"
+      }
+    },
     "interaction": {
       "next": "Next",
       "previous": "Previous"

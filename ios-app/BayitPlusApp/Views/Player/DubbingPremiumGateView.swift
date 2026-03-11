@@ -9,6 +9,7 @@ struct DubbingPremiumGateView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(LocalizationManager.self) private var localization
+    @Environment(NavigationCoordinator.self) private var coordinator
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
@@ -49,10 +50,10 @@ struct DubbingPremiumGateView: View {
 
     private var featuresView: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            featureRow(icon: "captions.bubble.fill", text: "Real-time dubbing in multiple languages")
-            featureRow(icon: "waveform", text: "Professional voice selection")
-            featureRow(icon: "bolt.fill", text: "Low-latency audio streaming")
-            featureRow(icon: "speaker.wave.2.fill", text: "High-quality audio")
+            featureRow(icon: "captions.bubble.fill", text: localization.t("player.dubbing.feature.realtime"))
+            featureRow(icon: "waveform", text: localization.t("player.dubbing.feature.voices"))
+            featureRow(icon: "bolt.fill", text: localization.t("player.dubbing.feature.lowLatency"))
+            featureRow(icon: "speaker.wave.2.fill", text: localization.t("player.dubbing.feature.highQuality"))
         }
         .padding(DesignTokens.Spacing.md)
         .background(DesignTokens.Background.elevated)
@@ -81,9 +82,8 @@ struct DubbingPremiumGateView: View {
             size: .large,
             icon: Image(systemName: "crown.fill")
         ) {
-            // Navigate to subscription view
-            // This would use NavigationCoordinator in production
-            dismiss()
+            coordinator.navigate(to: .subscription)
+            onDismiss()
         }
         .accessibilityLabel("Upgrade to Premium subscription")
     }

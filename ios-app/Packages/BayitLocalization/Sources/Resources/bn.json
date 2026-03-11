@@ -6404,7 +6404,15 @@
     "scenes": "Scenes",
     "translate": "Translate",
     "split": "Split",
-    "dubbing": "Dubbing",
+    "dubbing": {
+      "label": "Dubbing",
+      "feature": {
+        "realtime": "Real-time dubbing in multiple languages",
+        "voices": "Professional voice selection",
+        "lowLatency": "Low-latency audio streaming",
+        "highQuality": "High-quality audio"
+      }
+    },
     "interaction": {
       "previous": "পূর্ববর্তী ইন্টারঅ্যাকশন",
       "next": "পরবর্তী ইন্টারঅ্যাকশন"

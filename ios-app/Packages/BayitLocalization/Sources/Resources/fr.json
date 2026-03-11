@@ -6819,7 +6819,15 @@
     "scenes": "Scenes",
     "translate": "Translate",
     "split": "Split",
-    "dubbing": "Dubbing",
+    "dubbing": {
+      "label": "Dubbing",
+      "feature": {
+        "realtime": "Real-time dubbing in multiple languages",
+        "voices": "Professional voice selection",
+        "lowLatency": "Low-latency audio streaming",
+        "highQuality": "High-quality audio"
+      }
+    },
     "interaction": {
       "previous": "Interaction precedente",
       "next": "Interaction suivante"

@@ -6289,11 +6289,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -6476,7 +6472,15 @@
     "scenes": "סצנות",
     "translate": "תרגום",
     "split": "פיצול",
-    "dubbing": "דיבוב",
+    "dubbing": {
+      "label": "דיבוב",
+      "feature": {
+        "realtime": "Real-time dubbing in multiple languages",
+        "voices": "Professional voice selection",
+        "lowLatency": "Low-latency audio streaming",
+        "highQuality": "High-quality audio"
+      }
+    },
     "interactive": {
       "skip": "דלג",
       "continue": "המשך לצפות",
