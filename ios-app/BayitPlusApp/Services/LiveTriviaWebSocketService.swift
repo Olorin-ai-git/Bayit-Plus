@@ -43,7 +43,11 @@ final class LiveTriviaWebSocketService: @unchecked Sendable {
 
         onConnectionStatusChanged?(.connecting)
 
-        let wsURL = configuration.webSocketBaseURL
+        var wsURL = configuration.webSocketBaseURL
+        for component in configuration.apiBaseURL.pathComponents where component != "/" {
+            wsURL = wsURL.appendingPathComponent(component)
+        }
+        wsURL = wsURL
             .appendingPathComponent("ws")
             .appendingPathComponent("live")
             .appendingPathComponent(channelId)

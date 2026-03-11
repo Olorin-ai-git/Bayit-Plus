@@ -135,13 +135,24 @@
 
         // MARK: - Toggle Live Trivia
 
-        /// Toggles live trivia using `selectedAILanguage`. Independent of dubbing/subtitles.
+        /// Toggles live trivia using `selectedAILanguage`.
+        /// Auto-enables live translation if not already active, since trivia
+        /// consumes transcripts from the translation pipeline.
         func toggleLiveTrivia() {
             guard let vm = triviaVM else { return }
 
             if vm.isEnabled {
                 vm.disconnectLiveTrivia()
             } else {
+                // Trivia requires live translation to produce transcripts.
+                // Auto-enable subtitles/translation if not already active.
+                if liveSubtitlesVM?.isEnabled != true {
+                    if liveDubbingVM?.isEnabled == true {
+                        liveDubbingVM?.toggleDubbing(channelId: contentId)
+                    }
+                    handleSubtitleSelection(selectedAILanguage)
+                }
+
                 let triviaWS = LiveTriviaWebSocketService(
                     webSocketManager: repositories.webSocketManager,
                     configuration: repositories.configuration,

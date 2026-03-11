@@ -1,5 +1,8 @@
 import BayitCore
 import SwiftUI
+#if os(macOS)
+    import AppKit
+#endif
 
 private struct WalkthroughOverlayModifier: ViewModifier {
     let featureIds: Set<String>
@@ -67,6 +70,9 @@ private struct WalkthroughOverlayModifier: ViewModifier {
         #if os(tvOS)
             let screenWidth: CGFloat = 1920
             let screenHeight: CGFloat = 1080
+        #elseif os(macOS)
+            let screenWidth = NSScreen.main?.frame.width ?? 1440
+            let screenHeight = NSScreen.main?.frame.height ?? 900
         #else
             let screenWidth = UIScreen.main.bounds.width
             let screenHeight = UIScreen.main.bounds.height

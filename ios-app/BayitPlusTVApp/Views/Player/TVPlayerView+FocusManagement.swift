@@ -97,6 +97,18 @@ extension TVPlayerView {
         if vm.isEnabled {
             vm.disconnectLiveTrivia()
         } else {
+            // Trivia requires live translation to produce transcripts.
+            // Auto-enable translation if not already active.
+            if state.liveSubtitlesVM?.isEnabled != true {
+                if state.liveDubbingVM?.isEnabled == true {
+                    state.liveDubbingVM?.toggleDubbing(channelId: contentId)
+                }
+                state.liveSubtitlesVM?.selectLanguage(
+                    state.selectedAILanguage, channelId: contentId
+                )
+                state.liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+            }
+
             let triviaWS = LiveTriviaWebSocketService(
                 webSocketManager: repos.webSocketManager,
                 configuration: repos.configuration,

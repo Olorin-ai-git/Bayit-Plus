@@ -50,12 +50,6 @@
             )
             .walkthroughTarget(id: "discover_live_dubbing_step2")
             .walkthroughTarget(id: "discover_live_dubbing_step3")
-            .featureTooltip(
-                featureKey: "live_dubbing",
-                titleKey: "tooltip.dubbing.title",
-                descriptionKey: "tooltip.dubbing.description",
-                arrowDirection: .bottom
-            )
         }
 
         var liveTriviaButton: some View {

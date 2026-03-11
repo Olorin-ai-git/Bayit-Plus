@@ -50,12 +50,18 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
         voiceId: String?,
         streamUrl: String? = nil
     ) {
-        let wsURL = configuration.webSocketBaseURL
-            .appendingPathComponent("live-dubbing/stream")
+        var wsURL = configuration.webSocketBaseURL
+        for component in configuration.apiBaseURL.pathComponents where component != "/" {
+            wsURL = wsURL.appendingPathComponent(component)
+        }
+        wsURL = wsURL
+            .appendingPathComponent("ws")
+            .appendingPathComponent("live")
+            .appendingPathComponent(channelId)
+            .appendingPathComponent("dubbing")
         var urlComponents = URLComponents(url: wsURL, resolvingAgainstBaseURL: false)
         var queryItems = [
-            URLQueryItem(name: "channel_id", value: channelId),
-            URLQueryItem(name: "target_language", value: targetLanguage),
+            URLQueryItem(name: "target_lang", value: targetLanguage),
             URLQueryItem(name: "platform", value: Self.platformIdentifier),
         ]
         if let voiceId {
