@@ -6,12 +6,14 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.repository.BetaCreditsRepository
 import tv.bayit.plus.core.data.repository.UserRepository
 import tv.bayit.plus.core.model.UserResponse
 import javax.inject.Inject
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SubscriptionViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val betaCreditsRepository: BetaCreditsRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -32,23 +35,32 @@ class SubscriptionViewModel @Inject constructor(
     private fun loadSubscription() {
         viewModelScope.launch {
             logger.debug("Loading subscription info")
-            when (val result = userRepository.getCurrentUser()) {
+            val userDeferred = async { userRepository.getCurrentUser() }
+            val creditsDeferred = async { betaCreditsRepository.getBalance() }
+
+            val userResult = userDeferred.await()
+            val creditsResult = creditsDeferred.await()
+
+            when (userResult) {
                 is BayitResult.Success -> {
-                    val user = result.data as? UserResponse
+                    val user = userResult.data as? UserResponse
                     val sub = user?.subscription
+                    val remaining = (creditsResult as? BayitResult.Success)?.data ?: 0
                     _uiState.value = SubscriptionUiState.Success(
                         plan = sub?.plan ?: "Free",
                         status = sub?.status ?: "active",
                         startDate = sub?.startDate.orEmpty(),
                         endDate = sub?.endDate.orEmpty(),
                         isBetaUser = user?.isBetaUser == true,
+                        remainingCredits = remaining,
+                        totalCredits = BETA_CREDITS_TOTAL,
                     )
-                    logger.info("Subscription loaded", mapOf("plan" to (sub?.plan ?: "free")))
+                    logger.info("Subscription loaded", mapOf("plan" to (sub?.plan ?: "free"), "credits" to remaining.toString()))
                 }
                 is BayitResult.Error -> {
-                    logger.error("Failed to load subscription", result.exception)
+                    logger.error("Failed to load subscription", userResult.exception)
                     _uiState.value = SubscriptionUiState.Error(
-                        message = result.message ?: result.exception.message.orEmpty(),
+                        message = userResult.message ?: userResult.exception.message.orEmpty(),
                     )
                 }
                 is BayitResult.Loading -> Unit
@@ -76,6 +88,9 @@ class SubscriptionViewModel @Inject constructor(
     companion object {
         private const val PLAY_SUBSCRIPTION_DEEPLINK =
             "https://play.google.com/store/account/subscriptions?package=tv.bayit.plus"
+
+        /** Beta 500 program total credit allocation per user. */
+        internal const val BETA_CREDITS_TOTAL = 500
     }
 }
 
@@ -88,6 +103,8 @@ sealed interface SubscriptionUiState {
         val startDate: String,
         val endDate: String,
         val isBetaUser: Boolean,
+        val remainingCredits: Int = 0,
+        val totalCredits: Int = 0,
     ) : SubscriptionUiState
 
     data class Error(val message: String) : SubscriptionUiState
