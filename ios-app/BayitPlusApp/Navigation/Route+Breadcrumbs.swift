@@ -88,6 +88,7 @@ extension Route {
         case .zehAniMovieInteractions: return "Movie Interactions"
         case .zehAniMovieCharacters: return "Characters"
         case .zehAniCharacterDialogue: return "Dialogue"
+        case .interactiveMission: return "Mission"
         }
     }
 }
