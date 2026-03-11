@@ -83,6 +83,10 @@ struct TVHomeView: View {
             // Personalized greeting
             greetingSection
 
+            // Credit balance / Plus membership badge
+            TVCreditsBadgeView()
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
             // Hero carousel (owner mode only — spotlight is from private library)
             if appConfiguration.ownerMode, !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
