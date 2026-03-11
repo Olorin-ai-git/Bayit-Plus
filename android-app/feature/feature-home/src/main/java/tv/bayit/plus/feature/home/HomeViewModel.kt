@@ -10,12 +10,14 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.OwnerMode
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.repository.BetaCreditsRepository
 import tv.bayit.plus.core.data.repository.CategoryRepository
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
 import tv.bayit.plus.core.data.repository.LocationRepository
 import tv.bayit.plus.core.data.repository.RadioRepository
 import tv.bayit.plus.core.data.repository.ShabbatRepository
+import tv.bayit.plus.core.data.repository.SubscriptionRepository
 import tv.bayit.plus.core.location.LocationManager
 import tv.bayit.plus.core.location.wasPermissionRequested
 import tv.bayit.plus.core.byoc.BYOCSourceManager
@@ -34,6 +36,8 @@ class HomeViewModel @Inject constructor(
     internal val locationManager: LocationManager,
     internal val sourceManager: BYOCSourceManager,
     internal val tourDataStore: TourDataStore,
+    internal val subscriptionRepository: SubscriptionRepository,
+    internal val betaCreditsRepository: BetaCreditsRepository,
     internal val logger: BayitLogger,
     @OwnerMode internal val ownerMode: Boolean,
 ) : ViewModel() {
@@ -110,6 +114,7 @@ class HomeViewModel @Inject constructor(
         launchSection { loadJerusalemContent().let { data -> updateState { copy(jerusalemContent = data) } } }
         launchSection { loadShabbatInfo().let { data -> updateState { copy(shabbatInfo = data) } } }
         launchSection { loadBYOCState() }
+        launchSection { loadCreditBadgeData() }
 
         if (locationManager.hasLocationPermission()) {
             launchSection { loadIsraelisInCity().let { data -> updateState { copy(israelisInCity = data) } } }
@@ -187,8 +192,40 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private suspend fun loadCreditBadgeData() {
+        val subResult = subscriptionRepository.getCurrentSubscription()
+        val isPlus = subResult is BayitResult.Success
+
+        when (val creditResult = betaCreditsRepository.getBalance()) {
+            is BayitResult.Success -> {
+                val balance = creditResult.data
+                updateState {
+                    copy(
+                        remainingCredits = balance,
+                        totalCredits = BETA_CREDITS_TOTAL,
+                        isPlusSubscriber = isPlus,
+                    )
+                }
+            }
+            is BayitResult.Error -> {
+                logger.error(
+                    "Failed to load credit balance for badge",
+                    creditResult.exception,
+                    emptyMap(),
+                )
+                updateState { copy(isPlusSubscriber = isPlus) }
+            }
+            is BayitResult.Loading -> Unit
+        }
+    }
+
     internal fun handleError(message: String) {
         logger.error("Home feed error", null, mapOf("message" to message))
         _uiState.value = HomeUiState.Error(message = message)
+    }
+
+    companion object {
+        /** Beta 500 program total credit allocation per user. */
+        internal const val BETA_CREDITS_TOTAL = 500
     }
 }

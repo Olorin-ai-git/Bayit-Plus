@@ -41,6 +41,9 @@ sealed interface HomeUiState {
         val isRefreshing: Boolean = false,
         val localTimezone: String = TimeZone.getDefault().id,
         val localLocationLabel: String = timezoneDisplayCity(TimeZone.getDefault().id),
+        val remainingCredits: Int = 0,
+        val totalCredits: Int = 0,
+        val isPlusSubscriber: Boolean = false,
     ) : HomeUiState
 
     data class Error(

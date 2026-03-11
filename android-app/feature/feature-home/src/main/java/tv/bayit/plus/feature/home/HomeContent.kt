@@ -56,6 +56,7 @@ internal fun HomeSuccessContent(
     ownerMode: Boolean = false,
     sourceManager: BYOCSourceManager? = null,
     onRefresh: () -> Unit,
+    onNavigateToSubscribe: () -> Unit = {},
     onDismissShabbatBanner: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -113,6 +114,16 @@ internal fun HomeSuccessContent(
                         modifier = Modifier.padding(horizontal = DesignTokens.Spacing.lg),
                     )
                 }
+            }
+
+            item(key = "credits_badge") {
+                CreditsBadge(
+                    remainingCredits = uiState.remainingCredits,
+                    totalCredits = uiState.totalCredits,
+                    isPlus = uiState.isPlusSubscriber,
+                    onNavigateToSubscribe = onNavigateToSubscribe,
+                    modifier = Modifier.padding(horizontal = DesignTokens.Spacing.lg),
+                )
             }
 
             if (!ownerMode) {

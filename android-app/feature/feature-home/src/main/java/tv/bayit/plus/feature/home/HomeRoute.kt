@@ -41,6 +41,7 @@ fun HomeRoute(
     onNavigateToCategoryBrowse: (String) -> Unit,
     onNavigateToIsraelisCity: () -> Unit,
     onNavigateToIsraeliBusinesses: () -> Unit,
+    onNavigateToSubscribe: () -> Unit = {},
     onNavigateToBYOCSettings: () -> Unit = {},
     onNavigateToBYOCPlayer: (String, String) -> Unit = { _, _ -> },
     onNavigateToFeatureTour: () -> Unit = {},
@@ -79,6 +80,7 @@ fun HomeRoute(
         )
         HomeScreen(
             uiState = uiState,
+            onNavigateToSubscribe = onNavigateToSubscribe,
             onConnectBYOCSources = onNavigateToBYOCSettings,
             onBYOCItemClick = { item ->
                 onNavigateToBYOCPlayer(item.id, item.streamUrl.orEmpty())
