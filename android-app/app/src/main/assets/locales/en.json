@@ -2939,7 +2939,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -2951,7 +2955,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -4861,6 +4868,27 @@
       "blendShapes": "Blend Shapes",
       "hasGlb": "Has GLB",
       "status": "Status: {{value}}"
+    }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} credits remaining",
+      "unlimited": "Unlimited AI",
+      "subscribedLabel": "Plus Member",
+      "getUnlimited": "Get unlimited with Plus",
+      "upgradeNow": "Upgrade Now",
+      "creditLow": "Credits running low",
+      "subscribeAtWeb": "Subscribe at bayit.tv"
+    },
+    "toast": {
+      "creditUsed": "Credit used",
+      "remaining": "{{count}} remaining",
+      "getUnlimited": "Get unlimited with Plus"
+    },
+    "feature": {
+      "dubbing": "Watch in English with AI Dubbing",
+      "subtitles": "Smart Subtitles with grammar & slang",
+      "search": "Find scenes with AI Search"
     }
   }
 }

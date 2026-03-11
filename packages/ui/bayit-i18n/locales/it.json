@@ -10092,5 +10092,26 @@
     "languageCurrent": "Lingua: {{lang}}, tocca per cambiare",
     "selectLanguage": "Seleziona lingua",
     "homeLogo": "Bayit+"
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} crediti rimanenti",
+      "unlimited": "AI illimitata",
+      "subscribedLabel": "Membro Plus",
+      "getUnlimited": "Ottieni illimitato con Plus",
+      "upgradeNow": "Aggiorna ora",
+      "creditLow": "Crediti in esaurimento",
+      "subscribeAtWeb": "Abbonati su bayit.tv"
+    },
+    "toast": {
+      "creditUsed": "Credito utilizzato",
+      "remaining": "{{count}} rimanenti",
+      "getUnlimited": "Ottieni illimitato con Plus"
+    },
+    "feature": {
+      "dubbing": "Guarda in inglese con doppiaggio AI",
+      "subtitles": "Sottotitoli intelligenti con grammatica e slang",
+      "search": "Trova scene con AI Search"
+    }
   }
 }

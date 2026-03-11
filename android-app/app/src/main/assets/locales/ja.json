@@ -6188,5 +6188,26 @@
       "hasGlb": "Has GLB",
       "status": "Status: {{value}}"
     }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} クレジット残り",
+      "unlimited": "無制限AI",
+      "subscribedLabel": "Plusメンバー",
+      "getUnlimited": "Plusで無制限に",
+      "upgradeNow": "今すぐアップグレード",
+      "creditLow": "クレジット残りわずか",
+      "subscribeAtWeb": "bayit.tvで登録"
+    },
+    "toast": {
+      "creditUsed": "クレジット使用済み",
+      "remaining": "{{count}} 残り",
+      "getUnlimited": "Plusで無制限に"
+    },
+    "feature": {
+      "dubbing": "AIダビングで英語で視聴",
+      "subtitles": "文法とスラング付きスマート字幕",
+      "search": "AI Searchでシーンを検索"
+    }
   }
 }

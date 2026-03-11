@@ -10758,5 +10758,26 @@
     "languageCurrent": "Langue : {{lang}}, appuyez pour changer",
     "selectLanguage": "Choisir la langue",
     "homeLogo": "Bayit+"
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} credits restants",
+      "unlimited": "IA illimitee",
+      "subscribedLabel": "Membre Plus",
+      "getUnlimited": "Obtenez l illimite avec Plus",
+      "upgradeNow": "Mettre a niveau",
+      "creditLow": "Credits bientot epuises",
+      "subscribeAtWeb": "Abonnez-vous sur bayit.tv"
+    },
+    "toast": {
+      "creditUsed": "Credit utilise",
+      "remaining": "{{count}} restants",
+      "getUnlimited": "Obtenez l illimite avec Plus"
+    },
+    "feature": {
+      "dubbing": "Regarder en anglais avec doublage IA",
+      "subtitles": "Sous-titres intelligents avec grammaire et argot",
+      "search": "Trouver des scenes avec AI Search"
+    }
   }
 }

@@ -52,7 +52,14 @@ internal fun TVHomeScreen(
     when (uiState) {
         is TVHomeUiState.Loading -> LoadingState(modifier)
         is TVHomeUiState.Error -> ErrorState(uiState.message, onRetry, modifier)
-        is TVHomeUiState.Success -> ContentState(uiState.rows, onContentClick, modifier)
+        is TVHomeUiState.Success -> ContentState(
+            rows = uiState.rows,
+            remainingCredits = uiState.remainingCredits,
+            totalCredits = uiState.totalCredits,
+            isPlusSubscriber = uiState.isPlusSubscriber,
+            onContentClick = onContentClick,
+            modifier = modifier,
+        )
     }
 }
 
@@ -99,6 +106,9 @@ private fun ErrorState(
 @Composable
 private fun ContentState(
     rows: List<TVContentRowData>,
+    remainingCredits: Int,
+    totalCredits: Int,
+    isPlusSubscriber: Boolean,
     onContentClick: (contentId: String, contentType: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -120,6 +130,18 @@ private fun ContentState(
                     )
                 }
             }
+        }
+
+        item(key = "credits_badge") {
+            TVCreditsBadge(
+                remainingCredits = remainingCredits,
+                totalCredits = totalCredits,
+                isPlus = isPlusSubscriber,
+                modifier = Modifier.padding(
+                    horizontal = TVDesignTokens.Spacing.screenPadding,
+                    vertical = TVDesignTokens.Spacing.rowSpacing,
+                ),
+            )
         }
 
         items(

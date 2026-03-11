@@ -9953,5 +9953,26 @@
     "languageCurrent": "שפה: {{lang}}, הקש לשינוי",
     "selectLanguage": "בחר שפה",
     "homeLogo": "בית+"
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} קרדיטים נותרו",
+      "unlimited": "AI ללא הגבלה",
+      "subscribedLabel": "מנוי Plus",
+      "getUnlimited": "קבלו ללא הגבלה עם Plus",
+      "upgradeNow": "שדרגו עכשיו",
+      "creditLow": "הקרדיטים עומדים להיגמר",
+      "subscribeAtWeb": "הירשמו ב-bayit.tv"
+    },
+    "toast": {
+      "creditUsed": "קרדיט נוצל",
+      "remaining": "{{count}} נותרו",
+      "getUnlimited": "קבלו ללא הגבלה עם Plus"
+    },
+    "feature": {
+      "dubbing": "צפו באנגלית עם דיבוב AI",
+      "subtitles": "כתוביות חכמות עם דקדוק וסלנג",
+      "search": "מצאו סצנות עם חיפוש AI"
+    }
   }
 }

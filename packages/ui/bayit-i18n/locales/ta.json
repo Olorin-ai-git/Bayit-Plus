@@ -9919,5 +9919,26 @@
     "languageCurrent": "மொழி: {{lang}}, மாற்ற தட்டவும்",
     "selectLanguage": "மொழியைத் தேர்வு செய்யவும்",
     "homeLogo": "Bayit+"
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} கிரெடிட்கள் மீதமுள்ளன",
+      "unlimited": "வரம்பற்ற AI",
+      "subscribedLabel": "Plus உறுப்பினர்",
+      "getUnlimited": "Plus உடன் வரம்பற்ற பெறுங்கள்",
+      "upgradeNow": "இப்போது மேம்படுத்தவும்",
+      "creditLow": "கிரெடிட்கள் குறைகின்றன",
+      "subscribeAtWeb": "bayit.tv இல் சந்தா செலுத்தவும்"
+    },
+    "toast": {
+      "creditUsed": "கிரெடிட் பயன்படுத்தப்பட்டது",
+      "remaining": "{{count}} மீதமுள்ளன",
+      "getUnlimited": "Plus உடன் வரம்பற்ற பெறுங்கள்"
+    },
+    "feature": {
+      "dubbing": "AI டப்பிங் உடன் ஆங்கிலத்தில் பாருங்கள்",
+      "subtitles": "இலக்கணம் மற்றும் ஸ்லாங் உடன் ஸ்மார்ட் வசன உரை",
+      "search": "AI Search உடன் காட்சிகளைக் கண்டறியுங்கள்"
+    }
   }
 }

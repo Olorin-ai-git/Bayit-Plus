@@ -4845,5 +4845,26 @@
       "hasGlb": "Has GLB",
       "status": "Status: {{value}}"
     }
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} क्रेडिट शेष",
+      "unlimited": "असीमित AI",
+      "subscribedLabel": "Plus सदस्य",
+      "getUnlimited": "Plus के साथ असीमित प्राप्त करें",
+      "upgradeNow": "अभी अपग्रेड करें",
+      "creditLow": "क्रेडिट कम हो रहे हैं",
+      "subscribeAtWeb": "bayit.tv पर सदस्यता लें"
+    },
+    "toast": {
+      "creditUsed": "क्रेडिट उपयोग किया गया",
+      "remaining": "{{count}} शेष",
+      "getUnlimited": "Plus के साथ असीमित प्राप्त करें"
+    },
+    "feature": {
+      "dubbing": "AI डबिंग के साथ अंग्रेजी में देखें",
+      "subtitles": "व्याकरण और स्लैंग के साथ स्मार्ट उपशीर्षक",
+      "search": "AI Search से दृश्य खोजें"
+    }
   }
 }

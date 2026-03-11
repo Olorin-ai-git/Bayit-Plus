@@ -9827,5 +9827,26 @@
     "languageCurrent": "ভাষা: {{lang}}, পরিবর্তন করতে ট্যাপ করুন",
     "selectLanguage": "ভাষা নির্বাচন করুন",
     "homeLogo": "Bayit+"
+  },
+  "plus": {
+    "badge": {
+      "creditsRemaining": "{{count}} ক্রেডিট বাকি",
+      "unlimited": "সীমাহীন AI",
+      "subscribedLabel": "Plus সদস্য",
+      "getUnlimited": "Plus দিয়ে সীমাহীন পান",
+      "upgradeNow": "এখনই আপগ্রেড করুন",
+      "creditLow": "ক্রেডিট কমে যাচ্ছে",
+      "subscribeAtWeb": "bayit.tv-এ সাবস্ক্রাইব করুন"
+    },
+    "toast": {
+      "creditUsed": "ক্রেডিট ব্যবহৃত",
+      "remaining": "{{count}} বাকি",
+      "getUnlimited": "Plus দিয়ে সীমাহীন পান"
+    },
+    "feature": {
+      "dubbing": "AI ডাবিং দিয়ে ইংরেজিতে দেখুন",
+      "subtitles": "ব্যাকরণ ও স্ল্যাং সহ স্মার্ট সাবটাইটেল",
+      "search": "AI Search দিয়ে দৃশ্য খুঁজুন"
+    }
   }
 }
