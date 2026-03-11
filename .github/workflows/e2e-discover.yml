@@ -1,0 +1,327 @@
+name: Discover Tab E2E Tests
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'ios-app/BayitPlusApp/Views/Discover/**'
+      - 'ios-app/BayitPlusApp/ViewModels/Discover*'
+      - 'ios-app/Packages/BayitCore/Sources/BayitCore/Discover/**'
+      - 'web/src/pages/Discover*'
+      - 'web/src/components/discover/**'
+      - 'web/src/stores/discoverStore*'
+      - 'android-app/feature/feature-discover/**'
+      - 'backend/app/api/routes/discover*'
+      - 'backend/app/services/discover*'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to test'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - ios
+          - tvos
+          - web
+          - android
+      feature:
+        description: 'Feature to test (or all)'
+        required: false
+        default: 'all'
+        type: string
+
+concurrency:
+  group: discover-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+  BACKEND_PORT: 8000
+
+jobs:
+  setup-backend:
+    name: Start Backend & Seed Data
+    runs-on: self-hosted-macos
+    outputs:
+      backend-ready: ${{ steps.health.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: poetry install --no-interaction
+
+      - name: Start backend
+        working-directory: backend
+        run: |
+          poetry run uvicorn app.main:app \
+            --host 0.0.0.0 \
+            --port ${{ env.BACKEND_PORT }} \
+            --log-level warning &
+          echo "BACKEND_PID=$!" >> $GITHUB_ENV
+
+      - name: Wait for backend health
+        id: health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:${{ env.BACKEND_PORT }}/api/v1/health > /dev/null 2>&1; then
+              echo "ready=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ready=false" >> $GITHUB_OUTPUT
+          exit 1
+
+      - name: Seed test data
+        working-directory: backend
+        run: poetry run python ../scripts/seed-test-data.py
+
+      - name: Upload fixtures
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-fixtures
+          path: tests/e2e/fixtures/test-fixtures.json
+
+  test-ios:
+    name: iOS E2E Tests
+    needs: setup-backend
+    if: >
+      needs.setup-backend.outputs.backend-ready == 'true' &&
+      (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios' || github.event.inputs.platform == '')
+    runs-on: self-hosted-macos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-fixtures
+          path: tests/e2e/fixtures/
+
+      - name: Generate Xcode project
+        working-directory: ios-app
+        run: xcodegen generate
+
+      - name: Run iOS Discover tests
+        working-directory: ios-app
+        run: |
+          FEATURE="${{ github.event.inputs.feature || 'all' }}"
+          if [ "$FEATURE" = "all" ]; then
+            TEST_FILTER="-only-testing:BayitPlusUITests/Discover"
+          else
+            TEST_FILTER="-only-testing:BayitPlusUITests/Discover/${FEATURE}"
+          fi
+
+          xcodebuild test \
+            -project BayitPlus.xcodeproj \
+            -scheme BayitPlusApp \
+            -destination "platform=iOS Simulator,name=iPhone 17 Pro" \
+            -derivedDataPath /tmp/discover-derived \
+            -enableCodeCoverage YES \
+            -resultBundlePath /tmp/discover-ios-results.xcresult \
+            $TEST_FILTER
+
+      - name: Upload iOS results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-results
+          path: /tmp/discover-ios-results.xcresult
+
+  test-tvos:
+    name: tvOS E2E Tests
+    needs: [setup-backend, test-ios]
+    if: >
+      needs.setup-backend.outputs.backend-ready == 'true' &&
+      (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tvos' || github.event.inputs.platform == '')
+    runs-on: self-hosted-macos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-fixtures
+          path: tests/e2e/fixtures/
+
+      - name: Generate Xcode project
+        working-directory: ios-app
+        run: xcodegen generate
+
+      - name: Run tvOS Discover tests
+        working-directory: ios-app
+        run: |
+          FEATURE="${{ github.event.inputs.feature || 'all' }}"
+          if [ "$FEATURE" = "all" ]; then
+            TEST_FILTER="-only-testing:BayitPlusUITests/Discover"
+          else
+            TEST_FILTER="-only-testing:BayitPlusUITests/Discover/${FEATURE}"
+          fi
+
+          xcodebuild test \
+            -project BayitPlus.xcodeproj \
+            -scheme BayitPlusApp \
+            -destination "platform=tvOS Simulator,name=Apple TV 4K (3rd generation)" \
+            -derivedDataPath /tmp/discover-derived-tvos \
+            -resultBundlePath /tmp/discover-tvos-results.xcresult \
+            $TEST_FILTER
+
+      - name: Upload tvOS results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tvos-results
+          path: /tmp/discover-tvos-results.xcresult
+
+  test-web:
+    name: Web E2E Tests (Playwright)
+    needs: setup-backend
+    if: >
+      needs.setup-backend.outputs.backend-ready == 'true' &&
+      (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'web' || github.event.inputs.platform == '')
+    runs-on: self-hosted-macos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-fixtures
+          path: tests/e2e/fixtures/
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: web
+        run: npx playwright install chromium
+
+      - name: Run Playwright Discover tests
+        working-directory: web
+        env:
+          BASE_URL: http://localhost:${{ env.BACKEND_PORT }}
+        run: |
+          FEATURE="${{ github.event.inputs.feature || 'all' }}"
+          if [ "$FEATURE" = "all" ]; then
+            TEST_PATH="tests/e2e/discover/"
+          else
+            TEST_PATH="tests/e2e/discover/${FEATURE}.spec.ts"
+          fi
+
+          npx playwright test \
+            --config playwright.e2e.config.ts \
+            --reporter=html \
+            "$TEST_PATH"
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-playwright-report
+          path: |
+            web/playwright-report/
+            web/test-results/screenshots/
+
+  test-android:
+    name: Android E2E Tests
+    needs: setup-backend
+    if: >
+      needs.setup-backend.outputs.backend-ready == 'true' &&
+      (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android' || github.event.inputs.platform == '')
+    runs-on: self-hosted-macos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-fixtures
+          path: tests/e2e/fixtures/
+
+      - name: Run Android Discover tests
+        working-directory: android-app
+        run: |
+          FEATURE="${{ github.event.inputs.feature || 'all' }}"
+          if [ "$FEATURE" = "all" ]; then
+            ./gradlew :feature:feature-discover:connectedAndroidTest --no-daemon
+          else
+            ./gradlew :feature:feature-discover:connectedAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.class=tv.bayit.plus.feature.discover.${FEATURE} \
+              --no-daemon
+          fi
+
+      - name: Upload Android results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-results
+          path: android-app/feature/feature-discover/build/reports/androidTests/
+
+  collect-results:
+    name: Collect & Report Results
+    needs: [test-ios, test-tvos, test-web, test-android]
+    if: always()
+    runs-on: self-hosted-macos
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/e2e-artifacts
+
+      - name: Generate summary
+        run: |
+          echo "## Discover Tab E2E Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| iOS | ${{ needs.test-ios.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| tvOS | ${{ needs.test-tvos.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Web | ${{ needs.test-web.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Android | ${{ needs.test-android.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const results = {
+              ios: '${{ needs.test-ios.result }}',
+              tvos: '${{ needs.test-tvos.result }}',
+              web: '${{ needs.test-web.result }}',
+              android: '${{ needs.test-android.result }}'
+            };
+            const statusEmoji = (s) => s === 'success' ? 'PASS' : s === 'skipped' ? 'SKIP' : 'FAIL';
+            const body = [
+              '## Discover Tab E2E Results',
+              '',
+              `| Platform | Result |`,
+              `|----------|--------|`,
+              `| iOS | ${statusEmoji(results.ios)} |`,
+              `| tvOS | ${statusEmoji(results.tvos)} |`,
+              `| Web | ${statusEmoji(results.web)} |`,
+              `| Android | ${statusEmoji(results.android)} |`,
+            ].join('\n');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
