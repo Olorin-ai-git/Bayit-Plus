@@ -31,7 +31,7 @@ struct GlossaryView: View {
         HStack(spacing: DesignTokens.Spacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(DesignTokens.Text.secondary)
-            TextField("Search phrases...", text: $viewModel.searchQuery)
+            TextField(localization.t("glossary.searchPlaceholder"), text: $viewModel.searchQuery)
                 .foregroundStyle(DesignTokens.Text.primary)
                 .onSubmit { Task { await viewModel.search() } }
         }

@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Podcast show card with cover art, metadata, and inline play button
 struct PodcastShowCard: View {
     @Environment(AudioPlaybackManager.self) private var audioManager
+    @Environment(LocalizationManager.self) private var localization
 
     let show: PodcastShow
     let onTap: () -> Void
@@ -56,7 +58,7 @@ struct PodcastShowCard: View {
                 Button(role: .destructive) {
                     Task { await onDelete?() }
                 } label: {
-                    Label("Remove Podcast", systemImage: "trash")
+                    Label(localization.t("podcasts.removePodcast"), systemImage: "trash")
                 }
             }
         }

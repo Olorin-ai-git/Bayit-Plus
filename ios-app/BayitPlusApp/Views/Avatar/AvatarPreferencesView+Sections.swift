@@ -10,7 +10,7 @@ extension AvatarPreferencesView {
 
     var voiceSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            sectionHeader(title: "Voice", icon: "speaker.wave.2")
+            sectionHeader(title: localization.t("avatar.voice"), icon: "speaker.wave.2")
 
             ForEach(AvatarViewModel.availableVoices, id: \.self) { voice in
                 voiceRow(voice)
@@ -43,7 +43,7 @@ extension AvatarPreferencesView {
 
     var personalitySection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            sectionHeader(title: "Personality", icon: "face.smiling")
+            sectionHeader(title: localization.t("avatar.personality"), icon: "face.smiling")
 
             ForEach(AvatarViewModel.availablePersonalities, id: \.self) { personality in
                 personalityRow(personality)
@@ -81,7 +81,7 @@ extension AvatarPreferencesView {
 
     var animationSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            sectionHeader(title: "Animation Level", icon: "sparkle")
+            sectionHeader(title: localization.t("avatar.animationLevel"), icon: "sparkle")
 
             VStack(spacing: DesignTokens.Spacing.sm) {
                 Slider(value: $animationLevel, in: 0.0 ... 1.0, step: 0.25)

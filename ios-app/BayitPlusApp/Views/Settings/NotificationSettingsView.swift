@@ -45,11 +45,11 @@ struct NotificationSettingsView: View {
                 await loadSubscriptions()
             }
         }
-        .alert("Enable Notifications", isPresented: $showPermissionAlert) {
-            Button("Open Settings") {
+        .alert(localization.t("settings.enableNotifications"), isPresented: $showPermissionAlert) {
+            Button(localization.t("settings.openSettings")) {
                 pushService?.openAppSettings()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(localization.t("common.cancel"), role: .cancel) {}
         } message: {
             Text(localization.t("settings.notificationsGoToSettings"))
         }
@@ -67,7 +67,7 @@ struct NotificationSettingsView: View {
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text(hasPermission ? localization.t("settings.notificationDescription") : "Enable notifications to stay updated")
+            Text(hasPermission ? localization.t("settings.notificationDescription") : localization.t("settings.enableNotificationsPrompt"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
