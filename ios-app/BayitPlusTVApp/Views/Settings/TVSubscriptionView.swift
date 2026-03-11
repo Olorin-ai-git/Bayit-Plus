@@ -55,22 +55,23 @@ struct TVSubscriptionView: View {
     @ViewBuilder
     private var creditBalanceCard: some View {
         if let balance = creditBalance {
-            let progress = balance.totalCredits > 0
-                ? Double(balance.remainingCredits) / Double(balance.totalCredits) : 0
-            let statusColor: Color = balance.isCritical
+            let total = balance.totalCredits ?? 0
+            let remaining = balance.remainingCredits ?? 0
+            let progress = total > 0 ? Double(remaining) / Double(total) : 0
+            let statusColor: Color = balance.isCritical == true
                 ? DesignTokens.ErrorColor.default
-                : balance.isLow ? DesignTokens.Warning.default : DesignTokens.Success.default
+                : balance.isLow == true ? DesignTokens.Warning.default : DesignTokens.Success.default
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
                 HStack(spacing: TVDesignTokens.Spacing.sm) {
                     Image(systemName: "sparkles")
                         .font(.system(size: TVDesignTokens.FontSize.lg))
                         .foregroundStyle(statusColor)
                     Text(String(format: localization.t("plus.badge.creditsRemaining"),
-                                balance.remainingCredits))
+                                remaining))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
                     Spacer()
-                    Text("\(balance.remainingCredits) / \(balance.totalCredits)")
+                    Text("\(remaining) / \(total)")
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }

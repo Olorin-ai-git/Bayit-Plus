@@ -113,7 +113,7 @@ seed_data() {
 
     log_section "Seeding Test Data"
     cd "$BACKEND_DIR"
-    poetry run python "$SCRIPT_DIR/seed-test-data.py"
+    PYTHONPATH="$BACKEND_DIR" poetry run python "$SCRIPT_DIR/seed-test-data.py"
     log "Seed complete"
 }
 

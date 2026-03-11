@@ -1,0 +1,30 @@
+{
+  "user_id": "69b0e44ef317ee9299366f30",
+  "user_email": "e2e-test@bayit.tv",
+  "profile_id": "69b0e44ef317ee9299366f31",
+  "subscription_id": "69b0e44ef317ee9299366f32",
+  "avatar_id": "69b0e44ef317ee9299366f33",
+  "live_channel": "Channel 13",
+  "live_channel_aliases": [
+    "Reshet 13",
+    "IL: CHANNEL 13",
+    "Channel 13 Israel"
+  ],
+  "byoc_sources": {
+    "plex": {
+      "type": "plex",
+      "note": "Configure Plex BYOC source manually via the app for the test user"
+    },
+    "youtube": {
+      "type": "youtube",
+      "note": "Configure YouTube BYOC source manually via the app for the test user"
+    }
+  },
+  "preferences": {
+    "subtitles_enabled": true,
+    "voice_control_enabled": true,
+    "consent_granted": true,
+    "subscription_tier": "plus"
+  },
+  "seeded_at": "2026-03-11T03:41:02.412532+00:00"
+}

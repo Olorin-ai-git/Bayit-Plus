@@ -6,10 +6,10 @@ import SwiftUI
 /// Displays premium requirement and upgrade button.
 struct DubbingPremiumGateView: View {
     let onDismiss: () -> Void
+    var onUpgrade: (() -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(LocalizationManager.self) private var localization
-    @Environment(NavigationCoordinator.self) private var coordinator
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
@@ -82,7 +82,7 @@ struct DubbingPremiumGateView: View {
             size: .large,
             icon: Image(systemName: "crown.fill")
         ) {
-            coordinator.navigate(to: .subscription)
+            onUpgrade?()
             onDismiss()
         }
         .accessibilityLabel("Upgrade to Premium subscription")

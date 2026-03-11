@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 /**
  * Playwright E2E Testing Configuration
@@ -7,8 +7,8 @@ import { defineConfig, devices } from '@playwright/test';
  * Tests the actual user workflows and feature interactions.
  */
 export default defineConfig({
-  testDir: './tests/e2e',
-  testMatch: '**/*.spec.ts',
+  testDir: "./tests/e2e",
+  testMatch: "**/*.spec.ts",
 
   // Run tests sequentially for e2e (to avoid race conditions)
   fullyParallel: false,
@@ -22,24 +22,24 @@ export default defineConfig({
 
   // Reporter to use
   reporter: [
-    ['html', { outputFolder: 'playwright-report/e2e' }],
-    ['list'],
-    ['json', { outputFile: 'test-results/e2e-results.json' }],
+    ["html", { outputFolder: "playwright-report/e2e" }],
+    ["list"],
+    ["json", { outputFile: "test-results/e2e-results.json" }],
   ],
 
   // Shared settings for all tests
   use: {
     // Base URL for navigation
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3200',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3200",
 
     // Screenshot always (for verification)
-    screenshot: 'on',
+    screenshot: "on",
 
     // Video on failure
-    video: 'retain-on-failure',
+    video: "retain-on-failure",
 
     // Trace on first retry
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
 
     // Maximum time for actions
     actionTimeout: 10000,
@@ -55,54 +55,54 @@ export default defineConfig({
   projects: [
     // Desktop Chrome (primary)
     {
-      name: 'chromium-desktop',
+      name: "chromium-desktop",
       use: {
-        ...devices['Desktop Chrome'],
+        ...devices["Desktop Chrome"],
         viewport: { width: 1920, height: 1080 },
       },
     },
 
     // Desktop Firefox
     {
-      name: 'firefox-desktop',
+      name: "firefox-desktop",
       use: {
-        ...devices['Desktop Firefox'],
+        ...devices["Desktop Firefox"],
         viewport: { width: 1920, height: 1080 },
       },
     },
 
     // Desktop Safari
     {
-      name: 'webkit-desktop',
+      name: "webkit-desktop",
       use: {
-        ...devices['Desktop Safari'],
+        ...devices["Desktop Safari"],
         viewport: { width: 1920, height: 1080 },
       },
     },
 
     // Mobile viewports
     {
-      name: 'mobile-375',
+      name: "mobile-375",
       use: {
-        ...devices['iPhone 15'],
+        ...devices["iPhone 15"],
         viewport: { width: 375, height: 667 },
       },
     },
 
     {
-      name: 'tablet-768',
+      name: "tablet-768",
       use: {
-        ...devices['iPad Mini'],
+        ...devices["iPad Mini"],
         viewport: { width: 768, height: 1024 },
       },
     },
   ],
 
-  // Use existing server (user said backend is running)
+  // Start Vite dev server for E2E tests (reuses if already running)
   webServer: {
-    command: 'echo "Using existing server at port 3200"',
-    url: 'http://localhost:3200',
+    command: "npm run dev",
+    url: "http://localhost:3200",
     reuseExistingServer: true,
-    timeout: 5000,
+    timeout: 120000,
   },
 });

@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { GlassModal } from "@bayit/shared/ui";
-import { Sparkles, Mic, Captions, Search, Coins, Crown } from "lucide-react";
+import { Sparkles, Mic, Subtitles, Search, Coins, Crown } from "lucide-react";
 import { colors, spacing, fontSize } from "@olorin/design-tokens";
 
 const STORAGE_KEY = "bayit_plus_intro_seen";
@@ -30,7 +30,7 @@ interface PlusIntroModalProps {
 
 const featureBullets = [
   { icon: Mic, key: "bullet1" },
-  { icon: Captions, key: "bullet2" },
+  { icon: Subtitles, key: "bullet2" },
   { icon: Search, key: "bullet3" },
   { icon: Coins, key: "bullet4" },
 ] as const;

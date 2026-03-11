@@ -1,5 +1,6 @@
 #if os(tvOS)
 
+    import BayitAuth
     import BayitDesignSystem
     import BayitLocalization
     import SwiftUI

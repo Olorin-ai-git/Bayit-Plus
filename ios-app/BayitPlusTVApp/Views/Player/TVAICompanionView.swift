@@ -109,7 +109,7 @@
                 case .quiz:
                     TVCompanionQuizTab(viewModel: vm, contentId: contentId)
                 case .vocabulary:
-                    TVCompanionVocabularyTab(viewModel: vm, contentId: contentId, profileId: authManager.user?.uid ?? "")
+                    TVCompanionVocabularyTab(viewModel: vm, contentId: contentId, profileId: authManager.user?.id ?? "")
                 }
             }
         }
