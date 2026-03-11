@@ -37,6 +37,13 @@ class QuotaChecker:
             quota = await quota_manager.get_or_create_quota(user_id)
             await quota_manager.reset_windows_and_rollover(quota)
 
+            # Trivia is a lightweight feature that piggybacks on the
+            # subtitle translation pipeline. It does not consume its own
+            # metered minutes, so quota checks always pass for trivia.
+            if feature_type == FeatureType.TRIVIA:
+                usage_stats = quota_manager.build_usage_stats(quota)
+                return (True, None, usage_stats)
+
             is_subtitle = feature_type == FeatureType.SUBTITLE
 
             # Get current usage and limits

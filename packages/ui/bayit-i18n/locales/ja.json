@@ -3786,7 +3786,8 @@
     "continue": "続ける",
     "closeModal": "ウィンドウを閉じる",
     "dismissHint": "ヒントを閉じる",
-    "sending": "送信中..."
+    "sending": "送信中...",
+    "create": "作成"
   },
   "badges": {
     "aiEnhanced": "AI強化",

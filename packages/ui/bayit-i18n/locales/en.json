@@ -3786,7 +3786,8 @@
     "continue": "Continue",
     "closeModal": "Close modal",
     "dismissHint": "Dismiss hint",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "create": "Create"
   },
   "badges": {
     "aiEnhanced": "AI Enhanced",

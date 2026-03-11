@@ -3786,7 +3786,8 @@
     "continue": "जारी रखें",
     "closeModal": "विंडो बंद करें",
     "dismissHint": "संकेत खारिज करें",
-    "sending": "भेज रहा है..."
+    "sending": "भेज रहा है...",
+    "create": "बनाएं"
   },
   "badges": {
     "aiEnhanced": "AI संवर्धित",

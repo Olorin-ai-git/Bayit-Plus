@@ -3786,7 +3786,8 @@
     "continue": "继续",
     "closeModal": "关闭窗口",
     "dismissHint": "关闭提示",
-    "sending": "发送中..."
+    "sending": "发送中...",
+    "create": "创建"
   },
   "badges": {
     "aiEnhanced": "AI 增强",

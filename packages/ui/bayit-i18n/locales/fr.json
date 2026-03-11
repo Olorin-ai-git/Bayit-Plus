@@ -3786,7 +3786,8 @@
     "continue": "Continuer",
     "closeModal": "Fermer la fenetre",
     "dismissHint": "Ignorer l'indice",
-    "sending": "Envoi en cours..."
+    "sending": "Envoi en cours...",
+    "create": "Créer"
   },
   "badges": {
     "aiEnhanced": "Amélioré par IA",

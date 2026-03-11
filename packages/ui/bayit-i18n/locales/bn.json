@@ -3786,7 +3786,8 @@
     "continue": "চালিয়ে যান",
     "closeModal": "উইন্ডো বন্ধ করুন",
     "dismissHint": "ইঙ্গিত বাতিল করুন",
-    "sending": "পাঠানো হচ্ছে..."
+    "sending": "পাঠানো হচ্ছে...",
+    "create": "তৈরি করুন"
   },
   "badges": {
     "aiEnhanced": "AI উন্নত",

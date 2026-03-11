@@ -162,6 +162,7 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(auth.router, prefix=f"{prefix}/auth", tags=["auth"])
     app.include_router(auth_proxy.router, prefix=f"{prefix}/auth", tags=["auth-proxy"])
+    app.include_router(auth_proxy.router, prefix=f"{prefix}/auth/v2", tags=["auth-proxy-v2"])
     app.include_router(
         mobile_auth.router,
         prefix=f"{prefix}/auth",

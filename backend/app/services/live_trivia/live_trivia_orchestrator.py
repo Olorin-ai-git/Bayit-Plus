@@ -266,13 +266,23 @@ class LiveTriviaOrchestrator:
                 if event.event_type == "transcript" and not event.is_partial:
                     processed_count += 1
 
-                    # Process transcript and generate facts
-                    facts = await self.process_transcript(
-                        transcript=event.text,
-                        channel_id=channel_id,
-                        user_id=user_id,
-                        language=language,
-                    )
+                    try:
+                        facts = await self.process_transcript(
+                            transcript=event.text,
+                            channel_id=channel_id,
+                            user_id=user_id,
+                            language=language,
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            "Error processing transcript for trivia",
+                            extra={
+                                "channel_id": channel_id,
+                                "user_id": user_id,
+                                "error": str(e),
+                            },
+                        )
+                        continue
 
                     if facts:
                         callback = self._bus_callbacks.get(session_key)

@@ -35,7 +35,7 @@ struct AddProfileSheetView: View {
                     .padding(DesignTokens.Spacing.xl)
                 }
             }
-            .navigationTitle(localization.t("profile.addProfile"))
+            .navigationTitle(localization.t("profiles.addProfile"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

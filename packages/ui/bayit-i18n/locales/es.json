@@ -3786,7 +3786,8 @@
     "continue": "Continuar",
     "closeModal": "Cerrar ventana",
     "dismissHint": "Descartar sugerencia",
-    "sending": "Enviando..."
+    "sending": "Enviando...",
+    "create": "Crear"
   },
   "badges": {
     "aiEnhanced": "Mejorado con IA",

@@ -3786,7 +3786,8 @@
     "continue": "המשך",
     "closeModal": "סגור חלון",
     "dismissHint": "סגור רמז",
-    "sending": "שולח..."
+    "sending": "שולח...",
+    "create": "צור"
   },
   "badges": {
     "aiEnhanced": "משופר בינה מלאכותית",

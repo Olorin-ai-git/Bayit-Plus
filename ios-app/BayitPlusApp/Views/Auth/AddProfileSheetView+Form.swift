@@ -49,7 +49,7 @@ extension AddProfileSheetView {
                     .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text(localization.t("profiles.kidsProfileHint"))
+                Text(localization.t("profiles.kidsProfileDescription"))
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
