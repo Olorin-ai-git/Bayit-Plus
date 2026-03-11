@@ -12,14 +12,14 @@
  * - Responsive layout
  */
 
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@bayit/shared';
-import { colors } from '@olorin/design-tokens';
-import logger from '@/utils/logger';
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { GlassButton } from "@bayit/shared";
+import { colors } from "@olorin/design-tokens";
+import logger from "@/utils/logger";
 
-const moduleLogger = logger.scope('CollectionPromoBanner');
+const moduleLogger = logger.scope("CollectionPromoBanner");
 
 interface Collection {
   id: string;
@@ -53,7 +53,7 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
   collections,
   autoRotate = true,
   rotationInterval = 5000,
-  className = '',
+  className = "",
 }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -61,7 +61,7 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Get current collection
   const currentCollection = collections[currentIndex];
@@ -69,20 +69,25 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
   // Get promo text in current language
   const getPromoText = (collection: Collection): string => {
     const langMap: Record<string, keyof Collection> = {
-      he: 'promo_text',
-      en: 'promo_text_en',
-      es: 'promo_text_es',
-      fr: 'promo_text_fr',
-      it: 'promo_text_it',
-      hi: 'promo_text_hi',
-      ta: 'promo_text_ta',
-      bn: 'promo_text_bn',
-      ja: 'promo_text_ja',
-      zh: 'promo_text_zh',
+      he: "promo_text",
+      en: "promo_text_en",
+      es: "promo_text_es",
+      fr: "promo_text_fr",
+      it: "promo_text_it",
+      hi: "promo_text_hi",
+      ta: "promo_text_ta",
+      bn: "promo_text_bn",
+      ja: "promo_text_ja",
+      zh: "promo_text_zh",
     };
 
-    const field = langMap[i18n.language] || 'promo_text_en';
-    return (collection[field] as string) || collection.promo_text || collection.promo_text_en || '';
+    const field = langMap[i18n.language] || "promo_text_en";
+    return (
+      (collection[field] as string) ||
+      collection.promo_text ||
+      collection.promo_text_en ||
+      ""
+    );
   };
 
   // Preload next collection's image
@@ -112,7 +117,13 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
         clearInterval(timerRef.current);
       }
     };
-  }, [autoRotate, collections.length, isPaused, currentIndex, rotationInterval]);
+  }, [
+    autoRotate,
+    collections.length,
+    isPaused,
+    currentIndex,
+    rotationInterval,
+  ]);
 
   // Initial fade-in
   useEffect(() => {
@@ -157,36 +168,39 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
   }
 
   const promoText = getPromoText(currentCollection);
-  const title = i18n.language === 'en' ? (currentCollection.title_en || currentCollection.title) : currentCollection.title;
+  const title =
+    i18n.language === "en"
+      ? currentCollection.title_en || currentCollection.title
+      : currentCollection.title;
   const posterUrl = currentCollection.thumbnail || currentCollection.backdrop;
 
   return (
     <div
-      className={`collection-promo-banner ${isVisible ? 'fade-in' : 'opacity-0'} ${className}`}
+      className={`collection-promo-banner ${isVisible ? "fade-in" : "opacity-0"} ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
         background: `linear-gradient(135deg, ${colors.glass.bg} 0%, ${colors.glass.bgMedium} 100%)`,
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
         border: `1px solid ${colors.glass.border}`,
-        borderRadius: '16px',
-        padding: '24px',
-        display: 'flex',
-        gap: '20px',
-        alignItems: 'center',
-        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-        animation: isVisible ? 'fadeInUp 0.6s ease-out' : 'none',
+        borderRadius: "16px",
+        padding: "24px",
+        display: "flex",
+        gap: "20px",
+        alignItems: "center",
+        transition: "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+        animation: isVisible ? "fadeInUp 0.6s ease-out" : "none",
         opacity: isTransitioning ? 0 : 1,
       }}
     >
       {posterUrl && (
         <div
           style={{
-            width: '120px',
-            height: '180px',
-            borderRadius: '8px',
-            overflow: 'hidden',
+            width: "120px",
+            height: "180px",
+            borderRadius: "8px",
+            overflow: "hidden",
             flexShrink: 0,
           }}
         >
@@ -194,41 +208,58 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
             src={posterUrl}
             alt={title}
             style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
             }}
           />
         </div>
       )}
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span
               style={{
-                fontSize: '12px',
+                fontSize: "12px",
                 fontWeight: 600,
                 color: colors.text.muted,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
               }}
             >
-              {t('vod.collection.aiRecommendation')}
+              {t("vod.collection.aiRecommendation")}
             </span>
           </div>
           {collections.length > 1 && (
-            <div style={{ display: 'flex', gap: '4px' }}>
+            <div style={{ display: "flex", gap: "4px" }}>
               {collections.map((_, index) => (
                 <div
                   key={index}
                   style={{
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: index === currentIndex ? colors.text.primary : colors.text.muted,
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    backgroundColor:
+                      index === currentIndex
+                        ? colors.text.primary
+                        : colors.text.muted,
                     opacity: index === currentIndex ? 1 : 0.3,
-                    transition: 'all 0.3s ease',
+                    transition: "all 0.3s ease",
                   }}
                 />
               ))}
@@ -238,7 +269,7 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
 
         <h3
           style={{
-            fontSize: '20px',
+            fontSize: "20px",
             fontWeight: 700,
             color: colors.text.primary,
             margin: 0,
@@ -249,8 +280,8 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
 
         <p
           style={{
-            fontSize: '14px',
-            lineHeight: '1.6',
+            fontSize: "14px",
+            lineHeight: "1.6",
             color: colors.text.secondary,
             margin: 0,
           }}
@@ -260,19 +291,19 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
 
         <div
           style={{
-            fontSize: '13px',
+            fontSize: "13px",
             color: colors.text.muted,
           }}
         >
-          {currentCollection.available_movies} {t('vod.collection.movies')}
+          {currentCollection.available_movies} {t("vod.collection.movies")}
         </div>
 
         <GlassButton
           variant="primary"
-          title={t('vod.collection.watchNow')}
+          title={t("vod.collection.watchNow")}
           onPress={handleWatchNow}
           style={{
-            alignSelf: 'flex-start',
+            alignSelf: "flex-start",
             marginTop: 8,
           }}
         />
@@ -282,7 +313,7 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
 };
 
 // CSS keyframes (inject into global styles or use styled-components)
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
   @keyframes fadeInUp {
     from {

@@ -5,9 +5,9 @@
  * voice settings. Dismissed state persists for the current session only.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import api from '@/services/api';
-import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
+import { useState, useEffect, useCallback } from "react";
+import api from "@/services/api";
+import { useVoiceSettingsStore } from "@/stores/voiceSettingsStore";
 
 interface ProactiveSuggestionsState {
   suggestions: string[];
@@ -22,7 +22,9 @@ export const useProactiveSuggestions = (): ProactiveSuggestionsState => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  const isEnabled = (preferences as Record<string, unknown>).proactiveSuggestionsEnabled === true;
+  const isEnabled =
+    (preferences as unknown as Record<string, unknown>)
+      .proactiveSuggestionsEnabled === true;
 
   useEffect(() => {
     if (!isEnabled || isDismissed) {
@@ -35,7 +37,7 @@ export const useProactiveSuggestions = (): ProactiveSuggestionsState => {
     const fetchSuggestions = async () => {
       setIsLoading(true);
       try {
-        const data = await api.get<string[]>('/voice/suggestions/proactive');
+        const data = await api.get<string[]>("/voice/suggestions/proactive");
         if (!cancelled) {
           setSuggestions(Array.isArray(data) ? data : []);
         }

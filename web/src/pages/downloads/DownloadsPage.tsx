@@ -1,21 +1,26 @@
-import { useEffect } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
-import { Download, RotateCcw } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { GlassPageHeader, GlassEmptyState, GlassButton } from '@bayit/shared/ui';
-import { LoadingState } from '@bayit/shared-components/states';
-import { colors, spacing, fontSize } from '@olorin/design-tokens';
-import { useDirection } from '@/hooks/useDirection';
-import { useResponsive } from '@/hooks/useResponsive';
+import { useEffect } from "react";
+import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import { Download, RotateCcw } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import {
+  GlassPageHeader,
+  GlassEmptyState,
+  GlassButton,
+} from "@bayit/shared/ui";
+import { LoadingState } from "@bayit/shared-components/states";
+import { colors, spacing, fontSize } from "@olorin/design-tokens";
+import { useDirection } from "@/hooks/useDirection";
+import { useResponsive } from "@/hooks/useResponsive";
 import {
   useDownloadStore,
   selectActiveDownloads,
   selectCompletedDownloads,
   selectFailedDownloads,
-} from '@/stores/downloadStore';
-import { OfflineBanner } from '@/components/common/OfflineBanner';
-import { StorageBar } from './StorageBar';
-import { DownloadCard } from './DownloadCard';
+  type DownloadItem,
+} from "@/stores/downloadStore";
+import { OfflineBanner } from "@/components/common/OfflineBanner";
+import { StorageBar } from "./StorageBar";
+import { DownloadCard } from "./DownloadCard";
 
 function DownloadSection({
   title,
@@ -24,7 +29,7 @@ function DownloadSection({
   action,
 }: {
   title: string;
-  items: any[];
+  items: DownloadItem[];
   numColumns: number;
   action?: React.ReactNode;
 }) {
@@ -33,17 +38,19 @@ function DownloadSection({
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>{title} ({items.length})</Text>
+        <Text style={styles.sectionTitle}>
+          {title} ({items.length})
+        </Text>
         {action}
       </View>
       <FlatList
         data={items}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: DownloadItem) => item.id}
         numColumns={numColumns}
         key={`${title}-${numColumns}`}
         contentContainerStyle={{ gap: spacing.md }}
         columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: DownloadItem }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
             <DownloadCard item={item} />
           </View>
@@ -57,13 +64,23 @@ export default function DownloadsPage() {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
   const { width } = useResponsive();
-  const { loading, fetchDownloads, clearAll, startPolling, stopPolling } = useDownloadStore();
+  const { loading, fetchDownloads, clearAll, startPolling, stopPolling } =
+    useDownloadStore();
   const downloads = useDownloadStore((s) => s.downloads);
   const active = useDownloadStore(selectActiveDownloads);
   const completed = useDownloadStore(selectCompletedDownloads);
   const failed = useDownloadStore(selectFailedDownloads);
 
-  const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
+  const numColumns =
+    width >= 1280
+      ? 6
+      : width >= 1024
+        ? 5
+        : width >= 768
+          ? 4
+          : width >= 640
+            ? 3
+            : 2;
 
   useEffect(() => {
     fetchDownloads();
@@ -85,13 +102,18 @@ export default function DownloadsPage() {
   return (
     <View style={styles.container}>
       <GlassPageHeader
-        title={t('downloads.title')}
+        title={t("downloads.title")}
         pageType="downloads"
         badge={downloads.length}
         isRTL={isRTL}
         action={
           downloads.length > 0 ? (
-            <GlassButton onPress={clearAll} variant="ghost" size="sm" title={t('downloads.clearAll')} />
+            <GlassButton
+              onPress={clearAll}
+              variant="ghost"
+              size="sm"
+              title={t("downloads.clearAll")}
+            />
           ) : undefined
         }
       />
@@ -100,31 +122,53 @@ export default function DownloadsPage() {
       <StorageBar />
 
       {loading ? (
-        <LoadingState message={t('downloads.loading')} spinnerColor={colors.primary} />
+        <LoadingState
+          message={t("downloads.loading")}
+          spinnerColor={colors.primary}
+        />
       ) : downloads.length > 0 ? (
         <>
-          <DownloadSection title={t('downloads.downloading')} items={active} numColumns={numColumns} />
           <DownloadSection
-            title={t('downloads.failed')}
+            title={t("downloads.downloading")}
+            items={active}
+            numColumns={numColumns}
+          />
+          <DownloadSection
+            title={t("downloads.failed")}
             items={failed}
             numColumns={numColumns}
             action={
               failed.length > 0 ? (
-                <Pressable onPress={retryAllFailed} style={styles.retryAllButton}>
+                <Pressable
+                  onPress={retryAllFailed}
+                  style={styles.retryAllButton}
+                >
                   <RotateCcw size={14} color={colors.primary.DEFAULT} />
-                  <Text style={styles.retryAllText}>{t('downloads.retryAll')}</Text>
+                  <Text style={styles.retryAllText}>
+                    {t("downloads.retryAll")}
+                  </Text>
                 </Pressable>
               ) : undefined
             }
           />
-          <DownloadSection title={t('downloads.completed')} items={completed} numColumns={numColumns} />
+          <DownloadSection
+            title={t("downloads.completed")}
+            items={completed}
+            numColumns={numColumns}
+          />
         </>
       ) : (
         <GlassEmptyState
           variant="no-downloads"
-          icon={<Download size={72} color="rgba(168,85,247,0.5)" strokeWidth={1.5} />}
-          title={t('downloads.empty')}
-          description={t('downloads.emptyHint')}
+          icon={
+            <Download
+              size={72}
+              color="rgba(168,85,247,0.5)"
+              strokeWidth={1.5}
+            />
+          }
+          title={t("downloads.empty")}
+          description={t("downloads.emptyHint")}
         />
       )}
     </View>
@@ -132,10 +176,34 @@ export default function DownloadsPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.xl, maxWidth: 1400, marginHorizontal: 'auto', width: '100%' },
+  container: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+    maxWidth: 1400,
+    marginHorizontal: "auto",
+    width: "100%",
+  },
   section: { marginBottom: spacing.xl },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  sectionTitle: { color: colors.text, fontSize: fontSize.lg, fontWeight: '600' },
-  retryAllButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  retryAllText: { color: colors.primary.DEFAULT, fontSize: fontSize.sm, fontWeight: '500' },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  sectionTitle: {
+    color: colors.text,
+    fontSize: fontSize.lg,
+    fontWeight: "600",
+  },
+  retryAllButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  retryAllText: {
+    color: colors.primary.DEFAULT,
+    fontSize: fontSize.sm,
+    fontWeight: "500",
+  },
 });

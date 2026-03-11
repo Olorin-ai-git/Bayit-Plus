@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { SubtitleCue } from '@/types/subtitle';
-import { subtitlesService } from '@/services/api';
-import { logger } from '@bayit/shared-utils/logger';
+import { useState, useEffect, useCallback } from "react";
+import { SubtitleCue } from "@/types/subtitle";
+import { subtitlesService } from "@/services/api";
+import { logger } from "@bayit/shared-utils/logger";
 
 interface UseInteractiveSubtitlesOptions {
   contentId?: string;
@@ -34,11 +34,13 @@ export const useInteractiveSubtitles = ({
   language,
   subtitles,
   currentTime,
-  enabled
+  enabled,
 }: UseInteractiveSubtitlesOptions): UseInteractiveSubtitlesReturn => {
   const [activeCues, setActiveCues] = useState<SubtitleCue[]>([]);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
-  const [translation, setTranslation] = useState<TranslationResult | null>(null);
+  const [translation, setTranslation] = useState<TranslationResult | null>(
+    null,
+  );
   const [isTranslating, setIsTranslating] = useState(false);
   const [interactiveMode, setInteractiveMode] = useState(false);
   const [lastCueId, setLastCueId] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export const useInteractiveSubtitles = ({
     }
 
     const active = subtitles.filter(
-      (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time
+      (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time,
     );
 
     setActiveCues(active);
@@ -72,33 +74,40 @@ export const useInteractiveSubtitles = ({
       setIsTranslating(true);
 
       try {
-        const result = await subtitlesService.translateWord(word, language) as { translation: string; transliteration: string; example?: string };
+        const result = (await subtitlesService.translateWord(
+          word,
+          language,
+        )) as unknown as {
+          translation: string;
+          transliteration: string;
+          example?: string;
+        };
 
         setTranslation({
           word,
           translation: result.translation,
           transliteration: result.transliteration,
-          example: result.example
+          example: result.example,
         });
 
-        logger.info('Word translation successful', {
-          word,
-          language,
-          contentId
-        });
-      } catch (error) {
-        logger.error('Word translation failed', {
+        logger.info("Word translation successful", {
           word,
           language,
           contentId,
-          error
+        });
+      } catch (error) {
+        logger.error("Word translation failed", {
+          word,
+          language,
+          contentId,
+          error,
         });
         setTranslation(null);
       } finally {
         setIsTranslating(false);
       }
     },
-    [interactiveMode, language, contentId]
+    [interactiveMode, language, contentId],
   );
 
   const clearSelection = useCallback(() => {
@@ -111,9 +120,9 @@ export const useInteractiveSubtitles = ({
     if (interactiveMode) {
       clearSelection();
     }
-    logger.info('Interactive subtitle mode toggled', {
+    logger.info("Interactive subtitle mode toggled", {
       enabled: !interactiveMode,
-      contentId
+      contentId,
     });
   }, [interactiveMode, contentId, clearSelection]);
 
@@ -125,6 +134,6 @@ export const useInteractiveSubtitles = ({
     interactiveMode,
     handleWordTap,
     clearSelection,
-    toggleInteractiveMode
+    toggleInteractiveMode,
   };
 };

@@ -4,16 +4,24 @@
  * download high-res option. Glass UI image grid.
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TextInput, Image, FlatList, Pressable, Platform } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@bayit/shared/components/ui/GlassButton';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import api from '@/services/api';
-import logger from '@bayit/shared-utils/logger';
-import { styles } from './FamilySnapsGallery.styles';
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  FlatList,
+  Pressable,
+  Platform,
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import { GlassButton } from "@bayit/shared/components/ui/GlassButton";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import api from "@/services/api";
+import logger from "@bayit/shared-utils/logger";
+import { styles } from "./FamilySnapsGallery.styles";
 
-const snapsLogger = logger.scope('FamilySnapsGallery');
+const snapsLogger = logger.scope("FamilySnapsGallery");
 
 interface FamilySnap {
   snap_id: string;
@@ -44,8 +52,11 @@ export function FamilySnapsGallery({
   const [loading, setLoading] = useState(true);
   const [selectedSnap, setSelectedSnap] = useState<FamilySnap | null>(null);
   const [sharing, setSharing] = useState(false);
-  const [pinModalSnap, setPinModalSnap] = useState<{ snap: FamilySnap; platform: string } | null>(null);
-  const [pinInput, setPinInput] = useState('');
+  const [pinModalSnap, setPinModalSnap] = useState<{
+    snap: FamilySnap;
+    platform: string;
+  } | null>(null);
+  const [pinInput, setPinInput] = useState("");
 
   useEffect(() => {
     fetchSnaps();
@@ -54,85 +65,104 @@ export function FamilySnapsGallery({
   const fetchSnaps = async () => {
     setLoading(true);
     try {
-      const data = await api.get(`/family-snaps/avatars/${avatarId}/snaps`) as {
+      const data = (await api.get(
+        `/family-snaps/avatars/${avatarId}/snaps`,
+      )) as {
         snaps: FamilySnap[];
         total: number;
       };
       setSnaps(data.snaps || []);
     } catch (err: any) {
-      snapsLogger.error('Failed to fetch snaps', err);
+      snapsLogger.error("Failed to fetch snaps", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleShare = useCallback(async (snap: FamilySnap, platform: string) => {
-    if (!snap.share_url) {
-      setPinModalSnap({ snap, platform });
-      setPinInput('');
-      return;
-    }
-    openShareLink(snap.share_url, platform);
-  }, []);
+  const handleShare = useCallback(
+    async (snap: FamilySnap, platform: string) => {
+      if (!snap.share_url) {
+        setPinModalSnap({ snap, platform });
+        setPinInput("");
+        return;
+      }
+      openShareLink(snap.share_url, platform);
+    },
+    [],
+  );
 
   const handlePinSubmit = useCallback(async () => {
     if (!pinModalSnap || pinInput.length < 4) return;
     setSharing(true);
     try {
-      const result = await api.post(`/family-snaps/snaps/${pinModalSnap.snap.snap_id}/share`, {
-        pin: pinInput,
-      }) as { share_url: string };
+      const result = (await api.post(
+        `/family-snaps/snaps/${pinModalSnap.snap.snap_id}/share`,
+        {
+          pin: pinInput,
+        },
+      )) as { share_url: string };
       pinModalSnap.snap.share_url = result.share_url;
       openShareLink(result.share_url, pinModalSnap.platform);
     } catch (err: unknown) {
-      snapsLogger.error('Failed to generate share URL', err);
+      snapsLogger.error("Failed to generate share URL", err);
     } finally {
       setSharing(false);
       setPinModalSnap(null);
-      setPinInput('');
+      setPinInput("");
     }
   }, [pinModalSnap, pinInput]);
 
   const openShareLink = (shareUrl: string, platform: string) => {
-    if (Platform.OS !== 'web') return;
+    if (Platform.OS !== "web") return;
     const url = encodeURIComponent(shareUrl);
-    const text = encodeURIComponent(t('familySnaps.shareText'));
+    const text = encodeURIComponent(t("familySnaps.shareText"));
     const shareUrls: Record<string, string> = {
       whatsapp: `https://wa.me/?text=${text}%20${url}`,
       email: `mailto:?subject=${text}&body=${url}`,
     };
     const link = shareUrls[platform];
-    if (link) window.open(link, '_blank');
+    if (link) window.open(link, "_blank");
   };
 
   const handleDownload = useCallback(async (snap: FamilySnap) => {
-    if (Platform.OS === 'web' && snap.composite_url) {
-      const link = document.createElement('a');
+    if (Platform.OS === "web" && snap.composite_url) {
+      const link = document.createElement("a");
       link.href = snap.composite_url;
       link.download = `bayit_snap_${snap.snap_id}.png`;
       link.click();
     }
   }, []);
 
-  const renderSnapCard = useCallback(({ item }: { item: FamilySnap }) => (
-    <Pressable
-      style={[styles.snapCard, selectedSnap?.snap_id === item.snap_id && styles.snapCardSelected]}
-      onPress={() => setSelectedSnap(item)}
-      accessibilityLabel={item.template.replace(/_/g, ' ')}
-    >
-      {item.thumbnail_url ? (
-        <Image source={{ uri: item.thumbnail_url }} style={styles.snapImage} />
-      ) : (
-        <View style={styles.snapPlaceholder} />
-      )}
-      <Text style={styles.snapTemplate}>{item.template.replace(/_/g, ' ')}</Text>
-      {item.character_names.length > 0 && (
-        <Text style={styles.snapCharacters} numberOfLines={1}>
-          {item.character_names.join(', ')}
+  const renderSnapCard = useCallback(
+    ({ item }: { item: FamilySnap }) => (
+      <Pressable
+        style={[
+          styles.snapCard,
+          selectedSnap?.snap_id === item.snap_id && styles.snapCardSelected,
+        ]}
+        onPress={() => setSelectedSnap(item)}
+        accessibilityLabel={item.template.replace(/_/g, " ")}
+      >
+        {item.thumbnail_url ? (
+          <Image
+            source={{ uri: item.thumbnail_url }}
+            style={styles.snapImage}
+          />
+        ) : (
+          <View style={styles.snapPlaceholder} />
+        )}
+        <Text style={styles.snapTemplate}>
+          {item.template.replace(/_/g, " ")}
         </Text>
-      )}
-    </Pressable>
-  ), [selectedSnap]);
+        {item.character_names.length > 0 && (
+          <Text style={styles.snapCharacters} numberOfLines={1}>
+            {item.character_names.join(", ")}
+          </Text>
+        )}
+      </Pressable>
+    ),
+    [selectedSnap],
+  );
 
   if (loading) {
     return (
@@ -145,10 +175,10 @@ export function FamilySnapsGallery({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('familySnaps.title')}</Text>
+        <Text style={styles.title}>{t("familySnaps.title")}</Text>
         {onGenerateSnap && (
           <GlassButton
-            title={t('familySnaps.newSnap')}
+            title={t("familySnaps.newSnap")}
             onPress={onGenerateSnap}
             variant="primary"
             size="sm"
@@ -158,13 +188,13 @@ export function FamilySnapsGallery({
 
       {snaps.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>{t('familySnaps.empty')}</Text>
+          <Text style={styles.emptyText}>{t("familySnaps.empty")}</Text>
         </View>
       ) : (
         <FlatList
           data={snaps}
           renderItem={renderSnapCard}
-          keyExtractor={(item) => item.snap_id}
+          keyExtractor={(item: FamilySnap) => item.snap_id}
           numColumns={2}
           contentContainerStyle={styles.grid}
         />
@@ -174,21 +204,21 @@ export function FamilySnapsGallery({
         <View style={styles.detailBar}>
           <View style={styles.shareRow}>
             <GlassButton
-              title={t('familySnaps.shareWhatsApp')}
-              onPress={() => handleShare(selectedSnap, 'whatsapp')}
+              title={t("familySnaps.shareWhatsApp")}
+              onPress={() => handleShare(selectedSnap, "whatsapp")}
               variant="ghost"
               size="sm"
               disabled={sharing}
             />
             <GlassButton
-              title={t('familySnaps.shareEmail')}
-              onPress={() => handleShare(selectedSnap, 'email')}
+              title={t("familySnaps.shareEmail")}
+              onPress={() => handleShare(selectedSnap, "email")}
               variant="ghost"
               size="sm"
               disabled={sharing}
             />
             <GlassButton
-              title={t('familySnaps.download')}
+              title={t("familySnaps.download")}
               onPress={() => handleDownload(selectedSnap)}
               variant="primary"
               size="sm"
@@ -200,7 +230,7 @@ export function FamilySnapsGallery({
       {pinModalSnap && (
         <View style={styles.pinOverlay}>
           <View style={styles.pinCard}>
-            <Text style={styles.pinTitle}>{t('familySnaps.enterPin')}</Text>
+            <Text style={styles.pinTitle}>{t("familySnaps.enterPin")}</Text>
             <TextInput
               style={styles.pinInput}
               value={pinInput}
@@ -209,17 +239,20 @@ export function FamilySnapsGallery({
               maxLength={20}
               keyboardType="number-pad"
               autoFocus
-              accessibilityLabel={t('familySnaps.enterPin')}
+              accessibilityLabel={t("familySnaps.enterPin")}
             />
             <View style={styles.pinActions}>
               <GlassButton
-                title={t('common.cancel')}
-                onPress={() => { setPinModalSnap(null); setPinInput(''); }}
+                title={t("common.cancel")}
+                onPress={() => {
+                  setPinModalSnap(null);
+                  setPinInput("");
+                }}
                 variant="ghost"
                 size="sm"
               />
               <GlassButton
-                title={t('common.confirm')}
+                title={t("common.confirm")}
                 onPress={handlePinSubmit}
                 variant="primary"
                 size="sm"

@@ -66,6 +66,12 @@ export * from "./payment";
 // Re-export web-specific services
 export { audiobookService } from "../audiobookService";
 
+// Web-specific services not in shared API index
+export { byocService } from "../byocService";
+export { discoverService } from "../discoverService";
+export { dmService } from "../dmService";
+export { householdService } from "../householdService";
+
 // Scene search service (uses searchService under the hood)
 import { api } from "@bayit/shared-services/api";
 export const sceneSearchService = {

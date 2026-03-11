@@ -4,14 +4,14 @@
  * Shows Hebrew prompt, recording button, countdown, pronunciation feedback.
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { Mic, MicOff, Volume2 } from 'lucide-react-native';
-import { GlassButton } from '@bayit/shared/components/ui/GlassButton';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import { PronunciationFeedback } from '../phonetic-mirror/PronunciationFeedback';
-import { styles } from './VoiceDecisionOverlay.styles';
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { View, Text, Pressable, Platform } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Mic, MicOff, Volume2 } from "lucide-react-native";
+import { GlassButton } from "@bayit/shared/components/ui/GlassButton";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import { PronunciationFeedback } from "../phonetic-mirror/PronunciationFeedback";
+import { styles } from "./VoiceDecisionOverlay.styles";
 
 interface VoiceDecisionOverlayProps {
   promptText: string;
@@ -57,7 +57,7 @@ export function VoiceDecisionOverlay({
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setCountdown(timeoutSeconds);
@@ -77,10 +77,10 @@ export function VoiceDecisionOverlay({
   }, [timeoutSeconds, currentAttempt]);
 
   const startRecording = useCallback(async () => {
-    if (Platform.OS !== 'web') return;
+    if (Platform.OS !== "web") return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
       chunksRef.current = [];
 
       recorder.ondataavailable = (e) => {
@@ -89,7 +89,7 @@ export function VoiceDecisionOverlay({
 
       recorder.onstop = () => {
         stream.getTracks().forEach((track) => track.stop());
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         onSubmitAudio(blob);
       };
 
@@ -130,7 +130,7 @@ export function VoiceDecisionOverlay({
             onPressIn={startRecording}
             onPressOut={stopRecording}
             style={[styles.micButton, isRecording && styles.micButtonActive]}
-            accessibilityLabel={t('voiceDecision.holdToSpeak')}
+            accessibilityLabel={t("voiceDecision.holdToSpeak")}
             accessibilityRole="button"
           >
             {isRecording ? (
@@ -142,7 +142,10 @@ export function VoiceDecisionOverlay({
         )}
 
         <Text style={styles.attemptText}>
-          {t('voiceDecision.attempt', { current: currentAttempt, max: maxAttempts })}
+          {t("voiceDecision.attempt", {
+            current: currentAttempt,
+            max: maxAttempts,
+          })}
         </Text>
       </View>
 
@@ -152,7 +155,7 @@ export function VoiceDecisionOverlay({
 
       {lastResult?.corrected_audio_url && (
         <GlassButton
-          title={t('voiceDecision.listenHint')}
+          title={t("voiceDecision.listenHint")}
           onPress={() => {
             if (lastResult.corrected_audio_url) {
               const audio = new Audio(lastResult.corrected_audio_url);

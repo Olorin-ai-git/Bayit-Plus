@@ -1,26 +1,31 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
-import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Save, CheckCircle } from 'lucide-react'
-import { GlassView, GlassButton, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
-import { useDirection } from '@/hooks/useDirection'
-import { useContentForm } from '@/hooks/admin/useContentForm'
-import BasicInfoSection from '@/components/admin/content/BasicInfoSection'
-import MediaSection from '@/components/admin/content/MediaSection'
-import StreamingSection from '@/components/admin/content/StreamingSection'
-import ContentDetailsSection from '@/components/admin/content/ContentDetailsSection'
-import PublishingSection from '@/components/admin/content/PublishingSection'
-import AccessControlSection from '@/components/admin/content/AccessControlSection'
-import SubtitlesSection from '@/components/admin/content/SubtitlesSection'
-import InteractiveMomentsSection from '@/components/admin/content/InteractiveMomentsSection'
-import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
-import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
+import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ArrowLeft, Save, CheckCircle } from "lucide-react";
+import {
+  GlassView,
+  GlassButton,
+  GlassPageHeader,
+  GlassErrorBanner,
+} from "@bayit/shared/ui";
+import { colors, spacing, borderRadius, fontSize } from "@olorin/design-tokens";
+import { useDirection } from "@/hooks/useDirection";
+import { useContentForm } from "@/hooks/admin/useContentForm";
+import BasicInfoSection from "@/components/admin/content/BasicInfoSection";
+import MediaSection from "@/components/admin/content/MediaSection";
+import StreamingSection from "@/components/admin/content/StreamingSection";
+import ContentDetailsSection from "@/components/admin/content/ContentDetailsSection";
+import PublishingSection from "@/components/admin/content/PublishingSection";
+import AccessControlSection from "@/components/admin/content/AccessControlSection";
+import SubtitlesSection from "@/components/admin/content/SubtitlesSection";
+import InteractiveMomentsSection from "@/components/admin/content/InteractiveMomentsSection";
+import AdminLoadingState from "@/components/admin/shared/AdminLoadingState";
+import { ADMIN_PAGE_CONFIG } from "../../../../shared/utils/adminConstants";
 
 export default function ContentEditorPage() {
-  const { contentId } = useParams<{ contentId?: string }>()
-  const { t } = useTranslation()
-  const { isRTL } = useDirection()
+  const { contentId } = useParams<{ contentId?: string }>();
+  const { t } = useTranslation();
+  const { isRTL } = useDirection();
 
   const {
     formData,
@@ -33,13 +38,16 @@ export default function ContentEditorPage() {
     handleSubmit,
     handleCancel,
     isEditing,
-  } = useContentForm(contentId)
+  } = useContentForm(contentId);
 
   if (isLoading && error) {
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
         <GlassButton
-          title={t('admin.actions.back', 'Back to Content')}
+          title={t("admin.actions.back", "Back to Content")}
           onPress={handleCancel}
           variant="ghost"
           icon={<ArrowLeft size={20} color={colors.primary.DEFAULT} />}
@@ -50,26 +58,43 @@ export default function ContentEditorPage() {
           marginBottom={spacing.lg}
         />
       </ScrollView>
-    )
+    );
   }
 
   if (isLoading) {
-    return <AdminLoadingState message={t('common.loading', 'Loading...')} isRTL={isRTL} />
+    return (
+      <AdminLoadingState
+        message={t("common.loading", "Loading...")}
+        isRTL={isRTL}
+      />
+    );
   }
 
-  const pageConfig = ADMIN_PAGE_CONFIG['content-editor']
-  const IconComponent = pageConfig.icon
+  const pageConfig = ADMIN_PAGE_CONFIG["content-editor"];
+  const IconComponent = pageConfig.icon;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <GlassPageHeader
         title={
           isEditing
-            ? t('admin.content.editor.pageTitle', 'Edit Content')
-            : t('admin.content.editor.pageTitleNew', 'Add New Content')
+            ? t("admin.content.editor.pageTitle", "Edit Content")
+            : t("admin.content.editor.pageTitleNew", "Add New Content")
         }
-        subtitle={t('admin.contentEditor.subtitle', 'Manage content metadata and streaming details')}
-        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        subtitle={t(
+          "admin.contentEditor.subtitle",
+          "Manage content metadata and streaming details",
+        )}
+        icon={
+          <IconComponent
+            size={24}
+            color={pageConfig.iconColor}
+            strokeWidth={2}
+          />
+        }
         iconColor={pageConfig.iconColor}
         iconBackgroundColor={pageConfig.iconBackgroundColor}
         isRTL={isRTL}
@@ -94,8 +119,14 @@ export default function ContentEditorPage() {
           <CheckCircle size={20} color={colors.success.DEFAULT} />
           <Text style={styles.successText}>
             {isEditing
-              ? t('admin.content.updateSuccess', 'Content updated successfully. Redirecting...')
-              : t('admin.content.createSuccess', 'Content created successfully. Redirecting...')}
+              ? t(
+                  "admin.content.updateSuccess",
+                  "Content updated successfully. Redirecting...",
+                )
+              : t(
+                  "admin.content.createSuccess",
+                  "Content created successfully. Redirecting...",
+                )}
           </Text>
         </GlassView>
       )}
@@ -134,23 +165,24 @@ export default function ContentEditorPage() {
         />
 
         {isEditing && contentId && (
-          <SubtitlesSection
-            contentId={contentId}
-            disabled={isSubmitting}
-          />
+          <SubtitlesSection contentId={contentId} disabled={isSubmitting} />
         )}
 
         {isEditing && contentId && (
           <InteractiveMomentsSection
             contentId={contentId}
-            videoUrl={formData.video_url}
+            videoUrl={
+              (formData as Record<string, unknown>).video_url as
+                | string
+                | undefined
+            }
             disabled={isSubmitting}
           />
         )}
 
         <View style={styles.formActions}>
           <GlassButton
-            title={t('admin.content.editor.actions.cancel', 'Cancel')}
+            title={t("admin.content.editor.actions.cancel", "Cancel")}
             onPress={handleCancel}
             variant="ghost"
             disabled={isSubmitting}
@@ -159,8 +191,8 @@ export default function ContentEditorPage() {
           <GlassButton
             title={
               isSubmitting
-                ? t('admin.content.editor.actions.saving', 'Saving...')
-                : t('admin.content.editor.actions.save', 'Save')
+                ? t("admin.content.editor.actions.saving", "Saving...")
+                : t("admin.content.editor.actions.save", "Save")
             }
             onPress={handleSubmit}
             variant="primary"
@@ -172,7 +204,7 @@ export default function ContentEditorPage() {
         </View>
       </View>
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -183,8 +215,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   successContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     padding: spacing.md,
     borderRadius: borderRadius.md,
@@ -199,7 +231,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   formActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginTop: spacing.lg,
     paddingTop: spacing.lg,
@@ -209,4 +241,4 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
   },
-})
+});

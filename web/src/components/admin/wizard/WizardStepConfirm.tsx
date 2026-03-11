@@ -71,10 +71,12 @@ export function WizardStepConfirm({
       {/* Confirmation box */}
       <View style={styles.confirmBox}>
         <Text style={styles.confirmText}>
-          {t("admin.wizard.importSummary", {
-            count: importAll ? t("common.all") : selectedItemsCount,
-            source: currentSource.name,
-          })}
+          {importAll
+            ? t("admin.wizard.importSummaryAll", { source: currentSource.name })
+            : t("admin.wizard.importSummary", {
+                count: selectedItemsCount,
+                source: currentSource.name,
+              })}
         </Text>
 
         {sourceType === "vod" && selectedCategory && (

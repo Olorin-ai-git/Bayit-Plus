@@ -331,8 +331,10 @@ export default function VideoPlayer({
     let cancelled = false;
     api
       .get(`/avatar-mesh/content/${contentId}/interactive-moments`)
-      .then((data: InteractiveMoment[]) => {
-        if (!cancelled) setInteractiveMoments(Array.isArray(data) ? data : []);
+      .then((data) => {
+        const moments = data as unknown as InteractiveMoment[];
+        if (!cancelled)
+          setInteractiveMoments(Array.isArray(moments) ? moments : []);
       })
       .catch(() => {
         if (!cancelled) setInteractiveMoments([]);

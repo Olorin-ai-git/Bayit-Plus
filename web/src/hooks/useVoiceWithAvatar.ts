@@ -4,9 +4,10 @@
  * Synchronizes voice emotional intelligence with avatar emotions and animations
  */
 
-import { useEffect } from 'react';
-import { useEnhancedVoiceStore } from '@/stores/enhancedVoiceStore';
-import { useEnhancedAvatarStore } from '@/stores/enhancedAvatarStore';
+import { useEffect } from "react";
+import { useEnhancedVoiceStore } from "@/stores/enhancedVoiceStore";
+import type { VoiceAnalysis } from "@bayit/shared-voice-services";
+import { useEnhancedAvatarStore } from "@/stores/enhancedAvatarStore";
 
 export interface UseVoiceWithAvatarResult {
   // Voice state
@@ -16,7 +17,7 @@ export interface UseVoiceWithAvatarResult {
   lastCommand: string | null;
   lastResponse: string | null;
   error: string | null;
-  emotionalAnalysis: ReturnType<typeof useEnhancedVoiceStore>['emotionalAnalysis'];
+  emotionalAnalysis: VoiceAnalysis | null;
 
   // Voice actions
   startSession: () => void;
@@ -24,7 +25,10 @@ export interface UseVoiceWithAvatarResult {
   setListening: (listening: boolean) => void;
   setProcessing: (processing: boolean) => void;
   setTranscript: (transcript: string) => void;
-  processTranscriptionWithEI: (transcription: string, confidence: number) => void;
+  processTranscriptionWithEI: (
+    transcription: string,
+    confidence: number,
+  ) => void;
   addCommandToHistory: (command: string, success: boolean) => void;
   getAdaptiveTTSRate: () => number;
   shouldOfferHelp: () => boolean;
@@ -57,25 +61,45 @@ export function useVoiceWithAvatar(): UseVoiceWithAvatarResult {
   useEffect(() => {
     const { emotionalAnalysis } = voiceStore;
 
-    if (emotionalAnalysis && avatarStore.preferences.enabled && avatarStore.preferences.emotionsEnabled) {
+    if (
+      emotionalAnalysis &&
+      avatarStore.preferences.enabled &&
+      avatarStore.preferences.emotionsEnabled
+    ) {
       avatarStore.syncEmotionWithVoice(emotionalAnalysis.frustrationLevel);
     }
-  }, [voiceStore.emotionalAnalysis, avatarStore.preferences.enabled, avatarStore.preferences.emotionsEnabled]);
+  }, [
+    voiceStore.emotionalAnalysis,
+    avatarStore.preferences.enabled,
+    avatarStore.preferences.emotionsEnabled,
+  ]);
 
   // Sync avatar animations with voice state
   useEffect(() => {
-    if (!avatarStore.preferences.enabled || !avatarStore.preferences.animationsEnabled) return;
+    if (
+      !avatarStore.preferences.enabled ||
+      !avatarStore.preferences.animationsEnabled
+    )
+      return;
 
     if (voiceStore.isListening) {
       avatarStore.startListening();
     } else {
       avatarStore.stopListening();
     }
-  }, [voiceStore.isListening, avatarStore.preferences.enabled, avatarStore.preferences.animationsEnabled]);
+  }, [
+    voiceStore.isListening,
+    avatarStore.preferences.enabled,
+    avatarStore.preferences.animationsEnabled,
+  ]);
 
   // Handle TTS speaking state
   useEffect(() => {
-    if (!avatarStore.preferences.enabled || !avatarStore.preferences.animationsEnabled) return;
+    if (
+      !avatarStore.preferences.enabled ||
+      !avatarStore.preferences.animationsEnabled
+    )
+      return;
 
     if (voiceStore.lastResponse) {
       avatarStore.startSpeaking();
@@ -83,17 +107,24 @@ export function useVoiceWithAvatar(): UseVoiceWithAvatarResult {
       // Estimate TTS duration based on text length
       const textLength = voiceStore.lastResponse.length;
       const wordsPerMinute = 150;
-      const estimatedDuration = (textLength / 5) / wordsPerMinute * 60 * 1000;
+      const estimatedDuration = (textLength / 5 / wordsPerMinute) * 60 * 1000;
 
       setTimeout(() => {
         avatarStore.stopSpeaking();
       }, estimatedDuration);
     }
-  }, [voiceStore.lastResponse, avatarStore.preferences.enabled, avatarStore.preferences.animationsEnabled]);
+  }, [
+    voiceStore.lastResponse,
+    avatarStore.preferences.enabled,
+    avatarStore.preferences.animationsEnabled,
+  ]);
 
   // Show avatar on startup if configured
   useEffect(() => {
-    if (avatarStore.preferences.enabled && avatarStore.preferences.showOnStartup) {
+    if (
+      avatarStore.preferences.enabled &&
+      avatarStore.preferences.showOnStartup
+    ) {
       avatarStore.showAvatar();
     }
   }, [avatarStore.preferences.enabled, avatarStore.preferences.showOnStartup]);

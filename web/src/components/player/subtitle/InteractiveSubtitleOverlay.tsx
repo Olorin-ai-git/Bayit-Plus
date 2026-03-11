@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius, fontSize, glass } from '@olorin/design-tokens';
-import { SubtitleCue, SubtitleSettings, getLanguageInfo } from '@/types/subtitle';
-import { InteractiveWord } from './InteractiveWord';
-import { TranslationPopup } from './TranslationPopup';
-import { subtitlesService } from '@/services/api';
-import { logger } from '@bayit/shared-utils/logger';
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import {
+  colors,
+  spacing,
+  borderRadius,
+  fontSize,
+  glass,
+} from "@olorin/design-tokens";
+import {
+  SubtitleCue,
+  SubtitleSettings,
+  getLanguageInfo,
+} from "@/types/subtitle";
+import { InteractiveWord } from "./InteractiveWord";
+import { TranslationPopup } from "./TranslationPopup";
+import { subtitlesService } from "@/services/api";
+import { logger } from "@bayit/shared-utils/logger";
 
 interface InteractiveSubtitleOverlayProps {
   currentTime: number;
@@ -24,15 +34,12 @@ interface TranslationData {
   position: { x: number; y: number };
 }
 
-export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProps> = ({
-  currentTime,
-  subtitles,
-  language,
-  enabled,
-  settings,
-  onWordTap
-}) => {
-  const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
+export const InteractiveSubtitleOverlay: React.FC<
+  InteractiveSubtitleOverlayProps
+> = ({ currentTime, subtitles, language, enabled, settings, onWordTap }) => {
+  const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(
+    null,
+  );
   const [translation, setTranslation] = useState<TranslationData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,7 +47,7 @@ export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProp
   const isRTL = languageInfo?.rtl || false;
 
   const activeCues = subtitles.filter(
-    (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time
+    (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time,
   );
 
   useEffect(() => {
@@ -54,7 +61,14 @@ export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProp
 
     setIsLoading(true);
     try {
-      const result = await subtitlesService.translateWord(word, language) as { translation: string; transliteration: string; example?: string };
+      const result = (await subtitlesService.translateWord(
+        word,
+        language,
+      )) as unknown as {
+        translation: string;
+        transliteration: string;
+        example?: string;
+      };
 
       const rect = event.target.getBoundingClientRect();
       setTranslation({
@@ -64,13 +78,13 @@ export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProp
         example: result.example,
         position: {
           x: rect.left + rect.width / 2,
-          y: rect.top - spacing.md
-        }
+          y: rect.top - spacing.md,
+        },
       });
 
-      logger.info('Word translation fetched', { word, language });
+      logger.info("Word translation fetched", { word, language });
     } catch (error) {
-      logger.error('Failed to translate word', { word, language, error });
+      logger.error("Failed to translate word", { word, language, error });
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +99,10 @@ export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProp
     return null;
   }
 
-  const words = activeCues.map((cue) => cue.text).join(' ').split(' ');
+  const words = activeCues
+    .map((cue) => cue.text)
+    .join(" ")
+    .split(" ");
 
   return (
     <View style={styles.container}>
@@ -124,36 +141,36 @@ export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProp
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     bottom: spacing.xl,
-    left: '50%',
-    transform: [{ translateX: '-50%' }],
-    maxWidth: '80%',
-    alignItems: 'center',
-    zIndex: 100
+    left: "50%",
+    transform: [{ translateX: "-50%" }],
+    maxWidth: "80%",
+    alignItems: "center",
+    zIndex: 100,
   },
   wordsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
     padding: spacing.md,
     backgroundColor: glass.surface.medium,
     backdropFilter: glass.blur.lg,
-    borderRadius: borderRadius.lg
+    borderRadius: borderRadius.lg,
   },
   rtlContainer: {
-    flexDirection: 'row-reverse'
+    flexDirection: "row-reverse",
   },
   loadingIndicator: {
-    position: 'absolute',
+    position: "absolute",
     top: -spacing.xl,
     padding: spacing.sm,
     backgroundColor: glass.surface.dark,
-    borderRadius: borderRadius.md
+    borderRadius: borderRadius.md,
   },
   loadingText: {
     fontSize: fontSize.sm,
-    color: colors.neutral[300]
-  }
+    color: colors.neutral[300],
+  },
 });

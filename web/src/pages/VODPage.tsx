@@ -1,16 +1,25 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { useSearchParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useDirection } from '@/hooks/useDirection';
-import { useResponsive } from '@/hooks/useResponsive';
-import { Film, Tv, Search, ChevronLeft, ChevronRight, SlidersHorizontal, Mic, X } from 'lucide-react';
-import ContentCard from '@/components/content/ContentCard';
-import AnimatedCard from '@/components/common/AnimatedCard';
-import { CollectionPromoBanner } from '@/components/banners/CollectionPromoBanner';
-import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
-import api, { contentService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useDirection } from "@/hooks/useDirection";
+import { useResponsive } from "@/hooks/useResponsive";
+import {
+  Film,
+  Tv,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  SlidersHorizontal,
+  Mic,
+  X,
+} from "lucide-react";
+import ContentCard from "@/components/content/ContentCard";
+import AnimatedCard from "@/components/common/AnimatedCard";
+import { CollectionPromoBanner } from "@/components/banners/CollectionPromoBanner";
+import { WidgetToggleProvider } from "@/contexts/WidgetToggleContext";
+import api, { contentService } from "@/services/api";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
 import {
   GlassCard,
   GlassCategoryPill,
@@ -18,11 +27,11 @@ import {
   GlassCheckbox,
   GlassPageHeader,
   GlassModal,
-} from '@bayit/shared/ui';
-import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
-import logger from '@/utils/logger';
-import PageLoading from '@/components/common/PageLoading';
-import { isSeriesContent } from '@/utils/contentHelpers';
+} from "@bayit/shared/ui";
+import { getLocalizedName } from "@bayit/shared-utils/contentLocalization";
+import logger from "@/utils/logger";
+import PageLoading from "@/components/common/PageLoading";
+import { isSeriesContent } from "@/utils/contentHelpers";
 
 interface Subcategory {
   id: string;
@@ -70,11 +79,15 @@ export default function VODPage() {
   const [loading, setLoading] = useState(true);
   const [featuredCollections, setFeaturedCollections] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get('category') || 'all'
+    searchParams.get("category") || "all",
   );
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [contentTypeFilter, setContentTypeFilter] = useState<'all' | 'movies' | 'series' | 'collections'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null,
+  );
+  const [contentTypeFilter, setContentTypeFilter] = useState<
+    "all" | "movies" | "series" | "collections"
+  >("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
@@ -91,7 +104,7 @@ export default function VODPage() {
   const itemsPerPage = 24;
 
   // Debounced search query for API calls
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search query
@@ -118,7 +131,9 @@ export default function VODPage() {
     }
     const timer = setTimeout(async () => {
       try {
-        const data = await contentService.getSearchSuggestions(searchQuery.trim());
+        const data = await contentService.getSearchSuggestions(
+          searchQuery.trim(),
+        );
         setSuggestions(data?.suggestions || []);
         setShowSuggestions(true);
       } catch {
@@ -131,15 +146,22 @@ export default function VODPage() {
   // Filter content by subtitle filter
   const filteredContent = useMemo(() => {
     if (!showOnlyWithSubtitles) return allContent;
-    return allContent.filter(item =>
-      item.available_subtitle_languages && item.available_subtitle_languages.length > 0
+    return allContent.filter(
+      (item) =>
+        item.available_subtitle_languages &&
+        item.available_subtitle_languages.length > 0,
     );
   }, [allContent, showOnlyWithSubtitles]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, selectedSubcategory, contentTypeFilter, debouncedSearch]);
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    contentTypeFilter,
+    debouncedSearch,
+  ]);
 
   // Load categories on mount
   useEffect(() => {
@@ -149,18 +171,31 @@ export default function VODPage() {
   // Load content when filters change
   useEffect(() => {
     loadContent();
-  }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch, useSemanticSearch]);
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    contentTypeFilter,
+    currentPage,
+    debouncedSearch,
+    useSemanticSearch,
+  ]);
 
   // Load featured collections for rotating banner
   useEffect(() => {
     const loadFeaturedCollections = async () => {
       try {
-        const collections = await api.get('/content/collections/recommendations');
+        const collections = (await api.get(
+          "/content/collections/recommendations",
+        )) as any[];
         if (collections && collections.length > 0) {
           setFeaturedCollections(collections);
         }
       } catch (error) {
-        logger.error('Failed to load collection recommendations', 'VODPage', error);
+        logger.error(
+          "Failed to load collection recommendations",
+          "VODPage",
+          error,
+        );
       }
     };
     loadFeaturedCollections();
@@ -170,18 +205,20 @@ export default function VODPage() {
   useEffect(() => {
     const loadContinueWatching = async () => {
       try {
-        const data = await api.get('/history/continue');
+        const data = await api.get("/history/continue");
         if (data?.items && data.items.length > 0) {
           setContinueWatching(data.items);
         }
       } catch (error) {
-        logger.debug('Continue watching not available', 'VODPage');
+        logger.debug("Continue watching not available", "VODPage");
       }
     };
 
     const loadTrending = async () => {
       try {
-        const data = await api.get('/trending/recommendations', { params: { limit: 10 } });
+        const data = await api.get("/trending/recommendations", {
+          params: { limit: 10 },
+        });
         if (data?.recommendations && data.recommendations.length > 0) {
           setTrendingContent(data.recommendations);
         } else if (data?.items && data.items.length > 0) {
@@ -190,7 +227,7 @@ export default function VODPage() {
           setTrendingContent(data);
         }
       } catch (error) {
-        logger.debug('Trending content not available', 'VODPage');
+        logger.debug("Trending content not available", "VODPage");
       }
     };
 
@@ -204,7 +241,7 @@ export default function VODPage() {
     const MIN_REFRESH_INTERVAL = 60000; // 1 minute minimum between refreshes
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         const elapsed = Date.now() - lastRefreshRef.current;
         if (elapsed > MIN_REFRESH_INTERVAL) {
           lastRefreshRef.current = Date.now();
@@ -213,17 +250,29 @@ export default function VODPage() {
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch]);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    contentTypeFilter,
+    currentPage,
+    debouncedSearch,
+  ]);
 
   const loadCategories = async () => {
     try {
-      const data = await api.get('/content/categories', { params: { content_type: 'vod' } });
+      const data = await api.get("/content/categories", {
+        params: { content_type: "vod" },
+      });
       setCategories(data.categories || []);
-      logger.info(`VODPage: Loaded ${data.categories?.length || 0} VOD categories`, 'VODPage');
+      logger.info(
+        `VODPage: Loaded ${data.categories?.length || 0} VOD categories`,
+        "VODPage",
+      );
     } catch (error) {
-      logger.error('Failed to load categories', 'VODPage', error);
+      logger.error("Failed to load categories", "VODPage", error);
     }
   };
 
@@ -235,7 +284,8 @@ export default function VODPage() {
     setTotalItems(0);
 
     try {
-      const categoryParam = selectedCategory === 'all' ? undefined : selectedCategory;
+      const categoryParam =
+        selectedCategory === "all" ? undefined : selectedCategory;
       const searchParam = debouncedSearch || undefined;
 
       let items: ContentItem[] = [];
@@ -243,7 +293,10 @@ export default function VODPage() {
 
       // Semantic/LLM search when enabled and query exists
       if (useSemanticSearch && searchParam) {
-        const data = await contentService.searchLLM({ query: searchParam, limit: itemsPerPage });
+        const data = await contentService.searchLLM({
+          query: searchParam,
+          limit: itemsPerPage,
+        });
         items = data?.results || data?.items || [];
         total = items.length;
         setAllContent(items);
@@ -253,14 +306,14 @@ export default function VODPage() {
       }
 
       // Special handling for collections filter
-      if (contentTypeFilter === 'collections') {
-        const data = await api.get('/content/collections', {
+      if (contentTypeFilter === "collections") {
+        const data = (await api.get("/content/collections", {
           params: {
             skip: (currentPage - 1) * itemsPerPage,
             limit: itemsPerPage,
             published_only: true,
-          }
-        }) as ContentItem[];
+          },
+        })) as ContentItem[];
         items = data || [];
         total = items.length; // API returns full list, we paginate client-side
         setAllContent(items);
@@ -270,31 +323,38 @@ export default function VODPage() {
       }
 
       // Determine which content types to fetch based on filter
-      const fetchMovies = contentTypeFilter === 'all' || contentTypeFilter === 'movies';
-      const fetchSeries = contentTypeFilter === 'all' || contentTypeFilter === 'series';
+      const fetchMovies =
+        contentTypeFilter === "all" || contentTypeFilter === "movies";
+      const fetchSeries =
+        contentTypeFilter === "all" || contentTypeFilter === "series";
 
       if (selectedSubcategory) {
         // Fetch content by subcategory
-        const selectedCat = categories.find(c => c.id === selectedCategory);
+        const selectedCat = categories.find((c) => c.id === selectedCategory);
         if (selectedCat) {
-          const subcat = selectedCat.subcategories?.find(s => s.id === selectedSubcategory);
+          const subcat = selectedCat.subcategories?.find(
+            (s) => s.id === selectedSubcategory,
+          );
           if (subcat) {
             // Build content_type parameter for backend filtering
             let contentTypeParam: string | undefined;
-            if (contentTypeFilter === 'movies') {
-              contentTypeParam = 'movies';
-            } else if (contentTypeFilter === 'series') {
-              contentTypeParam = 'series';
+            if (contentTypeFilter === "movies") {
+              contentTypeParam = "movies";
+            } else if (contentTypeFilter === "series") {
+              contentTypeParam = "series";
             }
 
-            const data = await api.get(`/content/section/${selectedCat.slug}/subcategory/${subcat.slug}`, {
-              params: {
-                page: currentPage,
-                limit: itemsPerPage,
-                search: searchParam,
-                content_type: contentTypeParam  // Add content_type filter
-              }
-            });
+            const data = await api.get(
+              `/content/section/${selectedCat.slug}/subcategory/${subcat.slug}`,
+              {
+                params: {
+                  page: currentPage,
+                  limit: itemsPerPage,
+                  search: searchParam,
+                  content_type: contentTypeParam, // Add content_type filter
+                },
+              },
+            );
 
             items = data.items || [];
             total = data.total || items.length;
@@ -306,29 +366,39 @@ export default function VODPage() {
 
         if (fetchMovies) {
           requests.push(
-            api.get('/content/movies', {
-              params: { page: currentPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }
-            })
+            api.get("/content/movies", {
+              params: {
+                page: currentPage,
+                limit: itemsPerPage,
+                category_id: categoryParam,
+                search: searchParam,
+              },
+            }),
           );
         }
 
         if (fetchSeries) {
           requests.push(
-            api.get('/content/series', {
-              params: { page: currentPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }
-            })
+            api.get("/content/series", {
+              params: {
+                page: currentPage,
+                limit: itemsPerPage,
+                category_id: categoryParam,
+                search: searchParam,
+              },
+            }),
           );
         }
 
         const results = await Promise.all(requests);
 
-        if (contentTypeFilter === 'all') {
+        if (contentTypeFilter === "all") {
           // Both movies and series
           const movies = results[0]?.items || [];
           const series = results[1]?.items || [];
           items = interleaveArrays(movies, series);
           total = (results[0]?.total || 0) + (results[1]?.total || 0);
-        } else if (contentTypeFilter === 'movies') {
+        } else if (contentTypeFilter === "movies") {
           // Movies only
           items = results[0]?.items || [];
           total = results[0]?.total || 0;
@@ -342,16 +412,22 @@ export default function VODPage() {
       setAllContent(items);
       setTotalItems(total);
 
-      logger.info(`VODPage: Loaded ${items.length} items (total: ${total})`, 'VODPage');
+      logger.info(
+        `VODPage: Loaded ${items.length} items (total: ${total})`,
+        "VODPage",
+      );
     } catch (error) {
-      logger.error('Failed to load content', 'VODPage', error);
+      logger.error("Failed to load content", "VODPage", error);
     } finally {
       setLoading(false);
     }
   };
 
   // Interleave two arrays for better visual distribution
-  const interleaveArrays = (arr1: ContentItem[], arr2: ContentItem[]): ContentItem[] => {
+  const interleaveArrays = (
+    arr1: ContentItem[],
+    arr2: ContentItem[],
+  ): ContentItem[] => {
     const result: ContentItem[] = [];
     const maxLength = Math.max(arr1.length, arr2.length);
     for (let i = 0; i < maxLength; i++) {
@@ -364,12 +440,12 @@ export default function VODPage() {
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setSelectedSubcategory(null); // Clear subcategory when changing category
-    setSearchQuery(''); // Clear search when changing category
+    setSearchQuery(""); // Clear search when changing category
     setCurrentPage(1); // Reset to first page
-    if (categoryId === 'all') {
-      searchParams.delete('category');
+    if (categoryId === "all") {
+      searchParams.delete("category");
     } else {
-      searchParams.set('category', categoryId);
+      searchParams.set("category", categoryId);
     }
     setSearchParams(searchParams);
   };
@@ -382,13 +458,15 @@ export default function VODPage() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Get selected category's subcategories
-  const selectedCategoryData = categories.find(c => c.id === selectedCategory);
+  const selectedCategoryData = categories.find(
+    (c) => c.id === selectedCategory,
+  );
   const subcategories = selectedCategoryData?.subcategories || [];
 
   // Collect items for widget toggle batch-check
   const widgetItems = useMemo(() => {
     return allContent.map((item) => ({
-      content_type: item.type || 'vod',
+      content_type: item.type || "vod",
       content_id: item.id,
     }));
   }, [allContent]);
@@ -409,7 +487,9 @@ export default function VODPage() {
             key={item.id}
             index={index}
             variant="grid"
-            style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
+            style={
+              { width: `${100 / numColumns}%`, padding: spacing.xs } as any
+            }
           >
             <ContentCard content={item as any} />
           </AnimatedCard>
@@ -422,9 +502,9 @@ export default function VODPage() {
   if (loading && allContent.length === 0) {
     return (
       <PageLoading
-        title={t('vod.title')}
+        title={t("vod.title")}
         pageType="vod"
-        message={t('vod.loadingContent', 'Loading movies and series...')}
+        message={t("vod.loadingContent", "Loading movies and series...")}
         isRTL={isRTL}
       />
     );
@@ -432,303 +512,393 @@ export default function VODPage() {
 
   return (
     <WidgetToggleProvider items={widgetItems}>
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.container}>
-        {/* Header */}
-        <GlassPageHeader
-          title={t('vod.title')}
-          pageType="vod"
-          badge={totalItems}
-          isRTL={isRTL}
-        />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.container}>
+          {/* Header */}
+          <GlassPageHeader
+            title={t("vod.title")}
+            pageType="vod"
+            badge={totalItems}
+            isRTL={isRTL}
+          />
 
-        {/* Search Input with Filter and Voice Buttons */}
-        <View style={styles.searchContainer}>
-          <View style={[styles.searchRow, { flexDirection }]}>
-            {/* Search Input */}
-            <View style={styles.searchInputWrapper}>
-              <GlassInput
-                key="vod-search-input"
-                placeholder={t('vod.searchPlaceholder')}
-                value={searchQuery}
-                onChangeText={(text: string) => {
-                  setSearchQuery(text);
-                  if (text.trim().length < 2) setShowSuggestions(false);
+          {/* Search Input with Filter and Voice Buttons */}
+          <View style={styles.searchContainer}>
+            <View style={[styles.searchRow, { flexDirection }]}>
+              {/* Search Input */}
+              <View style={styles.searchInputWrapper}>
+                <GlassInput
+                  key="vod-search-input"
+                  placeholder={t("vod.searchPlaceholder")}
+                  value={searchQuery}
+                  onChangeText={(text: string) => {
+                    setSearchQuery(text);
+                    if (text.trim().length < 2) setShowSuggestions(false);
+                  }}
+                  containerStyle={styles.searchInput}
+                />
+                {showSuggestions && suggestions.length > 0 && (
+                  <GlassCard style={styles.suggestionsDropdown}>
+                    {suggestions.map((suggestion, index) => (
+                      <Pressable
+                        key={`${suggestion}-${index}`}
+                        onPress={() => {
+                          setSearchQuery(suggestion);
+                          setShowSuggestions(false);
+                        }}
+                        style={styles.suggestionItem}
+                      >
+                        <Search size={14} color={colors.textMuted} />
+                        <Text style={styles.suggestionText}>{suggestion}</Text>
+                      </Pressable>
+                    ))}
+                  </GlassCard>
+                )}
+              </View>
+
+              {/* Voice Search Button */}
+              <Pressable
+                onPress={() => {
+                  if (
+                    "webkitSpeechRecognition" in window ||
+                    "SpeechRecognition" in window
+                  ) {
+                    const SpeechRecognition =
+                      (window as any).webkitSpeechRecognition ||
+                      (window as any).SpeechRecognition;
+                    const recognition = new SpeechRecognition();
+                    recognition.lang =
+                      i18n.language === "he"
+                        ? "he-IL"
+                        : i18n.language === "es"
+                          ? "es-ES"
+                          : "en-US";
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+
+                    recognition.onstart = () => setIsListening(true);
+                    recognition.onend = () => setIsListening(false);
+                    recognition.onresult = (event: any) => {
+                      const transcript = event.results[0][0].transcript;
+                      setSearchQuery(transcript);
+                    };
+                    recognition.onerror = () => setIsListening(false);
+
+                    recognition.start();
+                  }
                 }}
-                containerStyle={styles.searchInput}
-              />
-              {showSuggestions && suggestions.length > 0 && (
-                <GlassCard style={styles.suggestionsDropdown}>
-                  {suggestions.map((suggestion, index) => (
-                    <Pressable
-                      key={`${suggestion}-${index}`}
-                      onPress={() => {
-                        setSearchQuery(suggestion);
-                        setShowSuggestions(false);
-                      }}
-                      style={styles.suggestionItem}
-                    >
-                      <Search size={14} color={colors.textMuted} />
-                      <Text style={styles.suggestionText}>{suggestion}</Text>
-                    </Pressable>
-                  ))}
-                </GlassCard>
-              )}
+                style={[
+                  styles.iconButton,
+                  isListening && styles.iconButtonActive,
+                ]}
+              >
+                <Mic
+                  size={20}
+                  color={
+                    isListening ? colors.primary.DEFAULT : colors.textMuted
+                  }
+                />
+              </Pressable>
+
+              {/* Filter Button */}
+              <Pressable
+                onPress={() => setShowFilterPanel(!showFilterPanel)}
+                style={[
+                  styles.iconButton,
+                  showFilterPanel && styles.iconButtonActive,
+                  showOnlyWithSubtitles && styles.iconButtonWithBadge,
+                ]}
+              >
+                <SlidersHorizontal
+                  size={20}
+                  color={
+                    showFilterPanel ? colors.primary.DEFAULT : colors.textMuted
+                  }
+                />
+                {showOnlyWithSubtitles && (
+                  <View style={styles.filterActiveBadge} />
+                )}
+              </Pressable>
             </View>
 
-            {/* Voice Search Button */}
-            <Pressable
-              onPress={() => {
-                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                  const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-                  const recognition = new SpeechRecognition();
-                  recognition.lang = i18n.language === 'he' ? 'he-IL' : i18n.language === 'es' ? 'es-ES' : 'en-US';
-                  recognition.continuous = false;
-                  recognition.interimResults = false;
-
-                  recognition.onstart = () => setIsListening(true);
-                  recognition.onend = () => setIsListening(false);
-                  recognition.onresult = (event: any) => {
-                    const transcript = event.results[0][0].transcript;
-                    setSearchQuery(transcript);
-                  };
-                  recognition.onerror = () => setIsListening(false);
-
-                  recognition.start();
-                }
-              }}
-              style={[styles.iconButton, isListening && styles.iconButtonActive]}
-            >
-              <Mic size={20} color={isListening ? colors.primary.DEFAULT : colors.textMuted} />
-            </Pressable>
-
-            {/* Filter Button */}
-            <Pressable
-              onPress={() => setShowFilterPanel(!showFilterPanel)}
-              style={[styles.iconButton, showFilterPanel && styles.iconButtonActive, showOnlyWithSubtitles && styles.iconButtonWithBadge]}
-            >
-              <SlidersHorizontal size={20} color={showFilterPanel ? colors.primary.DEFAULT : colors.textMuted} />
-              {showOnlyWithSubtitles && <View style={styles.filterActiveBadge} />}
-            </Pressable>
-          </View>
-
-          {/* Filter Panel - Modal on mobile, overlay on desktop */}
-          {isMobile ? (
-            <GlassModal
-              visible={showFilterPanel}
-              onClose={() => setShowFilterPanel(false)}
-              title={t('vod.filters', 'Filters')}
-            >
-              <View style={styles.filterPanelContent}>
-                <GlassCheckbox
-                  label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
-                  checked={showOnlyWithSubtitles}
-                  onChange={setShowOnlyWithSubtitles}
-                />
-                <GlassCheckbox
-                  label={t('vod.semanticSearch', 'AI Smart Search')}
-                  checked={useSemanticSearch}
-                  onChange={setUseSemanticSearch}
-                />
-              </View>
-            </GlassModal>
-          ) : (
-            showFilterPanel && (
-              <GlassCard style={styles.filterPanel}>
-                <View style={[styles.filterPanelHeader, { flexDirection }]}>
-                  <Text style={[styles.filterPanelTitle, { textAlign }]}>{t('vod.filters', 'Filters')}</Text>
-                  <Pressable onPress={() => setShowFilterPanel(false)} style={styles.filterCloseButton}>
-                    <X size={16} color={colors.textMuted} />
-                  </Pressable>
-                </View>
+            {/* Filter Panel - Modal on mobile, overlay on desktop */}
+            {isMobile ? (
+              <GlassModal
+                visible={showFilterPanel}
+                onClose={() => setShowFilterPanel(false)}
+                title={t("vod.filters", "Filters")}
+              >
                 <View style={styles.filterPanelContent}>
                   <GlassCheckbox
-                    label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
+                    label={t(
+                      "vod.showOnlyWithSubtitles",
+                      "Show only with subtitles",
+                    )}
                     checked={showOnlyWithSubtitles}
                     onChange={setShowOnlyWithSubtitles}
                   />
                   <GlassCheckbox
-                    label={t('vod.semanticSearch', 'AI Smart Search')}
+                    label={t("vod.semanticSearch", "AI Smart Search")}
                     checked={useSemanticSearch}
                     onChange={setUseSemanticSearch}
                   />
                 </View>
-              </GlassCard>
-            )
-          )}
-        </View>
-
-        {/* Content Type Filter (Movies/Series/All) */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.contentTypeScroll}
-          contentContainerStyle={styles.contentTypeContent}
-        >
-          <GlassCategoryPill
-            label={t('vod.allContent', 'All Content')}
-            isActive={contentTypeFilter === 'all'}
-            onPress={() => setContentTypeFilter('all')}
-          />
-          <GlassCategoryPill
-            label={t('vod.moviesOnly', 'Movies')}
-            isActive={contentTypeFilter === 'movies'}
-            onPress={() => setContentTypeFilter('movies')}
-          />
-          <GlassCategoryPill
-            label={t('vod.seriesOnly', 'Series')}
-            isActive={contentTypeFilter === 'series'}
-            onPress={() => setContentTypeFilter('series')}
-          />
-          <GlassCategoryPill
-            label={t('vod.collectionsOnly', 'Collections')}
-            isActive={contentTypeFilter === 'collections'}
-            onPress={() => setContentTypeFilter('collections')}
-          />
-        </ScrollView>
-
-        {/* Featured Collection Banner - Auto-rotating */}
-        {featuredCollections.length > 0 && contentTypeFilter === 'all' && (
-          <View style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.md }}>
-            <CollectionPromoBanner
-              collections={featuredCollections}
-              autoRotate={true}
-              rotationInterval={5000}
-            />
+              </GlassModal>
+            ) : (
+              showFilterPanel && (
+                <GlassCard style={styles.filterPanel}>
+                  <View style={[styles.filterPanelHeader, { flexDirection }]}>
+                    <Text style={[styles.filterPanelTitle, { textAlign }]}>
+                      {t("vod.filters", "Filters")}
+                    </Text>
+                    <Pressable
+                      onPress={() => setShowFilterPanel(false)}
+                      style={styles.filterCloseButton}
+                    >
+                      <X size={16} color={colors.textMuted} />
+                    </Pressable>
+                  </View>
+                  <View style={styles.filterPanelContent}>
+                    <GlassCheckbox
+                      label={t(
+                        "vod.showOnlyWithSubtitles",
+                        "Show only with subtitles",
+                      )}
+                      checked={showOnlyWithSubtitles}
+                      onChange={setShowOnlyWithSubtitles}
+                    />
+                    <GlassCheckbox
+                      label={t("vod.semanticSearch", "AI Smart Search")}
+                      checked={useSemanticSearch}
+                      onChange={setUseSemanticSearch}
+                    />
+                  </View>
+                </GlassCard>
+              )
+            )}
           </View>
-        )}
 
-        {/* Category Filter */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesScroll}
-          contentContainerStyle={styles.categoriesContent}
-        >
-          <GlassCategoryPill
-            label={t('vod.allCategories')}
-            isActive={selectedCategory === 'all'}
-            onPress={() => handleCategoryChange('all')}
-          />
-          {categories.map((category) => (
-            <GlassCategoryPill
-              key={category.id}
-              label={getLocalizedName(category, i18n.language)}
-              isActive={selectedCategory === category.id}
-              onPress={() => handleCategoryChange(category.id)}
-            />
-          ))}
-        </ScrollView>
-
-        {/* Subcategory Filter (if category supports subcategories) */}
-        {selectedCategory !== 'all' && selectedCategoryData?.supports_subcategories && subcategories.length > 0 && (
+          {/* Content Type Filter (Movies/Series/All) */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.subcategoriesScroll}
-            contentContainerStyle={styles.subcategoriesContent}
+            style={styles.contentTypeScroll}
+            contentContainerStyle={styles.contentTypeContent}
           >
             <GlassCategoryPill
-              label={t('vod.allSubcategories', 'All')}
-              isActive={selectedSubcategory === null}
-              onPress={() => handleSubcategoryChange(null)}
+              label={t("vod.allContent", "All Content")}
+              isActive={contentTypeFilter === "all"}
+              onPress={() => setContentTypeFilter("all")}
             />
-            {subcategories.map((subcategory) => (
+            <GlassCategoryPill
+              label={t("vod.moviesOnly", "Movies")}
+              isActive={contentTypeFilter === "movies"}
+              onPress={() => setContentTypeFilter("movies")}
+            />
+            <GlassCategoryPill
+              label={t("vod.seriesOnly", "Series")}
+              isActive={contentTypeFilter === "series"}
+              onPress={() => setContentTypeFilter("series")}
+            />
+            <GlassCategoryPill
+              label={t("vod.collectionsOnly", "Collections")}
+              isActive={contentTypeFilter === "collections"}
+              onPress={() => setContentTypeFilter("collections")}
+            />
+          </ScrollView>
+
+          {/* Featured Collection Banner - Auto-rotating */}
+          {featuredCollections.length > 0 && contentTypeFilter === "all" && (
+            <View
+              style={{
+                paddingHorizontal: spacing.lg,
+                paddingVertical: spacing.md,
+              }}
+            >
+              <CollectionPromoBanner
+                collections={featuredCollections}
+                autoRotate={true}
+                rotationInterval={5000}
+              />
+            </View>
+          )}
+
+          {/* Category Filter */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoriesScroll}
+            contentContainerStyle={styles.categoriesContent}
+          >
+            <GlassCategoryPill
+              label={t("vod.allCategories")}
+              isActive={selectedCategory === "all"}
+              onPress={() => handleCategoryChange("all")}
+            />
+            {categories.map((category) => (
               <GlassCategoryPill
-                key={subcategory.id}
-                label={getLocalizedName(subcategory, i18n.language)}
-                isActive={selectedSubcategory === subcategory.id}
-                onPress={() => handleSubcategoryChange(subcategory.id)}
+                key={category.id}
+                label={getLocalizedName(category, i18n.language)}
+                isActive={selectedCategory === category.id}
+                onPress={() => handleCategoryChange(category.id)}
               />
             ))}
           </ScrollView>
-        )}
 
-        {/* Continue Watching Row */}
-        {continueWatching.length > 0 && contentTypeFilter === 'all' && !debouncedSearch && (
-          <View style={styles.sectionContainer}>
-            <Text style={[styles.sectionTitle, { textAlign }]}>
-              {t('home.continueWatching', 'Continue Watching')}
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
-              {continueWatching.map((item: any) => (
-                <View key={item.id} style={styles.horizontalCard}>
-                  <ContentCard content={item} showProgress />
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        )}
+          {/* Subcategory Filter (if category supports subcategories) */}
+          {selectedCategory !== "all" &&
+            selectedCategoryData?.supports_subcategories &&
+            subcategories.length > 0 && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.subcategoriesScroll}
+                contentContainerStyle={styles.subcategoriesContent}
+              >
+                <GlassCategoryPill
+                  label={t("vod.allSubcategories", "All")}
+                  isActive={selectedSubcategory === null}
+                  onPress={() => handleSubcategoryChange(null)}
+                />
+                {subcategories.map((subcategory) => (
+                  <GlassCategoryPill
+                    key={subcategory.id}
+                    label={getLocalizedName(subcategory, i18n.language)}
+                    isActive={selectedSubcategory === subcategory.id}
+                    onPress={() => handleSubcategoryChange(subcategory.id)}
+                  />
+                ))}
+              </ScrollView>
+            )}
 
-        {/* Trending Row */}
-        {trendingContent.length > 0 && contentTypeFilter === 'all' && !debouncedSearch && (
-          <View style={styles.sectionContainer}>
-            <Text style={[styles.sectionTitle, { textAlign }]}>
-              {t('home.trending', 'Trending Now')}
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
-              {trendingContent.map((item: any) => (
-                <View key={item.id} style={styles.horizontalCard}>
-                  <ContentCard content={item} />
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        )}
-
-        {/* Content Grid */}
-        {loading ? (
-          <View style={styles.grid}>
-            {[...Array(12)].map((_, i) => (
-              <View key={i} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
-                <View style={styles.skeletonCard}>
-                  <View style={styles.skeletonThumbnail} />
-                </View>
-              </View>
-            ))}
-          </View>
-        ) : (
-          <>
-            {renderContentGrid(filteredContent, t('vod.noContent', 'No content found'))}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <View style={styles.paginationContainer}>
-                <Pressable
-                  onPress={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  style={[styles.pageButton, currentPage === 1 && styles.pageButtonDisabled]}
+          {/* Continue Watching Row */}
+          {continueWatching.length > 0 &&
+            contentTypeFilter === "all" &&
+            !debouncedSearch && (
+              <View style={styles.sectionContainer}>
+                <Text style={[styles.sectionTitle, { textAlign }]}>
+                  {t("home.continueWatching", "Continue Watching")}
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.horizontalRow}
                 >
-                  {isRTL ? <ChevronRight size={20} color={colors.text} /> : <ChevronLeft size={20} color={colors.text} />}
-                </Pressable>
-                <View style={styles.pageInfo}>
-                  <Text style={styles.pageText}>{currentPage} / {totalPages}</Text>
-                  <Text style={styles.pageSubtext}>{totalItems} {t('vod.items', 'items')}</Text>
-                </View>
-                <Pressable
-                  onPress={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  style={[styles.pageButton, currentPage === totalPages && styles.pageButtonDisabled]}
-                >
-                  {isRTL ? <ChevronLeft size={20} color={colors.text} /> : <ChevronRight size={20} color={colors.text} />}
-                </Pressable>
+                  {continueWatching.map((item: any) => (
+                    <View key={item.id} style={styles.horizontalCard}>
+                      <ContentCard content={item} showProgress />
+                    </View>
+                  ))}
+                </ScrollView>
               </View>
             )}
 
-            {/* Empty State */}
-            {filteredContent.length === 0 && (
-              <View style={styles.emptyState}>
-                <GlassCard style={styles.emptyCard}>
-                  <Film size={64} color={colors.textMuted} />
-                  <Text style={styles.emptyTitle}>{t('vod.emptyTitle')}</Text>
-                  <Text style={styles.emptyDescription}>{t('vod.emptyDescription')}</Text>
-                </GlassCard>
+          {/* Trending Row */}
+          {trendingContent.length > 0 &&
+            contentTypeFilter === "all" &&
+            !debouncedSearch && (
+              <View style={styles.sectionContainer}>
+                <Text style={[styles.sectionTitle, { textAlign }]}>
+                  {t("home.trending", "Trending Now")}
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.horizontalRow}
+                >
+                  {trendingContent.map((item: any) => (
+                    <View key={item.id} style={styles.horizontalCard}>
+                      <ContentCard content={item} />
+                    </View>
+                  ))}
+                </ScrollView>
               </View>
             )}
-          </>
-        )}
-      </View>
-    </ScrollView>
+
+          {/* Content Grid */}
+          {loading ? (
+            <View style={styles.grid}>
+              {[...Array(12)].map((_, i) => (
+                <View
+                  key={i}
+                  style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}
+                >
+                  <View style={styles.skeletonCard}>
+                    <View style={styles.skeletonThumbnail} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <>
+              {renderContentGrid(
+                filteredContent,
+                t("vod.noContent", "No content found"),
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <View style={styles.paginationContainer}>
+                  <Pressable
+                    onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    style={[
+                      styles.pageButton,
+                      currentPage === 1 && styles.pageButtonDisabled,
+                    ]}
+                  >
+                    {isRTL ? (
+                      <ChevronRight size={20} color={colors.text} />
+                    ) : (
+                      <ChevronLeft size={20} color={colors.text} />
+                    )}
+                  </Pressable>
+                  <View style={styles.pageInfo}>
+                    <Text style={styles.pageText}>
+                      {currentPage} / {totalPages}
+                    </Text>
+                    <Text style={styles.pageSubtext}>
+                      {totalItems} {t("vod.items", "items")}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() =>
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    style={[
+                      styles.pageButton,
+                      currentPage === totalPages && styles.pageButtonDisabled,
+                    ]}
+                  >
+                    {isRTL ? (
+                      <ChevronLeft size={20} color={colors.text} />
+                    ) : (
+                      <ChevronRight size={20} color={colors.text} />
+                    )}
+                  </Pressable>
+                </View>
+              )}
+
+              {/* Empty State */}
+              {filteredContent.length === 0 && (
+                <View style={styles.emptyState}>
+                  <GlassCard style={styles.emptyCard}>
+                    <Film size={64} color={colors.textMuted} />
+                    <Text style={styles.emptyTitle}>{t("vod.emptyTitle")}</Text>
+                    <Text style={styles.emptyDescription}>
+                      {t("vod.emptyDescription")}
+                    </Text>
+                  </GlassCard>
+                </View>
+              )}
+            </>
+          )}
+        </View>
+      </ScrollView>
     </WidgetToggleProvider>
   );
 }
@@ -745,29 +915,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
+    marginHorizontal: "auto",
+    width: "100%",
   },
   searchContainer: {
     marginBottom: spacing.lg,
-    position: 'relative',
+    position: "relative",
     zIndex: 10,
   },
   searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
   },
   searchInputWrapper: {
     flex: 1,
-    position: 'relative',
+    position: "relative",
     zIndex: 20,
   },
   searchInput: {
     marginBottom: 0,
   },
   suggestionsDropdown: {
-    position: 'absolute',
+    position: "absolute",
     top: 52,
     left: 0,
     right: 0,
@@ -775,8 +945,8 @@ const styles = StyleSheet.create({
     padding: spacing.xs,
   },
   suggestionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -793,18 +963,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glass,
     borderWidth: 1,
     borderColor: colors.glassBorder,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   iconButtonActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: "rgba(107, 33, 168, 0.3)",
     borderColor: colors.primary.DEFAULT,
   },
   iconButtonWithBadge: {
-    position: 'relative',
+    position: "relative",
   },
   filterActiveBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
     width: 8,
@@ -813,7 +983,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary.DEFAULT,
   },
   filterPanel: {
-    position: 'absolute',
+    position: "absolute",
     top: 60,
     right: 0,
     left: 0,
@@ -821,9 +991,9 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   filterPanelHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: spacing.md,
     paddingBottom: spacing.sm,
     borderBottomWidth: 1,
@@ -831,7 +1001,7 @@ const styles = StyleSheet.create({
   },
   filterPanelTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   filterCloseButton: {
@@ -866,7 +1036,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.md,
   },
@@ -879,12 +1049,12 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   emptySection: {
     paddingVertical: spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptySectionText: {
     fontSize: 16,
@@ -892,17 +1062,17 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: spacing.xl * 2,
   },
   emptyCard: {
     padding: spacing.xl * 1.5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
@@ -912,7 +1082,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   skeletonCard: {
-    width: '100%',
+    width: "100%",
   },
   skeletonThumbnail: {
     aspectRatio: 16 / 9,
@@ -920,9 +1090,9 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
   },
   paginationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.xl,
     padding: spacing.lg,
     marginTop: spacing.xl,
@@ -931,18 +1101,18 @@ const styles = StyleSheet.create({
   pageButton: {
     padding: spacing.md,
     borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   pageButtonDisabled: {
     opacity: 0.3,
   },
   pageInfo: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.xs,
   },
   pageText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   pageSubtext: {

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { GlassCard, GlassButton } from "@bayit/shared/ui";
 import { colors, spacing, borderRadius } from "@olorin/design-tokens";
 import { useDirection } from "@/hooks/useDirection";
-import { byocService } from "@/services/api";
+import { byocService } from "@/services/byocService";
 import logger from "@bayit/shared-utils/logger";
 
 const reviewLogger = logger.scope("NormalizationReview");

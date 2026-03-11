@@ -64,7 +64,7 @@ export const ProactiveSuggestions: React.FC<ProactiveSuggestionsProps> = ({
       const data = (await api.post<ProactiveApiResponse>(
         "/voice/proactive/suggest",
         body,
-      )) as ProactiveApiResponse;
+      )) as unknown as ProactiveApiResponse;
 
       if (!mountedRef.current) return;
 

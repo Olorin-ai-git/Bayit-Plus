@@ -5,14 +5,17 @@
  * Used by web, tvOS, and tv-app platforms.
  */
 
-import { create } from 'zustand';
-import { apiContentService } from '../services/api/contentServices';
-import { apiCollectionsService, apiVodBrowseService } from '../services/api/vodServices';
-import { apiTrendingService } from '../services/api/specialtyServices';
-import type { VODContentItem, VODCategory, VODFilters } from '../types/vod';
-import logger from '../utils/logger';
+import { create } from "zustand";
+import { apiContentService } from "../services/api/contentServices";
+import {
+  apiCollectionsService,
+  apiVodBrowseService,
+} from "../services/api/vodServices";
+import { apiTrendingService } from "../services/api/specialtyServices";
+import type { VODContentItem, VODCategory, VODFilters } from "../types/vod";
+import logger from "../utils/logger";
 
-const vodLogger = logger.scope('VODStore');
+const vodLogger = logger.scope("VODStore");
 
 interface CollectionSummary {
   id: string;
@@ -75,7 +78,7 @@ export const useVodStore = create<VODState>((set, get) => ({
   categoryContent: [],
   categoryTotal: 0,
   searchResults: [],
-  searchQuery: '',
+  searchQuery: "",
   currentContent: null,
   relatedContent: [],
   isLoading: false,
@@ -90,8 +93,11 @@ export const useVodStore = create<VODState>((set, get) => ({
       const data = await apiContentService.getFeatured();
       set({ featured: data?.items || data || [], isLoading: false });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch featured content', { error: err });
-      set({ error: err?.detail || err?.message || 'Failed to load featured content', isLoading: false });
+      vodLogger.error("Failed to fetch featured content", { error: err });
+      set({
+        error: err?.detail || err?.message || "Failed to load featured content",
+        isLoading: false,
+      });
     }
   },
 
@@ -101,8 +107,11 @@ export const useVodStore = create<VODState>((set, get) => ({
       const data = await apiContentService.getCategories();
       set({ categories: data?.categories || data || [], isLoading: false });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch categories', { error: err });
-      set({ error: err?.detail || err?.message || 'Failed to load categories', isLoading: false });
+      vodLogger.error("Failed to fetch categories", { error: err });
+      set({
+        error: err?.detail || err?.message || "Failed to load categories",
+        isLoading: false,
+      });
     }
   },
 
@@ -111,16 +120,18 @@ export const useVodStore = create<VODState>((set, get) => ({
       const data = await apiTrendingService.getRecommendations(limit);
       set({ trending: data?.items || data || [] });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch trending content', { error: err });
+      vodLogger.error("Failed to fetch trending content", { error: err });
     }
   },
 
   fetchCollections: async () => {
     try {
       const data = await apiCollectionsService.getRecommendations();
-      set({ collections: Array.isArray(data) ? data : data?.collections || [] });
+      set({
+        collections: Array.isArray(data) ? data : data?.collections || [],
+      });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch collections', { error: err });
+      vodLogger.error("Failed to fetch collections", { error: err });
     }
   },
 
@@ -135,8 +146,14 @@ export const useVodStore = create<VODState>((set, get) => ({
         isCategoryLoading: false,
       });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch category content', { error: err, categoryId });
-      set({ error: err?.detail || err?.message || 'Failed to load category', isCategoryLoading: false });
+      vodLogger.error("Failed to fetch category content", {
+        error: err,
+        categoryId,
+      });
+      set({
+        error: err?.detail || err?.message || "Failed to load category",
+        isCategoryLoading: false,
+      });
     }
   },
 
@@ -157,19 +174,30 @@ export const useVodStore = create<VODState>((set, get) => ({
         isCategoryLoading: false,
       });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch movies', { error: err });
-      set({ error: err?.detail || err?.message || 'Failed to load movies', isCategoryLoading: false });
+      vodLogger.error("Failed to fetch movies", { error: err });
+      set({
+        error: err?.detail || err?.message || "Failed to load movies",
+        isCategoryLoading: false,
+      });
     }
   },
 
   fetchContentDetail: async (contentId: string) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await apiContentService.getById(contentId);
+      const data = (await apiContentService.getById(
+        contentId,
+      )) as unknown as VODContentItem;
       set({ currentContent: data, isLoading: false });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch content detail', { error: err, contentId });
-      set({ error: err?.detail || err?.message || 'Content not found', isLoading: false });
+      vodLogger.error("Failed to fetch content detail", {
+        error: err,
+        contentId,
+      });
+      set({
+        error: err?.detail || err?.message || "Content not found",
+        isLoading: false,
+      });
     }
   },
 
@@ -178,13 +206,16 @@ export const useVodStore = create<VODState>((set, get) => ({
       const data = await apiVodBrowseService.getRelated(contentId, limit);
       set({ relatedContent: data?.items || data || [] });
     } catch (err: any) {
-      vodLogger.error('Failed to fetch related content', { error: err, contentId });
+      vodLogger.error("Failed to fetch related content", {
+        error: err,
+        contentId,
+      });
     }
   },
 
   searchContent: async (query: string, filters?: VODFilters) => {
     if (!query.trim()) {
-      set({ searchResults: [], searchQuery: '' });
+      set({ searchResults: [], searchQuery: "" });
       return;
     }
     set({ isSearching: true, searchQuery: query, error: null });
@@ -196,8 +227,11 @@ export const useVodStore = create<VODState>((set, get) => ({
       });
       set({ searchResults: data?.items || data || [], isSearching: false });
     } catch (err: any) {
-      vodLogger.error('Failed to search content', { error: err, query });
-      set({ error: err?.detail || err?.message || 'Search failed', isSearching: false });
+      vodLogger.error("Failed to search content", { error: err, query });
+      set({
+        error: err?.detail || err?.message || "Search failed",
+        isSearching: false,
+      });
     }
   },
 
@@ -205,7 +239,8 @@ export const useVodStore = create<VODState>((set, get) => ({
     set((state) => ({ filters: { ...state.filters, ...newFilters } }));
   },
 
-  clearSearch: () => set({ searchResults: [], searchQuery: '', isSearching: false }),
+  clearSearch: () =>
+    set({ searchResults: [], searchQuery: "", isSearching: false }),
 
   clearError: () => set({ error: null }),
 }));

@@ -259,7 +259,7 @@ export const InteractiveMomentEditor: React.FC<Props> = ({
                   <GlassInput
                     type="number"
                     value={newMoment.timestamp || 0}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewMoment({
                         ...newMoment,
                         timestamp: parseFloat(e.target.value),
@@ -285,7 +285,7 @@ export const InteractiveMomentEditor: React.FC<Props> = ({
                 <GlassInput
                   type="number"
                   value={newMoment.duration || 30}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewMoment({
                       ...newMoment,
                       duration: parseInt(e.target.value),
@@ -302,7 +302,7 @@ export const InteractiveMomentEditor: React.FC<Props> = ({
                 <GlassInput
                   type="text"
                   value={newMoment.character_name || ""}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewMoment({
                       ...newMoment,
                       character_name: e.target.value,
@@ -318,7 +318,7 @@ export const InteractiveMomentEditor: React.FC<Props> = ({
                 </label>
                 <textarea
                   value={newMoment.scene_context || ""}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                     setNewMoment({
                       ...newMoment,
                       scene_context: e.target.value,
@@ -337,7 +337,7 @@ export const InteractiveMomentEditor: React.FC<Props> = ({
                 <GlassInput
                   type="text"
                   value={newMoment.interaction_prompt || ""}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewMoment({
                       ...newMoment,
                       interaction_prompt: e.target.value,

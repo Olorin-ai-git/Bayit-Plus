@@ -37,7 +37,7 @@ const CulturalContextOverlay: React.FC<CulturalContextOverlayProps> = ({
   const [references, setReferences] = useState<CulturalReference[]>([]);
   const [loading, setLoading] = useState(false);
   const detectionCache = useRef<Map<string, CulturalReference[]>>(new Map());
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastDetectedText = useRef<string>("");
 
   const detectReferences = useCallback(

@@ -8,12 +8,15 @@
  * - Message input and conversation history
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import { GlassCard, GlassButton, GlassInput } from '@bayit/glass';
-import { InteractionSession, DialogueExchange } from '../../hooks/useVODInteraction';
-import logger from '@/utils/logger';
+import React, { useState, useRef, useEffect } from "react";
+import { GlassCard, GlassButton, GlassInput } from "@bayit/glass";
+import {
+  InteractionSession,
+  DialogueExchange,
+} from "../../hooks/useVODInteraction";
+import logger from "@/utils/logger";
 
-const log = logger.scope('InteractionOverlay');
+const log = logger.scope("InteractionOverlay");
 
 interface Props {
   session: InteractionSession;
@@ -28,9 +31,9 @@ export const InteractionOverlay: React.FC<Props> = ({
   onSendMessage,
   onComplete,
   isSending,
-  avatarComponent
+  avatarComponent,
 }) => {
-  const [messageInput, setMessageInput] = useState('');
+  const [messageInput, setMessageInput] = useState("");
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -40,14 +43,14 @@ export const InteractionOverlay: React.FC<Props> = ({
   }, [session.dialogue_exchanges]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSend = async () => {
     if (!messageInput.trim() || isSending) return;
 
     const message = messageInput.trim();
-    setMessageInput('');
+    setMessageInput("");
 
     try {
       const response = await onSendMessage(message);
@@ -56,12 +59,12 @@ export const InteractionOverlay: React.FC<Props> = ({
         setCurrentVideo(response.animated_video_url);
       }
     } catch (error) {
-      log.error('Failed to send message:', error);
+      log.error("Failed to send message:", error);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -72,11 +75,7 @@ export const InteractionOverlay: React.FC<Props> = ({
       {/* Left Side - Avatar and Character Video */}
       <div className="w-1/2 flex flex-col items-center justify-center p-6">
         {/* User's Avatar */}
-        {avatarComponent && (
-          <div className="mb-6">
-            {avatarComponent}
-          </div>
-        )}
+        {avatarComponent && <div className="mb-6">{avatarComponent}</div>}
 
         {/* Character Animated Video */}
         {currentVideo && (
@@ -89,12 +88,14 @@ export const InteractionOverlay: React.FC<Props> = ({
                 playsInline
                 onCanPlay={() => {
                   videoRef.current?.play().catch((err) => {
-                    log.error('Character video play failed:', err);
+                    log.error("Character video play failed:", err);
                     setCurrentVideo(null);
                   });
                 }}
                 onError={() => {
-                  log.error('Character video load error:', { url: currentVideo });
+                  log.error("Character video load error:", {
+                    url: currentVideo,
+                  });
                   setCurrentVideo(null);
                 }}
                 onEnded={() => setCurrentVideo(null)}
@@ -108,7 +109,9 @@ export const InteractionOverlay: React.FC<Props> = ({
 
         {!currentVideo && (
           <div className="text-center text-gray-400">
-            <div className="text-lg mb-2">Talking with {session.character_name}</div>
+            <div className="text-lg mb-2">
+              Talking with {session.character_name}
+            </div>
             <div className="text-sm">Type your message below</div>
           </div>
         )}
@@ -123,18 +126,20 @@ export const InteractionOverlay: React.FC<Props> = ({
               <div
                 key={index}
                 className={`flex ${
-                  exchange.speaker === 'user' ? 'justify-end' : 'justify-start'
+                  exchange.speaker === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
                   className={`max-w-[80%] p-3 rounded-lg ${
-                    exchange.speaker === 'user'
-                      ? 'bg-blue-500 bg-opacity-20'
-                      : 'bg-white bg-opacity-10'
+                    exchange.speaker === "user"
+                      ? "bg-blue-500 bg-opacity-20"
+                      : "bg-white bg-opacity-10"
                   }`}
                 >
                   <div className="text-xs font-semibold mb-1 text-gray-300">
-                    {exchange.speaker === 'user' ? 'You' : session.character_name}
+                    {exchange.speaker === "user"
+                      ? "You"
+                      : session.character_name}
                   </div>
                   <div className="text-sm">{exchange.message_text}</div>
                 </div>
@@ -148,7 +153,9 @@ export const InteractionOverlay: React.FC<Props> = ({
             <div className="flex gap-2">
               <GlassInput
                 value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setMessageInput(e.target.value)
+                }
                 onKeyPress={handleKeyPress}
                 placeholder={`Ask ${session.character_name} something...`}
                 disabled={isSending}

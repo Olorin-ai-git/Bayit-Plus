@@ -3,24 +3,27 @@
  *
  * Grid display of all VOD content with interactive moment status.
  */
-import { useEffect } from 'react'
-import { View, Text, Pressable, StyleSheet, TextInput } from 'react-native'
-import { useTranslation } from 'react-i18next'
-import { Search, Filter, Play } from 'lucide-react'
-import { GlassView, GlassButton } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
-import { useDirection } from '@/hooks/useDirection'
-import { useAvatarStudioStore } from '@/stores/avatarStudioStore'
-import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
+import { useEffect } from "react";
+import { View, Text, Pressable, StyleSheet, TextInput } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Search, Filter, Play } from "lucide-react";
+import { GlassView, GlassButton } from "@bayit/shared/ui";
+import { colors, spacing, borderRadius, fontSize } from "@olorin/design-tokens";
+import { useDirection } from "@/hooks/useDirection";
+import { useAvatarStudioStore } from "@/stores/avatarStudioStore";
+import AdminLoadingState from "@/components/admin/shared/AdminLoadingState";
 
 interface ContentLibraryViewProps {
-  onOpenEditor: () => void
-  disabled?: boolean
+  onOpenEditor: () => void;
+  disabled?: boolean;
 }
 
-export default function ContentLibraryView({ onOpenEditor, disabled = false }: ContentLibraryViewProps) {
-  const { t } = useTranslation()
-  const { isRTL } = useDirection()
+export default function ContentLibraryView({
+  onOpenEditor,
+  disabled = false,
+}: ContentLibraryViewProps) {
+  const { t } = useTranslation();
+  const { isRTL } = useDirection();
   const {
     movies,
     isLoading,
@@ -31,37 +34,44 @@ export default function ContentLibraryView({ onOpenEditor, disabled = false }: C
     setStatusFilter,
     setSearchQuery,
     selectMovie,
-  } = useAvatarStudioStore()
+  } = useAvatarStudioStore();
 
   useEffect(() => {
-    loadMovies()
-  }, [])
+    loadMovies();
+  }, []);
 
   const handleMovieClick = (movieId: string) => {
-    if (disabled) return
-    selectMovie(movieId)
-    onOpenEditor()
-  }
+    if (disabled) return;
+    selectMovie(movieId);
+    onOpenEditor();
+  };
 
   const statusBadges = {
-    ready: { color: colors.success.DEFAULT, label: 'Ready' },
-    in_progress: { color: colors.warning.DEFAULT, label: 'In Progress' },
-    not_started: { color: colors.textMuted, label: 'Not Started' },
-    needs_review: { color: colors.error.DEFAULT, label: 'Needs Review' },
-  }
+    ready: { color: colors.success.DEFAULT, label: "Ready" },
+    in_progress: { color: colors.warning.DEFAULT, label: "In Progress" },
+    not_started: { color: colors.textMuted, label: "Not Started" },
+    needs_review: { color: colors.error.DEFAULT, label: "Needs Review" },
+  };
 
   if (isLoading) {
-    return <AdminLoadingState message={t('common.loading', 'Loading...')} />
+    return <AdminLoadingState message={t("common.loading", "Loading...")} />;
   }
 
   return (
     <View style={styles.container}>
       <View style={[styles.toolbar, isRTL && styles.toolbarRTL]}>
         <View style={styles.searchContainer}>
-          <Search size={20} color={colors.textMuted} style={styles.searchIcon} />
+          <Search
+            size={20}
+            color={colors.textMuted}
+            style={styles.searchIcon}
+          />
           <TextInput
             style={[styles.searchInput, isRTL && styles.searchInputRTL]}
-            placeholder={t('avatarStudio.searchPlaceholder', 'Search movies...')}
+            placeholder={t(
+              "avatarStudio.searchPlaceholder",
+              "Search movies...",
+            )}
             placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -69,12 +79,17 @@ export default function ContentLibraryView({ onOpenEditor, disabled = false }: C
         </View>
 
         <View style={[styles.filterButtons, isRTL && styles.filterButtonsRTL]}>
-          {(['ready', 'in_progress', 'not_started'] as const).map((status) => (
+          {(["ready", "in_progress", "not_started"] as const).map((status) => (
             <GlassButton
               key={status}
-              title={t(`avatarStudio.status.${status}`, statusBadges[status].label)}
-              variant={statusFilter === status ? 'primary' : 'ghost'}
-              onPress={() => setStatusFilter(statusFilter === status ? null : status)}
+              title={t(
+                `avatarStudio.status.${status}`,
+                statusBadges[status].label,
+              )}
+              variant={statusFilter === status ? "primary" : "ghost"}
+              onPress={() =>
+                setStatusFilter(statusFilter === status ? null : status)
+              }
               size="small"
             />
           ))}
@@ -89,7 +104,7 @@ export default function ContentLibraryView({ onOpenEditor, disabled = false }: C
 
       <View style={styles.grid}>
         {movies.map((movie) => {
-          const status = statusBadges[movie.status]
+          const status = statusBadges[movie.status];
 
           return (
             <Pressable
@@ -117,15 +132,25 @@ export default function ContentLibraryView({ onOpenEditor, disabled = false }: C
                     <Text style={styles.movieYear}>{movie.year}</Text>
                   )}
 
-                  <View style={[styles.statusBadge, { backgroundColor: status.color + '20' }]}>
-                    <View style={[styles.statusDot, { backgroundColor: status.color }]} />
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: status.color + "20" },
+                    ]}
+                  >
+                    <View
+                      style={[
+                        styles.statusDot,
+                        { backgroundColor: status.color },
+                      ]}
+                    />
                     <Text style={[styles.statusText, { color: status.color }]}>
                       {t(`avatarStudio.status.${movie.status}`, status.label)}
                     </Text>
                   </View>
 
                   <Text style={styles.momentCount}>
-                    {t('avatarStudio.momentCount', {
+                    {t("avatarStudio.momentCount", {
                       count: movie.moment_count,
                       defaultValue: `${movie.moment_count} moment(s)`,
                     })}
@@ -137,7 +162,7 @@ export default function ContentLibraryView({ onOpenEditor, disabled = false }: C
                 </View>
               </GlassView>
             </Pressable>
-          )
+          );
         })}
       </View>
 
@@ -145,13 +170,13 @@ export default function ContentLibraryView({ onOpenEditor, disabled = false }: C
         <View style={styles.emptyState}>
           <Text style={styles.emptyText}>
             {searchQuery || statusFilter
-              ? t('avatarStudio.noResults', 'No movies found')
-              : t('avatarStudio.noMovies', 'No movies available')}
+              ? t("avatarStudio.noResults", "No movies found")
+              : t("avatarStudio.noMovies", "No movies available")}
           </Text>
         </View>
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -159,22 +184,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toolbar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginBottom: spacing.lg,
   },
   toolbarRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   searchContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.glassDark,
     borderRadius: borderRadius.md,
     paddingHorizontal: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   searchIcon: {
     marginRight: spacing.sm,
@@ -186,19 +211,19 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   searchInputRTL: {
-    textAlign: 'right',
+    textAlign: "right",
   },
   filterButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
   },
   filterButtonsRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   errorBanner: {
     padding: spacing.md,
     marginBottom: spacing.lg,
-    backgroundColor: colors.error.DEFAULT + '20',
+    backgroundColor: colors.error.DEFAULT + "20",
     borderRadius: borderRadius.md,
   },
   errorText: {
@@ -206,12 +231,12 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.lg,
   },
   movieCard: {
-    width: 'calc(33.333% - 16px)',
+    width: "calc(33.333% - 16px)",
     minWidth: 280,
   },
   movieCardDisabled: {
@@ -220,26 +245,26 @@ const styles = StyleSheet.create({
   movieCardContent: {
     padding: spacing.md,
     borderRadius: borderRadius.lg,
-    position: 'relative',
+    position: "relative",
   },
   posterContainer: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 2 / 3,
     borderRadius: borderRadius.md,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: spacing.md,
   },
   poster: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    width: "100%",
+    height: "100%",
+    objectFit: "cover" as const,
   },
   movieInfo: {
     gap: spacing.xs,
   },
   movieTitle: {
     fontSize: fontSize.lg,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   movieYear: {
@@ -247,13 +272,13 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: borderRadius.sm,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginTop: spacing.xs,
   },
   statusDot: {
@@ -263,7 +288,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: fontSize.xs,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   momentCount: {
     fontSize: fontSize.sm,
@@ -271,16 +296,16 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   playIcon: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.md,
     right: spacing.md,
   },
   emptyState: {
     padding: spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyText: {
     fontSize: fontSize.lg,
     color: colors.textMuted,
   },
-})
+});

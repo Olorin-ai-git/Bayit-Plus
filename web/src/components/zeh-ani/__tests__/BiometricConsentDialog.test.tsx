@@ -1,144 +1,161 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { BiometricConsentDialog } from '../BiometricConsentDialog';
-import api from '@/services/api';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { BiometricConsentDialog } from "../BiometricConsentDialog";
+import api from "@/services/api";
 
-jest.mock('@/services/api');
-jest.mock('react-i18next', () => ({
+jest.mock("@/services/api");
+jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-describe('BiometricConsentDialog', () => {
-  const mockOnConsent = jest.fn();
-  const mockOnCancel = jest.fn();
-  const mockProfileId = 'profile-123';
+jest.mock("@/stores/avatarMeshStore", () => ({
+  useAvatarMeshStore: () => ({
+    consentStatus: null,
+    loading: false,
+    error: null,
+    grantConsent: jest.fn().mockResolvedValue(true),
+    checkConsent: jest.fn(),
+    clearError: jest.fn(),
+  }),
+}));
+
+describe("BiometricConsentDialog", () => {
+  const mockOnConsentGranted = jest.fn();
+  const mockProfileId = "profile-123";
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders consent dialog with all consent types', () => {
+  it("renders consent dialog with all consent types", () => {
     render(
       <BiometricConsentDialog
-        open={true}
         profileId={mockProfileId}
-        consentType="mesh_generation"
-        onConsent={mockOnConsent}
-        onCancel={mockOnCancel}
-      />
+        onConsentGranted={mockOnConsentGranted}
+      />,
     );
 
-    expect(screen.getByText(/biometric consent/i)).toBeInTheDocument();
-    expect(screen.getByText(/mesh generation/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/zehAni.consent.biometric.title/i),
+    ).toBeInTheDocument();
   });
 
-  it('requires PIN input before granting consent', async () => {
+  it("requires PIN input before granting consent", async () => {
     render(
       <BiometricConsentDialog
-        open={true}
         profileId={mockProfileId}
-        consentType="voice_v2v"
-        onConsent={mockOnConsent}
-        onCancel={mockOnCancel}
-      />
+        onConsentGranted={mockOnConsentGranted}
+      />,
     );
 
-    const submitButton = screen.getByRole('button', { name: /grant consent/i });
+    const submitButton = screen.getByRole("button", {
+      name: /zehAni.consent.biometric.submit/i,
+    });
     expect(submitButton).toBeDisabled();
 
-    const pinInput = screen.getByLabelText(/pin/i);
-    await userEvent.type(pinInput, '123456');
-
-    expect(submitButton).toBeEnabled();
-  });
-
-  it('validates PIN length', async () => {
-    render(
-      <BiometricConsentDialog
-        open={true}
-        profileId={mockProfileId}
-        consentType="latent_features"
-        onConsent={mockOnConsent}
-        onCancel={mockOnCancel}
-      />
+    const pinInput = screen.getByLabelText(
+      /zehAni.consent.biometric.pinLabel/i,
     );
+    await userEvent.type(pinInput, "1234");
 
-    const pinInput = screen.getByLabelText(/pin/i);
-    await userEvent.type(pinInput, '12345'); // Only 5 digits
-
-    const submitButton = screen.getByRole('button', { name: /grant consent/i });
     expect(submitButton).toBeDisabled();
   });
 
-  it('calls onConsent with correct data on submit', async () => {
-    (api.post as jest.Mock).mockResolvedValue({ success: true });
-
+  it("validates PIN length", async () => {
     render(
       <BiometricConsentDialog
-        open={true}
         profileId={mockProfileId}
-        consentType="mesh_generation"
-        onConsent={mockOnConsent}
-        onCancel={mockOnCancel}
-      />
+        onConsentGranted={mockOnConsentGranted}
+      />,
     );
 
-    const pinInput = screen.getByLabelText(/pin/i);
-    await userEvent.type(pinInput, '123456');
+    const pinInput = screen.getByLabelText(
+      /zehAni.consent.biometric.pinLabel/i,
+    );
+    await userEvent.type(pinInput, "12"); // Only 2 digits (below min 4)
 
-    const submitButton = screen.getByRole('button', { name: /grant consent/i });
+    const submitButton = screen.getByRole("button", {
+      name: /zehAni.consent.biometric.submit/i,
+    });
+    expect(submitButton).toBeDisabled();
+  });
+
+  it("calls onConsentGranted after successful consent grant", async () => {
+    render(
+      <BiometricConsentDialog
+        profileId={mockProfileId}
+        onConsentGranted={mockOnConsentGranted}
+      />,
+    );
+
+    const checkboxes = screen.getAllByRole("checkbox");
+    if (checkboxes[0]) {
+      fireEvent.click(checkboxes[0]);
+    }
+
+    const pinInput = screen.getByLabelText(
+      /zehAni.consent.biometric.pinLabel/i,
+    );
+    await userEvent.type(pinInput, "1234");
+
+    const submitButton = screen.getByRole("button", {
+      name: /zehAni.consent.biometric.submit/i,
+    });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith('/zeh-ani/consent/biometric', {
-        profile_id: mockProfileId,
-        consent_type: 'mesh_generation',
-        pin: '123456'
+      expect(mockOnConsentGranted).toHaveBeenCalled();
+    });
+  });
+
+  it("displays error when consent grant fails", async () => {
+    const mockStore = {
+      consentStatus: null,
+      loading: false,
+      error: "zehAni.consent.biometric.error",
+      grantConsent: jest.fn().mockResolvedValue(false),
+      checkConsent: jest.fn(),
+      clearError: jest.fn(),
+    };
+
+    jest
+      .mocked(require("@/stores/avatarMeshStore").useAvatarMeshStore)
+      .mockReturnValue(mockStore);
+
+    render(
+      <BiometricConsentDialog
+        profileId={mockProfileId}
+        onConsentGranted={mockOnConsentGranted}
+      />,
+    );
+
+    expect(
+      screen.getByText("zehAni.consent.biometric.error"),
+    ).toBeInTheDocument();
+  });
+
+  it("checks consent on mount", () => {
+    const checkConsent = jest.fn();
+    jest
+      .mocked(require("@/stores/avatarMeshStore").useAvatarMeshStore)
+      .mockReturnValue({
+        consentStatus: null,
+        loading: false,
+        error: null,
+        grantConsent: jest.fn().mockResolvedValue(true),
+        checkConsent,
+        clearError: jest.fn(),
       });
-      expect(mockOnConsent).toHaveBeenCalled();
-    });
-  });
-
-  it('displays error on invalid PIN', async () => {
-    (api.post as jest.Mock).mockRejectedValue(new Error('Invalid PIN'));
 
     render(
       <BiometricConsentDialog
-        open={true}
         profileId={mockProfileId}
-        consentType="voice_v2v"
-        onConsent={mockOnConsent}
-        onCancel={mockOnCancel}
-      />
+        onConsentGranted={mockOnConsentGranted}
+      />,
     );
 
-    const pinInput = screen.getByLabelText(/pin/i);
-    await userEvent.type(pinInput, '000000');
-
-    const submitButton = screen.getByRole('button', { name: /grant consent/i });
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(/invalid pin/i)).toBeInTheDocument();
-    });
-  });
-
-  it('calls onCancel when cancel button clicked', () => {
-    render(
-      <BiometricConsentDialog
-        open={true}
-        profileId={mockProfileId}
-        consentType="mesh_generation"
-        onConsent={mockOnConsent}
-        onCancel={mockOnCancel}
-      />
-    );
-
-    const cancelButton = screen.getByRole('button', { name: /cancel/i });
-    fireEvent.click(cancelButton);
-
-    expect(mockOnCancel).toHaveBeenCalled();
+    expect(checkConsent).toHaveBeenCalledWith(mockProfileId);
   });
 });

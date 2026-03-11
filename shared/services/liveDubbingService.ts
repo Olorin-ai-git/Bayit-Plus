@@ -125,6 +125,7 @@ class LiveDubbingService {
         wsUrl += `&voice_id=${voiceId}`;
       }
 
+      const wsProtocol = wsUrl.startsWith("wss://") ? "wss" : "ws";
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {

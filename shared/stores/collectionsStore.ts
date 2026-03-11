@@ -4,11 +4,11 @@
  * Handles collection listing, detail views, and AI-rotating collection recommendations.
  */
 
-import { create } from 'zustand';
-import { apiCollectionsService } from '../services/api/vodServices';
-import logger from '../utils/logger';
+import { create } from "zustand";
+import { apiCollectionsService } from "../services/api/vodServices";
+import logger from "../utils/logger";
 
-const collectionsLogger = logger.scope('CollectionsStore');
+const collectionsLogger = logger.scope("CollectionsStore");
 
 interface CollectionSummary {
   id: string;
@@ -70,9 +70,9 @@ export const useCollectionsStore = create<CollectionsState>((set) => ({
       const data = await apiCollectionsService.getAll(skip, limit);
       set({ collections: Array.isArray(data) ? data : [], isLoading: false });
     } catch (err: any) {
-      collectionsLogger.error('Failed to fetch collections', { error: err });
+      collectionsLogger.error("Failed to fetch collections", { error: err });
       set({
-        error: err?.detail || err?.message || 'Failed to load collections',
+        error: err?.detail || err?.message || "Failed to load collections",
         isLoading: false,
       });
     }
@@ -82,11 +82,19 @@ export const useCollectionsStore = create<CollectionsState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const data = await apiCollectionsService.getRecommendations();
-      set({ recommendations: Array.isArray(data) ? data : [], isLoading: false });
-    } catch (err: any) {
-      collectionsLogger.error('Failed to fetch collection recommendations', { error: err });
       set({
-        error: err?.detail || err?.message || 'Failed to load collection recommendations',
+        recommendations: Array.isArray(data) ? data : [],
+        isLoading: false,
+      });
+    } catch (err: any) {
+      collectionsLogger.error("Failed to fetch collection recommendations", {
+        error: err,
+      });
+      set({
+        error:
+          err?.detail ||
+          err?.message ||
+          "Failed to load collection recommendations",
         isLoading: false,
       });
     }
@@ -95,12 +103,17 @@ export const useCollectionsStore = create<CollectionsState>((set) => ({
   fetchCollectionDetail: async (collectionId: string) => {
     set({ isDetailLoading: true, error: null });
     try {
-      const data = await apiCollectionsService.getDetail(collectionId);
+      const data = (await apiCollectionsService.getDetail(
+        collectionId,
+      )) as unknown as CollectionDetail;
       set({ currentCollection: data, isDetailLoading: false });
     } catch (err: any) {
-      collectionsLogger.error('Failed to fetch collection detail', { error: err, collectionId });
+      collectionsLogger.error("Failed to fetch collection detail", {
+        error: err,
+        collectionId,
+      });
       set({
-        error: err?.detail || err?.message || 'Collection not found',
+        error: err?.detail || err?.message || "Collection not found",
         isDetailLoading: false,
       });
     }
