@@ -118,7 +118,7 @@
                 HStack {
                     Spacer()
                     AICompanionSidebarView(
-                        repository: repositories.chat,
+                        companionRepository: repositories.companion,
                         talkBackRepository: repositories.talkBack,
                         contentId: contentId,
                         profileId: authManager.user?.id ?? "",

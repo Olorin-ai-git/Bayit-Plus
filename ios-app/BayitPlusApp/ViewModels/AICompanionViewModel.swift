@@ -40,12 +40,12 @@ final class AICompanionViewModel {
     /// Vocabulary tab
     private(set) var words: [VocabularyWord] = []
 
-    private let repository: any ChatRepository
+    private let companionRepository: any CompanionRepository
     private let talkBackRepository: any TalkBackRepository
     private let logger = BayitLogger(category: "AICompanionViewModel")
 
-    init(repository: any ChatRepository, talkBackRepository: any TalkBackRepository) {
-        self.repository = repository
+    init(companionRepository: any CompanionRepository, talkBackRepository: any TalkBackRepository) {
+        self.companionRepository = companionRepository
         self.talkBackRepository = talkBackRepository
     }
 
@@ -53,20 +53,23 @@ final class AICompanionViewModel {
         selectedTab = tab
     }
 
-    func loadContent(contentId: String) async {
+    func loadContent(contentId: String, language: String = "en") async {
         isContextLoading = true
         error = nil
 
         do {
-            let request = ChatRequest(
-                message: "companion_context",
-                conversationId: nil,
-                context: "companion:\(contentId)",
-                language: nil
+            let response = try await companionRepository.fetchContext(
+                contentId: contentId,
+                language: language
             )
-            let response = try await repository.sendMessage(request)
-            contextText = response.response
-            logger.info("Companion context loaded", context: ["contentId": contentId])
+            contextText = response.context
+            topics = response.topics ?? []
+            relatedLinks = response.relatedLinks ?? []
+            logger.info("Companion context loaded", context: [
+                "contentId": contentId,
+                "topicCount": String(topics.count),
+                "linkCount": String(relatedLinks.count),
+            ])
         } catch {
             self.error = "Failed to load companion content"
             logger.error("Companion load failed", error: error)
@@ -75,20 +78,22 @@ final class AICompanionViewModel {
         isContextLoading = false
     }
 
-    func loadQuiz(contentId: String) async {
+    func loadQuiz(contentId: String, language: String = "en") async {
         isQuizLoading = true
+        error = nil
 
         do {
-            let request = ChatRequest(
-                message: "companion_quiz",
-                conversationId: nil,
-                context: "companion_quiz:\(contentId)",
-                language: nil
+            let response = try await companionRepository.fetchQuiz(
+                contentId: contentId,
+                language: language
             )
-            let response = try await repository.sendMessage(request)
-            contextText = response.response
-            logger.info("Companion quiz loaded", context: ["contentId": contentId])
+            questions = response.questions ?? []
+            logger.info("Companion quiz loaded", context: [
+                "contentId": contentId,
+                "questionCount": String(questions.count),
+            ])
         } catch {
+            self.error = "Failed to load quiz"
             logger.error("Quiz load failed", error: error)
         }
 

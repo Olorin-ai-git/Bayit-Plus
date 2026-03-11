@@ -207,6 +207,7 @@
 		1A0A58F5B863A606978FF229 /* TVCreditsBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0422B0296BE8FD92FDFE1F56 /* TVCreditsBadgeView.swift */; };
 		1A220286CA5E4358562B8507 /* TVQRAuthWebSocket+MessageHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807DE5842A0F85A86C2E43CB /* TVQRAuthWebSocket+MessageHandling.swift */; };
 		1A25D3EA32AAF3F577DAE7BD /* TriviaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52DA961EA1D12F35923644A /* TriviaRepository.swift */; };
+		1A2CDAE8EB182DC469314278 /* CompanionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF4EF2017404B784DD0B206 /* CompanionRepository.swift */; };
 		1A476BFFE72D23350BFCEF1E /* PauseAskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76A5D25A8059B342897D4E6 /* PauseAskTests.swift */; };
 		1A55E5A93476397CF31F7480 /* VODCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D13A6A2C526631570C312E7 /* VODCard.swift */; };
 		1AB3880FA93373826ED408A8 /* RewardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64559A0DF0154DC42DAB394D /* RewardsViewModel.swift */; };
@@ -226,6 +227,7 @@
 		1C172F8D00B4B0B39AEAE172 /* SubtitleModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F35A280BDECB21F2036BB03 /* SubtitleModePicker.swift */; };
 		1C32BC0183774194E2DC7A1D /* TVLocationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50B2A7FE4C476772F236AA5 /* TVLocationProvider.swift */; };
 		1C5BF9A7826915A4768849AC /* ProfileView+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB43A08C36E290EF3EF6EB5 /* ProfileView+Loading.swift */; };
+		1C660EE47FDA2508A171896B /* CompanionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF4EF2017404B784DD0B206 /* CompanionRepository.swift */; };
 		1C671F7B378B9895ED8FA5C2 /* TVPlexServerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B46B9EC695EBA34D493659 /* TVPlexServerPickerSheet.swift */; };
 		1C6C3BFB9945ECD0C6837011 /* PlaylistIntentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0E6160C44CAB5479F0C82 /* PlaylistIntentProvider.swift */; };
 		1CA93215475A342C4F1A3F08 /* TVOnboardingFeatureCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239325E2BE3BA41942765996 /* TVOnboardingFeatureCard.swift */; };
@@ -2382,6 +2384,7 @@
 		4A8707D636BF518739F3312B /* NowPlayingLockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingLockScreenView.swift; sourceTree = "<group>"; };
 		4A9785C08528041EEA89B926 /* LiveDubbingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveDubbingViewModel.swift; sourceTree = "<group>"; };
 		4AD9EC5108EE7ACFB80E2977 /* TVPendingIntentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPendingIntentManager.swift; sourceTree = "<group>"; };
+		4AF4EF2017404B784DD0B206 /* CompanionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionRepository.swift; sourceTree = "<group>"; };
 		4B235691EFECCA22BEBA060B /* TVChessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVChessView.swift; sourceTree = "<group>"; };
 		4B5A4F4A74371E3ADE0560B1 /* ScreenshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotHelper.swift; sourceTree = "<group>"; };
 		4B735C4203D3313E63DAC339 /* MessageInputBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInputBar.swift; sourceTree = "<group>"; };
@@ -5134,6 +5137,7 @@
 				F3E6AADE5531BF7FFEE6BCFB /* ChapterRepository.swift */,
 				C6FAD2B2C6D892264423E5FE /* ChatRepository.swift */,
 				685609FD47D9A6DEFA56E346 /* ChessRepository.swift */,
+				4AF4EF2017404B784DD0B206 /* CompanionRepository.swift */,
 				CFC795BC1005B2BED375E7CC /* ContentRepository.swift */,
 				7866A898A9B63F7FFE0EA6F2 /* ContentRepository+Convenience.swift */,
 				50E89EDB2E054BD84C4525BB /* ContentRepositoryProtocol.swift */,
@@ -6722,6 +6726,7 @@
 				B817EA5B2E55C7EEE45E91E4 /* ChildrenViewModel.swift in Sources */,
 				13A3249348449181DEF454C1 /* CollectionDetailViewModel.swift in Sources */,
 				195C60A7DB17CF1CB4445DD3 /* CollectionModels.swift in Sources */,
+				1A2CDAE8EB182DC469314278 /* CompanionRepository.swift in Sources */,
 				B801164E55E2D957DDC9CED9 /* ContentDetailModels.swift in Sources */,
 				A66A6F8EB5FD89C7E67AF2FA /* ContentModels.swift in Sources */,
 				3F3CBE19847B46A37B9798E5 /* ContentPickerItem.swift in Sources */,
@@ -7695,6 +7700,7 @@
 				E602C23937C4CA12C1320834 /* CollectionPromoBannerView.swift in Sources */,
 				2CED1DD6D37343EC59701FEE /* CompanionContextTab.swift in Sources */,
 				B6547634F78A300C605DB461 /* CompanionQuizTab.swift in Sources */,
+				1C660EE47FDA2508A171896B /* CompanionRepository.swift in Sources */,
 				B4FBA21688335FDCB6EE36CC /* CompanionVocabularyTab.swift in Sources */,
 				A51F7B96B3F2C08B04D06539 /* ComprehensionQuizOverlayView.swift in Sources */,
 				2B55AF078C331664127D3666 /* ConnectedAccountRow.swift in Sources */,

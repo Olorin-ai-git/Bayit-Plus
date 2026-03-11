@@ -36,7 +36,7 @@
             }
             .task {
                 if viewModel == nil {
-                    viewModel = AICompanionViewModel(repository: repos.chat, talkBackRepository: repos.talkBack)
+                    viewModel = AICompanionViewModel(companionRepository: repos.companion, talkBackRepository: repos.talkBack)
                 }
                 await viewModel?.loadContent(contentId: contentId)
             }

@@ -57,6 +57,7 @@ final class TVRepositoryProvider {
     let movieInteraction: any MovieInteractionRepository
     let avatarOutfitRepository: any AvatarOutfitRepository
     let talkBack: any TalkBackRepository
+    let companion: any CompanionRepository
     let discover: any DiscoverRepository
     let proactiveSuggestion: any ProactiveSuggestionRepository
     let webSocketManager: WebSocketManager
@@ -120,6 +121,7 @@ final class TVRepositoryProvider {
         movieInteraction = APIMovieInteractionRepository(client: client)
         avatarOutfitRepository = APIAvatarOutfitRepository(client: client)
         talkBack = APITalkBackRepository(client: client)
+        companion = APICompanionRepository(client: client)
         discover = APIDiscoverRepository(client: client)
         proactiveSuggestion = APIProactiveSuggestionRepository(client: client)
         self.webSocketManager = webSocketManager

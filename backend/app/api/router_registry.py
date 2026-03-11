@@ -48,7 +48,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_youngsters_content, audiobooks,
                                 auth, auth_proxy, avatar_dialogue, avatar_studio, chapters, chat,
                                 mfa, mobile_auth,
-                                channel_chat, chess, chess_chat, chess_invite, children, content, content_taxonomy,
+                                channel_chat, chess, chess_chat, chess_invite, children, companion, content, content_taxonomy,
                                 cultures, device_pairing, device_pairing_proxy, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
                                 extension_config,
@@ -342,6 +342,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Social Routes
     # ============================================
     app.include_router(chat.router, prefix=f"{prefix}/chat", tags=["chat"])
+    app.include_router(companion.router, prefix=f"{prefix}/companion", tags=["companion"])
     app.include_router(voice.router, prefix=f"{prefix}/voice", tags=["voice"])
     app.include_router(friends.router, prefix=prefix, tags=["friends"])
     app.include_router(direct_messages.router, prefix=prefix, tags=["direct-messages"])

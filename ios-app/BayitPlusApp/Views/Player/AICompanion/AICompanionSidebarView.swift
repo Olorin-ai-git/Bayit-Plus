@@ -11,11 +11,11 @@
         let profileId: String
         let onDismiss: () -> Void
 
-        init(repository: any ChatRepository, talkBackRepository: any TalkBackRepository,
+        init(companionRepository: any CompanionRepository, talkBackRepository: any TalkBackRepository,
              contentId: String, profileId: String, onDismiss: @escaping () -> Void)
         {
             _viewModel = State(initialValue: AICompanionViewModel(
-                repository: repository, talkBackRepository: talkBackRepository
+                companionRepository: companionRepository, talkBackRepository: talkBackRepository
             ))
             self.contentId = contentId
             self.profileId = profileId
