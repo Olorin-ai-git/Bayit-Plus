@@ -86,7 +86,7 @@ async def submit_response(
             detail="profile_id is required for Talk Back",
         )
 
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="talk_back_respond",
@@ -94,7 +94,7 @@ async def submit_response(
             metadata={"content_id": request.content_id, "point_id": request.point_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     try:
         result = await talk_back_orchestrator.process_response(

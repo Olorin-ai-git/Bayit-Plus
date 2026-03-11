@@ -33,7 +33,6 @@ async def list_users():
         user_id = str(user.get("_id", "N/A"))
         role = user.get("role", "user")
         custom_permissions = user.get("custom_permissions", [])
-        is_beta = user.get("is_beta_user", False)
         auth_provider = user.get("auth_provider", "N/A")
         email_verified = user.get("email_verified", False)
         subscription_tier = user.get("subscription_tier", "N/A")
@@ -45,7 +44,6 @@ async def list_users():
         print(f"   Role: {role.upper()}")
         if custom_permissions:
             print(f"   Custom Permissions: {', '.join(custom_permissions)}")
-        print(f"   Beta User: {'Yes (500 AI credits)' if is_beta else 'No'}")
         print(f"   Subscription: {subscription_tier}")
         print(f"   Auth Provider: {auth_provider}")
         print(f"   Email Verified: {'Yes' if email_verified else 'No'}")

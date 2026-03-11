@@ -1,10 +1,9 @@
-import XCTest
 @testable import BayitAuth
 import BayitCore
 import BayitNetworking
+import XCTest
 
 final class AuthManagerTests: XCTestCase {
-
     // MARK: - Test Dependencies
 
     private var mockConfiguration: AuthConfiguration!
@@ -72,7 +71,6 @@ final class AuthManagerTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: nil,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -171,7 +169,7 @@ final class AuthManagerTests: XCTestCase {
 // MARK: - Mock API Logger
 
 private final class MockAPILogger: APILogger {
-    func log(_ message: String, metadata: [String: String], level: LogLevel, file: String, function: String, line: Int) {
+    func log(_: String, metadata _: [String: String], level _: LogLevel, file _: String, function _: String, line _: Int) {
         // No-op for testing
     }
 }

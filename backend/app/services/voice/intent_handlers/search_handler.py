@@ -140,7 +140,6 @@ async def _execute_complex_vod_search(query: str, context: VoiceContext) -> List
         vod_llm_service = VODLLMSearchService()
         user_context = {
             "subscription_tier": context.subscription_tier,
-            "is_beta_user": context.is_beta_user,
         }
         results = await vod_llm_service.search(
             query=query,

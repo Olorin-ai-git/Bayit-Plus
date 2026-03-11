@@ -56,10 +56,6 @@ class ApiBetaCreditsRepository @Inject constructor(
             response.eligibleFeatures
         }
 
-    override suspend fun getBeta500Status(): BayitResult<Any> =
-        runCatchingResult {
-            client.safeApiCall { service.getBeta500Status() }
-        }
 }
 
 private interface BetaCreditsService {
@@ -73,8 +69,6 @@ private interface BetaCreditsService {
     @POST("api/v1/beta/credits/redeem")
     suspend fun redeemCredits(@Body request: RedeemCreditsBody): RedeemCreditsResponse
 
-    @GET("api/v1/beta/status")
-    suspend fun getBeta500Status(): BetaStatusResponse
 }
 
 /** Response for credit balance with eligible features. */
@@ -129,12 +123,3 @@ private data class RedeemCreditsResponse(
     val message: String? = null,
 )
 
-/** Response for the Beta 500 program status. */
-@Serializable
-private data class BetaStatusResponse(
-    @SerialName("is_enrolled") val isEnrolled: Boolean,
-    @SerialName("credits_remaining") val creditsRemaining: Int,
-    @SerialName("enrollment_date") val enrollmentDate: String? = null,
-    val tier: String? = null,
-    @SerialName("features_used") val featuresUsed: Int = 0,
-)

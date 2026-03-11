@@ -101,7 +101,7 @@ async def create_additional_avatar(
 ):
     """Create an additional avatar for a profile with existing consent."""
     try:
-        if user.is_beta_user and not user.is_admin_role():
+        if not user.can_access_premium_features():
             success, _remaining = await credit_service.deduct_credits(
                 user_id=str(user.id),
                 feature="avatar_creation",

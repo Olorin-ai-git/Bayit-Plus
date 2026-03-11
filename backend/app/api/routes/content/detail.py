@@ -7,10 +7,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
-from app.api.routes.content.beta_filter import (
-    build_beta_content_filter,
-    check_beta_access,
-)
 from app.api.routes.content.utils import is_native_app, is_series_content
 from app.core.security import (get_current_active_user, get_optional_user,
                                get_passkey_session)
@@ -87,23 +83,14 @@ async def get_content(
     if not content or not content.is_published:
         raise HTTPException(status_code=404, detail="Content not found")
 
-    # Check beta content access - return 404 to hide existence from non-authorized users
-    is_beta = getattr(content, "is_beta_content", False)
-    if not check_beta_access(current_user, is_beta):
-        raise HTTPException(status_code=404, detail="Content not found")
-
     # Check visibility access (doesn't require stream access for details)
     await check_visibility_access(content, request, require_stream=False)
 
-    # Build beta filter for related items
-    beta_filter = build_beta_content_filter(current_user)
-
-    # Query related items with beta filter
+    # Query related items
     related_query = {
         "category_id": content.category_id,
         "_id": {"$ne": content.id},
         "is_published": True,
-        **beta_filter,
     }
     related = await Content.find(related_query).limit(6).to_list()
 
@@ -180,14 +167,6 @@ async def get_stream_url(
     content = await Content.get(content_id)
     if not content or not content.is_published:
         raise HTTPException(status_code=404, detail="Content not found")
-
-    # Check beta content access - return 403 for stream (user knows it exists but can't stream)
-    is_beta = getattr(content, "is_beta_content", False)
-    if not check_beta_access(current_user, is_beta):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Beta content access required",
-        )
 
     # Check visibility access (requires stream access for protected content)
     await check_visibility_access(content, request, require_stream=True)

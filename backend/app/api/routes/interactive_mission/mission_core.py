@@ -28,13 +28,13 @@ async def generate_mission(
     user: User = Depends(require_ai_access),
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id), feature="interactive_mission", usage_amount=1.0,
             metadata={"profile_id": request.profile_id, "show_content_id": request.show_content_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
     try:
         mission = await mission_orchestrator.generate_mission(
             user_id=str(user.id), profile_id=request.profile_id,

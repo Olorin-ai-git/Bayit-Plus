@@ -125,7 +125,6 @@ class ChannelChatService {
           this.sessionToken = msg.session_token;
           logger.info("Chat connected", "channelChatService", {
             userCount: msg.user_count,
-            isBetaUser: msg.is_beta_user,
             sessionToken: !!msg.session_token,
             recentMessages: msg.recent_messages?.length || 0,
           });

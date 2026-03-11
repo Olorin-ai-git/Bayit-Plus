@@ -13,7 +13,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: nil,
-            isBetaUser: true,
             isVerified: true,
             createdAt: "2024-01-01T00:00:00Z",
             lastLogin: "2024-01-10T12:00:00Z"
@@ -26,7 +25,6 @@ final class BayitUserTests: XCTestCase {
         XCTAssertEqual(user.role, .user)
         XCTAssertTrue(user.isActive)
         XCTAssertNil(user.subscription)
-        XCTAssertTrue(user.isBetaUser)
         XCTAssertTrue(user.isVerified)
         XCTAssertEqual(user.createdAt, "2024-01-01T00:00:00Z")
         XCTAssertEqual(user.lastLogin, "2024-01-10T12:00:00Z")
@@ -43,7 +41,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: nil,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -69,7 +66,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: subscription,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -97,7 +93,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: subscription,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -123,7 +118,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: subscription,
-            isBetaUser: false,
             isVerified: false,
             createdAt: nil,
             lastLogin: nil
@@ -141,7 +135,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: nil,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -159,7 +152,6 @@ final class BayitUserTests: XCTestCase {
             role: .admin,
             isActive: true,
             subscription: nil,
-            isBetaUser: false,
             isVerified: false,
             createdAt: nil,
             lastLogin: nil
@@ -187,7 +179,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: subscription,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -213,7 +204,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: subscription,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -231,7 +221,6 @@ final class BayitUserTests: XCTestCase {
             role: .admin,
             isActive: true,
             subscription: nil,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil
@@ -257,7 +246,6 @@ final class BayitUserTests: XCTestCase {
                 endDate: "2024-12-31T23:59:59Z",
                 autoRenew: nil
             ),
-            isBetaUser: true,
             isVerified: true,
             createdAt: "2024-01-01T00:00:00Z",
             lastLogin: "2024-01-10T12:00:00Z"
@@ -275,7 +263,6 @@ final class BayitUserTests: XCTestCase {
         XCTAssertEqual(decodedUser.photoURL, originalUser.photoURL)
         XCTAssertEqual(decodedUser.role, originalUser.role)
         XCTAssertEqual(decodedUser.isActive, originalUser.isActive)
-        XCTAssertEqual(decodedUser.isBetaUser, originalUser.isBetaUser)
         XCTAssertEqual(decodedUser.isVerified, originalUser.isVerified)
     }
 
@@ -290,7 +277,6 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: nil,
-            isBetaUser: false,
             isVerified: true,
             createdAt: nil,
             lastLogin: nil

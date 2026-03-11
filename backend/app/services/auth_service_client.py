@@ -2,7 +2,7 @@
 Olorin Auth Service client for Bayit+ backend.
 
 Proxies authentication requests to auth.olorin.ai while maintaining
-Bayit+ specific features (payment flow, beta users, etc).
+Bayit+ specific features (payment flow, subscription tiers, etc).
 
 In production (Cloud Run), uses GCP metadata server for identity tokens.
 In development (localhost), skips service-to-service auth.
@@ -378,7 +378,6 @@ class AuthServiceClient:
             Bayit+ User object
         """
         from app.models.user import User
-        from app.models.beta_user import BetaUser
 
         # Check if user already exists in Bayit+ DB
         existing = await User.find_one({"email": email})
@@ -402,11 +401,6 @@ class AuthServiceClient:
             subscription_tier="free",
             avatar=avatar,  # Profile picture from OAuth provider
         )
-
-        # Check beta status
-        beta_user = await BetaUser.find_one({"email": email})
-        if beta_user and beta_user.is_active() and not beta_user.is_expired():
-            user.is_beta_user = True
 
         await user.insert()
 

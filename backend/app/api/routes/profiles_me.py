@@ -26,8 +26,6 @@ class MyProfileResponse(BaseModel):
     displayName: Optional[str] = None
     avatar: Optional[str] = None
     language: Optional[str] = None
-    isBetaUser: bool = False
-    betaCredits: Optional[int] = None
     createdAt: Optional[str] = None
     updatedAt: Optional[str] = None
     preferences: Optional[dict] = None
@@ -48,22 +46,7 @@ async def _get_active_profile(current_user: User) -> Profile:
     return await Profile.get_or_create_active_profile(current_user, logger)
 
 
-async def _fetch_beta_credits(current_user: User) -> Optional[int]:
-    """Fetch beta credit balance if the user is a beta participant."""
-    try:
-        if not current_user.is_beta_user:
-            return None
-        from app.models.beta_credit import BetaCredit
-        credit = await BetaCredit.find_one(
-            {"user_id": str(current_user.id), "is_expired": False}
-)
-        return credit.remaining_credits if credit else None
-    except Exception as e:
-        logger.error(f"Failed to fetch beta credits: {e}", extra={"user_id": str(current_user.id)})
-        return None
-
-
-def _build_response(profile: Profile, user: User, beta_credits: Optional[int]) -> MyProfileResponse:
+def _build_response(profile: Profile, user: User) -> MyProfileResponse:
     """Build a MyProfileResponse from a profile and user."""
     return MyProfileResponse(
         id=str(profile.id),
@@ -71,8 +54,6 @@ def _build_response(profile: Profile, user: User, beta_credits: Optional[int]) -
         displayName=profile.name or user.name,
         avatar=profile.avatar or user.avatar,
         language=profile.preferences.get("language"),
-        isBetaUser=user.is_beta_user,
-        betaCredits=beta_credits,
         createdAt=user.created_at.isoformat() if user.created_at else None,
         updatedAt=user.updated_at.isoformat() if user.updated_at else None,
         preferences=profile.preferences,
@@ -95,10 +76,7 @@ async def get_my_profile(
         profile = await _get_active_profile(current_user)
         logger.info(f"Profile retrieved: {str(profile.id)}")
 
-        beta_credits = await _fetch_beta_credits(current_user)
-        logger.info(f"Beta credits fetched: {beta_credits}")
-
-        response = _build_response(profile, current_user, beta_credits)
+        response = _build_response(profile, current_user)
         logger.info(f"Response built successfully")
 
         return response
@@ -127,10 +105,8 @@ async def update_my_profile(
     await current_user.save()
     await profile.save()
 
-    beta_credits = await _fetch_beta_credits(current_user)
-
     logger.info(
         "Profile /me updated",
         extra={"user_id": str(current_user.id)},
     )
-    return _build_response(profile, current_user, beta_credits)
+    return _build_response(profile, current_user)

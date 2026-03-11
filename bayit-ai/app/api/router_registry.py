@@ -16,7 +16,6 @@ from app.models.bilingual_dubbing_session import BilingualDubbingSession
 from app.models.dubbing.session import UserDubbingSession, UserQuota
 from app.models.live_dubbing import LiveDubbingSession
 from app.models.live_feature_quota import LiveFeatureQuota, LiveFeatureUsageSession
-from app.models.beta_user import BetaUser
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.models.gamification_profile import GamificationProfile
@@ -63,7 +62,7 @@ SERVICE_MODELS = [
     User, Content, LiveChannel, Profile, Subscription,
     VODInteractionSession, Conversation, NLPConversationSession, BilingualDubbingSession,
     UserDubbingSession, UserQuota, LiveDubbingSession, LiveFeatureQuota, LiveFeatureUsageSession,
-    BetaUser, BetaCredit, BetaCreditTransaction,
+    BetaCredit, BetaCreditTransaction,
     GamificationProfile, MissionTemplate, UserMission, ShekelWallet, ShekelTransaction,
     LeaderboardEntry, WeeklyZine, Coupon, CouponRedemption,
     ChildAvatar, ChildProficiency, FamilyControls,

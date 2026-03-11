@@ -17,7 +17,6 @@ def mock_auth_user():
     return User(
         id="test-user-id",
         email="test@example.com",
-        is_beta_user=True,
     )
 
 

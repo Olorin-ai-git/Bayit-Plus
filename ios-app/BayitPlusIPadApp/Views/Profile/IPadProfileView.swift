@@ -54,9 +54,6 @@ struct IPadProfileView: View {
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundColor(DesignTokens.Text.secondary)
             }
-            if profile.isBetaUser == true, let credits = profile.betaCredits {
-                GlassBadge(text: "Beta 500 - \(credits) credits", variant: .primary)
-            }
             VStack(spacing: DesignTokens.Spacing.md) {
                 profileNavButton(icon: "heart", title: localization.t("profile.favorites")) {
                     coordinator.navigate(to: .favorites)
@@ -172,7 +169,7 @@ struct IPadProfileView: View {
             }
             .frame(maxWidth: .infinity)
             HStack(spacing: DesignTokens.Spacing.md) {
-                ForEach(0..<3, id: \.self) { _ in
+                ForEach(0 ..< 3, id: \.self) { _ in
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                         .fill(DesignTokens.Glass.bg).frame(height: 80)
                 }

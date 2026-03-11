@@ -15,7 +15,6 @@ from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
 from app.core.security import (create_access_token, get_current_active_user,
                                get_password_hash, verify_password)
-from app.models.beta_user import BetaUser
 from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
                              UserResponse, UserUpdate)
 from app.services.audit_logger import audit_logger
@@ -43,27 +42,6 @@ class AppleMobileAuth(BaseModel):
 
 
 router = APIRouter()
-
-
-async def _sync_beta_user_status(user: User) -> None:
-    """Sync is_beta_user flag from BetaUser collection on each login.
-
-    Ensures denormalized is_beta_user stays in sync with BetaUser status,
-    handling cases where beta expired between sessions.
-    """
-    try:
-        beta_user = await BetaUser.find_one({"email": user.email})
-        if beta_user and beta_user.is_active() and not beta_user.is_expired():
-            if not user.is_beta_user:
-                user.is_beta_user = True
-        else:
-            if user.is_beta_user:
-                user.is_beta_user = False
-    except Exception as e:
-        logger.warning(
-            "Failed to sync beta user status",
-            extra={"user_id": str(user.id), "error": str(e)}
-        )
 
 
 def should_require_payment(user_id: str) -> bool:
@@ -354,9 +332,6 @@ async def login(request: Request, credentials: UserLogin):
     # Update last login
     user.last_login = datetime.now(timezone.utc)
 
-    # Sync beta user status from BetaUser collection
-    await _sync_beta_user_status(user)
-
     await user.save()
 
     # ✅ Audit log: successful login
@@ -548,8 +523,6 @@ async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
         if picture and not user.avatar:
             user.avatar = picture
 
-        # Sync beta user status
-        await _sync_beta_user_status(user)
         await user.save()
 
         # Audit log
@@ -695,8 +668,6 @@ async def mobile_apple_signin(request: Request, auth_data: AppleMobileAuth):
         # Update last login
         user.last_login = datetime.now(timezone.utc)
 
-        # Sync beta user status
-        await _sync_beta_user_status(user)
         await user.save()
 
         # Audit log
@@ -917,9 +888,6 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
     # Update avatar from Google if not already set
     if picture and not user.avatar:
         user.avatar = picture
-
-    # Sync beta user status from BetaUser collection
-    await _sync_beta_user_status(user)
 
     await user.save()
 

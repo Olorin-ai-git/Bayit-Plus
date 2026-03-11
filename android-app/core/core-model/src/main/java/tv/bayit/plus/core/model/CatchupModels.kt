@@ -29,7 +29,6 @@ data class CatchUpProgramInfo(
 @Serializable
 data class CatchUpAvailabilityResponse(
     val available: Boolean = false,
-    @SerialName("is_beta_user") val isBetaUser: Boolean? = null,
     @SerialName("has_credits") val hasCredits: Boolean? = null,
     val balance: Int? = null,
 )

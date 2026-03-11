@@ -50,7 +50,6 @@ extension BayitPlusTVApp {
                 role: role,
                 isActive: true,
                 subscription: nil,
-                isBetaUser: response.user?.isBetaUser ?? false,
                 isVerified: true,
                 createdAt: nil,
                 lastLogin: nil
@@ -105,5 +104,4 @@ struct AutoLoginUserPayload: Decodable, Sendable {
     let email: String?
     let name: String?
     let role: String?
-    let isBetaUser: Bool?
 }

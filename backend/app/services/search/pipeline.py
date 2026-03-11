@@ -67,14 +67,12 @@ class SearchPipelineService:
         sort_by: SortField = SortField.RELEVANCE,
         sort_order: SortOrder = SortOrder.DESC,
         user_subscription_tier: Optional[str] = None,
-        is_beta_user: Optional[bool] = None,
         no_cache: bool = False,
     ) -> SearchResults:
         """Execute the full search pipeline."""
         start_ns = time.monotonic_ns()
 
         filters.user_subscription_tier = user_subscription_tier
-        filters.is_beta_user = is_beta_user
 
         cache_key_data = _build_cache_key(
             query, filters, page, limit, sort_by, sort_order,

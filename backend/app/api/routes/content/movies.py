@@ -8,10 +8,6 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.routes.content.beta_filter import (
-    build_beta_content_filter,
-    check_beta_access,
-)
 from app.api.routes.content.utils import is_native_app, is_series_content
 from app.core.config import settings
 from app.core.security import get_current_active_user, get_optional_user
@@ -27,11 +23,9 @@ _RELATED_LIMIT = 6
 _BASE_FILTER = {"is_published": True, "content_format": "movie"}
 
 
-async def _find_related_movies(
-    movie: Content, beta_filter: dict
-) -> List[Content]:
+async def _find_related_movies(movie: Content) -> List[Content]:
     """Find related movies by genre, director, then cast overlap."""
-    exclude = {"_id": {"$ne": movie.id}, **_BASE_FILTER, **beta_filter}
+    exclude = {"_id": {"$ne": movie.id}, **_BASE_FILTER}
     seen_ids = set()
     related: List[Content] = []
 
@@ -96,8 +90,6 @@ async def list_all_movies(
     """Get all movies (non-series content)."""
     skip = (page - 1) * limit
 
-    beta_filter = build_beta_content_filter(current_user)
-
     filters = {
         "is_published": True,
         "content_format": "movie",
@@ -106,7 +98,6 @@ async def list_all_movies(
             {"series_id": {"$exists": False}},
             {"series_id": ""},
         ],
-        **beta_filter,
     }
     if category_id:
         filters["category_id"] = category_id
@@ -193,15 +184,7 @@ async def get_movie_details(
     if is_series_content(movie_dict):
         raise HTTPException(status_code=404, detail="Movie not found")
 
-    # Check beta content access - return 404 to hide existence from non-authorized users
-    is_beta = getattr(movie, "is_beta_content", False)
-    if not check_beta_access(current_user, is_beta):
-        raise HTTPException(status_code=404, detail="Movie not found")
-
-    # Build beta filter for related items
-    beta_filter = build_beta_content_filter(current_user)
-
-    related = await _find_related_movies(movie, beta_filter)
+    related = await _find_related_movies(movie)
 
     # Determine stream URL based on platform
     user_agent = request.headers.get("User-Agent", "")

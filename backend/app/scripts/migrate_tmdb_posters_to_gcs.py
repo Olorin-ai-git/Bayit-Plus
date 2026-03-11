@@ -1,7 +1,7 @@
 """
 Bulk TMDB Poster → GCS Migration
 
-Finds all published non-beta content whose thumbnail points directly to
+Finds all published content whose thumbnail points directly to
 image.tmdb.org, downloads each poster, uploads to GCS, and updates MongoDB.
 
 Uses gsutil (active gcloud account) to bypass application-default auth expiry.
@@ -125,7 +125,6 @@ async def run(dry_run: bool = False, limit: Optional[int] = None) -> None:
 
     query = {
         "is_published": True,
-        "is_beta_content": False,
         "thumbnail": {"$regex": r"image\.tmdb\.org", "$options": "i"},
     }
     cursor = db.content.find(query, {"title": 1, "thumbnail": 1})

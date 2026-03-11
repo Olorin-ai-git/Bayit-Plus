@@ -128,13 +128,11 @@ extension TVPlayerView {
     func initializeViewModels() {
         resolveBYOCCapabilities()
 
-        if isLive, authManager.user?.isBetaUser == true {
+        if isLive {
             let vm = CatchUpViewModel(repository: repos.liveTV, localization: localization)
             state.catchUpVM = vm
             Task {
-                await vm.checkAvailability(
-                    channelId: channelId ?? contentId, isBetaUser: true
-                )
+                await vm.checkAvailability(channelId: channelId ?? contentId)
             }
         }
 

@@ -2,7 +2,7 @@
 Auth proxy endpoints that delegate to auth.olorin.ai.
 
 These endpoints maintain Bayit+ specific features (payment flow,
-beta users, etc.) while using Olorin Auth Service for authentication.
+subscription tiers, etc.) while using Olorin Auth Service for authentication.
 """
 
 import asyncio
@@ -171,9 +171,6 @@ async def login_via_auth_service(request: Request, credentials: UserLogin):
             role=auth_response.get("role", "user"),
         )
 
-        # Sync beta user status (Bayit+ specific)
-        from app.api.routes.auth import _sync_beta_user_status
-        await _sync_beta_user_status(user)
         await user.save()
 
         # Audit log
@@ -223,9 +220,6 @@ async def login_google_via_auth_service(request: Request, auth_data: SocialAuthR
             avatar=auth_response.get("avatar"),
         )
 
-        # Sync beta user status
-        from app.api.routes.auth import _sync_beta_user_status
-        await _sync_beta_user_status(user)
         await user.save()
 
         # Audit log
@@ -323,9 +317,6 @@ async def google_callback_via_auth_service(request: Request, auth_data: GoogleCa
             avatar=auth_response.get("avatar"),
         )
 
-        # Sync beta user status
-        from app.api.routes.auth import _sync_beta_user_status
-        await _sync_beta_user_status(user)
         await user.save()
 
         # Audit log
@@ -386,9 +377,6 @@ async def login_apple_via_auth_service(request: Request, auth_data: AppleSocialA
             avatar=auth_response.get("avatar"),
         )
 
-        # Sync beta user status
-        from app.api.routes.auth import _sync_beta_user_status
-        await _sync_beta_user_status(user)
         await user.save()
 
         # Audit log

@@ -83,8 +83,8 @@ async def handle_answer_submission(
     )
     await attempt.insert()
 
-    # Deduct credits for beta users (after attempt recorded)
-    if user.is_beta_user:
+    # Deduct credits for non-premium users (after attempt recorded)
+    if not user.can_access_premium_features():
         credit_service = BetaCreditService(
             settings=settings,
             metering_service=MeteringService(),

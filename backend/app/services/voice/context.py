@@ -29,7 +29,6 @@ class VoiceContext:
     user: Optional[User] = None
     family_controls: Optional[FamilyControls] = None
     subscription_tier: Optional[str] = None
-    is_beta_user: bool = False
 
     @classmethod
     async def from_request(
@@ -58,7 +57,6 @@ class VoiceContext:
         user = None
         family_controls = None
         subscription_tier = None
-        is_beta_user = False
 
         # Lazy load user if requested
         if load_user:
@@ -66,14 +64,12 @@ class VoiceContext:
                 user = await User.get(user_id)
                 if user:
                     subscription_tier = user.subscription_tier
-                    is_beta_user = getattr(user, "is_beta_user", False)
 
                     logger.debug(
                         "User loaded",
                         extra={
                             "user_id": user_id,
                             "subscription_tier": subscription_tier,
-                            "is_beta_user": is_beta_user
                         }
                     )
             except Exception as e:
@@ -112,5 +108,4 @@ class VoiceContext:
             user=user,
             family_controls=family_controls,
             subscription_tier=subscription_tier,
-            is_beta_user=is_beta_user
         )

@@ -45,7 +45,7 @@ async def generate_snap(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Generate a composite photo of avatar with show characters."""
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="family_snap",
@@ -55,7 +55,7 @@ async def generate_snap(
         if not success:
             raise HTTPException(
                 status_code=402,
-                detail="Insufficient Beta 500 credits",
+                detail="Insufficient credits",
             )
 
     try:

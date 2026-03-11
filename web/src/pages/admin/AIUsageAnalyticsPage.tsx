@@ -38,7 +38,10 @@ export default function AIUsageAnalyticsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await aiUsageService.getOverview(dateRange.startDate, dateRange.endDate);
+      const data = await aiUsageService.getOverview(
+        dateRange.startDate,
+        dateRange.endDate,
+      );
       setOverview(data);
       if ((data as any).features?.length && !selectedFeature) {
         setSelectedFeature((data as any).features[0].feature);
@@ -57,7 +60,9 @@ export default function AIUsageAnalyticsPage() {
     setError(null);
     try {
       const data = await aiUsageService.getFeatureTimeline(
-        selectedFeature, dateRange.startDate, dateRange.endDate,
+        selectedFeature,
+        dateRange.startDate,
+        dateRange.endDate,
       );
       setTimeline((data as any).timeline || []);
     } catch (err: any) {
@@ -72,7 +77,10 @@ export default function AIUsageAnalyticsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await aiUsageService.getTopUsers(dateRange.startDate, dateRange.endDate);
+      const data = await aiUsageService.getTopUsers(
+        dateRange.startDate,
+        dateRange.endDate,
+      );
       setTopUsers((data as any).users || []);
     } catch (err: any) {
       logger.error("Failed to fetch top users", "AIUsage", err);
@@ -96,7 +104,9 @@ export default function AIUsageAnalyticsPage() {
     }
   }, [t]);
 
-  useEffect(() => { fetchOverview(); }, [fetchOverview]);
+  useEffect(() => {
+    fetchOverview();
+  }, [fetchOverview]);
 
   useEffect(() => {
     if (activeTab === "timeline") fetchTimeline();
@@ -116,12 +126,22 @@ export default function AIUsageAnalyticsPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-white">{t("aiUsage.title")}</h1>
         <div className="flex gap-4 mt-4 items-end">
-          <GlassInput label={t("aiUsage.startDate")} value={dateRange.startDate}
-            onChangeText={(v: string) => setDateRange((p) => ({ ...p, startDate: v }))}
-            placeholder="YYYY-MM-DD" />
-          <GlassInput label={t("aiUsage.endDate")} value={dateRange.endDate}
-            onChangeText={(v: string) => setDateRange((p) => ({ ...p, endDate: v }))}
-            placeholder="YYYY-MM-DD" />
+          <GlassInput
+            label={t("aiUsage.startDate")}
+            value={dateRange.startDate}
+            onChangeText={(v: string) =>
+              setDateRange((p) => ({ ...p, startDate: v }))
+            }
+            placeholder="YYYY-MM-DD"
+          />
+          <GlassInput
+            label={t("aiUsage.endDate")}
+            value={dateRange.endDate}
+            onChangeText={(v: string) =>
+              setDateRange((p) => ({ ...p, endDate: v }))
+            }
+            placeholder="YYYY-MM-DD"
+          />
           <GlassButton variant="primary" onPress={fetchOverview}>
             {t("aiUsage.refresh")}
           </GlassButton>
@@ -135,15 +155,25 @@ export default function AIUsageAnalyticsPage() {
       )}
 
       {overview && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {[
-            { label: t("aiUsage.totalCredits"), value: overview.total_credits_consumed },
-            { label: t("aiUsage.totalTransactions"), value: overview.total_transactions },
-            { label: t("aiUsage.activeBetaUsers"), value: overview.active_beta_users },
+            {
+              label: t("aiUsage.totalCredits"),
+              value: overview.total_credits_consumed,
+            },
+            {
+              label: t("aiUsage.totalTransactions"),
+              value: overview.total_transactions,
+            },
           ].map((card) => (
-            <div key={card.label} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-5">
+            <div
+              key={card.label}
+              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-5"
+            >
               <div className="text-gray-400 text-sm">{card.label}</div>
-              <div className="text-3xl font-bold text-white mt-1">{card.value.toLocaleString()}</div>
+              <div className="text-3xl font-bold text-white mt-1">
+                {card.value.toLocaleString()}
+              </div>
             </div>
           ))}
         </div>
@@ -151,13 +181,16 @@ export default function AIUsageAnalyticsPage() {
 
       <div className="flex border-b border-purple-500/30 gap-4 mb-6">
         {tabs.map((tab) => (
-          <GlassButton key={tab.id} onPress={() => setActiveTab(tab.id)}
+          <GlassButton
+            key={tab.id}
+            onPress={() => setActiveTab(tab.id)}
             variant={activeTab === tab.id ? "primary" : "ghost"}
             className={`px-4 py-2 font-medium transition-colors ${
               activeTab === tab.id
                 ? "text-purple-400 border-b-2 border-purple-400"
                 : "text-gray-400 hover:text-gray-300"
-            }`}>
+            }`}
+          >
             {tab.label}
           </GlassButton>
         ))}
@@ -173,10 +206,17 @@ export default function AIUsageAnalyticsPage() {
         <FeatureBreakdownTab features={overview.features} t={t} />
       )}
       {!loading && activeTab === "timeline" && (
-        <TimelineTab timeline={timeline} features={overview?.features || []}
-          selectedFeature={selectedFeature} onFeatureChange={setSelectedFeature} t={t} />
+        <TimelineTab
+          timeline={timeline}
+          features={overview?.features || []}
+          selectedFeature={selectedFeature}
+          onFeatureChange={setSelectedFeature}
+          t={t}
+        />
       )}
-      {!loading && activeTab === "top-users" && <TopUsersTab users={topUsers} t={t} />}
+      {!loading && activeTab === "top-users" && (
+        <TopUsersTab users={topUsers} t={t} />
+      )}
       {!loading && activeTab === "rates" && <RatesTab rates={rates} t={t} />}
     </div>
   );

@@ -59,7 +59,7 @@ async def start_session(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Start a new bilingual dubbing session."""
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="bilingual_session",
@@ -67,7 +67,7 @@ async def start_session(
             metadata={"content_id": request.content_id, "profile_id": request.profile_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     session = await bilingual_dubbing_service.start_session(
         user_id=str(user.id),
@@ -93,7 +93,7 @@ async def translate_segment(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Translate a segment with code-switching."""
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="bilingual_translate",
@@ -101,7 +101,7 @@ async def translate_segment(
             metadata={"session_id": request.session_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     try:
         result = await bilingual_dubbing_service.translate_segment(

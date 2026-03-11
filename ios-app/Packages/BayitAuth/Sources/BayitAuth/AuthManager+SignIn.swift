@@ -297,7 +297,6 @@ public extension AuthManager {
                 role: UserRole(rawValue: registrationResponse.user.role) ?? .user,
                 isActive: registrationResponse.user.isActive,
                 subscription: nil,
-                isBetaUser: registrationResponse.user.isBetaUser ?? false,
                 isVerified: registrationResponse.user.isVerified ?? false,
                 createdAt: nil,
                 lastLogin: nil
@@ -378,7 +377,6 @@ public extension AuthManager {
                 role: UserRole(rawValue: loginResponse.user.role) ?? .user,
                 isActive: loginResponse.user.isActive,
                 subscription: nil,
-                isBetaUser: loginResponse.user.isBetaUser ?? false,
                 isVerified: loginResponse.user.isVerified ?? false,
                 createdAt: nil,
                 lastLogin: nil

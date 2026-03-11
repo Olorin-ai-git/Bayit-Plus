@@ -148,7 +148,7 @@ async def websocket_live_dubbing(
     # Step 5: Check rate limit (connections per minute, configurable)
     rate_limiter = await get_rate_limiter()
     allowed, error_msg, reset_in = await rate_limiter.check_websocket_connection(
-        str(user.id)
+        str(user.id), feature="dubbing"
     )
     if not allowed:
         await websocket.send_json(

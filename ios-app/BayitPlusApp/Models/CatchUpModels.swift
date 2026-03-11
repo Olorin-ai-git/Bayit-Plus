@@ -59,13 +59,11 @@ struct CatchUpProgramInfo: Decodable, Sendable {
 /// Response from GET /api/v1/live/{channelId}/catchup/available.
 struct CatchUpAvailabilityResponse: Decodable, Sendable {
     let available: Bool
-    let isBetaUser: Bool?
     let hasCredits: Bool?
     let balance: Int?
 
     enum CodingKeys: String, CodingKey {
         case available
-        case isBetaUser = "is_beta_user"
         case hasCredits = "has_credits"
         case balance
     }

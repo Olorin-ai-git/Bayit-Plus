@@ -24,7 +24,6 @@ struct ProfileView: View {
                         }
                     } else if let profile = vm.profile {
                         profileHeader(profile)
-                        creditBalanceSection(profile)
                         accountInfoSection(profile)
                         securitySection(profile)
                         statsSection(vm.stats)
@@ -64,13 +63,6 @@ struct ProfileView: View {
                 Text(email)
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundColor(DesignTokens.Text.secondary)
-            }
-
-            if profile.isBetaUser == true, let credits = profile.betaCredits {
-                GlassBadge(
-                    text: "Beta 500 - \(credits) credits",
-                    variant: .primary
-                )
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -138,43 +130,6 @@ struct ProfileView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(DesignTokens.Spacing.md)
-        }
-    }
-
-    @ViewBuilder
-    private func creditBalanceSection(_ profile: ProfileResponse) -> some View {
-        if profile.isBetaUser == true {
-            GlassCard {
-                Button {
-                    coordinator.pushToCurrentTab(.betaCredits)
-                } label: {
-                    HStack(spacing: DesignTokens.Spacing.md) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: DesignTokens.FontSize.xl))
-                            .foregroundColor(DesignTokens.Primary.default)
-
-                        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
-                            Text(localization.t("profile.betaCredits"))
-                                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-                                .foregroundColor(DesignTokens.Text.primary)
-
-                            if let credits = profile.betaCredits {
-                                Text("\(credits) \(localization.t("profile.creditsRemaining"))")
-                                    .font(.system(size: DesignTokens.FontSize.sm))
-                                    .foregroundColor(DesignTokens.Text.secondary)
-                            }
-                        }
-
-                        Spacer()
-
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundColor(DesignTokens.Text.muted)
-                    }
-                    .padding(DesignTokens.Spacing.md)
-                }
-            }
-            .padding(.horizontal, DesignTokens.Spacing.lg)
         }
     }
 }

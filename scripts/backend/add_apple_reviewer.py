@@ -49,7 +49,7 @@ async def create_apple_reviewer():
         print(f"   Email: {existing_user.email}")
         print(f"   Name: {existing_user.name}")
         print(f"   Role: {existing_user.role}")
-        print(f"   Beta User: {existing_user.is_beta_user}")
+        print(f"   Subscription: {existing_user.subscription_tier}")
 
         # Check if they already have credits
         existing_credits = await BetaCredit.find_one(
@@ -84,7 +84,6 @@ async def create_apple_reviewer():
     print(f"   Password: {password}")
     print(f"   Role: viewer")
     print(f"   Subscription: basic")
-    print(f"   Beta 500: Yes")
 
     # Hash password
     hashed_password = get_password_hash(password)
@@ -99,8 +98,6 @@ async def create_apple_reviewer():
         subscription_status='active',
         is_active=True,
         auth_provider='local',
-        # Beta 500 program
-        is_beta_user=True,
         # Verified so they can use the platform
         is_verified=True,
         email_verified=True,

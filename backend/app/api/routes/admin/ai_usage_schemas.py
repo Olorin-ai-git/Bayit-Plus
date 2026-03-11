@@ -24,7 +24,7 @@ class AIUsageOverviewResponse(BaseModel):
     period_end: datetime
     total_credits_consumed: int
     total_transactions: int
-    active_beta_users: int
+    active_credit_users: int
     features: List[AIFeatureUsageSummary]
 
 
@@ -53,7 +53,7 @@ class AIUsageTopUserEntry(BaseModel):
 
 
 class AIUsageTopUsersResponse(BaseModel):
-    """Top Beta-500 users by credit consumption."""
+    """Top users by credit consumption."""
 
     period_start: datetime
     period_end: datetime

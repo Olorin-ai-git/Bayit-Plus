@@ -7,10 +7,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.routes.content.beta_filter import (
-    build_beta_content_filter,
-    check_beta_access,
-)
 from app.api.routes.content.utils import is_native_app, is_series_content
 from app.core.security import get_optional_user
 from app.models.content import Content
@@ -50,8 +46,6 @@ async def list_all_series(
     """Get all series (parent series, not episodes)."""
     skip = (page - 1) * limit
 
-    beta_filter = build_beta_content_filter(current_user)
-
     # Defensive filtering: Exclude episodes even if data is malformed
     # Parent series should NEVER have season/episode numbers
     # Also exclude series with no episodes from user-facing endpoints
@@ -84,7 +78,6 @@ async def list_all_series(
                 ]
             },
         ],
-        **beta_filter,
     }
     if category_id:
         filters["category_id"] = category_id
@@ -148,11 +141,6 @@ async def get_series_details(
     if not is_series_content(series_dict):
         raise HTTPException(status_code=404, detail="Series not found")
 
-    # Check beta content access - return 404 to hide existence from non-authorized users
-    is_beta = getattr(series, "is_beta_content", False)
-    if not check_beta_access(current_user, is_beta):
-        raise HTTPException(status_code=404, detail="Series not found")
-
     episodes = (
         await Content.find(
             {"series_id": series_id, "is_published": True}
@@ -175,17 +163,12 @@ async def get_series_details(
 
     seasons = sorted(seasons_map.values(), key=lambda x: x["season_number"])
 
-    # Build beta filter for related items
-    beta_filter = build_beta_content_filter(current_user)
-
-    # Query related items with beta filter
+    # Query related items
     related_query = {
         "category_id": series.category_id,
         "_id": {"$ne": series.id},
         "is_published": True,
-        # Use category_name instead of deprecated is_series field
         "category_name": {"$regex": "series|סדרות", "$options": "i"},
-        **beta_filter,
     }
     related = await Content.find(related_query).limit(6).to_list()
 
@@ -244,10 +227,6 @@ async def get_series_seasons(
     if not is_series_content(series_dict):
         raise HTTPException(status_code=404, detail="Series not found")
 
-    # Check beta content access on parent series
-    is_beta = getattr(series, "is_beta_content", False)
-    if not check_beta_access(current_user, is_beta):
-        raise HTTPException(status_code=404, detail="Series not found")
 
     episodes = (
         await Content.find(
@@ -291,10 +270,6 @@ async def get_season_episodes(
     if not is_series_content(series_dict):
         raise HTTPException(status_code=404, detail="Series not found")
 
-    # Check beta content access on parent series
-    is_beta = getattr(series, "is_beta_content", False)
-    if not check_beta_access(current_user, is_beta):
-        raise HTTPException(status_code=404, detail="Series not found")
 
     episodes = (
         await Content.find(

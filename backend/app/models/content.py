@@ -191,9 +191,6 @@ class Content(Document):
     # - "passkey_protected": Requires passkey authentication to view
     visibility_mode: str = "public"
 
-    # Beta 500 program
-    is_beta_content: bool = False
-
     # Children content fields
     is_kids_content: bool = False
     age_rating: Optional[int] = None  # Minimum age (e.g., 3, 7, 12)
@@ -365,9 +362,6 @@ class Content(Document):
                 sparse=True,
                 name="source_provider_source_id_unique",
             ),
-            # Beta content indexes
-            IndexModel("is_beta_content", sparse=True),
-            IndexModel([("is_beta_content", 1), ("is_published", 1)], sparse=True),
             # Movie Collection indexes
             "tmdb_collection_id",
             "is_collection_parent",
@@ -462,9 +456,6 @@ class LiveChannel(Document):
     order: int = 0
     requires_subscription: str = "premium"
 
-    # Beta 500 program
-    is_beta_content: bool = False
-
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -479,9 +470,6 @@ class LiveChannel(Document):
             ("culture_id", "category"),
             # Compound index covering all common query patterns
             ("is_active", "culture_id", "category", "order"),
-            # Beta content indexes
-            IndexModel("is_beta_content", sparse=True),
-            IndexModel([("is_beta_content", 1), ("is_active", 1)], sparse=True),
         ]
 
 
@@ -536,9 +524,6 @@ class RadioStation(Document):
     is_active: bool = True
     order: int = 0
 
-    # Beta 500 program
-    is_beta_content: bool = False
-
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     class Settings:
@@ -550,9 +535,6 @@ class RadioStation(Document):
             "culture_id",
             ("culture_id", "is_active"),
             ("culture_id", "genre"),
-            # Beta content indexes
-            IndexModel("is_beta_content", sparse=True),
-            IndexModel([("is_beta_content", 1), ("is_active", 1)], sparse=True),
         ]
 
 
@@ -591,9 +573,6 @@ class Podcast(Document):
     is_featured: bool = False
     order: int = 0
 
-    # Beta 500 program
-    is_beta_content: bool = False
-
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -608,9 +587,6 @@ class Podcast(Document):
             ("is_active", "is_featured"),
             ("culture_id", "is_active"),
             ("culture_id", "category"),
-            # Beta content indexes
-            IndexModel("is_beta_content", sparse=True),
-            IndexModel([("is_beta_content", 1), ("is_active", 1)], sparse=True),
         ]
 
 

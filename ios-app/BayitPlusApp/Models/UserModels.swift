@@ -9,8 +9,6 @@ struct ProfileResponse: Decodable, Sendable, Identifiable {
     let displayName: String?
     let avatar: String?
     let language: String?
-    let isBetaUser: Bool?
-    let betaCredits: Int?
     let createdAt: String?
     let updatedAt: String?
     let preferences: ProfilePreferences?

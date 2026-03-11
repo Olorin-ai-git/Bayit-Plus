@@ -56,7 +56,7 @@ async def get_current_zine(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Get the current week's zine."""
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="zine_generation",
@@ -64,7 +64,7 @@ async def get_current_zine(
             metadata={"profile_id": profile_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     week_key = datetime.now(timezone.utc).strftime("%Y-W%W")
 

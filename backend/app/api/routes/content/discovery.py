@@ -10,7 +10,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Request
 
-from app.api.routes.content.beta_filter import build_beta_content_filter
 from app.api.routes.content.utils import (convert_to_proxy_url,
                                           is_series_content)
 from app.core.security import get_optional_user, get_passkey_session
@@ -70,8 +69,6 @@ async def get_all_content(
     passkey_session = await get_passkey_session(request)
     has_passkey = passkey_session is not None
     visibility_filter = build_visibility_filter(has_passkey)
-    beta_filter = build_beta_content_filter(current_user)
-
     # Build filter combining series exclusion and visibility rules
     content_filter = {
         "$and": [
@@ -87,8 +84,6 @@ async def get_all_content(
             },
             # Apply visibility filter
             visibility_filter,
-            # Apply beta content filter
-            beta_filter,
         ]
     }
 
@@ -210,8 +205,6 @@ async def search_content(
     passkey_session = await get_passkey_session(request)
     has_passkey = passkey_session is not None
     visibility_filter = build_visibility_filter(has_passkey)
-    beta_filter = build_beta_content_filter(current_user)
-
     if not type or type == "vod":
         # Build search filter with visibility rules
         search_filter = {
@@ -219,7 +212,6 @@ async def search_content(
                 {"$text": {"$search": query}},
                 {"is_published": True},
                 visibility_filter,
-                beta_filter,
             ]
         }
         vod_items = await Content.find(search_filter).limit(limit).to_list()

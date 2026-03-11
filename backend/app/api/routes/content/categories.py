@@ -10,7 +10,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.api.routes.content.beta_filter import build_beta_content_filter
 from app.api.routes.content.utils import (is_series_by_category,
                                           is_series_content)
 from app.core.security import get_optional_user
@@ -222,7 +221,6 @@ async def get_by_category(
         raise HTTPException(status_code=404, detail="Section not found")
 
     section_id = str(section.id)
-    beta_filter = build_beta_content_filter(current_user)
 
     content_filter = {
         "section_ids": section_id,
@@ -233,7 +231,6 @@ async def get_by_category(
             {"series_id": ""},
         ],
         "is_quality_variant": {"$ne": True},
-        **beta_filter,
     }
 
     items = await Content.find(content_filter).skip(skip).limit(limit).to_list()
@@ -347,7 +344,6 @@ async def get_subcategory_content(
         raise HTTPException(status_code=404, detail="Subcategory not found")
 
     subcategory_id = str(subcategory.id)
-    beta_filter = build_beta_content_filter(current_user)
 
     content_filter = {
         "subcategory_ids": subcategory_id,
@@ -357,7 +353,6 @@ async def get_subcategory_content(
             {"series_id": {"$exists": False}},
             {"series_id": ""},
         ],
-        **beta_filter,
     }
 
     # Add content type filter if specified (using category_name, NOT is_series)

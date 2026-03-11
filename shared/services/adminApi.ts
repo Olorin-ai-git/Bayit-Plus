@@ -7,8 +7,8 @@
  * createAdminApi with its platform-specific auth store.
  */
 
-import axios, { AxiosInstance } from 'axios';
-import { Platform } from 'react-native';
+import axios, { AxiosInstance } from "axios";
+import { Platform } from "react-native";
 import {
   User,
   Campaign,
@@ -23,7 +23,7 @@ import {
   Subscription,
   PaginatedResponse,
   AudienceFilter,
-} from '../types/rbac';
+} from "../types/rbac";
 
 // Auth Store Interface (any store implementing this can be used)
 export interface AuthStore {
@@ -40,12 +40,12 @@ export interface AuthStore {
 export interface UsersFilter {
   search?: string;
   role?: string;
-  status?: 'active' | 'inactive' | 'all';
+  status?: "active" | "inactive" | "all";
   subscription?: string;
   page?: number;
   page_size?: number;
   sort_by?: string;
-  sort_order?: 'asc' | 'desc';
+  sort_order?: "asc" | "desc";
 }
 
 export interface CampaignsFilter {
@@ -82,7 +82,7 @@ export interface SubscriptionPlan {
   name: string;
   price: number;
   currency: string;
-  interval: 'monthly' | 'yearly';
+  interval: "monthly" | "yearly";
   features: string[];
   is_active: boolean;
   trial_days: number;
@@ -110,8 +110,8 @@ export interface MarketingMetrics {
 export interface RecentCampaign {
   id: string;
   name: string;
-  type: 'email' | 'push';
-  status: 'active' | 'completed' | 'scheduled' | 'draft';
+  type: "email" | "push";
+  status: "active" | "completed" | "scheduled" | "draft";
   sent: number;
   opened: number;
   clicked: number;
@@ -138,12 +138,11 @@ export interface ContentFilter {
   is_featured?: boolean;
   is_published?: boolean;
   is_kids_content?: boolean;
-  is_beta_content?: boolean;
   page?: number;
   page_size?: number;
   sort_by?: string;
-  sort_direction?: 'asc' | 'desc';
-  content_type?: 'series' | 'movies' | string;
+  sort_direction?: "asc" | "desc";
+  content_type?: "series" | "movies" | string;
 }
 
 export interface Content {
@@ -167,7 +166,6 @@ export interface Content {
   featured_order?: number;
   requires_subscription?: boolean;
   is_kids_content?: boolean;
-  is_beta_content?: boolean;
   age_rating?: string;
   view_count?: number;
   avg_rating?: number;
@@ -271,7 +269,7 @@ export interface Podcast {
 }
 
 export interface PodcastEpisodeFilter {
-  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
+  translation_status?: "pending" | "processing" | "completed" | "failed";
   page?: number;
   page_size?: number;
 }
@@ -287,7 +285,7 @@ export interface PodcastEpisode {
   season_number?: number;
   published_at: string;
   thumbnail?: string;
-  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
+  translation_status?: "pending" | "processing" | "completed" | "failed";
   available_languages?: string[];
   original_language?: string;
   retry_count?: number;
@@ -338,7 +336,7 @@ export interface LiveUsageSession {
   session_id: string;
   user_id: string;
   channel_id: string;
-  feature_type: 'subtitle' | 'dubbing';
+  feature_type: "subtitle" | "dubbing";
   started_at: string;
   ended_at?: string;
   duration_seconds: number;
@@ -357,10 +355,13 @@ export interface TopUser {
 }
 
 // Re-use the shared API base URL to avoid duplicating URL resolution logic
-import { API_BASE_URL } from './api/client';
+import { API_BASE_URL } from "./api/client";
 
 const ADMIN_API_TIMEOUT_MS = (() => {
-  const raw = typeof process !== 'undefined' ? process.env?.BAYIT_ADMIN_API_TIMEOUT_MS : undefined;
+  const raw =
+    typeof process !== "undefined"
+      ? process.env?.BAYIT_ADMIN_API_TIMEOUT_MS
+      : undefined;
   if (raw) {
     const parsed = Number(raw);
     if (!isNaN(parsed) && parsed > 0) return parsed;
@@ -380,7 +381,7 @@ const createAxiosInstance = (authStore: AuthStore): AxiosInstance => {
     timeout: ADMIN_API_TIMEOUT_MS,
     withCredentials: true, // Required for CSRF cookies
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
@@ -394,24 +395,27 @@ const createAxiosInstance = (authStore: AuthStore): AxiosInstance => {
     // Add Accept-Language header for localization
     try {
       // Dynamically import i18n to get current language
-      const i18n = require('../i18n').default;
-      const currentLang = i18n.language || 'he';
-      config.headers['Accept-Language'] = currentLang;
+      const i18n = require("../i18n").default;
+      const currentLang = i18n.language || "he";
+      config.headers["Accept-Language"] = currentLang;
     } catch (error) {
       // Fallback to Hebrew if i18n not available
-      config.headers['Accept-Language'] = 'he';
+      config.headers["Accept-Language"] = "he";
     }
 
     // Add CSRF token from cookie for state-changing requests
-    if (config.method && !['get', 'head', 'options'].includes(config.method.toLowerCase())) {
+    if (
+      config.method &&
+      !["get", "head", "options"].includes(config.method.toLowerCase())
+    ) {
       // Get CSRF token from cookie
       const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrf_token='))
-        ?.split('=')[1];
+        .split("; ")
+        .find((row) => row.startsWith("csrf_token="))
+        ?.split("=")[1];
 
       if (csrfToken) {
-        config.headers['X-CSRF-Token'] = csrfToken;
+        config.headers["X-CSRF-Token"] = csrfToken;
       }
     }
 
@@ -430,10 +434,10 @@ const createAxiosInstance = (authStore: AuthStore): AxiosInstance => {
         logout();
 
         // Redirect to login page (web-specific)
-        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        if (Platform.OS === "web" && typeof window !== "undefined") {
           // Store the current URL to redirect back after login
           const currentPath = window.location.pathname;
-          if (!currentPath.includes('/login')) {
+          if (!currentPath.includes("/login")) {
             window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
           }
         }
@@ -441,12 +445,12 @@ const createAxiosInstance = (authStore: AuthStore): AxiosInstance => {
 
       // Reject with a proper error object
       const errorResponse = error.response?.data || {
-        message: error.message || 'Request failed',
-        status: error.response?.status
+        message: error.message || "Request failed",
+        status: error.response?.status,
       };
 
       return Promise.reject(errorResponse);
-    }
+    },
   );
 
   return adminApi;
@@ -467,16 +471,20 @@ export const createAdminApi = (authStore: AuthStore) => {
 
   const dashboardService = {
     getStats: (): Promise<DashboardStats> =>
-      adminApi.get('/admin/dashboard/stats'),
+      adminApi.get("/admin/dashboard/stats"),
 
-    getRevenueChart: (period: 'daily' | 'weekly' | 'monthly' = 'daily'): Promise<ChartDataPoint[]> =>
-      adminApi.get('/admin/dashboard/charts/revenue', { params: { period } }),
+    getRevenueChart: (
+      period: "daily" | "weekly" | "monthly" = "daily",
+    ): Promise<ChartDataPoint[]> =>
+      adminApi.get("/admin/dashboard/charts/revenue", { params: { period } }),
 
-    getUserGrowthChart: (period: 'daily' | 'weekly' | 'monthly' = 'daily'): Promise<ChartDataPoint[]> =>
-      adminApi.get('/admin/dashboard/charts/users', { params: { period } }),
+    getUserGrowthChart: (
+      period: "daily" | "weekly" | "monthly" = "daily",
+    ): Promise<ChartDataPoint[]> =>
+      adminApi.get("/admin/dashboard/charts/users", { params: { period } }),
 
     getRecentActivity: (limit: number = 10): Promise<AuditLog[]> =>
-      adminApi.get('/admin/dashboard/activity', { params: { limit } }),
+      adminApi.get("/admin/dashboard/activity", { params: { limit } }),
   };
 
   // ============================================
@@ -484,626 +492,772 @@ export const createAdminApi = (authStore: AuthStore) => {
   // ============================================
 
   const usersService = {
-  getUsers: (filters?: UsersFilter): Promise<PaginatedResponse<User>> =>
-    adminApi.get('/admin/users', { params: filters }),
+    getUsers: (filters?: UsersFilter): Promise<PaginatedResponse<User>> =>
+      adminApi.get("/admin/users", { params: filters }),
 
-  getUser: (userId: string): Promise<User> =>
-    adminApi.get(`/admin/users/${userId}`),
+    getUser: (userId: string): Promise<User> =>
+      adminApi.get(`/admin/users/${userId}`),
 
-  createUser: (data: Partial<User> & { password: string }): Promise<User> =>
-    adminApi.post('/admin/users', data),
+    createUser: (data: Partial<User> & { password: string }): Promise<User> =>
+      adminApi.post("/admin/users", data),
 
-  updateUser: (userId: string, data: Partial<User>): Promise<User> =>
-    adminApi.patch(`/admin/users/${userId}`, data),
+    updateUser: (userId: string, data: Partial<User>): Promise<User> =>
+      adminApi.patch(`/admin/users/${userId}`, data),
 
-  deleteUser: (userId: string): Promise<void> =>
-    adminApi.delete(`/admin/users/${userId}`),
+    deleteUser: (userId: string): Promise<void> =>
+      adminApi.delete(`/admin/users/${userId}`),
 
-  resetPassword: (userId: string): Promise<{ message: string }> =>
-    adminApi.post(`/admin/users/${userId}/reset-password`),
+    resetPassword: (userId: string): Promise<{ message: string }> =>
+      adminApi.post(`/admin/users/${userId}/reset-password`),
 
-  updateRole: (userId: string, role: string, permissions?: string[]): Promise<User> =>
-    adminApi.put(`/admin/users/${userId}/role`, { role, permissions }),
+    updateRole: (
+      userId: string,
+      role: string,
+      permissions?: string[],
+    ): Promise<User> =>
+      adminApi.put(`/admin/users/${userId}/role`, { role, permissions }),
 
-  banUser: (userId: string, reason: string): Promise<User> =>
-    adminApi.post(`/admin/users/${userId}/ban`, { reason }),
+    banUser: (userId: string, reason: string): Promise<User> =>
+      adminApi.post(`/admin/users/${userId}/ban`, { reason }),
 
-  unbanUser: (userId: string): Promise<User> =>
-    adminApi.post(`/admin/users/${userId}/unban`),
+    unbanUser: (userId: string): Promise<User> =>
+      adminApi.post(`/admin/users/${userId}/unban`),
 
-  getUserActivity: (userId: string, limit?: number): Promise<AuditLog[]> =>
-    adminApi.get(`/admin/users/${userId}/activity`, { params: { limit } }),
+    getUserActivity: (userId: string, limit?: number): Promise<AuditLog[]> =>
+      adminApi.get(`/admin/users/${userId}/activity`, { params: { limit } }),
 
-  getUserBillingHistory: (userId: string): Promise<Transaction[]> =>
-    adminApi.get(`/admin/users/${userId}/billing`),
-};
+    getUserBillingHistory: (userId: string): Promise<Transaction[]> =>
+      adminApi.get(`/admin/users/${userId}/billing`),
+  };
 
   // ============================================
   // Campaigns Service
   // ============================================
 
   const campaignsService = {
-  getCampaigns: (filters?: CampaignsFilter): Promise<PaginatedResponse<Campaign>> =>
-    adminApi.get('/admin/campaigns', { params: filters }),
+    getCampaigns: (
+      filters?: CampaignsFilter,
+    ): Promise<PaginatedResponse<Campaign>> =>
+      adminApi.get("/admin/campaigns", { params: filters }),
 
-  getCampaign: (campaignId: string): Promise<Campaign> =>
-    adminApi.get(`/admin/campaigns/${campaignId}`),
+    getCampaign: (campaignId: string): Promise<Campaign> =>
+      adminApi.get(`/admin/campaigns/${campaignId}`),
 
-  createCampaign: (data: Partial<Campaign>): Promise<Campaign> =>
-    adminApi.post('/admin/campaigns', data),
+    createCampaign: (data: Partial<Campaign>): Promise<Campaign> =>
+      adminApi.post("/admin/campaigns", data),
 
-  updateCampaign: (campaignId: string, data: Partial<Campaign>): Promise<Campaign> =>
-    adminApi.put(`/admin/campaigns/${campaignId}`, data),
+    updateCampaign: (
+      campaignId: string,
+      data: Partial<Campaign>,
+    ): Promise<Campaign> =>
+      adminApi.put(`/admin/campaigns/${campaignId}`, data),
 
-  deleteCampaign: (campaignId: string): Promise<void> =>
-    adminApi.delete(`/admin/campaigns/${campaignId}`),
+    deleteCampaign: (campaignId: string): Promise<void> =>
+      adminApi.delete(`/admin/campaigns/${campaignId}`),
 
-  activateCampaign: (campaignId: string): Promise<Campaign> =>
-    adminApi.post(`/admin/campaigns/${campaignId}/activate`),
+    activateCampaign: (campaignId: string): Promise<Campaign> =>
+      adminApi.post(`/admin/campaigns/${campaignId}/activate`),
 
-  deactivateCampaign: (campaignId: string): Promise<Campaign> =>
-    adminApi.post(`/admin/campaigns/${campaignId}/deactivate`),
+    deactivateCampaign: (campaignId: string): Promise<Campaign> =>
+      adminApi.post(`/admin/campaigns/${campaignId}/deactivate`),
 
-  getCampaignStats: (campaignId: string): Promise<{
-    redemptions: number;
-    revenue_impact: number;
-    conversion_rate: number;
-  }> =>
-    adminApi.get(`/admin/campaigns/${campaignId}/stats`),
+    getCampaignStats: (
+      campaignId: string,
+    ): Promise<{
+      redemptions: number;
+      revenue_impact: number;
+      conversion_rate: number;
+    }> => adminApi.get(`/admin/campaigns/${campaignId}/stats`),
 
-  validatePromoCode: (code: string): Promise<Campaign | null> =>
-    adminApi.get('/admin/campaigns/validate', { params: { code } }),
-};
+    validatePromoCode: (code: string): Promise<Campaign | null> =>
+      adminApi.get("/admin/campaigns/validate", { params: { code } }),
+  };
 
   // ============================================
   // Billing Service
   // ============================================
 
   const billingService = {
-  getOverview: (): Promise<{
-    today: number;
-    this_week: number;
-    this_month: number;
-    this_year: number;
-    pending_refunds: number;
-  }> =>
-    adminApi.get('/admin/billing/overview'),
+    getOverview: (): Promise<{
+      today: number;
+      this_week: number;
+      this_month: number;
+      this_year: number;
+      pending_refunds: number;
+    }> => adminApi.get("/admin/billing/overview"),
 
-  getTransactions: (filters?: BillingFilter): Promise<PaginatedResponse<Transaction>> =>
-    adminApi.get('/admin/billing/transactions', { params: filters }),
+    getTransactions: (
+      filters?: BillingFilter,
+    ): Promise<PaginatedResponse<Transaction>> =>
+      adminApi.get("/admin/billing/transactions", { params: filters }),
 
-  getTransaction: (transactionId: string): Promise<Transaction> =>
-    adminApi.get(`/admin/billing/transactions/${transactionId}`),
+    getTransaction: (transactionId: string): Promise<Transaction> =>
+      adminApi.get(`/admin/billing/transactions/${transactionId}`),
 
-  getRefunds: (filters?: BillingFilter): Promise<PaginatedResponse<Refund>> =>
-    adminApi.get('/admin/billing/refunds', { params: filters }),
+    getRefunds: (filters?: BillingFilter): Promise<PaginatedResponse<Refund>> =>
+      adminApi.get("/admin/billing/refunds", { params: filters }),
 
-  processRefund: (transactionId: string, data: {
-    amount: number;
-    reason: string;
-  }): Promise<Refund> =>
-    adminApi.post('/admin/billing/refunds', { transaction_id: transactionId, ...data }),
+    processRefund: (
+      transactionId: string,
+      data: {
+        amount: number;
+        reason: string;
+      },
+    ): Promise<Refund> =>
+      adminApi.post("/admin/billing/refunds", {
+        transaction_id: transactionId,
+        ...data,
+      }),
 
-  approveRefund: (refundId: string): Promise<Refund> =>
-    adminApi.post(`/admin/billing/refunds/${refundId}/approve`),
+    approveRefund: (refundId: string): Promise<Refund> =>
+      adminApi.post(`/admin/billing/refunds/${refundId}/approve`),
 
-  rejectRefund: (refundId: string, reason: string): Promise<Refund> =>
-    adminApi.post(`/admin/billing/refunds/${refundId}/reject`, { reason }),
+    rejectRefund: (refundId: string, reason: string): Promise<Refund> =>
+      adminApi.post(`/admin/billing/refunds/${refundId}/reject`, { reason }),
 
-  exportTransactions: (filters?: BillingFilter): Promise<Blob> =>
-    adminApi.get('/admin/billing/export', {
-      params: filters,
-      responseType: 'blob',
-    }),
+    exportTransactions: (filters?: BillingFilter): Promise<Blob> =>
+      adminApi.get("/admin/billing/export", {
+        params: filters,
+        responseType: "blob",
+      }),
 
-  generateInvoice: (transactionId: string): Promise<Blob> =>
-    adminApi.get(`/admin/billing/transactions/${transactionId}/invoice`, {
-      responseType: 'blob',
-    }),
-};
+    generateInvoice: (transactionId: string): Promise<Blob> =>
+      adminApi.get(`/admin/billing/transactions/${transactionId}/invoice`, {
+        responseType: "blob",
+      }),
+  };
 
   // ============================================
   // Subscriptions Service
   // ============================================
 
   const subscriptionsService = {
-  getSubscriptions: (filters?: SubscriptionsFilter): Promise<PaginatedResponse<Subscription & { user: User }>> =>
-    adminApi.get('/admin/subscriptions', { params: filters }),
+    getSubscriptions: (
+      filters?: SubscriptionsFilter,
+    ): Promise<PaginatedResponse<Subscription & { user: User }>> =>
+      adminApi.get("/admin/subscriptions", { params: filters }),
 
-  getSubscription: (subscriptionId: string): Promise<Subscription & { user: User }> =>
-    adminApi.get(`/admin/subscriptions/${subscriptionId}`),
+    getSubscription: (
+      subscriptionId: string,
+    ): Promise<Subscription & { user: User }> =>
+      adminApi.get(`/admin/subscriptions/${subscriptionId}`),
 
-  updateSubscription: (subscriptionId: string, data: Partial<Subscription>): Promise<Subscription> =>
-    adminApi.put(`/admin/subscriptions/${subscriptionId}`, data),
+    updateSubscription: (
+      subscriptionId: string,
+      data: Partial<Subscription>,
+    ): Promise<Subscription> =>
+      adminApi.put(`/admin/subscriptions/${subscriptionId}`, data),
 
-  extendSubscription: (subscriptionId: string, days: number): Promise<Subscription> =>
-    adminApi.post(`/admin/subscriptions/${subscriptionId}/extend`, { days }),
+    extendSubscription: (
+      subscriptionId: string,
+      days: number,
+    ): Promise<Subscription> =>
+      adminApi.post(`/admin/subscriptions/${subscriptionId}/extend`, { days }),
 
-  cancelSubscription: (subscriptionId: string, reason?: string): Promise<Subscription> =>
-    adminApi.post(`/admin/subscriptions/${subscriptionId}/cancel`, { reason }),
+    cancelSubscription: (
+      subscriptionId: string,
+      reason?: string,
+    ): Promise<Subscription> =>
+      adminApi.post(`/admin/subscriptions/${subscriptionId}/cancel`, {
+        reason,
+      }),
 
-  pauseSubscription: (subscriptionId: string): Promise<Subscription> =>
-    adminApi.post(`/admin/subscriptions/${subscriptionId}/pause`),
+    pauseSubscription: (subscriptionId: string): Promise<Subscription> =>
+      adminApi.post(`/admin/subscriptions/${subscriptionId}/pause`),
 
-  resumeSubscription: (subscriptionId: string): Promise<Subscription> =>
-    adminApi.post(`/admin/subscriptions/${subscriptionId}/resume`),
+    resumeSubscription: (subscriptionId: string): Promise<Subscription> =>
+      adminApi.post(`/admin/subscriptions/${subscriptionId}/resume`),
 
-  applyDiscount: (subscriptionId: string, discountPercent: number, months: number): Promise<Subscription> =>
-    adminApi.post(`/admin/subscriptions/${subscriptionId}/discount`, {
-      discount_percent: discountPercent,
-      months,
-    }),
+    applyDiscount: (
+      subscriptionId: string,
+      discountPercent: number,
+      months: number,
+    ): Promise<Subscription> =>
+      adminApi.post(`/admin/subscriptions/${subscriptionId}/discount`, {
+        discount_percent: discountPercent,
+        months,
+      }),
 
-  // Plans Management
-  getPlans: (): Promise<SubscriptionPlan[]> =>
-    adminApi.get('/admin/plans'),
+    // Plans Management
+    getPlans: (): Promise<SubscriptionPlan[]> => adminApi.get("/admin/plans"),
 
-  getPlan: (planId: string): Promise<SubscriptionPlan> =>
-    adminApi.get(`/admin/plans/${planId}`),
+    getPlan: (planId: string): Promise<SubscriptionPlan> =>
+      adminApi.get(`/admin/plans/${planId}`),
 
-  createPlan: (data: Partial<SubscriptionPlan>): Promise<SubscriptionPlan> =>
-    adminApi.post('/admin/plans', data),
+    createPlan: (data: Partial<SubscriptionPlan>): Promise<SubscriptionPlan> =>
+      adminApi.post("/admin/plans", data),
 
-  updatePlan: (planId: string, data: Partial<SubscriptionPlan>): Promise<SubscriptionPlan> =>
-    adminApi.put(`/admin/plans/${planId}`, data),
+    updatePlan: (
+      planId: string,
+      data: Partial<SubscriptionPlan>,
+    ): Promise<SubscriptionPlan> =>
+      adminApi.put(`/admin/plans/${planId}`, data),
 
-  deletePlan: (planId: string): Promise<void> =>
-    adminApi.delete(`/admin/plans/${planId}`),
+    deletePlan: (planId: string): Promise<void> =>
+      adminApi.delete(`/admin/plans/${planId}`),
 
-  // Analytics
-  getChurnAnalytics: (): Promise<{
-    churn_rate: number;
-    churned_users: number;
-    at_risk_users: number;
-    retention_rate: number;
-  }> =>
-    adminApi.get('/admin/subscriptions/analytics/churn'),
-};
+    // Analytics
+    getChurnAnalytics: (): Promise<{
+      churn_rate: number;
+      churned_users: number;
+      at_risk_users: number;
+      retention_rate: number;
+    }> => adminApi.get("/admin/subscriptions/analytics/churn"),
+  };
 
   // ============================================
   // Marketing Service
   // ============================================
 
   const marketingService = {
-  // Dashboard metrics
-  getMetrics: (): Promise<MarketingMetrics> =>
-    adminApi.get('/admin/marketing/metrics'),
+    // Dashboard metrics
+    getMetrics: (): Promise<MarketingMetrics> =>
+      adminApi.get("/admin/marketing/metrics"),
 
-  getRecentCampaigns: (limit: number = 5): Promise<RecentCampaign[]> =>
-    adminApi.get('/admin/marketing/campaigns/recent', { params: { limit } }),
+    getRecentCampaigns: (limit: number = 5): Promise<RecentCampaign[]> =>
+      adminApi.get("/admin/marketing/campaigns/recent", { params: { limit } }),
 
-  getAudienceSegments: (): Promise<AudienceSegment[]> =>
-    adminApi.get('/admin/marketing/segments/summary'),
+    getAudienceSegments: (): Promise<AudienceSegment[]> =>
+      adminApi.get("/admin/marketing/segments/summary"),
 
-  // Email Campaigns
-  getEmailCampaigns: (filters?: MarketingFilter): Promise<PaginatedResponse<EmailCampaign>> =>
-    adminApi.get('/admin/marketing/emails', { params: filters }),
+    // Email Campaigns
+    getEmailCampaigns: (
+      filters?: MarketingFilter,
+    ): Promise<PaginatedResponse<EmailCampaign>> =>
+      adminApi.get("/admin/marketing/emails", { params: filters }),
 
-  getEmailCampaign: (campaignId: string): Promise<EmailCampaign> =>
-    adminApi.get(`/admin/marketing/emails/${campaignId}`),
+    getEmailCampaign: (campaignId: string): Promise<EmailCampaign> =>
+      adminApi.get(`/admin/marketing/emails/${campaignId}`),
 
-  createEmailCampaign: (data: Partial<EmailCampaign>): Promise<EmailCampaign> =>
-    adminApi.post('/admin/marketing/emails', data),
+    createEmailCampaign: (
+      data: Partial<EmailCampaign>,
+    ): Promise<EmailCampaign> => adminApi.post("/admin/marketing/emails", data),
 
-  updateEmailCampaign: (campaignId: string, data: Partial<EmailCampaign>): Promise<EmailCampaign> =>
-    adminApi.put(`/admin/marketing/emails/${campaignId}`, data),
+    updateEmailCampaign: (
+      campaignId: string,
+      data: Partial<EmailCampaign>,
+    ): Promise<EmailCampaign> =>
+      adminApi.put(`/admin/marketing/emails/${campaignId}`, data),
 
-  deleteEmailCampaign: (campaignId: string): Promise<void> =>
-    adminApi.delete(`/admin/marketing/emails/${campaignId}`),
+    deleteEmailCampaign: (campaignId: string): Promise<void> =>
+      adminApi.delete(`/admin/marketing/emails/${campaignId}`),
 
-  sendEmailCampaign: (campaignId: string): Promise<EmailCampaign> =>
-    adminApi.post(`/admin/marketing/emails/${campaignId}/send`),
+    sendEmailCampaign: (campaignId: string): Promise<EmailCampaign> =>
+      adminApi.post(`/admin/marketing/emails/${campaignId}/send`),
 
-  scheduleEmailCampaign: (campaignId: string, scheduledAt: string): Promise<EmailCampaign> =>
-    adminApi.post(`/admin/marketing/emails/${campaignId}/schedule`, { scheduled_at: scheduledAt }),
+    scheduleEmailCampaign: (
+      campaignId: string,
+      scheduledAt: string,
+    ): Promise<EmailCampaign> =>
+      adminApi.post(`/admin/marketing/emails/${campaignId}/schedule`, {
+        scheduled_at: scheduledAt,
+      }),
 
-  sendTestEmail: (campaignId: string, email: string): Promise<{ success: boolean }> =>
-    adminApi.post(`/admin/marketing/emails/${campaignId}/test`, { email }),
+    sendTestEmail: (
+      campaignId: string,
+      email: string,
+    ): Promise<{ success: boolean }> =>
+      adminApi.post(`/admin/marketing/emails/${campaignId}/test`, { email }),
 
-  // Push Notifications
-  getPushNotifications: (filters?: MarketingFilter): Promise<PaginatedResponse<PushNotification>> =>
-    adminApi.get('/admin/marketing/push', { params: filters }),
+    // Push Notifications
+    getPushNotifications: (
+      filters?: MarketingFilter,
+    ): Promise<PaginatedResponse<PushNotification>> =>
+      adminApi.get("/admin/marketing/push", { params: filters }),
 
-  getPushNotification: (notificationId: string): Promise<PushNotification> =>
-    adminApi.get(`/admin/marketing/push/${notificationId}`),
+    getPushNotification: (notificationId: string): Promise<PushNotification> =>
+      adminApi.get(`/admin/marketing/push/${notificationId}`),
 
-  createPushNotification: (data: Partial<PushNotification>): Promise<PushNotification> =>
-    adminApi.post('/admin/marketing/push', data),
+    createPushNotification: (
+      data: Partial<PushNotification>,
+    ): Promise<PushNotification> =>
+      adminApi.post("/admin/marketing/push", data),
 
-  updatePushNotification: (notificationId: string, data: Partial<PushNotification>): Promise<PushNotification> =>
-    adminApi.put(`/admin/marketing/push/${notificationId}`, data),
+    updatePushNotification: (
+      notificationId: string,
+      data: Partial<PushNotification>,
+    ): Promise<PushNotification> =>
+      adminApi.put(`/admin/marketing/push/${notificationId}`, data),
 
-  deletePushNotification: (notificationId: string): Promise<void> =>
-    adminApi.delete(`/admin/marketing/push/${notificationId}`),
+    deletePushNotification: (notificationId: string): Promise<void> =>
+      adminApi.delete(`/admin/marketing/push/${notificationId}`),
 
-  sendPushNotification: (notificationId: string): Promise<PushNotification> =>
-    adminApi.post(`/admin/marketing/push/${notificationId}/send`),
+    sendPushNotification: (notificationId: string): Promise<PushNotification> =>
+      adminApi.post(`/admin/marketing/push/${notificationId}/send`),
 
-  schedulePushNotification: (notificationId: string, scheduledAt: string): Promise<PushNotification> =>
-    adminApi.post(`/admin/marketing/push/${notificationId}/schedule`, { scheduled_at: scheduledAt }),
+    schedulePushNotification: (
+      notificationId: string,
+      scheduledAt: string,
+    ): Promise<PushNotification> =>
+      adminApi.post(`/admin/marketing/push/${notificationId}/schedule`, {
+        scheduled_at: scheduledAt,
+      }),
 
-  // Audience Segments
-  getAudienceCount: (filter: AudienceFilter): Promise<{ count: number }> =>
-    adminApi.post('/admin/marketing/audience/count', filter),
+    // Audience Segments
+    getAudienceCount: (filter: AudienceFilter): Promise<{ count: number }> =>
+      adminApi.post("/admin/marketing/audience/count", filter),
 
-  getSegments: (): Promise<{ id: string; name: string; filter: AudienceFilter; count: number }[]> =>
-    adminApi.get('/admin/marketing/segments'),
+    getSegments: (): Promise<
+      { id: string; name: string; filter: AudienceFilter; count: number }[]
+    > => adminApi.get("/admin/marketing/segments"),
 
-  createSegment: (data: { name: string; filter: AudienceFilter }): Promise<{ id: string }> =>
-    adminApi.post('/admin/marketing/segments', data),
+    createSegment: (data: {
+      name: string;
+      filter: AudienceFilter;
+    }): Promise<{ id: string }> =>
+      adminApi.post("/admin/marketing/segments", data),
 
-  deleteSegment: (segmentId: string): Promise<void> =>
-    adminApi.delete(`/admin/marketing/segments/${segmentId}`),
-};
+    deleteSegment: (segmentId: string): Promise<void> =>
+      adminApi.delete(`/admin/marketing/segments/${segmentId}`),
+  };
 
   // ============================================
   // Settings Service
   // ============================================
 
   const settingsService = {
-  getSettings: (): Promise<SystemSettings> =>
-    adminApi.get('/admin/settings'),
+    getSettings: (): Promise<SystemSettings> => adminApi.get("/admin/settings"),
 
-  updateSettings: (data: Partial<SystemSettings>): Promise<SystemSettings> =>
-    adminApi.put('/admin/settings', data),
+    updateSettings: (data: Partial<SystemSettings>): Promise<SystemSettings> =>
+      adminApi.put("/admin/settings", data),
 
-  getFeatureFlags: (): Promise<Record<string, boolean>> =>
-    adminApi.get('/admin/settings/features'),
+    getFeatureFlags: (): Promise<Record<string, boolean>> =>
+      adminApi.get("/admin/settings/features"),
 
-  updateFeatureFlag: (flag: string, enabled: boolean): Promise<void> =>
-    adminApi.put(`/admin/settings/features/${flag}`, { enabled }),
+    updateFeatureFlag: (flag: string, enabled: boolean): Promise<void> =>
+      adminApi.put(`/admin/settings/features/${flag}`, { enabled }),
 
-  clearCache: (): Promise<{ success: boolean }> =>
-    adminApi.post('/admin/settings/cache/clear'),
+    clearCache: (): Promise<{ success: boolean }> =>
+      adminApi.post("/admin/settings/cache/clear"),
 
-  resetAnalytics: (): Promise<{ success: boolean }> =>
-    adminApi.post('/admin/settings/analytics/reset'),
-};
+    resetAnalytics: (): Promise<{ success: boolean }> =>
+      adminApi.post("/admin/settings/analytics/reset"),
+  };
 
   // ============================================
   // Audit Logs Service
   // ============================================
 
   const auditLogsService = {
-  getLogs: (filters?: AuditLogsFilter): Promise<PaginatedResponse<AuditLog>> =>
-    adminApi.get('/admin/logs', { params: filters }),
+    getLogs: (
+      filters?: AuditLogsFilter,
+    ): Promise<PaginatedResponse<AuditLog>> =>
+      adminApi.get("/admin/logs", { params: filters }),
 
-  exportLogs: (filters?: AuditLogsFilter): Promise<Blob> =>
-    adminApi.get('/admin/logs/export', {
-      params: filters,
-      responseType: 'blob',
-    }),
-};
+    exportLogs: (filters?: AuditLogsFilter): Promise<Blob> =>
+      adminApi.get("/admin/logs/export", {
+        params: filters,
+        responseType: "blob",
+      }),
+  };
 
   // ============================================
   // Content Service
   // ============================================
 
   const adminContentService = {
-  // Category management
-  getCategories: (filters?: CategoryFilter): Promise<PaginatedResponse<Category>> =>
-    adminApi.get('/admin/categories', { params: filters }),
+    // Category management
+    getCategories: (
+      filters?: CategoryFilter,
+    ): Promise<PaginatedResponse<Category>> =>
+      adminApi.get("/admin/categories", { params: filters }),
 
-  createCategory: (data: Partial<Category>): Promise<{ id: string; name: string; slug: string }> =>
-    adminApi.post('/admin/categories', data),
+    createCategory: (
+      data: Partial<Category>,
+    ): Promise<{ id: string; name: string; slug: string }> =>
+      adminApi.post("/admin/categories", data),
 
-  updateCategory: (categoryId: string, data: Partial<Category>): Promise<{ message: string; id: string }> =>
-    adminApi.patch(`/admin/categories/${categoryId}`, data),
+    updateCategory: (
+      categoryId: string,
+      data: Partial<Category>,
+    ): Promise<{ message: string; id: string }> =>
+      adminApi.patch(`/admin/categories/${categoryId}`, data),
 
-  deleteCategory: (categoryId: string): Promise<{ message: string }> =>
-    adminApi.delete(`/admin/categories/${categoryId}`),
+    deleteCategory: (categoryId: string): Promise<{ message: string }> =>
+      adminApi.delete(`/admin/categories/${categoryId}`),
 
-  getContentHierarchical: (filters?: ContentFilter): Promise<PaginatedResponse<Content>> =>
-    adminApi.get('/admin/content/hierarchical', { params: filters }),
+    getContentHierarchical: (
+      filters?: ContentFilter,
+    ): Promise<PaginatedResponse<Content>> =>
+      adminApi.get("/admin/content/hierarchical", { params: filters }),
 
-  getContentById: (contentId: string): Promise<Content> =>
-    adminApi.get(`/admin/content/${contentId}`),
+    getContentById: (contentId: string): Promise<Content> =>
+      adminApi.get(`/admin/content/${contentId}`),
 
-  createContent: (data: Partial<Content>): Promise<Content> =>
-    adminApi.post('/admin/content', data),
+    createContent: (data: Partial<Content>): Promise<Content> =>
+      adminApi.post("/admin/content", data),
 
-  updateContent: (contentId: string, data: Partial<Content>): Promise<Content> =>
-    adminApi.patch(`/admin/content/${contentId}`, data),
+    updateContent: (
+      contentId: string,
+      data: Partial<Content>,
+    ): Promise<Content> => adminApi.patch(`/admin/content/${contentId}`, data),
 
-  deleteContent: (contentId: string): Promise<void> =>
-    adminApi.delete(`/admin/content/${contentId}`),
+    deleteContent: (contentId: string): Promise<void> =>
+      adminApi.delete(`/admin/content/${contentId}`),
 
-  publishContent: (contentId: string): Promise<Content> =>
-    adminApi.post(`/admin/content/${contentId}/publish`),
+    publishContent: (contentId: string): Promise<Content> =>
+      adminApi.post(`/admin/content/${contentId}/publish`),
 
-  featureContent: (contentId: string): Promise<Content> =>
-    adminApi.post(`/admin/content/${contentId}/feature`),
+    featureContent: (contentId: string): Promise<Content> =>
+      adminApi.post(`/admin/content/${contentId}/feature`),
 
-  toggleBetaContent: (contentId: string): Promise<Content> =>
-    adminApi.post(`/admin/content/${contentId}/beta`),
+    toggleBetaContent: (contentId: string): Promise<Content> =>
+      adminApi.post(`/admin/content/${contentId}/beta`),
 
-  getSeriesEpisodes: (seriesId: string): Promise<{
-    series_id: string;
-    series_title: string;
-    total_episodes: number;
-    episodes: Array<{
-      id: string;
-      title: string;
-      thumbnail?: string;
-      duration?: string;
-      season?: number;
-      episode?: number;
-      is_published: boolean;
-      is_featured: boolean;
-    }>;
-  }> =>
-    adminApi.get(`/admin/content/${seriesId}/episodes`),
+    getSeriesEpisodes: (
+      seriesId: string,
+    ): Promise<{
+      series_id: string;
+      series_title: string;
+      total_episodes: number;
+      episodes: Array<{
+        id: string;
+        title: string;
+        thumbnail?: string;
+        duration?: string;
+        season?: number;
+        episode?: number;
+        is_published: boolean;
+        is_featured: boolean;
+      }>;
+    }> => adminApi.get(`/admin/content/${seriesId}/episodes`),
 
-  // Batch operations
-  batchDeleteContent: (contentIds: string[]): Promise<{ deleted_count: number; errors: string[] }> =>
-    adminApi.post('/admin/content/batch/delete', { content_ids: contentIds }),
+    // Batch operations
+    batchDeleteContent: (
+      contentIds: string[],
+    ): Promise<{ deleted_count: number; errors: string[] }> =>
+      adminApi.post("/admin/content/batch/delete", { content_ids: contentIds }),
 
-  batchFeatureContent: (contentIds: string[], featured: boolean): Promise<{ updated_count: number }> =>
-    adminApi.post('/admin/content/batch/feature', { content_ids: contentIds, featured }),
+    batchFeatureContent: (
+      contentIds: string[],
+      featured: boolean,
+    ): Promise<{ updated_count: number }> =>
+      adminApi.post("/admin/content/batch/feature", {
+        content_ids: contentIds,
+        featured,
+      }),
 
-  batchBetaContent: (contentIds: string[], beta: boolean): Promise<{ updated_count: number; errors: string[] }> =>
-    adminApi.post('/admin/content/batch/beta', { content_ids: contentIds, beta }),
+    batchBetaContent: (
+      contentIds: string[],
+      beta: boolean,
+    ): Promise<{ updated_count: number; errors: string[] }> =>
+      adminApi.post("/admin/content/batch/beta", {
+        content_ids: contentIds,
+        beta,
+      }),
 
-  batchPublishContent: (contentIds: string[], published: boolean): Promise<{ updated_count: number }> =>
-    adminApi.post('/admin/content/batch/publish', { content_ids: contentIds, published }),
+    batchPublishContent: (
+      contentIds: string[],
+      published: boolean,
+    ): Promise<{ updated_count: number }> =>
+      adminApi.post("/admin/content/batch/publish", {
+        content_ids: contentIds,
+        published,
+      }),
 
-  mergeContent: (request: {
-    base_id: string;
-    merge_ids: string[];
-    transfer_seasons?: boolean;
-    transfer_episodes?: boolean;
-    preserve_metadata?: {
-      useBaseTitle?: boolean;
-      useBasePoster?: boolean;
-      useBaseDescription?: boolean;
-    };
-    dry_run?: boolean;
-  }): Promise<{
-    success: boolean;
-    items_merged: number;
-    base_content_id: string;
-    merged_content_ids: string[];
-    seasons_transferred?: number;
-    episodes_transferred?: number;
-    errors: string[];
-  }> =>
-    adminApi.post('/admin/content/batch/merge', request),
+    mergeContent: (request: {
+      base_id: string;
+      merge_ids: string[];
+      transfer_seasons?: boolean;
+      transfer_episodes?: boolean;
+      preserve_metadata?: {
+        useBaseTitle?: boolean;
+        useBasePoster?: boolean;
+        useBaseDescription?: boolean;
+      };
+      dry_run?: boolean;
+    }): Promise<{
+      success: boolean;
+      items_merged: number;
+      base_content_id: string;
+      merged_content_ids: string[];
+      seasons_transferred?: number;
+      episodes_transferred?: number;
+      errors: string[];
+    }> => adminApi.post("/admin/content/batch/merge", request),
 
-  // Radio Stations
-  getRadioStations: (filters?: { search?: string; genre?: string; is_active?: boolean; page?: number; page_size?: number }): Promise<PaginatedResponse<any>> =>
-    adminApi.get('/admin/radio-stations', { params: filters }),
+    // Radio Stations
+    getRadioStations: (filters?: {
+      search?: string;
+      genre?: string;
+      is_active?: boolean;
+      page?: number;
+      page_size?: number;
+    }): Promise<PaginatedResponse<any>> =>
+      adminApi.get("/admin/radio-stations", { params: filters }),
 
-  getRadioStation: (stationId: string): Promise<any> =>
-    adminApi.get(`/admin/radio-stations/${stationId}`),
+    getRadioStation: (stationId: string): Promise<any> =>
+      adminApi.get(`/admin/radio-stations/${stationId}`),
 
-  createRadioStation: (data: any): Promise<any> =>
-    adminApi.post('/admin/radio-stations', data),
+    createRadioStation: (data: any): Promise<any> =>
+      adminApi.post("/admin/radio-stations", data),
 
-  updateRadioStation: (stationId: string, data: any): Promise<any> =>
-    adminApi.patch(`/admin/radio-stations/${stationId}`, data),
+    updateRadioStation: (stationId: string, data: any): Promise<any> =>
+      adminApi.patch(`/admin/radio-stations/${stationId}`, data),
 
-  deleteRadioStation: (stationId: string): Promise<void> =>
-    adminApi.delete(`/admin/radio-stations/${stationId}`),
-};
+    deleteRadioStation: (stationId: string): Promise<void> =>
+      adminApi.delete(`/admin/radio-stations/${stationId}`),
+  };
 
   // ============================================
   // Widgets Service
   // ============================================
 
   const adminWidgetsService = {
-  getWidgets: (filters?: WidgetFilter): Promise<PaginatedResponse<Widget>> =>
-    adminApi.get('/admin/widgets', { params: filters }),
+    getWidgets: (filters?: WidgetFilter): Promise<PaginatedResponse<Widget>> =>
+      adminApi.get("/admin/widgets", { params: filters }),
 
-  getMyWidgets: (targetPage?: string): Promise<PaginatedResponse<Widget>> =>
-    adminApi.get('/widgets', { params: { page_path: targetPage } }),
+    getMyWidgets: (targetPage?: string): Promise<PaginatedResponse<Widget>> =>
+      adminApi.get("/widgets", { params: { page_path: targetPage } }),
 
-  getWidget: (widgetId: string): Promise<Widget> =>
-    adminApi.get(`/admin/widgets/${widgetId}`),
+    getWidget: (widgetId: string): Promise<Widget> =>
+      adminApi.get(`/admin/widgets/${widgetId}`),
 
-  checkWidgetName: (widgetTitle: string, excludeId?: string): Promise<{ exists: boolean; available: boolean }> =>
-    adminApi.get(`/admin/widgets/check-name/${encodeURIComponent(widgetTitle)}`, {
-      params: excludeId ? { exclude_id: excludeId } : undefined
-    }),
+    checkWidgetName: (
+      widgetTitle: string,
+      excludeId?: string,
+    ): Promise<{ exists: boolean; available: boolean }> =>
+      adminApi.get(
+        `/admin/widgets/check-name/${encodeURIComponent(widgetTitle)}`,
+        {
+          params: excludeId ? { exclude_id: excludeId } : undefined,
+        },
+      ),
 
-  createWidget: (data: Partial<Widget>): Promise<Widget> =>
-    adminApi.post('/admin/widgets', data),
+    createWidget: (data: Partial<Widget>): Promise<Widget> =>
+      adminApi.post("/admin/widgets", data),
 
-  updateWidget: (widgetId: string, data: Partial<Widget>): Promise<Widget> =>
-    adminApi.patch(`/admin/widgets/${widgetId}`, data),
+    updateWidget: (widgetId: string, data: Partial<Widget>): Promise<Widget> =>
+      adminApi.patch(`/admin/widgets/${widgetId}`, data),
 
-  deleteWidget: (widgetId: string): Promise<void> =>
-    adminApi.delete(`/admin/widgets/${widgetId}`),
+    deleteWidget: (widgetId: string): Promise<void> =>
+      adminApi.delete(`/admin/widgets/${widgetId}`),
 
-  reorderWidgets: (widgets: { id: string; order: number }[]): Promise<void> =>
-    adminApi.post('/admin/widgets/reorder', { widgets }),
+    reorderWidgets: (widgets: { id: string; order: number }[]): Promise<void> =>
+      adminApi.post("/admin/widgets/reorder", { widgets }),
 
-  publishWidget: (widgetId: string): Promise<Widget> =>
-    adminApi.post(`/admin/widgets/${widgetId}/publish`),
+    publishWidget: (widgetId: string): Promise<Widget> =>
+      adminApi.post(`/admin/widgets/${widgetId}/publish`),
 
-  unpublishWidget: (widgetId: string): Promise<Widget> =>
-    adminApi.post(`/admin/widgets/${widgetId}/unpublish`),
+    unpublishWidget: (widgetId: string): Promise<Widget> =>
+      adminApi.post(`/admin/widgets/${widgetId}/unpublish`),
 
-  // System widgets (user-facing, opt-in model)
-  getAvailableSystemWidgets: (): Promise<PaginatedResponse<Widget>> =>
-    adminApi.get('/widgets/system/available'),
+    // System widgets (user-facing, opt-in model)
+    getAvailableSystemWidgets: (): Promise<PaginatedResponse<Widget>> =>
+      adminApi.get("/widgets/system/available"),
 
-  addSystemWidget: (widgetId: string): Promise<{ message: string; id: string; widget_id: string }> =>
-    adminApi.post(`/widgets/system/${widgetId}/add`),
+    addSystemWidget: (
+      widgetId: string,
+    ): Promise<{ message: string; id: string; widget_id: string }> =>
+      adminApi.post(`/widgets/system/${widgetId}/add`),
 
-  removeSystemWidget: (widgetId: string): Promise<{ message: string }> =>
-    adminApi.delete(`/widgets/system/${widgetId}/remove`),
+    removeSystemWidget: (widgetId: string): Promise<{ message: string }> =>
+      adminApi.delete(`/widgets/system/${widgetId}/remove`),
 
-  // Widget state management
-  updateWidgetPosition: (
-    widgetId: string,
-    position: { x: number; y: number; width?: number; height?: number }
-  ): Promise<{ message: string }> =>
-    adminApi.post(`/widgets/${widgetId}/position`, position),
+    // Widget state management
+    updateWidgetPosition: (
+      widgetId: string,
+      position: { x: number; y: number; width?: number; height?: number },
+    ): Promise<{ message: string }> =>
+      adminApi.post(`/widgets/${widgetId}/position`, position),
 
-  closeWidget: (widgetId: string): Promise<{ message: string }> =>
-    adminApi.post(`/widgets/${widgetId}/close`),
+    closeWidget: (widgetId: string): Promise<{ message: string }> =>
+      adminApi.post(`/widgets/${widgetId}/close`),
 
-  toggleWidgetMinimize: (widgetId: string, isMinimized: boolean): Promise<{ message: string }> =>
-    adminApi.post(`/widgets/${widgetId}/minimize`, null, { params: { is_minimized: isMinimized } }),
+    toggleWidgetMinimize: (
+      widgetId: string,
+      isMinimized: boolean,
+    ): Promise<{ message: string }> =>
+      adminApi.post(`/widgets/${widgetId}/minimize`, null, {
+        params: { is_minimized: isMinimized },
+      }),
 
-  bulkSoftDelete: (widgetIds: string[]): Promise<{ deleted_count: number }> =>
-    adminApi.post('/widgets/bulk-delete', { widget_ids: widgetIds }),
-};
+    bulkSoftDelete: (widgetIds: string[]): Promise<{ deleted_count: number }> =>
+      adminApi.post("/widgets/bulk-delete", { widget_ids: widgetIds }),
+  };
 
   // ============================================
   // Podcasts Service
   // ============================================
 
   const adminPodcastsService = {
-  getPodcasts: (filters?: PodcastFilter): Promise<PaginatedResponse<Podcast>> =>
-    adminApi.get('/admin/podcasts', { params: filters }),
+    getPodcasts: (
+      filters?: PodcastFilter,
+    ): Promise<PaginatedResponse<Podcast>> =>
+      adminApi.get("/admin/podcasts", { params: filters }),
 
-  getPodcast: (podcastId: string): Promise<Podcast> =>
-    adminApi.get(`/admin/podcasts/${podcastId}`),
+    getPodcast: (podcastId: string): Promise<Podcast> =>
+      adminApi.get(`/admin/podcasts/${podcastId}`),
 
-  createPodcast: (data: Partial<Podcast>): Promise<Podcast> =>
-    adminApi.post('/admin/podcasts', data),
+    createPodcast: (data: Partial<Podcast>): Promise<Podcast> =>
+      adminApi.post("/admin/podcasts", data),
 
-  updatePodcast: (podcastId: string, data: Partial<Podcast>): Promise<Podcast> =>
-    adminApi.patch(`/admin/podcasts/${podcastId}`, data),
+    updatePodcast: (
+      podcastId: string,
+      data: Partial<Podcast>,
+    ): Promise<Podcast> => adminApi.patch(`/admin/podcasts/${podcastId}`, data),
 
-  deletePodcast: (podcastId: string): Promise<void> =>
-    adminApi.delete(`/admin/podcasts/${podcastId}`),
+    deletePodcast: (podcastId: string): Promise<void> =>
+      adminApi.delete(`/admin/podcasts/${podcastId}`),
 
-  // Bulk translation for all podcast episodes
-  triggerBulkTranslation: (podcastId: string): Promise<{
-    status: string;
-    podcast_id: string;
-    episodes_queued: number;
-    total_eligible: number;
-    message: string;
-  }> =>
-    adminApi.post(`/admin/podcasts/${podcastId}/translate-all`),
-};
+    // Bulk translation for all podcast episodes
+    triggerBulkTranslation: (
+      podcastId: string,
+    ): Promise<{
+      status: string;
+      podcast_id: string;
+      episodes_queued: number;
+      total_eligible: number;
+      message: string;
+    }> => adminApi.post(`/admin/podcasts/${podcastId}/translate-all`),
+  };
 
   // ============================================
   // Podcast Episodes Service
   // ============================================
 
   const adminPodcastEpisodesService = {
-  getEpisodes: (
-    podcastId: string,
-    filters?: PodcastEpisodeFilter
-  ): Promise<PaginatedResponse<PodcastEpisode>> =>
-    adminApi.get(`/admin/podcasts/${podcastId}/episodes`, { params: filters }),
+    getEpisodes: (
+      podcastId: string,
+      filters?: PodcastEpisodeFilter,
+    ): Promise<PaginatedResponse<PodcastEpisode>> =>
+      adminApi.get(`/admin/podcasts/${podcastId}/episodes`, {
+        params: filters,
+      }),
 
-  getEpisode: (podcastId: string, episodeId: string): Promise<PodcastEpisode> =>
-    adminApi.get(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
+    getEpisode: (
+      podcastId: string,
+      episodeId: string,
+    ): Promise<PodcastEpisode> =>
+      adminApi.get(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
 
-  createEpisode: (
-    podcastId: string,
-    data: Partial<PodcastEpisode>
-  ): Promise<{ id: string; title: string; podcast_id: string }> =>
-    adminApi.post(`/admin/podcasts/${podcastId}/episodes`, data),
+    createEpisode: (
+      podcastId: string,
+      data: Partial<PodcastEpisode>,
+    ): Promise<{ id: string; title: string; podcast_id: string }> =>
+      adminApi.post(`/admin/podcasts/${podcastId}/episodes`, data),
 
-  updateEpisode: (
-    podcastId: string,
-    episodeId: string,
-    data: Partial<PodcastEpisode>
-  ): Promise<{ message: string; id: string }> =>
-    adminApi.patch(`/admin/podcasts/${podcastId}/episodes/${episodeId}`, data),
+    updateEpisode: (
+      podcastId: string,
+      episodeId: string,
+      data: Partial<PodcastEpisode>,
+    ): Promise<{ message: string; id: string }> =>
+      adminApi.patch(
+        `/admin/podcasts/${podcastId}/episodes/${episodeId}`,
+        data,
+      ),
 
-  deleteEpisode: (podcastId: string, episodeId: string): Promise<{ message: string }> =>
-    adminApi.delete(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
+    deleteEpisode: (
+      podcastId: string,
+      episodeId: string,
+    ): Promise<{ message: string }> =>
+      adminApi.delete(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
 
-  // Translation operations
-  triggerTranslation: (
-    podcastId: string,
-    episodeId: string
-  ): Promise<{ status: string; episode_id: string; message: string }> =>
-    adminApi.post(`/admin/podcasts/${podcastId}/episodes/${episodeId}/translate`),
+    // Translation operations
+    triggerTranslation: (
+      podcastId: string,
+      episodeId: string,
+    ): Promise<{ status: string; episode_id: string; message: string }> =>
+      adminApi.post(
+        `/admin/podcasts/${podcastId}/episodes/${episodeId}/translate`,
+      ),
 
-  getTranslationStatus: (): Promise<TranslationStatusResponse> =>
-    adminApi.get('/admin/translation/status'),
+    getTranslationStatus: (): Promise<TranslationStatusResponse> =>
+      adminApi.get("/admin/translation/status"),
 
-  getFailedTranslations: (params?: {
-    page?: number;
-    page_size?: number;
-  }): Promise<PaginatedResponse<FailedTranslationItem>> =>
-    adminApi.get('/admin/translation/failed', { params }),
-};
+    getFailedTranslations: (params?: {
+      page?: number;
+      page_size?: number;
+    }): Promise<PaginatedResponse<FailedTranslationItem>> =>
+      adminApi.get("/admin/translation/failed", { params }),
+  };
 
   // ============================================
   // Live Quotas Service
   // ============================================
 
   const liveQuotasService = {
-  getUserQuota: (userId: string): Promise<{ quota: LiveQuotaData; usage: LiveQuotaData }> =>
-    adminApi.get(`/admin/live-quotas/users/${userId}`),
+    getUserQuota: (
+      userId: string,
+    ): Promise<{ quota: LiveQuotaData; usage: LiveQuotaData }> =>
+      adminApi.get(`/admin/live-quotas/users/${userId}`),
 
-  updateUserLimits: (
-    userId: string,
-    limits: Partial<LiveQuotaData>,
-    notes?: string
-  ): Promise<{ success: boolean }> =>
-    adminApi.patch(`/admin/live-quotas/users/${userId}`, { limits, notes }),
+    updateUserLimits: (
+      userId: string,
+      limits: Partial<LiveQuotaData>,
+      notes?: string,
+    ): Promise<{ success: boolean }> =>
+      adminApi.patch(`/admin/live-quotas/users/${userId}`, { limits, notes }),
 
-  resetUserQuota: (userId: string): Promise<{ success: boolean }> =>
-    adminApi.post(`/admin/live-quotas/users/${userId}/reset`),
+    resetUserQuota: (userId: string): Promise<{ success: boolean }> =>
+      adminApi.post(`/admin/live-quotas/users/${userId}/reset`),
 
-  getUsageReport: (params: {
-    start_date: string;
-    end_date: string;
-    feature_type?: 'subtitle' | 'dubbing';
-  }): Promise<{
-    total_sessions: number;
-    total_minutes: number;
-    total_cost: number;
-    sessions: LiveUsageSession[];
-  }> =>
-    adminApi.get('/admin/live-quotas/usage-report', { params }),
+    getUsageReport: (params: {
+      start_date: string;
+      end_date: string;
+      feature_type?: "subtitle" | "dubbing";
+    }): Promise<{
+      total_sessions: number;
+      total_minutes: number;
+      total_cost: number;
+      sessions: LiveUsageSession[];
+    }> => adminApi.get("/admin/live-quotas/usage-report", { params }),
 
-  getTopUsers: (params: {
-    start_date: string;
-    end_date: string;
-    limit?: number;
-  }): Promise<TopUser[]> =>
-    adminApi.get('/admin/live-quotas/top-users', { params }),
+    getTopUsers: (params: {
+      start_date: string;
+      end_date: string;
+      limit?: number;
+    }): Promise<TopUser[]> =>
+      adminApi.get("/admin/live-quotas/top-users", { params }),
 
-  getSystemStats: (): Promise<{
-    total_users_with_quotas: number;
-    active_sessions: number;
-    total_subtitle_minutes_today: number;
-    total_dubbing_minutes_today: number;
-    total_cost_today: number;
-    total_cost_month: number;
-  }> =>
-    adminApi.get('/admin/live-quotas/system-stats'),
-};
+    getSystemStats: (): Promise<{
+      total_users_with_quotas: number;
+      active_sessions: number;
+      total_subtitle_minutes_today: number;
+      total_dubbing_minutes_today: number;
+      total_cost_today: number;
+      total_cost_month: number;
+    }> => adminApi.get("/admin/live-quotas/system-stats"),
+  };
 
   // ============================================
   // Live Channels Service
   // ============================================
 
   const adminLiveChannelsService = {
-  getAll: (filters?: { is_active?: boolean; page?: number; page_size?: number }): Promise<PaginatedResponse<any>> =>
-    adminApi.get('/admin/live-channels', { params: filters }),
+    getAll: (filters?: {
+      is_active?: boolean;
+      page?: number;
+      page_size?: number;
+    }): Promise<PaginatedResponse<any>> =>
+      adminApi.get("/admin/live-channels", { params: filters }),
 
-  getById: (channelId: string): Promise<any> =>
-    adminApi.get(`/admin/live-channels/${channelId}`),
+    getById: (channelId: string): Promise<any> =>
+      adminApi.get(`/admin/live-channels/${channelId}`),
 
-  create: (data: any): Promise<any> =>
-    adminApi.post('/admin/live-channels', data),
+    create: (data: any): Promise<any> =>
+      adminApi.post("/admin/live-channels", data),
 
-  update: (channelId: string, data: any): Promise<any> =>
-    adminApi.patch(`/admin/live-channels/${channelId}`, data),
+    update: (channelId: string, data: any): Promise<any> =>
+      adminApi.patch(`/admin/live-channels/${channelId}`, data),
 
-  delete: (channelId: string): Promise<void> =>
-    adminApi.delete(`/admin/live-channels/${channelId}`),
-};
+    delete: (channelId: string): Promise<void> =>
+      adminApi.delete(`/admin/live-channels/${channelId}`),
+  };
 
   // ============================================
   // Radio Stations Service
   // ============================================
 
   const adminRadioStationsService = {
-    getAll: (filters?: { search?: string; genre?: string; is_active?: boolean; page?: number; page_size?: number }): Promise<PaginatedResponse<any>> =>
-      adminApi.get('/admin/radio-stations', { params: filters }),
+    getAll: (filters?: {
+      search?: string;
+      genre?: string;
+      is_active?: boolean;
+      page?: number;
+      page_size?: number;
+    }): Promise<PaginatedResponse<any>> =>
+      adminApi.get("/admin/radio-stations", { params: filters }),
 
     getById: (stationId: string): Promise<any> =>
       adminApi.get(`/admin/radio-stations/${stationId}`),
@@ -1114,19 +1268,30 @@ export const createAdminApi = (authStore: AuthStore) => {
   // ============================================
 
   const uploadsService = {
-    uploadImage: async (file: File, imageType: string = 'general'): Promise<{ url: string; filename: string; size: number }> => {
+    uploadImage: async (
+      file: File,
+      imageType: string = "general",
+    ): Promise<{ url: string; filename: string; size: number }> => {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      return adminApi.post(`/admin/uploads/image?image_type=${imageType}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      return adminApi.post(
+        `/admin/uploads/image?image_type=${imageType}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
     },
 
-    validateUrl: async (url: string): Promise<{ valid: boolean; message: string }> => {
-      return adminApi.post(`/admin/uploads/validate-url?url=${encodeURIComponent(url)}`);
+    validateUrl: async (
+      url: string,
+    ): Promise<{ valid: boolean; message: string }> => {
+      return adminApi.post(
+        `/admin/uploads/validate-url?url=${encodeURIComponent(url)}`,
+      );
     },
   };
 

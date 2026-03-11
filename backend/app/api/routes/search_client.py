@@ -101,12 +101,6 @@ async def client_search(
         subtitle_languages=subtitle_languages if has_subtitles else None,
     )
 
-    is_beta_user = (
-        current_user.is_beta_user
-        if current_user and not current_user.is_admin_user()
-        else None
-    )
-
     results = await _pipeline.search(
         query=q,
         filters=filters,
@@ -117,7 +111,6 @@ async def client_search(
         user_subscription_tier=(
             current_user.subscription_tier if current_user else None
         ),
-        is_beta_user=is_beta_user,
     )
 
     await SearchQuery.log_search(

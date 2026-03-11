@@ -1,4 +1,4 @@
-"""Beta 500 credit integration for catch-up feature."""
+"""Credit integration for catch-up feature."""
 
 from typing import Optional
 
@@ -13,9 +13,9 @@ logger = get_logger(__name__)
 
 
 class CatchUpIntegration:
-    """Beta 500 credit-wrapped catch-up integration.
+    """Credit-wrapped catch-up integration.
 
-    Handles credit verification, authorization, and deduction for catch-up summaries.
+    Handles credit authorization and deduction for catch-up summaries.
     """
 
     def __init__(
@@ -49,14 +49,13 @@ class CatchUpIntegration:
     async def generate_catchup_with_credits(
         self, target_language: str, window_minutes: Optional[int] = None
     ) -> dict:
-        """Generate catch-up summary with Beta 500 credit enforcement.
+        """Generate catch-up summary with credit enforcement.
 
         Workflow:
-        1. Verify beta user status
-        2. Pre-authorize credits (1.0 credit)
-        3. Generate summary via session manager
-        4. Deduct credits atomically on success
-        5. Return summary with credit info
+        1. Pre-authorize credits (1.0 credit)
+        2. Generate summary via session manager
+        3. Deduct credits atomically on success
+        4. Return summary with credit info
 
         Args:
             target_language: Target language code
@@ -66,22 +65,13 @@ class CatchUpIntegration:
             Summary dict augmented with credits_used and remaining_credits
 
         Raises:
-            ValueError: If user has insufficient credits or is not beta user
+            ValueError: If user has insufficient credits
         """
         feature_name = "catchup_summary"
         credit_cost = 1.0
 
-        # Verify beta user status
+        # Pre-authorize credits for non-premium users
         if self._credit_service:
-            is_beta = await self._credit_service.is_beta_user(self.user_id)
-            if not is_beta:
-                logger.warning(
-                    "Non-beta user attempted catch-up access",
-                    extra={"user_id": self.user_id, "channel_id": self.channel_id},
-                )
-                raise ValueError("Catch-up feature is only available to Beta 500 users")
-
-            # Pre-authorize credits
             authorized, remaining = await self._credit_service.authorize(
                 user_id=self.user_id,
                 feature=feature_name,
@@ -184,24 +174,20 @@ class CatchUpIntegration:
         Returns:
             Availability dict with:
             - available (bool): Whether catch-up is technically available
-            - is_beta_user (bool): Whether user is Beta 500 member
             - has_credits (bool): Whether user has sufficient credits
             - balance (int): Current credit balance
         """
         # Check technical availability (transcript data exists)
         available = await self._session_manager.check_catchup_available(self.channel_id)
 
-        # Check beta user status and credits
-        is_beta_user = False
+        # Check credits
         has_credits = False
         balance = 0
 
         if self._credit_service:
-            is_beta_user = await self._credit_service.is_beta_user(self.user_id)
-            if is_beta_user:
-                raw_balance = await self._credit_service.get_balance(self.user_id)
-                balance = raw_balance if raw_balance is not None else 0
-                has_credits = balance >= 1
+            raw_balance = await self._credit_service.get_balance(self.user_id)
+            balance = raw_balance if raw_balance is not None else 0
+            has_credits = balance >= 1
 
         logger.debug(
             "Checked catch-up availability",
@@ -209,7 +195,6 @@ class CatchUpIntegration:
                 "user_id": self.user_id,
                 "channel_id": self.channel_id,
                 "available": available,
-                "is_beta_user": is_beta_user,
                 "has_credits": has_credits,
                 "balance": balance,
             },
@@ -217,7 +202,6 @@ class CatchUpIntegration:
 
         return {
             "available": available,
-            "is_beta_user": is_beta_user,
             "has_credits": has_credits,
             "balance": balance,
         }

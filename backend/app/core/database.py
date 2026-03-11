@@ -20,8 +20,7 @@ from app.models.audio_tracks import AudioTrackDoc
 # BYOC AI-powered ingestion models
 from app.models.byoc_channel_index import ChannelIndexEntry
 from app.models.byoc_provider import BYOCProvider
-# Beta 500 program models
-from app.models.beta_user import BetaUser
+# AI credit models (formerly Beta 500 program)
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.models.cost_breakdown import CostBreakdown, UserCostBreakdown
@@ -364,8 +363,7 @@ async def connect_to_mongo():
         ChannelChatMessage,
         ChatReaction,
         ModerationAuditLog,
-        # Beta 500 program models
-        BetaUser,
+        # AI credit models
         BetaCredit,
         BetaCreditTransaction,
         # Judaism Section models

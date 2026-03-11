@@ -7,5 +7,4 @@ interface BetaCreditsRepository {
     suspend fun getTransactionHistory(): BayitResult<List<Any>>
     suspend fun redeemCredits(amount: Int, featureId: String): BayitResult<Any>
     suspend fun getEligibleFeatures(): BayitResult<List<Any>>
-    suspend fun getBeta500Status(): BayitResult<Any>
 }

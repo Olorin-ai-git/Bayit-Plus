@@ -20,7 +20,7 @@ from app.services.content_deletion_service import content_deletion_service
 from app.services.subtitle_extraction_service import \
     analyze_and_extract_subtitles
 
-from .admin_content_schemas import (BatchBetaRequest, ContentCreateRequest,
+from .admin_content_schemas import (ContentCreateRequest,
                                     ContentUpdateRequest, MergeContentRequest)
 from .admin_content_utils import has_permission, log_audit
 from app.api.routes.content.utils import is_series_content
@@ -487,64 +487,6 @@ async def batch_feature_content(
 
     return {
         "updated_count": updated_count,
-        "errors": errors
-    }
-
-
-@router.post("/content/batch/beta")
-async def batch_beta_content(
-    data: BatchBetaRequest,
-    request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
-):
-    """Batch update beta content status for multiple content items."""
-    errors = []
-
-    # Convert string IDs to ObjectId, tracking invalid ones
-    object_ids = []
-    for cid in data.content_ids:
-        try:
-            object_ids.append(PydanticObjectId(cid))
-        except Exception:
-            errors.append(f"Invalid content ID format: {cid}")
-
-    if not object_ids:
-        raise HTTPException(status_code=400, detail="No valid content IDs provided")
-
-    # Fetch existing content to get old values for audit log
-    existing_content = await Content.find({"_id": {"$in": object_ids}}).to_list()
-    existing_ids = {str(c.id) for c in existing_content}
-
-    # Track not found IDs
-    for cid in data.content_ids:
-        if cid not in existing_ids and f"Invalid content ID format: {cid}" not in errors:
-            errors.append(f"Content {cid} not found")
-
-    if not existing_content:
-        return {"updated_count": 0, "errors": errors}
-
-    # Perform bulk update
-    now = datetime.utcnow()
-    update_result = await Content.find(
-        {"_id": {"$in": [c.id for c in existing_content]}}
-    ).update_many({"$set": {"is_beta_content": data.beta, "updated_at": now}})
-
-    # Log audit for each updated content with actual old values
-    for content in existing_content:
-        try:
-            await log_audit(
-                str(current_user.id),
-                AuditAction.CONTENT_BETA_TOGGLED,
-                "content",
-                str(content.id),
-                {"is_beta_content": {"old": content.is_beta_content, "new": data.beta}},
-                request,
-            )
-        except Exception as e:
-            logger.error("Failed to log audit for content %s: %s", content.id, e)
-
-    return {
-        "updated_count": update_result.modified_count,
         "errors": errors
     }
 

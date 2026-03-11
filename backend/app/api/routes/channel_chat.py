@@ -100,8 +100,8 @@ async def _translate_chat(
     )
 
     try:
-        # Beta users: deduct credits before translation
-        if current_user.is_beta_user and not current_user.is_admin_role():
+        # Deduct credits for non-premium users before translation
+        if not current_user.can_access_premium_features():
             success, remaining = await credit_service.deduct_credits(
                 user_id=str(current_user.id),
                 feature="chat_translation",
@@ -109,7 +109,7 @@ async def _translate_chat(
                 metadata={"channel_id": channel_id, "to_lang": to_lang},
             )
             if not success:
-                raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+                raise HTTPException(status_code=402, detail="Insufficient credits")
 
         if from_lang:
             result = await ChatTranslationService.translate_message(

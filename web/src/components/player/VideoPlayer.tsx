@@ -38,7 +38,6 @@ import { SplitLanguages } from "@/types/subtitle";
 import { useChannelChatStore } from "@/stores/channelChatSlice";
 import { castConfig } from "@/config/castConfig";
 import { useLiveFeatureQuota } from "@/hooks/useLiveFeatureQuota";
-import { useBetaUser } from "@/hooks/useBetaUser";
 import { VideoPlayerProps } from "./types";
 
 export default function VideoPlayer({
@@ -298,9 +297,6 @@ export default function VideoPlayer({
     setShowSettings,
   } = usePlayerPanels();
 
-  // Check if user is Beta 500 user
-  const { isBetaUser, isLoading: isBetaUserLoading } = useBetaUser(user?.id);
-
   // Live trivia for live TV
   const liveTrivia = useLiveTrivia({
     channelId: isLive ? contentId : undefined,
@@ -433,10 +429,9 @@ export default function VideoPlayer({
   // Channel chat visibility (Zustand store - persisted)
   const { isChatVisible, toggleChatVisibility } = useChannelChatStore();
 
-  // Catchup summaries for live TV (Beta 500 only)
+  // Catchup summaries for live TV
   const catchUp = useCatchUp({
     channelId: isLive ? contentId || "" : "",
-    isBetaUser: isBetaUser,
   });
 
   const [isMobile, setIsMobile] = useState(false);
@@ -626,18 +621,17 @@ export default function VideoPlayer({
           hasActiveFact: liveTrivia.currentFact !== null,
         }
       : undefined,
-    catchUp:
-      isLive && isBetaUser && !isBetaUserLoading
-        ? {
-            showSummary: catchUp.showSummary,
-            toggleSummary: () =>
-              catchUp.showSummary
-                ? catchUp.closeSummary()
-                : catchUp.fetchSummary(),
-            canRequest:
-              catchUp.isAvailable && catchUp.hasCredits && !catchUp.isLoading,
-          }
-        : undefined,
+    catchUp: isLive
+      ? {
+          showSummary: catchUp.showSummary,
+          toggleSummary: () =>
+            catchUp.showSummary
+              ? catchUp.closeSummary()
+              : catchUp.fetchSummary(),
+          canRequest:
+            catchUp.isAvailable && catchUp.hasCredits && !catchUp.isLoading,
+        }
+      : undefined,
     onShowUpgrade,
     onHoveredButtonChange: setHoveredButton,
     vodInteraction:
@@ -850,11 +844,10 @@ export default function VideoPlayer({
         />
       )}
 
-      {/* Catch-Up Summary for Live TV (Beta 500 only) */}
-      {isLive && isBetaUser && (
+      {/* Catch-Up Summary for Live TV */}
+      {isLive && (
         <VideoPlayerCatchUp
           channelId={contentId || ""}
-          isBetaUser={isBetaUser}
           creditBalance={catchUp.balance}
           creditCost={5}
           programName={title}

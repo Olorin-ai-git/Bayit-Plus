@@ -1,6 +1,6 @@
 """AI Usage Analytics Service.
 
-Aggregates BetaCreditTransaction data for admin analytics dashboard.
+Aggregates credit transaction data for admin analytics dashboard.
 """
 
 from datetime import datetime
@@ -56,7 +56,7 @@ async def get_usage_overview(
         "period_start": start, "period_end": end,
         "total_credits_consumed": grand_credits,
         "total_transactions": grand_txns,
-        "active_beta_users": len(all_users),
+        "active_credit_users": len(all_users),
         "features": features,
     }
 
@@ -88,7 +88,7 @@ async def get_feature_timeline(
 async def get_top_users(
     start: datetime, end: datetime, limit: int,
 ) -> dict:
-    """Get top Beta-500 users by credit consumption (hashed IDs)."""
+    """Get top users by credit consumption (hashed IDs)."""
     results = await BetaCreditTransaction.aggregate([
         {"$match": _date_match(start, end)},
         {"$group": {

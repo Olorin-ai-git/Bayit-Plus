@@ -49,7 +49,6 @@ extension AuthManager {
                 role: parseRole(from: tokenResult.claims),
                 isActive: true,
                 subscription: nil,
-                isBetaUser: parseBetaStatus(from: tokenResult.claims),
                 isVerified: firebaseUser.isEmailVerified,
                 createdAt: nil,
                 lastLogin: nil
@@ -127,11 +126,6 @@ extension AuthManager {
             return .user
         }
         return role
-    }
-
-    /// Parses beta user status from Firebase custom claims.
-    func parseBetaStatus(from claims: [String: Any]) -> Bool {
-        claims["is_beta_user"] as? Bool ?? false
     }
 
     /// Restores a cached session from Keychain on launch.
@@ -363,7 +357,6 @@ extension AuthManager {
             role: UserRole(rawValue: userResponse.role) ?? .user,
             isActive: userResponse.isActive,
             subscription: nil,
-            isBetaUser: userResponse.isBetaUser ?? false,
             isVerified: userResponse.isVerified ?? false,
             createdAt: nil,
             lastLogin: nil
@@ -378,7 +371,6 @@ private struct BackendUserResponse: Decodable {
     let name: String
     let role: String
     let isActive: Bool
-    let isBetaUser: Bool?
     let isVerified: Bool?
     let avatar: String?
 
@@ -388,7 +380,6 @@ private struct BackendUserResponse: Decodable {
         case name
         case role
         case isActive = "is_active"
-        case isBetaUser = "is_beta_user"
         case isVerified = "is_verified"
         case avatar
     }

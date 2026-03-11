@@ -140,7 +140,6 @@
             guard authManager.isAuthenticated, let user = authManager.user else {
                 return "Tap to sign in"
             }
-            if user.isBetaUser { return "Beta Tester" }
             switch user.subscriptionTier {
             case .plus: return "Plus"
             case .free, .nonRegistered: return "Free"
@@ -151,7 +150,6 @@
             guard authManager.isAuthenticated, let user = authManager.user else {
                 return DesignTokens.Text.muted
             }
-            if user.isBetaUser { return DesignTokens.Primary.p400 }
             switch user.subscriptionTier {
             case .plus: return DesignTokens.Subscription.premium
             case .free, .nonRegistered: return DesignTokens.Text.muted

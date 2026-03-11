@@ -70,12 +70,7 @@ final class CatchUpViewModel {
 
     /// Check whether catch-up is available for the given channel and user.
     /// If available and not previously dismissed, shows the auto-prompt.
-    func checkAvailability(channelId: String, isBetaUser: Bool) async {
-        guard isBetaUser else {
-            isAvailable = false
-            return
-        }
-
+    func checkAvailability(channelId: String) async {
         do {
             let response = try await repository.checkCatchUpAvailability(
                 channelId: channelId

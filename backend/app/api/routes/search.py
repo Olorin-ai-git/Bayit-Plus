@@ -79,12 +79,6 @@ async def unified_search_endpoint(
             search_in_subtitles=search_in_subtitles,
         )
 
-        is_beta_user = (
-            current_user.is_beta_user
-            if current_user and not current_user.is_admin_user()
-            else None
-        )
-
         # Separate actor content type -- actors are aggregated, not in the pipeline
         include_actors = "actor" in content_types
         pipeline_types = [ct for ct in content_types if ct != "actor"]
@@ -102,7 +96,6 @@ async def unified_search_endpoint(
                 user_subscription_tier=(
                     current_user.subscription_tier if current_user else None
                 ),
-                is_beta_user=is_beta_user,
                 no_cache=no_cache,
             )
         else:

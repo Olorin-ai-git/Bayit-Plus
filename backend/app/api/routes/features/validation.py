@@ -5,7 +5,7 @@ Server-side validation for iOS/tvOS feature flags.
 Ensures critical features cannot be bypassed by client-side tampering.
 
 SECURITY: This API enforces:
-- Beta 500 credit availability
+- AI credit availability
 - Family Controls compliance
 - Subscription entitlements for premium features
 - Device-specific feature capabilities
@@ -108,27 +108,27 @@ async def validate_beta_500(
     credit_service: BetaCreditService
 ) -> ValidationResult:
     """
-    Validate Beta 500 feature access.
+    Validate AI credit availability.
 
     Requirements:
-    - User must be enrolled in beta program
-    - User must have remaining credits
+    - Premium users: always enabled (unlimited)
+    - Free users: must have remaining credits
 
     Returns:
-        ValidationResult with enabled=True if user has credits
+        ValidationResult with enabled=True if user has access
     """
     from app.models.beta_credit import BetaCredit
 
     try:
-        # Check if user is beta enrolled
-        if not current_user.is_beta_user:
+        # Premium users have unlimited access
+        if current_user.can_access_premium_features():
             return ValidationResult(
                 feature="beta_500",
-                enabled=False,
-                reason="not_enrolled_in_beta_program"
+                enabled=True,
+                reason="premium_access"
             )
 
-        # Check credit balance
+        # Check credit balance for free-tier users
         credit = await BetaCredit.find_one(
             {"user_id": str(current_user.id), "is_expired": False}
 )
@@ -156,7 +156,7 @@ async def validate_beta_500(
 
     except Exception as e:
         logger.error(
-            "Beta 500 validation error",
+            "AI credit validation error",
             extra={"user_id": str(current_user.id), "error": str(e)}
         )
         return ValidationResult(
@@ -273,36 +273,30 @@ async def validate_ai_feature(
     Validate AI-powered feature access.
 
     Access tiers:
-    - Admin: unlimited
-    - Plus: unlimited
-    - Beta-500: requires positive credit balance
-    - Free: denied
+    - Premium (admin/plus): unlimited
+    - Free with credits: requires positive credit balance
+    - Free without credits: denied
 
     Returns:
         ValidationResult with enabled=True if user meets requirements
     """
     try:
-        if current_user.is_admin_role():
+        if current_user.can_access_premium_features():
             return ValidationResult(
                 feature=feature_name,
                 enabled=True,
-                reason="admin_access"
-            )
-
-        if current_user.subscription_tier == "plus":
-            return ValidationResult(
-                feature=feature_name,
-                enabled=True,
+                reason="premium_access",
                 metadata={"subscription_tier": current_user.subscription_tier}
             )
 
-        if current_user.is_beta_user and credit_service:
+        # Free-tier users: check credit balance
+        if credit_service:
             balance = await credit_service.get_balance(str(current_user.id))
             if balance is not None and balance > 0:
                 return ValidationResult(
                     feature=feature_name,
                     enabled=True,
-                    reason="beta_user_access",
+                    reason="credit_access",
                     metadata={"remaining_credits": balance}
                 )
             return ValidationResult(
@@ -315,7 +309,7 @@ async def validate_ai_feature(
         return ValidationResult(
             feature=feature_name,
             enabled=False,
-            reason="requires_premium_or_beta",
+            reason="requires_premium_or_credits",
             metadata={
                 "current_tier": current_user.subscription_tier or "free"
             }
@@ -600,12 +594,13 @@ async def deduct_credit_for_feature(
         ```
     """
     try:
-        # Verify user is beta enrolled
-        if not current_user.is_beta_user:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="not_enrolled_in_beta_program"
-            )
+        # Premium users do not consume credits
+        if current_user.can_access_premium_features():
+            return {
+                "success": True,
+                "remaining_credits": None,
+                "message": "Premium user - no credit deduction required"
+            }
 
         # Deduct credit
         success, remaining = await credit_service.deduct_credits(

@@ -99,16 +99,11 @@ extension PlayerView {
             }
         }
 
-        if mediaContentType.isLive,
-           authManager.user?.isBetaUser == true
-        {
+        if mediaContentType.isLive {
             let vm = CatchUpViewModel(repository: repositories.liveTV, localization: localization)
             catchUpVM = vm
             Task {
-                await vm.checkAvailability(
-                    channelId: contentId,
-                    isBetaUser: true
-                )
+                await vm.checkAvailability(channelId: contentId)
             }
         }
 

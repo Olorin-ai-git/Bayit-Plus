@@ -17,7 +17,6 @@ from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
 from app.core.security import create_access_token
-from app.models.beta_user import BetaUser
 from app.models.user import TokenResponse, User
 from app.services.audit_logger import audit_logger
 
@@ -48,22 +47,6 @@ class AppleIDTokenRequest(BaseModel):
         None, description="User email (only on first sign-in)"
     )
 
-
-async def _sync_beta_user_status(user: User) -> None:
-    """Sync is_beta_user flag from BetaUser collection."""
-    try:
-        beta_user = await BetaUser.find_one({"email": user.email})
-        if beta_user and beta_user.is_active() and not beta_user.is_expired():
-            if not user.is_beta_user:
-                user.is_beta_user = True
-        else:
-            if user.is_beta_user:
-                user.is_beta_user = False
-    except Exception as e:
-        logger.warning(
-            "Failed to sync beta user status",
-            extra={"user_id": str(user.id), "error": str(e)},
-        )
 
 
 async def _find_or_create_google_user(
@@ -226,7 +209,6 @@ async def mobile_google_auth(request: Request, body: GoogleIDTokenRequest):
     if picture and not user.avatar:
         user.avatar = picture
 
-    await _sync_beta_user_status(user)
     await user.save()
 
     await audit_logger.log_oauth_login(user, request, "google_mobile")
@@ -313,7 +295,6 @@ async def mobile_apple_auth(request: Request, body: AppleIDTokenRequest):
         )
 
     user.last_login = datetime.now(timezone.utc)
-    await _sync_beta_user_status(user)
     await user.save()
 
     await audit_logger.log_oauth_login(user, request, "apple_mobile")

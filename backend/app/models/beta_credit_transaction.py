@@ -15,7 +15,7 @@ class BetaCreditTransaction(Document):
     Credit transaction record for audit trail.
 
     Attributes:
-        user_id: Reference to BetaUser ID
+        user_id: Reference to User ID
         credit_id: Reference to BetaCredit ID
         transaction_type: Type of transaction (debit, credit, refund, expired)
         amount: Credit amount (negative for debits, positive for credits)

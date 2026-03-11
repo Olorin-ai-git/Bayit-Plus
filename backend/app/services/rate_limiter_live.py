@@ -76,15 +76,17 @@ class LiveFeatureRateLimiter:
         return True, 0
 
     async def check_websocket_connection(
-        self, user_id: str
+        self, user_id: str, feature: str = "default"
     ) -> tuple[bool, Optional[str], int]:
         """
-        Check WebSocket connection rate limit (5 connections per minute)
+        Check WebSocket connection rate limit per feature type.
+        Each feature (subtitles, trivia, dubbing) has its own bucket
+        so reconnection storms on one feature don't block others.
         Returns: (allowed, error_message, reset_in_seconds)
         """
         allowed, reset_in = self._check_limit(
             self._connection_attempts,
-            f"ws:{user_id}",
+            f"ws:{user_id}:{feature}",
             limit=settings.LIVE_QUOTA_WEBSOCKET_RATE_LIMIT,
             window_seconds=60,
         )

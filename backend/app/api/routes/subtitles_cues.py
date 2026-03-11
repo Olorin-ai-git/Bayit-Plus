@@ -272,7 +272,7 @@ async def generate_nikud_for_track(
         return existing_job.to_response()
 
     # Pre-deduct credits for Beta users (background task cannot await)
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="subtitle_nikud",
@@ -280,7 +280,7 @@ async def generate_nikud_for_track(
             metadata={"content_id": content_id, "language": language},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     # Create new job
     job = await AIGenerationJob.create_job(
@@ -411,7 +411,7 @@ async def generate_shoresh_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="subtitle_shoresh",
@@ -419,7 +419,7 @@ async def generate_shoresh_for_track(
             metadata={"content_id": content_id, "language": language},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     job = await AIGenerationJob.create_job(
         content_id=content_id,
@@ -554,7 +554,7 @@ async def generate_heblish_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="subtitle_heblish",
@@ -562,7 +562,7 @@ async def generate_heblish_for_track(
             metadata={"content_id": content_id, "language": language},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     job = await AIGenerationJob.create_job(
         content_id=content_id,
@@ -697,7 +697,7 @@ async def generate_grammar_flip_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="subtitle_grammar_flip",
@@ -705,7 +705,7 @@ async def generate_grammar_flip_for_track(
             metadata={"content_id": content_id, "language": language},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     job = await AIGenerationJob.create_job(
         content_id=content_id,
@@ -841,7 +841,7 @@ async def generate_slang_synthesis_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="subtitle_slang_synthesis",
@@ -849,7 +849,7 @@ async def generate_slang_synthesis_for_track(
             metadata={"content_id": content_id, "language": language},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     job = await AIGenerationJob.create_job(
         content_id=content_id,
@@ -988,7 +988,7 @@ async def generate_engrew_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="subtitle_engrew",
@@ -996,7 +996,7 @@ async def generate_engrew_for_track(
             metadata={"content_id": content_id, "language": language},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     job = await AIGenerationJob.create_job(
         content_id=content_id,

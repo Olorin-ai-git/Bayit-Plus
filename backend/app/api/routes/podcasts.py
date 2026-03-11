@@ -5,8 +5,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
-from app.api.routes.content.beta_filter import (build_beta_content_filter,
-                                                 check_beta_access)
 from app.core.security import get_current_user, get_optional_user
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
@@ -335,9 +333,6 @@ async def get_podcast_categories(
 
         # Build query conditions
         query_conditions = {"is_active": True}
-        beta_filter = build_beta_content_filter(current_user)
-        if beta_filter:
-            query_conditions.update(beta_filter)
         if culture_id:
             query_conditions["culture_id"] = culture_id
 
@@ -508,9 +503,6 @@ async def get_podcasts(
             "zh": "category_zh",
         }
         query = {"is_active": True}
-        beta_filter = build_beta_content_filter(current_user)
-        if beta_filter:
-            query.update(beta_filter)
         if culture_id:
             query["culture_id"] = culture_id
         if category:
@@ -681,10 +673,6 @@ async def get_podcast(
                     ],
                     "latestEpisode": {"audioUrl": episode.audio_url},
                 }
-            raise HTTPException(status_code=404, detail="Podcast not found")
-
-        # Beta access check
-        if not check_beta_access(current_user, getattr(show, "is_beta_content", False)):
             raise HTTPException(status_code=404, detail="Podcast not found")
 
         # Get localized category name

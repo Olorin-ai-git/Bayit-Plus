@@ -7,7 +7,7 @@ from fastapi import APIRouter, WebSocket
 from app.api.routes.websocket_chat_connection import (
     broadcast_user_joined,
     broadcast_user_left,
-    check_beta_status,
+    check_premium_status,
     get_recent_messages_data,
     send_connected_message,
 )
@@ -76,10 +76,10 @@ async def _handle_channel_chat_ws(websocket: WebSocket, channel_id: str) -> None
             return
 
         # Step 4: Send connected state and broadcast join
-        is_beta_user = await check_beta_status(user)
+        is_premium = check_premium_status(user)
         recent_messages_data = await get_recent_messages_data(chat_service, channel_id)
         user_count = await chat_service.get_channel_user_count(channel_id)
-        await send_connected_message(websocket, channel_id, user_count, is_beta_user, session_token, recent_messages_data)
+        await send_connected_message(websocket, channel_id, user_count, is_premium, session_token, recent_messages_data)
         await broadcast_user_joined(chat_service, channel_id, user_name, user_count)
 
         # Step 5: Run message loop (handles heartbeat + dispatch)

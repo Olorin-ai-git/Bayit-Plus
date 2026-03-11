@@ -68,8 +68,6 @@ async def seed_kan_educational_channel() -> Dict[str, Any]:
         is_active=True,
         order=100,  # After regular live channels
         requires_subscription="basic",
-        # Not beta content - available to all
-        is_beta_content=False,
         # Timestamps
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),

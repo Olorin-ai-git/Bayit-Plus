@@ -1,26 +1,24 @@
 /**
  * VideoPlayerCatchUp Component
  * Integrates Catch-Up overlay, button, and summary card into the player.
- * Only renders for Beta 500 users on live channels.
+ * Renders on live channels for catch-up summaries.
  */
 
-import { useCatchUp } from './hooks'
-import CatchUpOverlay from './catchup/CatchUpOverlay'
-import CatchUpButton from './catchup/CatchUpButton'
-import CatchUpSummaryCard from './catchup/CatchUpSummaryCard'
+import { useCatchUp } from "./hooks";
+import CatchUpOverlay from "./catchup/CatchUpOverlay";
+import CatchUpButton from "./catchup/CatchUpButton";
+import CatchUpSummaryCard from "./catchup/CatchUpSummaryCard";
 
 interface VideoPlayerCatchUpProps {
-  channelId: string
-  isBetaUser: boolean
-  creditBalance: number
-  creditCost: number
-  programName?: string
-  autoDismissSeconds: number
+  channelId: string;
+  creditBalance: number;
+  creditCost: number;
+  programName?: string;
+  autoDismissSeconds: number;
 }
 
 export default function VideoPlayerCatchUp({
   channelId,
-  isBetaUser,
   creditBalance,
   creditCost,
   programName,
@@ -35,9 +33,7 @@ export default function VideoPlayerCatchUp({
     fetchSummary,
     dismissAutoPrompt,
     closeSummary,
-  } = useCatchUp({ channelId, isBetaUser })
-
-  if (!isBetaUser) return null
+  } = useCatchUp({ channelId });
 
   return (
     <>
@@ -59,12 +55,12 @@ export default function VideoPlayerCatchUp({
 
       {!showAutoPrompt && !showSummary && (
         <CatchUpButton
-          {...{ creditCost } as any}
+          {...({ creditCost } as any)}
           disabled={!hasCredits}
           isLoading={isLoading}
           onPress={() => fetchSummary()}
         />
       )}
     </>
-  )
+  );
 }

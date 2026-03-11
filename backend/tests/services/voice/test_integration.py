@@ -74,7 +74,6 @@ class TestWizardIntegration:
             mock_ctx.platform = "web"
             mock_ctx.conversation_id = "conv-456"
             mock_ctx.subscription_tier = "premium"
-            mock_ctx.is_beta_user = False
             mock_context.return_value = mock_ctx
 
             # Mock search service

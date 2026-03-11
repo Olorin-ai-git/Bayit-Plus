@@ -164,7 +164,7 @@ async def llm_search_epg(
     - execution_time_ms: Total execution time
     """
     try:
-        if current_user.is_beta_user and not current_user.is_admin_role():
+        if not current_user.can_access_premium_features():
             success, remaining = await credit_service.deduct_credits(
                 user_id=str(current_user.id),
                 feature="ai_search",
@@ -172,7 +172,7 @@ async def llm_search_epg(
                 metadata={"query": request.query},
             )
             if not success:
-                raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+                raise HTTPException(status_code=402, detail="Insufficient credits")
 
         # Build user context if requested
         user_context = None

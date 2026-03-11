@@ -1,7 +1,7 @@
 """
-Beta Credit Model
+AI Credit Model
 
-Tracks AI credit allocation and usage for Beta 500 users.
+Tracks AI credit allocation and usage for users.
 """
 
 from datetime import datetime
@@ -11,10 +11,10 @@ from pydantic import Field, field_validator
 
 class BetaCredit(Document):
     """
-    AI credit allocation for a beta user.
+    AI credit allocation for a user.
 
     Attributes:
-        user_id: Reference to BetaUser ID (unique, indexed)
+        user_id: Reference to User ID (unique, indexed)
         total_credits: Total credits allocated
         used_credits: Credits consumed
         remaining_credits: Credits available

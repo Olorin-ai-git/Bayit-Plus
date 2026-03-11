@@ -108,8 +108,6 @@ class AtlasSearchExecutor:
         ]
 
         must: List[Dict[str, Any]] = [{"equals": {"path": "is_published", "value": True}}]
-        if filters.is_beta_user is False:
-            must.append({"equals": {"path": "is_beta_content", "value": False}})
         if content_subtype == "audiobook":
             must.append({"equals": {"path": "content_format", "value": "audiobook"}})
 
@@ -152,8 +150,6 @@ class AtlasSearchExecutor:
                       "fuzzy": {"maxEdits": analysis.fuzzy_distance}}},
         ]
         must: List[Dict[str, Any]] = [{"equals": {"path": active_field, "value": True}}]
-        if filters.is_beta_user is False:
-            must.append({"equals": {"path": "is_beta_content", "value": False}})
 
         fetch_limit = limit * config.atlas_overfetch_multiplier
         content_type = model.__name__.lower()
@@ -276,8 +272,6 @@ class AtlasSearchExecutor:
         match: Dict[str, Any] = {active_field: True}
         if extra_match:
             match.update(extra_match)
-        if filters.is_beta_user is False:
-            match["is_beta_content"] = {"$ne": True}
         if is_vod:
             if filters.genres:
                 match["genres"] = {"$in": filters.genres}
@@ -299,8 +293,6 @@ class AtlasSearchExecutor:
         match: Dict[str, Any] = {active_field: True}
         if extra_match:
             match.update(extra_match)
-        if filters.is_beta_user is False:
-            match["is_beta_content"] = {"$ne": True}
         if is_vod:
             if filters.genres:
                 match["genres"] = {"$in": filters.genres}

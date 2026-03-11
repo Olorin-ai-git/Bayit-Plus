@@ -9,26 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import tv.bayit.plus.designsystem.component.GlassBadge
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -97,12 +90,7 @@ private fun SubscriptionContent(
         item {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = bayitString("settings.subscription.currentPlan"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
-                        if (state.isBetaUser) {
-                            GlassBadge(count = 1, modifier = Modifier.padding(start = DesignTokens.Spacing.sm))
-                        }
-                    }
+                    Text(text = bayitString("settings.subscription.currentPlan"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                     Text(
                         text = state.plan.replaceFirstChar { it.titlecase() },
                         color = DesignTokens.Colors.Primary.light,
@@ -115,33 +103,6 @@ private fun SubscriptionContent(
                     }
                     if (state.endDate.isNotEmpty()) {
                         Text(text = "${bayitString("settings.subscription.renews")}: ${state.endDate}", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
-        }
-        if (state.isBetaUser) {
-            item {
-                val pct = if (state.totalCredits > 0) state.remainingCredits.toFloat() / state.totalCredits else 0f
-                val statusColor = when {
-                    pct > 0.20f -> DesignTokens.Colors.Semantic.success
-                    pct > 0.05f -> DesignTokens.Colors.Semantic.warning
-                    else -> DesignTokens.Colors.Semantic.error
-                }
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Icons.Default.AutoAwesome, contentDescription = null, tint = statusColor, modifier = Modifier.size(20.dp))
-                            Spacer(Modifier.padding(start = DesignTokens.Spacing.sm))
-                            Text(text = "${state.remainingCredits} / ${state.totalCredits}", style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.primary)
-                        }
-                        Spacer(Modifier.height(DesignTokens.Spacing.xs))
-                        Text(
-                            text = bayitString("plus.badge.creditsRemaining").replace("{{count}}", state.remainingCredits.toString()),
-                            color = DesignTokens.Colors.Text.muted,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        Spacer(Modifier.height(DesignTokens.Spacing.sm))
-                        LinearProgressIndicator(progress = { pct }, color = statusColor, trackColor = DesignTokens.Colors.Text.muted.copy(alpha = 0.2f), modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)))
                     }
                 }
             }

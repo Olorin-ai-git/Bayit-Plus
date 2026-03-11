@@ -159,7 +159,6 @@ class OlorinAuthService @Inject constructor(
         val name: String,
         val role: String,
         @SerialName("is_active") val isActive: Boolean,
-        @SerialName("is_beta_user") val isBetaUser: Boolean? = false,
         @SerialName("is_verified") val isVerified: Boolean? = false,
         val avatar: String? = null,
         @SerialName("payment_pending") val paymentPending: Boolean? = false,

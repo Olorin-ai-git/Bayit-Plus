@@ -51,7 +51,6 @@ class SubscriptionViewModel @Inject constructor(
                         status = sub?.status ?: "active",
                         startDate = sub?.startDate.orEmpty(),
                         endDate = sub?.endDate.orEmpty(),
-                        isBetaUser = user?.isBetaUser == true,
                         remainingCredits = remaining,
                         totalCredits = BETA_CREDITS_TOTAL,
                     )
@@ -102,7 +101,6 @@ sealed interface SubscriptionUiState {
         val status: String,
         val startDate: String,
         val endDate: String,
-        val isBetaUser: Boolean,
         val remainingCredits: Int = 0,
         val totalCredits: Int = 0,
     ) : SubscriptionUiState

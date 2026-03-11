@@ -114,8 +114,8 @@ async def _find_content(
     if content_types == ["audiobook"]:
         return await search_audiobooks(query)
 
-    # VOD queries: try LLM-powered search only for beta users (AI-enhanced search)
-    if "vod" in content_types and context.is_beta_user:
+    # VOD queries: try LLM-powered search for enhanced results
+    if "vod" in content_types:
         try:
             vod_llm = VODLLMSearchService()
             user_ctx = {

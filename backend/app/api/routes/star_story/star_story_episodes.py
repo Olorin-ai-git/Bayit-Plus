@@ -33,7 +33,7 @@ async def generate_episode(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Start generating a personalized episode."""
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="star_story_episode",
@@ -41,7 +41,7 @@ async def generate_episode(
             metadata={"profile_id": request.profile_id, "theme": request.theme},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     try:
         episode = await star_story_orchestrator.generate_episode(

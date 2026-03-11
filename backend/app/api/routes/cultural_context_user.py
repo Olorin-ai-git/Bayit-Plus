@@ -42,7 +42,7 @@ async def detect_cultural_references(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Detect cultural references in subtitle text."""
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="cultural_detect",
@@ -50,7 +50,7 @@ async def detect_cultural_references(
             metadata={"text_length": len(request.text)},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     return await cultural_context_service.detect_references(request)
 
@@ -87,7 +87,7 @@ async def get_phrase_breakdown(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Get TikTok-style breakdown of a Hebrew phrase."""
-    if user.is_beta_user and not user.is_admin_role():
+    if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
             feature="phrase_breakdown",
@@ -95,7 +95,7 @@ async def get_phrase_breakdown(
             metadata={"phrase": request.phrase},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     return await phrase_breakdown_service.get_breakdown(
         phrase=request.phrase,

@@ -85,7 +85,6 @@ async def seed_user() -> User:
         existing.is_verified = True
         existing.email_verified = True
         existing.preferences = preferences
-        existing.is_beta_user = True
         existing.updated_at = datetime.now(timezone.utc)
         await existing.save()
         logger.info("Updated existing test user: %s", existing.id)
@@ -104,7 +103,6 @@ async def seed_user() -> User:
         subscription_start_date=datetime.now(timezone.utc),
         preferred_language="he",
         preferences=preferences,
-        is_beta_user=True,
     )
     await user.insert()
     logger.info("Created test user: %s", user.id)

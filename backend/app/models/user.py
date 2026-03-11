@@ -112,8 +112,6 @@ class UserResponse(BaseModel):
     subscription: Optional[dict] = None
     created_at: datetime
     last_login: Optional[datetime] = None
-    # Beta 500 program
-    is_beta_user: bool = False
     is_verified: bool = False
     # Payment status fields
     payment_pending: bool = False
@@ -163,9 +161,6 @@ class User(Document):
     # Privacy settings
     profile_visibility: Literal["public", "friends_only", "private"] = "public"
     allow_friend_requests: bool = True
-
-    # Beta 500 program
-    is_beta_user: bool = False
 
     # OAuth - Multi-provider support
     google_id: Optional[str] = None
@@ -343,8 +338,6 @@ class User(Document):
             "payment_pending",  # Access control checks (high frequency)
             [("role", 1), ("subscription_tier", 1)],  # Viewer migration queries
             [("payment_pending", 1), ("payment_created_at", 1)],  # Cleanup queries
-            # Beta 500 program
-            "is_beta_user",
         ]
 
     def to_response(self) -> UserResponse:
@@ -385,7 +378,6 @@ class User(Document):
             last_login=self.last_login,
             payment_pending=self.payment_pending,
             pending_plan_id=self.pending_plan_id,
-            is_beta_user=self.is_beta_user,
             is_verified=self.is_verified,
         )
 

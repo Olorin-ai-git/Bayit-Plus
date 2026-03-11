@@ -91,10 +91,6 @@ struct TVProfileView: View {
                 TVProfileStatsSection(stats: stats, localization: localization)
             }
 
-            if profile.isBetaUser == true {
-                TVProfileBetaSection(profile: profile, localization: localization)
-            }
-
             TVProfileMyContentSection(localization: localization, onAction: { activeSheet = $0 })
             TVProfileSocialSection(localization: localization, onAction: { activeSheet = $0 })
             TVProfileAccountSection(

@@ -5,29 +5,14 @@ from fastapi import WebSocket
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.user import User
-from app.services.beta.credit_service import BetaCreditService
 from app.services.channel_chat_service import ChannelChatService
-from app.services.olorin.metering.service import MeteringService
 
 logger = get_logger(__name__)
 
 
-async def check_beta_status(user: User) -> bool:
-    """Check if user is beta user."""
-    try:
-        from app.core.config import get_settings
-
-        credit_service = BetaCreditService(
-            settings=get_settings(),
-            metering_service=MeteringService(),
-            db=None,
-        )
-        return await credit_service.is_beta_user(str(user.id))
-    except Exception as e:
-        logger.debug(
-            "Could not check beta status", extra={"user_id": str(user.id), "error": str(e)}
-        )
-        return False
+def check_premium_status(user: User) -> bool:
+    """Check if user has premium access (Plus subscription or admin)."""
+    return user.can_access_premium_features()
 
 
 async def get_recent_messages_data(
@@ -54,7 +39,7 @@ async def send_connected_message(
     websocket: WebSocket,
     channel_id: str,
     user_count: int,
-    is_beta_user: bool,
+    is_premium: bool,
     session_token: str,
     recent_messages_data: list,
 ) -> None:
@@ -64,9 +49,9 @@ async def send_connected_message(
             "type": "connected",
             "channel_id": channel_id,
             "user_count": user_count,
-            "is_beta_user": is_beta_user,
+            "is_premium": is_premium,
             "translation_enabled": (
-                is_beta_user and settings.olorin.channel_chat.translation_enabled
+                is_premium and settings.olorin.channel_chat.translation_enabled
             ),
             "session_token": session_token,
             "recent_messages": recent_messages_data,

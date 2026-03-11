@@ -64,8 +64,8 @@ async def get_comprehension_question(
     """
     check_comprehension_enabled()
 
-    # Check beta credits
-    if user.is_beta_user:
+    # Check credits for non-premium users
+    if not user.can_access_premium_features():
         credit_service = BetaCreditService(
             settings=settings,
             metering_service=MeteringService(),

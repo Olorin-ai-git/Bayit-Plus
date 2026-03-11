@@ -47,7 +47,6 @@ enum BackendTokenExchangeClient {
             let name: String
             let role: String
             let isActive: Bool
-            let isBetaUser: Bool?
             let isVerified: Bool?
             let profileImageUrl: String?
 
@@ -57,7 +56,6 @@ enum BackendTokenExchangeClient {
                 case name
                 case role
                 case isActive = "is_active"
-                case isBetaUser = "is_beta_user"
                 case isVerified = "is_verified"
                 case profileImageUrl = "profile_image_url"
             }

@@ -35,7 +35,6 @@ async def find_content_for_playlist(
             result = await vod_llm.search(
                 query=query,
                 subscription_tier=context.subscription_tier,
-                is_beta_user=context.is_beta_user,
                 limit=5,
             )
             items = result.get("results", [])

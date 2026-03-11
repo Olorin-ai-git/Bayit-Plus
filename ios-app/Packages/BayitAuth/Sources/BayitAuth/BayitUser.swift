@@ -12,7 +12,6 @@ public struct BayitUser: Codable, Sendable, Identifiable {
     public let role: UserRole
     public let isActive: Bool
     public let subscription: UserSubscription?
-    public let isBetaUser: Bool
     public let isVerified: Bool
     public let createdAt: String?
     public let lastLogin: String?
@@ -25,7 +24,6 @@ public struct BayitUser: Codable, Sendable, Identifiable {
         case role
         case isActive = "is_active"
         case subscription
-        case isBetaUser = "is_beta_user"
         case isVerified = "is_verified"
         case createdAt = "created_at"
         case lastLogin = "last_login"
@@ -39,7 +37,6 @@ public struct BayitUser: Codable, Sendable, Identifiable {
         role: UserRole,
         isActive: Bool,
         subscription: UserSubscription?,
-        isBetaUser: Bool,
         isVerified: Bool,
         createdAt: String?,
         lastLogin: String?
@@ -51,7 +48,6 @@ public struct BayitUser: Codable, Sendable, Identifiable {
         self.role = role
         self.isActive = isActive
         self.subscription = subscription
-        self.isBetaUser = isBetaUser
         self.isVerified = isVerified
         self.createdAt = createdAt
         self.lastLogin = lastLogin
@@ -68,7 +64,6 @@ public struct BayitUser: Codable, Sendable, Identifiable {
         subscription = try? container.decodeIfPresent(
             UserSubscription.self, forKey: .subscription
         )
-        isBetaUser = try container.decodeIfPresent(Bool.self, forKey: .isBetaUser) ?? false
         isVerified = try container.decodeIfPresent(Bool.self, forKey: .isVerified) ?? false
         createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
         lastLogin = try container.decodeIfPresent(String.self, forKey: .lastLogin)

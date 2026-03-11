@@ -1,32 +1,32 @@
-import { useState, useMemo, useCallback } from 'react'
-import { View, StyleSheet, ScrollView, Text, Pressable } from 'react-native'
-import { useTranslation } from 'react-i18next'
-import { RefreshCw, Search, Filter, Merge, Trash2 } from 'lucide-react'
-import MergeWizard from '@/components/admin/content/MergeWizard'
-import AISubtitlesPicker from '@/components/player/subtitle/AISubtitlesPicker'
-import EnglishModePickerModal from '@/components/player/subtitle/EnglishModePickerModal'
-import { adminContentService } from '@/services/adminApi'
-import { subtitlesService } from '@/services/api'
-import type { HebrewMode, EnglishMode } from '@/types/subtitle'
-import { colors, fontSize, spacing } from '@olorin/design-tokens'
+import { useState, useMemo, useCallback } from "react";
+import { View, StyleSheet, ScrollView, Text, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
+import { RefreshCw, Search, Filter, Merge, Trash2 } from "lucide-react";
+import MergeWizard from "@/components/admin/content/MergeWizard";
+import AISubtitlesPicker from "@/components/player/subtitle/AISubtitlesPicker";
+import EnglishModePickerModal from "@/components/player/subtitle/EnglishModePickerModal";
+import { adminContentService } from "@/services/adminApi";
+import { subtitlesService } from "@/services/api";
+import type { HebrewMode, EnglishMode } from "@/types/subtitle";
+import { colors, fontSize, spacing } from "@olorin/design-tokens";
 import {
   GlassInput,
   GlassButton,
   GlassPageHeader,
   GlassHierarchicalTable,
   GlassModal,
-} from '@bayit/shared/ui'
-import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
-import { useDirection } from '@/hooks/useDirection'
-import { useContentData } from '@/hooks/admin/useContentData'
-import ContentBatchActions from '@/components/admin/content/ContentBatchActions'
-import ContentFiltersDropdown from '@/components/admin/content/ContentFiltersDropdown'
-import { getContentTableColumns } from '@/components/admin/content/getContentTableColumns'
-import logger from '@/utils/logger'
+} from "@bayit/shared/ui";
+import { ADMIN_PAGE_CONFIG } from "../../../../shared/utils/adminConstants";
+import { useDirection } from "@/hooks/useDirection";
+import { useContentData } from "@/hooks/admin/useContentData";
+import ContentBatchActions from "@/components/admin/content/ContentBatchActions";
+import ContentFiltersDropdown from "@/components/admin/content/ContentFiltersDropdown";
+import { getContentTableColumns } from "@/components/admin/content/getContentTableColumns";
+import logger from "@/utils/logger";
 
 export default function ContentLibraryPage() {
-  const { t } = useTranslation()
-  const { isRTL } = useDirection()
+  const { t } = useTranslation();
+  const { isRTL } = useDirection();
 
   const {
     items,
@@ -35,7 +35,6 @@ export default function ContentLibraryPage() {
     pagination,
     filters,
     showOnlyWithSubtitles,
-    showOnlyBetaContent,
     selectedIds,
     selectedItemsData,
     isBatchProcessing,
@@ -45,7 +44,6 @@ export default function ContentLibraryPage() {
     showDeleteConfirm,
     setFilters,
     setShowOnlyWithSubtitles,
-    setShowOnlyBetaContent,
     setPagination,
     setSelectedItemsData,
     handleExpandToggle,
@@ -53,127 +51,130 @@ export default function ContentLibraryPage() {
     handleBatchMerge,
     handleBatchDelete,
     handleBatchFeature,
-    handleBatchBeta,
     handleSort,
     confirmBatchDelete,
     cancelBatchDelete,
     refresh,
     clearSelection,
-  } = useContentData()
+  } = useContentData();
 
-  const [showFiltersDropdown, setShowFiltersDropdown] = useState(false)
-  const [showMergeModal, setShowMergeModal] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
-  const [deleteByIdInput, setDeleteByIdInput] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [showFiltersDropdown, setShowFiltersDropdown] = useState(false);
+  const [showMergeModal, setShowMergeModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [deleteByIdInput, setDeleteByIdInput] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const [subtitleAIContent, setSubtitleAIContent] = useState<{
-    id: string
-    title: string
-    isLoading: boolean
-    hasHebrew: boolean
-    hasNikud: boolean
-    hasShoresh: boolean
-    hasEnglish: boolean
-    hasHeblish: boolean
-    hasGrammarFlip: boolean
-    hasSlangSynthesis: boolean
-    hasEngrew?: boolean
-  } | null>(null)
-  const [subtitleAITab, setSubtitleAITab] = useState<'hebrew' | 'english'>('hebrew')
+    id: string;
+    title: string;
+    isLoading: boolean;
+    hasHebrew: boolean;
+    hasNikud: boolean;
+    hasShoresh: boolean;
+    hasEnglish: boolean;
+    hasHeblish: boolean;
+    hasGrammarFlip: boolean;
+    hasSlangSynthesis: boolean;
+    hasEngrew?: boolean;
+  } | null>(null);
+  const [subtitleAITab, setSubtitleAITab] = useState<"hebrew" | "english">(
+    "hebrew",
+  );
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query)
-    setFilters({ ...filters, search: query })
-  }
+    setSearchQuery(query);
+    setFilters({ ...filters, search: query });
+  };
 
   const handleToggleFeatured = async (id: string) => {
     try {
-      const updatedContent = await adminContentService.featureContent(id)
-      refresh()
-      logger.info('Content featured status toggled', { id, featured: updatedContent.is_featured })
+      const updatedContent = await adminContentService.featureContent(id);
+      refresh();
+      logger.info("Content featured status toggled", {
+        id,
+        featured: updatedContent.is_featured,
+      });
     } catch (err) {
-      logger.error('Failed to toggle featured', { error: err, id })
+      logger.error("Failed to toggle featured", { error: err, id });
     }
-  }
-
-  const handleToggleBeta = async (id: string) => {
-    try {
-      const updatedContent = await adminContentService.toggleBetaContent(id)
-      refresh()
-      logger.info('Content beta status toggled', { id, beta: updatedContent.is_beta_content })
-    } catch (err) {
-      logger.error('Failed to toggle beta', { error: err, id })
-    }
-  }
+  };
 
   const handleDeleteContent = (id: string) => {
-    setDeleteItemId(id)
-  }
+    setDeleteItemId(id);
+  };
 
   const confirmSingleDelete = async () => {
-    if (!deleteItemId) return
+    if (!deleteItemId) return;
 
     try {
-      await adminContentService.deleteContent(deleteItemId)
-      setDeleteItemId(null)
-      refresh()
-      logger.info('Content deleted', { id: deleteItemId })
+      await adminContentService.deleteContent(deleteItemId);
+      setDeleteItemId(null);
+      refresh();
+      logger.info("Content deleted", { id: deleteItemId });
     } catch (err) {
-      logger.error('Failed to delete content', { error: err, id: deleteItemId })
-      setDeleteItemId(null)
+      logger.error("Failed to delete content", {
+        error: err,
+        id: deleteItemId,
+      });
+      setDeleteItemId(null);
     }
-  }
+  };
 
   const cancelSingleDelete = () => {
-    setDeleteItemId(null)
-  }
+    setDeleteItemId(null);
+  };
 
   const handleDeleteById = () => {
-    const trimmedId = deleteByIdInput.trim()
-    if (!trimmedId) return
+    const trimmedId = deleteByIdInput.trim();
+    if (!trimmedId) return;
     // Set the delete item ID to trigger the confirmation modal
-    setDeleteItemId(trimmedId)
-  }
+    setDeleteItemId(trimmedId);
+  };
 
   const confirmDeleteById = async () => {
-    if (!deleteItemId) return
+    if (!deleteItemId) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      const result = await adminContentService.deleteContent(deleteItemId)
-      setDeleteItemId(null)
-      setDeleteByIdInput('')
-      refresh()
-      logger.info('Content deleted by ID', {
+      const result = await adminContentService.deleteContent(deleteItemId);
+      setDeleteItemId(null);
+      setDeleteByIdInput("");
+      refresh();
+      logger.info("Content deleted by ID", {
         id: deleteItemId,
         gcsFilesDeleted: (result as any)?.gcs_files_deleted,
         episodesDeleted: (result as any)?.episodes_deleted,
-      })
+      });
     } catch (err) {
-      logger.error('Failed to delete content by ID', { error: err, id: deleteItemId })
+      logger.error("Failed to delete content by ID", {
+        error: err,
+        id: deleteItemId,
+      });
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const openMergeWizard = async () => {
-    if (selectedIds.length < 2) return
+    if (selectedIds.length < 2) return;
 
     try {
       const itemDetails = await Promise.all(
-        selectedIds.map(id => adminContentService.getContentById(id))
-      )
-      setSelectedItemsData(itemDetails as any)
-      setShowMergeModal(true)
-      logger.info('Merge wizard opened', { itemCount: itemDetails.length })
+        selectedIds.map((id) => adminContentService.getContentById(id)),
+      );
+      setSelectedItemsData(itemDetails as any);
+      setShowMergeModal(true);
+      logger.info("Merge wizard opened", { itemCount: itemDetails.length });
     } catch (err) {
-      logger.error('Failed to load items for merge', { error: err })
+      logger.error("Failed to load items for merge", { error: err });
     }
-  }
+  };
 
   const handleSubtitleAI = useCallback((id: string, title: string) => {
-    logger.info('Opening Subtitle AI modal', 'ContentLibraryPage', { id, title })
+    logger.info("Opening Subtitle AI modal", "ContentLibraryPage", {
+      id,
+      title,
+    });
 
     // Open modal immediately with loading state
     setSubtitleAIContent({
@@ -188,55 +189,78 @@ export default function ContentLibraryPage() {
       hasHeblish: false,
       hasGrammarFlip: false,
       hasSlangSynthesis: false,
-    })
+    });
 
     // Fetch subtitle tracks in background
-    subtitlesService.getTracks(id)
-      .then(response => {
-        const hebrewTrack = response.tracks.find((track: { language: string }) => track.language === 'he')
-        const englishTrack = response.tracks.find((track: { language: string }) => track.language === 'en')
-        setSubtitleAIContent(prev => prev?.id === id ? {
-          ...prev,
-          isLoading: false,
-          hasHebrew: !!hebrewTrack,
-          hasNikud: hebrewTrack?.has_nikud_version || false,
-          hasShoresh: hebrewTrack?.has_shoresh_version || false,
-          hasEngrew: hebrewTrack?.has_engrew_version || false,
-          hasEnglish: !!englishTrack,
-          hasHeblish: englishTrack?.has_heblish_version || false,
-          hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
-          hasSlangSynthesis: englishTrack?.has_slang_synthesis_version || false,
-        } : prev)
+    subtitlesService
+      .getTracks(id)
+      .then((response) => {
+        const hebrewTrack = response.tracks.find(
+          (track: { language: string }) => track.language === "he",
+        );
+        const englishTrack = response.tracks.find(
+          (track: { language: string }) => track.language === "en",
+        );
+        setSubtitleAIContent((prev) =>
+          prev?.id === id
+            ? {
+                ...prev,
+                isLoading: false,
+                hasHebrew: !!hebrewTrack,
+                hasNikud: hebrewTrack?.has_nikud_version || false,
+                hasShoresh: hebrewTrack?.has_shoresh_version || false,
+                hasEngrew: hebrewTrack?.has_engrew_version || false,
+                hasEnglish: !!englishTrack,
+                hasHeblish: englishTrack?.has_heblish_version || false,
+                hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
+                hasSlangSynthesis:
+                  englishTrack?.has_slang_synthesis_version || false,
+              }
+            : prev,
+        );
         // Auto-select tab based on available tracks
         if (!hebrewTrack && englishTrack) {
-          setSubtitleAITab('english')
+          setSubtitleAITab("english");
         } else {
-          setSubtitleAITab('hebrew')
+          setSubtitleAITab("hebrew");
         }
       })
-      .catch(err => {
-        logger.error('Failed to fetch subtitle tracks', 'ContentLibraryPage', { id, error: err })
-        setSubtitleAIContent(prev => prev?.id === id ? {
-          ...prev,
-          isLoading: false,
-          hasHebrew: false,
-          hasNikud: false,
-          hasShoresh: false,
-          hasEnglish: false,
-          hasHeblish: false,
-          hasGrammarFlip: false,
-          hasSlangSynthesis: false,
-        } : prev)
-      })
-  }, [])
+      .catch((err) => {
+        logger.error("Failed to fetch subtitle tracks", "ContentLibraryPage", {
+          id,
+          error: err,
+        });
+        setSubtitleAIContent((prev) =>
+          prev?.id === id
+            ? {
+                ...prev,
+                isLoading: false,
+                hasHebrew: false,
+                hasNikud: false,
+                hasShoresh: false,
+                hasEnglish: false,
+                hasHeblish: false,
+                hasGrammarFlip: false,
+                hasSlangSynthesis: false,
+              }
+            : prev,
+        );
+      });
+  }, []);
 
   const columns = useMemo(
-    () => getContentTableColumns(t as any, handleToggleFeatured, handleDeleteContent, handleSubtitleAI, handleToggleBeta),
-    [t]
-  )
+    () =>
+      getContentTableColumns(
+        t as any,
+        handleToggleFeatured,
+        handleDeleteContent,
+        handleSubtitleAI,
+      ),
+    [t],
+  );
 
-  const pageConfig = ADMIN_PAGE_CONFIG['content-library']
-  const IconComponent = pageConfig.icon
+  const pageConfig = ADMIN_PAGE_CONFIG["content-library"];
+  const IconComponent = pageConfig.icon;
 
   return (
     <>
@@ -244,9 +268,15 @@ export default function ContentLibraryPage() {
         <View style={styles.content}>
           {/* Page Header */}
           <GlassPageHeader
-            title={t('admin.titles.content')}
-            subtitle={t('admin.content.subtitle')}
-            icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+            title={t("admin.titles.content")}
+            subtitle={t("admin.content.subtitle")}
+            icon={
+              <IconComponent
+                size={24}
+                color={pageConfig.iconColor}
+                strokeWidth={2}
+              />
+            }
             iconColor={pageConfig.iconColor}
             iconBackgroundColor={pageConfig.iconBackgroundColor}
             badge={pagination.total}
@@ -263,22 +293,29 @@ export default function ContentLibraryPage() {
           />
 
           {/* Search and Filters */}
-          <View style={[styles.filtersRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View
+            style={[
+              styles.filtersRow,
+              { flexDirection: isRTL ? "row-reverse" : "row" },
+            ]}
+          >
             <View style={styles.searchWrapper}>
               <GlassInput
-                placeholder={t('admin.content.searchPlaceholder')}
+                placeholder={t("admin.content.searchPlaceholder")}
                 value={searchQuery}
                 onChangeText={handleSearch}
                 icon={<Search size={18} />}
               />
             </View>
             <GlassButton
-              title={t('common.filters')}
+              title={t("common.filters")}
               onPress={() => setShowFiltersDropdown(true)}
               variant={
-                filters.content_type || filters.is_published !== undefined || showOnlyWithSubtitles || showOnlyBetaContent
-                  ? 'primary'
-                  : 'secondary'
+                filters.content_type ||
+                filters.is_published !== undefined ||
+                showOnlyWithSubtitles
+                  ? "primary"
+                  : "secondary"
               }
               icon={<Filter size={16} />}
               badge={
@@ -286,24 +323,31 @@ export default function ContentLibraryPage() {
                   !!filters.content_type,
                   filters.is_published !== undefined,
                   showOnlyWithSubtitles,
-                  showOnlyBetaContent,
                 ].filter(Boolean).length || undefined
               }
             />
           </View>
 
           {/* Delete by ID */}
-          <View style={[styles.deleteByIdRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View
+            style={[
+              styles.deleteByIdRow,
+              { flexDirection: isRTL ? "row-reverse" : "row" },
+            ]}
+          >
             <View style={styles.deleteByIdInputWrapper}>
               <GlassInput
-                placeholder={t('admin.content.deleteByIdPlaceholder', 'Enter content ID to delete...')}
+                placeholder={t(
+                  "admin.content.deleteByIdPlaceholder",
+                  "Enter content ID to delete...",
+                )}
                 value={deleteByIdInput}
                 onChangeText={setDeleteByIdInput}
                 icon={<Trash2 size={18} />}
               />
             </View>
             <GlassButton
-              title={t('admin.content.deleteById', 'Delete by ID')}
+              title={t("admin.content.deleteById", "Delete by ID")}
               onPress={handleDeleteById}
               variant="destructive"
               icon={<Trash2 size={16} />}
@@ -319,8 +363,6 @@ export default function ContentLibraryPage() {
               onMerge={openMergeWizard}
               onBatchFeature={() => handleBatchFeature(true)}
               onBatchUnfeature={() => handleBatchFeature(false)}
-              onBatchBeta={() => handleBatchBeta(true)}
-              onBatchUnbeta={() => handleBatchBeta(false)}
               onBatchDelete={handleBatchDelete}
               isRTL={isRTL}
             />
@@ -332,8 +374,10 @@ export default function ContentLibraryPage() {
             rows={hierarchicalData}
             loading={isLoading}
             pagination={pagination}
-            onPageChange={(page: number) => setPagination(prev => ({ ...prev, page }))}
-            emptyMessage={t('admin.content.emptyMessage')}
+            onPageChange={(page: number) =>
+              setPagination((prev) => ({ ...prev, page }))
+            }
+            emptyMessage={t("admin.content.emptyMessage")}
             isRTL={isRTL}
             selectable
             selectedIds={selectedIds}
@@ -349,10 +393,12 @@ export default function ContentLibraryPage() {
           {showMergeModal && (
             <MergeWizard
               visible={showMergeModal}
-              selectedItems={selectedItemsData.filter(item => selectedIds.includes(item.id))}
+              selectedItems={selectedItemsData.filter((item) =>
+                selectedIds.includes(item.id),
+              )}
               onClose={() => {
-                setShowMergeModal(false)
-                clearSelection()
+                setShowMergeModal(false);
+                clearSelection();
               }}
               onConfirm={handleBatchMerge}
             />
@@ -365,10 +411,8 @@ export default function ContentLibraryPage() {
         visible={showFiltersDropdown}
         filters={filters}
         showOnlyWithSubtitles={showOnlyWithSubtitles}
-        showOnlyBetaContent={showOnlyBetaContent}
         onFiltersChange={setFilters}
         onSubtitlesChange={setShowOnlyWithSubtitles}
-        onBetaContentChange={setShowOnlyBetaContent}
         onClose={() => setShowFiltersDropdown(false)}
         isRTL={isRTL}
       />
@@ -377,17 +421,19 @@ export default function ContentLibraryPage() {
       <GlassModal
         visible={showDeleteConfirm}
         type="confirm"
-        title={t('common.confirmDelete')}
-        message={t('admin.content.confirmBatchDelete', { count: selectedIds.length })}
+        title={t("common.confirmDelete")}
+        message={t("admin.content.confirmBatchDelete", {
+          count: selectedIds.length,
+        })}
         buttons={[
           {
-            text: t('common.cancel'),
-            style: 'cancel',
+            text: t("common.cancel"),
+            style: "cancel",
             onPress: cancelBatchDelete,
           },
           {
-            text: t('common.delete'),
-            style: 'destructive',
+            text: t("common.delete"),
+            style: "destructive",
             onPress: confirmBatchDelete,
           },
         ]}
@@ -398,29 +444,34 @@ export default function ContentLibraryPage() {
       <GlassModal
         visible={!!deleteItemId}
         type="confirm"
-        title={t('common.confirmDelete')}
+        title={t("common.confirmDelete")}
         message={
           deleteByIdInput.trim() === deleteItemId
-            ? t('admin.content.confirmDeleteById', { id: deleteItemId })
-            : t('admin.content.confirmDeleteSingle')
+            ? t("admin.content.confirmDeleteById", { id: deleteItemId })
+            : t("admin.content.confirmDeleteSingle")
         }
         buttons={[
           {
-            text: t('common.cancel'),
-            style: 'cancel',
+            text: t("common.cancel"),
+            style: "cancel",
             onPress: cancelSingleDelete,
           },
           {
-            text: isDeleting ? t('common.deleting', 'Deleting...') : t('common.delete'),
-            style: 'destructive',
-            onPress: deleteByIdInput.trim() === deleteItemId ? confirmDeleteById : confirmSingleDelete,
+            text: isDeleting
+              ? t("common.deleting", "Deleting...")
+              : t("common.delete"),
+            style: "destructive",
+            onPress:
+              deleteByIdInput.trim() === deleteItemId
+                ? confirmDeleteById
+                : confirmSingleDelete,
           },
         ]}
         onClose={cancelSingleDelete}
       />
 
       {/* Subtitle AI Modal - Hebrew Mode */}
-      {subtitleAIContent && subtitleAITab === 'hebrew' && (
+      {subtitleAIContent && subtitleAITab === "hebrew" && (
         <AISubtitlesPicker
           visible={!!subtitleAIContent}
           currentMode="regular"
@@ -435,26 +486,44 @@ export default function ContentLibraryPage() {
             // Mode selection is not used in admin context
           }}
           onGenerationComplete={async () => {
-            logger.info('Hebrew AI features generated', 'ContentLibraryPage', { contentId: subtitleAIContent.id })
+            logger.info("Hebrew AI features generated", "ContentLibraryPage", {
+              contentId: subtitleAIContent.id,
+            });
             // Refresh subtitle track info
             try {
-              const response = await subtitlesService.getTracks(subtitleAIContent.id)
-              const hebrewTrack = response.tracks.find((track: { language: string }) => track.language === 'he')
-              const englishTrack = response.tracks.find((track: { language: string }) => track.language === 'en')
-              setSubtitleAIContent(prev => prev ? {
-                ...prev,
-                isLoading: false,
-                hasHebrew: !!hebrewTrack,
-                hasNikud: hebrewTrack?.has_nikud_version || false,
-                hasShoresh: hebrewTrack?.has_shoresh_version || false,
-                hasEngrew: hebrewTrack?.has_engrew_version || false,
-                hasEnglish: !!englishTrack,
-                hasHeblish: englishTrack?.has_heblish_version || false,
-                hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
-                hasSlangSynthesis: englishTrack?.has_slang_synthesis_version || false,
-              } : null)
+              const response = await subtitlesService.getTracks(
+                subtitleAIContent.id,
+              );
+              const hebrewTrack = response.tracks.find(
+                (track: { language: string }) => track.language === "he",
+              );
+              const englishTrack = response.tracks.find(
+                (track: { language: string }) => track.language === "en",
+              );
+              setSubtitleAIContent((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      isLoading: false,
+                      hasHebrew: !!hebrewTrack,
+                      hasNikud: hebrewTrack?.has_nikud_version || false,
+                      hasShoresh: hebrewTrack?.has_shoresh_version || false,
+                      hasEngrew: hebrewTrack?.has_engrew_version || false,
+                      hasEnglish: !!englishTrack,
+                      hasHeblish: englishTrack?.has_heblish_version || false,
+                      hasGrammarFlip:
+                        englishTrack?.has_grammar_flip_version || false,
+                      hasSlangSynthesis:
+                        englishTrack?.has_slang_synthesis_version || false,
+                    }
+                  : null,
+              );
             } catch (err) {
-              logger.error('Failed to refresh subtitle tracks', 'ContentLibraryPage', { error: err })
+              logger.error(
+                "Failed to refresh subtitle tracks",
+                "ContentLibraryPage",
+                { error: err },
+              );
             }
           }}
           adminTabSwitcher={
@@ -464,15 +533,15 @@ export default function ContentLibraryPage() {
                 onPress={() => {}}
               >
                 <Text style={[styles.tabText, styles.tabTextActive]}>
-                  {t('subtitles.hebrewMode.title', 'Hebrew')}
+                  {t("subtitles.hebrewMode.title", "Hebrew")}
                 </Text>
               </Pressable>
               <Pressable
                 style={styles.tab}
-                onPress={() => setSubtitleAITab('english')}
+                onPress={() => setSubtitleAITab("english")}
               >
                 <Text style={styles.tabText}>
-                  {t('subtitles.englishMode.title', 'English')}
+                  {t("subtitles.englishMode.title", "English")}
                 </Text>
               </Pressable>
             </View>
@@ -481,7 +550,7 @@ export default function ContentLibraryPage() {
       )}
 
       {/* Subtitle AI Modal - English Mode */}
-      {subtitleAIContent && subtitleAITab === 'english' && (
+      {subtitleAIContent && subtitleAITab === "english" && (
         <EnglishModePickerModal
           visible={!!subtitleAIContent}
           currentMode="regular"
@@ -496,36 +565,54 @@ export default function ContentLibraryPage() {
             // Mode selection is not used in admin context
           }}
           onGenerationComplete={async () => {
-            logger.info('English AI features generated', 'ContentLibraryPage', { contentId: subtitleAIContent.id })
+            logger.info("English AI features generated", "ContentLibraryPage", {
+              contentId: subtitleAIContent.id,
+            });
             // Refresh subtitle track info
             try {
-              const response = await subtitlesService.getTracks(subtitleAIContent.id)
-              const hebrewTrack = response.tracks.find((track: { language: string }) => track.language === 'he')
-              const englishTrack = response.tracks.find((track: { language: string }) => track.language === 'en')
-              setSubtitleAIContent(prev => prev ? {
-                ...prev,
-                isLoading: false,
-                hasHebrew: !!hebrewTrack,
-                hasNikud: hebrewTrack?.has_nikud_version || false,
-                hasShoresh: hebrewTrack?.has_shoresh_version || false,
-                hasEngrew: hebrewTrack?.has_engrew_version || false,
-                hasEnglish: !!englishTrack,
-                hasHeblish: englishTrack?.has_heblish_version || false,
-                hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
-                hasSlangSynthesis: englishTrack?.has_slang_synthesis_version || false,
-              } : null)
+              const response = await subtitlesService.getTracks(
+                subtitleAIContent.id,
+              );
+              const hebrewTrack = response.tracks.find(
+                (track: { language: string }) => track.language === "he",
+              );
+              const englishTrack = response.tracks.find(
+                (track: { language: string }) => track.language === "en",
+              );
+              setSubtitleAIContent((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      isLoading: false,
+                      hasHebrew: !!hebrewTrack,
+                      hasNikud: hebrewTrack?.has_nikud_version || false,
+                      hasShoresh: hebrewTrack?.has_shoresh_version || false,
+                      hasEngrew: hebrewTrack?.has_engrew_version || false,
+                      hasEnglish: !!englishTrack,
+                      hasHeblish: englishTrack?.has_heblish_version || false,
+                      hasGrammarFlip:
+                        englishTrack?.has_grammar_flip_version || false,
+                      hasSlangSynthesis:
+                        englishTrack?.has_slang_synthesis_version || false,
+                    }
+                  : null,
+              );
             } catch (err) {
-              logger.error('Failed to refresh subtitle tracks', 'ContentLibraryPage', { error: err })
+              logger.error(
+                "Failed to refresh subtitle tracks",
+                "ContentLibraryPage",
+                { error: err },
+              );
             }
           }}
           adminTabSwitcher={
             <View style={styles.tabContainer}>
               <Pressable
                 style={styles.tab}
-                onPress={() => setSubtitleAITab('hebrew')}
+                onPress={() => setSubtitleAITab("hebrew")}
               >
                 <Text style={styles.tabText}>
-                  {t('subtitles.hebrewMode.title', 'Hebrew')}
+                  {t("subtitles.hebrewMode.title", "Hebrew")}
                 </Text>
               </Pressable>
               <Pressable
@@ -533,7 +620,7 @@ export default function ContentLibraryPage() {
                 onPress={() => {}}
               >
                 <Text style={[styles.tabText, styles.tabTextActive]}>
-                  {t('subtitles.englishMode.title', 'English')}
+                  {t("subtitles.englishMode.title", "English")}
                 </Text>
               </Pressable>
             </View>
@@ -541,7 +628,7 @@ export default function ContentLibraryPage() {
         />
       )}
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -553,7 +640,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   filtersRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginBottom: spacing.lg,
   },
@@ -561,26 +648,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   deleteByIdRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginBottom: spacing.lg,
-    alignItems: 'center',
+    alignItems: "center",
   },
   deleteByIdInputWrapper: {
     flex: 1,
     maxWidth: 400,
   },
   tabContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   tab: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    borderBottomColor: "transparent",
   },
   tabActive: {
     borderBottomColor: colors.primary.DEFAULT,
@@ -591,6 +678,6 @@ const styles = StyleSheet.create({
   },
   tabTextActive: {
     color: colors.primary.DEFAULT,
-    fontWeight: '600',
+    fontWeight: "600",
   },
-})
+});

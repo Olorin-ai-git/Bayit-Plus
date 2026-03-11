@@ -56,7 +56,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 family_controls, favorites, friends, health,
                                 history, household, iap_verification,
                                 jerusalem, judaism, librarian, live,
-                                live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
+                                live_catchup, live_dubbing, live_quota, live_scene_search,
+                                location, location_consent, media_proxy, news, nlp,
                                 notifications,
                                 onboarding, onboarding_tour, party, password_reset, payments,
                                 playback_session, podcasts, profile_controls, profile_stats,
@@ -99,8 +100,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.v1.endpoints import subtitles as subtitles_vtt
     # VOD Audio Tracks routes (AI-generated audio dubbing)
     from app.api.routes import vod_audio_tracks
-    # Beta 500 routes
-    from app.api.routes.beta import signup, credits, sessions, status
+    from app.api.routes.beta import credits
     # Feature validation routes
     from app.api.routes.features import validation as features_validation
     # Mission and gamification routes (Hebrew engagement)
@@ -235,6 +235,8 @@ def register_all_routers(app: FastAPI) -> None:
         content_taxonomy.router, prefix=prefix, tags=["content-taxonomy"]
     )
     app.include_router(live.router, prefix=f"{prefix}/live", tags=["live"])
+    app.include_router(live_catchup.router, prefix=f"{prefix}/live", tags=["live", "catchup"])
+    app.include_router(live_scene_search.router, prefix=f"{prefix}/live", tags=["live", "scene-search"])
     app.include_router(live_quota.router, prefix=prefix, tags=["live-quota"])
     app.include_router(radio.router, prefix=f"{prefix}/radio", tags=["radio"])
     app.include_router(podcasts.router, prefix=f"{prefix}/podcasts", tags=["podcasts"])
@@ -582,13 +584,10 @@ def register_all_routers(app: FastAPI) -> None:
     logger.debug("Registered NLP routes (intent parsing, agent execution, semantic search, voice commands)")
 
     # ============================================
-    # Beta 500 Program Routes
+    # AI Credit Routes
     # ============================================
-    app.include_router(signup.router, prefix=prefix, tags=["beta"])
     app.include_router(credits.router, prefix=prefix, tags=["beta-credits"])
-    app.include_router(sessions.router, prefix=prefix, tags=["beta-sessions"])
-    app.include_router(status.router, prefix=prefix, tags=["beta-status"])
-    logger.debug("Registered Beta 500 closed beta program routes (signup, credits, sessions, status)")
+    logger.debug("Registered AI credit routes")
 
     # ============================================
     # Hebrew Engagement / Gamification Routes

@@ -89,7 +89,6 @@ class SearchFilters(BaseModel):
     is_kids_content: Optional[bool] = None
     search_in_subtitles: bool = False
     user_subscription_tier: Optional[str] = None
-    is_beta_user: Optional[bool] = None
 
     @field_validator("content_types")
     @classmethod

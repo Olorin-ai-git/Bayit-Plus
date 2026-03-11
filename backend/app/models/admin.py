@@ -300,8 +300,6 @@ class AuditAction(str, Enum):
     WIDGET_DELETED = "widget_deleted"
     WIDGET_PUBLISHED = "widget_published"
     WIDGET_UNPUBLISHED = "widget_unpublished"
-    # Beta Content Management
-    CONTENT_BETA_TOGGLED = "content_beta_toggled"
 
 
 class AuditLog(Document):

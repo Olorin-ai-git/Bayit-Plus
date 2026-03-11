@@ -102,39 +102,3 @@ async def toggle_content_feature(
         )
 
 
-@router.post("/content/{content_id}/beta")
-async def toggle_content_beta(
-    content_id: str,
-    request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
-):
-    """Toggle content beta status."""
-    try:
-        content = await Content.get(content_id)
-    except Exception as e:
-        logger.error(f"Error fetching content {content_id}: {e}")
-        raise HTTPException(status_code=404, detail=f"Content not found: {content_id}")
-    if not content:
-        raise HTTPException(status_code=404, detail=f"Content not found: {content_id}")
-
-    try:
-        content.is_beta_content = not content.is_beta_content
-        content.updated_at = datetime.utcnow()
-        await content.save()
-        await log_audit(
-            str(current_user.id),
-            AuditAction.CONTENT_BETA_TOGGLED,
-            "content",
-            content_id,
-            {"title": content.title, "is_beta_content": content.is_beta_content},
-            request,
-        )
-        return {
-            "message": f"Content {'marked as beta' if content.is_beta_content else 'removed from beta'}",
-            "is_beta_content": content.is_beta_content,
-        }
-    except Exception as e:
-        logger.error(f"Error toggling beta status for {content_id}: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to toggle beta status: {str(e)}"
-        )

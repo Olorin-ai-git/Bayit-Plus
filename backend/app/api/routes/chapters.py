@@ -52,7 +52,7 @@ async def get_chapters(
         raise HTTPException(status_code=404, detail="Content not found")
 
     # Pre-deduct credits for Beta users
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="chapter_generation",
@@ -60,7 +60,7 @@ async def get_chapters(
             metadata={"content_id": content_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     # Generate chapters on-demand
     is_news = content.category_name and any(
@@ -133,7 +133,7 @@ async def generate_chapters(
                 "chapters": _format_chapters_response(existing),
             }
 
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="chapter_generation",
@@ -141,7 +141,7 @@ async def generate_chapters(
             metadata={"content_id": content_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     # Generate chapters
     is_news = content.category_name and any(
@@ -211,7 +211,7 @@ async def get_live_chapters(
     if not channel:
         raise HTTPException(status_code=404, detail="Channel not found")
 
-    if current_user.is_beta_user and not current_user.is_admin_role():
+    if not current_user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(current_user.id),
             feature="chapter_generation",
@@ -219,7 +219,7 @@ async def get_live_chapters(
             metadata={"channel_id": channel_id},
         )
         if not success:
-            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+            raise HTTPException(status_code=402, detail="Insufficient credits")
 
     gen_chapters = await generate_chapters_from_title(
         content_id=channel_id,

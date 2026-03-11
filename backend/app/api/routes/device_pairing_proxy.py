@@ -122,10 +122,6 @@ async def complete_auth_v2(request: Request, auth_request: CompleteAuthRequest):
             role=auth_response.get("role", "user"),
         )
 
-        # Sync beta user status (Bayit+ specific)
-        from app.api.routes.auth import _sync_beta_user_status
-        await _sync_beta_user_status(user)
-
         # Update last login
         user.last_login = datetime.now(timezone.utc)
         await user.save()
@@ -248,10 +244,6 @@ async def complete_google_v2(request: Request, auth_request: CompleteGoogleReque
             role=auth_response.get("role", "user"),
             avatar=auth_response.get("avatar"),
         )
-
-        # Sync beta user status
-        from app.api.routes.auth import _sync_beta_user_status
-        await _sync_beta_user_status(user)
 
         # Update last login
         user.last_login = datetime.now(timezone.utc)
@@ -381,10 +373,6 @@ async def complete_apple_v2(request: Request, auth_request: CompleteAppleRequest
             role=auth_response.get("role", "user"),
             avatar=auth_response.get("avatar"),
         )
-
-        # Sync beta user status
-        from app.api.routes.auth import _sync_beta_user_status
-        await _sync_beta_user_status(user)
 
         # Update last login
         user.last_login = datetime.now(timezone.utc)

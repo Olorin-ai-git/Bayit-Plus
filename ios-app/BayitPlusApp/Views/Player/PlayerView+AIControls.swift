@@ -66,7 +66,18 @@
                 }
                 handleSubtitleSelection(selectedAILanguage)
                 // Auto-start trivia when translation is enabled
+                let triviaLogger = BayitLogger(category: "LiveTrivia")
+                triviaLogger.info("Auto-start check", context: [
+                    "triviaVM": triviaVM == nil ? "nil" : "exists",
+                    "isEnabled": String(triviaVM?.isEnabled ?? false),
+                    "isLive": String(mediaContentType.isLive),
+                    "channelId": contentId,
+                ])
                 if let vm = triviaVM, !vm.isEnabled, mediaContentType.isLive {
+                    triviaLogger.info("Auto-starting trivia for channel", context: [
+                        "channelId": contentId,
+                        "language": selectedAILanguage,
+                    ])
                     let triviaWS = LiveTriviaWebSocketService(
                         webSocketManager: repositories.webSocketManager,
                         configuration: repositories.configuration,
