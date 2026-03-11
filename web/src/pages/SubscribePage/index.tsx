@@ -115,16 +115,13 @@ export default function SubscribePage() {
             title={
               loading
                 ? sanitizeI18n(t("subscribe.processing"))
-                : sanitizeI18n(t("subscribe.startTrial"))
+                : sanitizeI18n(t("subscribe.select"))
             }
             onPress={handleSubscribe}
             disabled={loading}
             variant="primary"
             style={styles.ctaButton}
           />
-          <Text style={styles.ctaDisclaimer}>
-            {sanitizeI18n(t("subscribe.noCharge"))}
-          </Text>
         </View>
       </View>
     </View>

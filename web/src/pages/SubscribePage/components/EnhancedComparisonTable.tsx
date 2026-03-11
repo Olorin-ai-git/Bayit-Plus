@@ -16,12 +16,7 @@ import logger from "@/utils/logger";
 
 const PLAN_TIERS: PlanTier[] = [PlanTier.FREE, PlanTier.PLUS];
 
-const CATEGORY_ORDER: FeatureCategory[] = [
-  "content",
-  "ai",
-  "streaming",
-  "support",
-];
+const CATEGORY_ORDER: FeatureCategory[] = ["ai", "platform", "support"];
 
 export function EnhancedComparisonTable() {
   const { t } = useTranslation();
@@ -40,9 +35,8 @@ export function EnhancedComparisonTable() {
   // Group features by category
   const featuresByCategory = useMemo(() => {
     const grouped: Record<FeatureCategory, typeof PLAN_FEATURES> = {
-      content: [],
       ai: [],
-      streaming: [],
+      platform: [],
       support: [],
     };
 

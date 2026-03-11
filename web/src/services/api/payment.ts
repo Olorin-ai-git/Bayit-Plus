@@ -5,12 +5,12 @@
  * - Get payment status (polling)
  * - Generate checkout URL (on-demand)
  */
-import { useAuthStore } from '@/stores/authStore';
-import logger from '@/utils/logger';
+import { useAuthStore } from "@/stores/authStore";
+import logger from "@/utils/logger";
 
-const paymentLogger = logger.scope('PaymentAPI');
+const paymentLogger = logger.scope("PaymentAPI");
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api/v1";
 
 export interface PaymentStatusResponse {
   payment_pending: boolean;
@@ -38,20 +38,20 @@ export async function getPaymentStatus(): Promise<PaymentStatusResponse> {
   const token = useAuthStore.getState().token;
 
   if (!token) {
-    throw new Error('Not authenticated');
+    throw new Error("Not authenticated");
   }
 
   const response = await fetch(`${API_BASE_URL}/auth/payment/status`, {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    paymentLogger.error('Failed to get payment status', {
+    paymentLogger.error("Failed to get payment status", {
       status: response.status,
       error,
     });
@@ -60,7 +60,7 @@ export async function getPaymentStatus(): Promise<PaymentStatusResponse> {
 
   const data = await response.json();
 
-  paymentLogger.debug('Payment status fetched', {
+  paymentLogger.debug("Payment status fetched", {
     payment_pending: data.payment_pending,
     can_access_app: data.can_access_app,
   });
@@ -74,35 +74,35 @@ export async function getPaymentStatus(): Promise<PaymentStatusResponse> {
  * Checkout URLs are never stored - they're generated on-demand
  * when the user clicks "Continue to Payment".
  *
- * @param planId Plan ID (basic, premium, family)
+ * @param planId Plan ID (free, plus)
  * @returns Checkout session with temporary URL
  * @throws Error if request fails
  */
 export async function generateCheckoutUrl(
-  planId: string = 'basic'
+  planId: string = "plus",
 ): Promise<CheckoutSessionResponse> {
   const token = useAuthStore.getState().token;
 
   if (!token) {
-    throw new Error('Not authenticated');
+    throw new Error("Not authenticated");
   }
 
-  paymentLogger.info('Generating checkout URL', { planId });
+  paymentLogger.info("Generating checkout URL", { planId });
 
   const response = await fetch(
     `${API_BASE_URL}/auth/payment/checkout-url?plan_id=${encodeURIComponent(planId)}`,
     {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    paymentLogger.error('Failed to generate checkout URL', {
+    paymentLogger.error("Failed to generate checkout URL", {
       status: response.status,
       error,
       planId,
@@ -112,7 +112,7 @@ export async function generateCheckoutUrl(
 
   const data = await response.json();
 
-  paymentLogger.info('Checkout URL generated', {
+  paymentLogger.info("Checkout URL generated", {
     session_id: data.session_id,
     expires_in: data.expires_in,
   });
@@ -133,7 +133,7 @@ export async function generateCheckoutUrl(
 export function pollPaymentStatus(
   maxAttempts: number = 60,
   baseInterval: number = 5000,
-  onStatusUpdate?: (status: PaymentStatusResponse) => void
+  onStatusUpdate?: (status: PaymentStatusResponse) => void,
 ): () => void {
   let attempts = 0;
   let timeoutId: number | null = null;
@@ -153,7 +153,7 @@ export function pollPaymentStatus(
 
       if (!status.payment_pending) {
         // Payment completed - stop polling
-        paymentLogger.info('Payment completed, stopping poll');
+        paymentLogger.info("Payment completed, stopping poll");
         return;
       }
 
@@ -162,7 +162,7 @@ export function pollPaymentStatus(
       const interval = attempts > 10 ? baseInterval * 2 : baseInterval;
       timeoutId = window.setTimeout(poll, interval);
     } catch (error) {
-      paymentLogger.error('Payment status poll failed', error);
+      paymentLogger.error("Payment status poll failed", error);
 
       // Retry with backoff
       attempts++;
