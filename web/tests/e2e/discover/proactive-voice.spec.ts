@@ -9,7 +9,7 @@
  *   npx playwright test tests/e2e/discover/proactive-voice.spec.ts
  */
 
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Page } from "./helpers/discover-test";
 import { mockAuthPremium } from "./helpers/discover-fixtures";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:3200";

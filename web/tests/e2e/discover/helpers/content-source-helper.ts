@@ -3,17 +3,34 @@
  *
  * Navigation helpers for Plex BYOC, YouTube BYOC, and Channel 13 live content.
  * Used across VOD and Live TV Discover tab E2E specs.
+ *
+ * Fatal runtime errors (ChunkLoadError, webpack overlay) are caught by the
+ * error guard fixture installed via discover-test.ts. These helpers focus
+ * on navigation and waiting for the video player to load.
  */
 
 import { Page } from "@playwright/test";
 import { fixtures } from "./discover-fixtures";
+import { hasWebpackErrorOverlay } from "./error-guard";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:3200";
+
+async function assertNoOverlay(page: Page): Promise<void> {
+  await page.waitForTimeout(500);
+  if (await hasWebpackErrorOverlay(page)) {
+    const screenshotPath = `/tmp/discover-e2e-report/web/error-screenshots/overlay-${Date.now()}.png`;
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    throw new Error(
+      `Webpack error overlay detected - app has compilation errors. Screenshot: ${screenshotPath}`,
+    );
+  }
+}
 
 export async function navigateToPlexContent(page: Page): Promise<void> {
   const contentId = fixtures.content.plexContentId;
   await page.goto(`${BASE_URL}/watch/${contentId}?source=plex`);
   await page.waitForLoadState("networkidle");
+  await assertNoOverlay(page);
   await page.waitForSelector('video, [data-testid="video-player"]', {
     timeout: 10000,
   });
@@ -23,6 +40,7 @@ export async function navigateToYouTubeContent(page: Page): Promise<void> {
   const contentId = fixtures.content.youtubeContentId;
   await page.goto(`${BASE_URL}/watch/${contentId}?source=youtube`);
   await page.waitForLoadState("networkidle");
+  await assertNoOverlay(page);
   await page.waitForSelector('video, [data-testid="video-player"]', {
     timeout: 10000,
   });
@@ -32,6 +50,7 @@ export async function navigateToChannel13(page: Page): Promise<void> {
   const slug = fixtures.content.liveChannelSlug;
   await page.goto(`${BASE_URL}/live/${slug}`);
   await page.waitForLoadState("networkidle");
+  await assertNoOverlay(page);
   await page.waitForSelector('video, [data-testid="video-player"]', {
     timeout: 10000,
   });

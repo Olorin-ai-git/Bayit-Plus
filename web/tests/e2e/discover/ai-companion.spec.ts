@@ -8,7 +8,7 @@
  *   npx playwright test tests/e2e/discover/ai-companion.spec.ts
  */
 
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Page } from "./helpers/discover-test";
 import { mockAuthPremium, mockAuthBasic } from "./helpers/discover-fixtures";
 import {
   navigateToPlexContent,

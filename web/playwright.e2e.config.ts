@@ -5,6 +5,9 @@ import { defineConfig, devices } from "@playwright/test";
  *
  * Configuration for end-to-end functional tests.
  * Tests the actual user workflows and feature interactions.
+ *
+ * Local: Chromium only (fast feedback).
+ * CI: All browsers (Chromium, Firefox, WebKit) + mobile viewports.
  */
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -13,6 +16,9 @@ export default defineConfig({
   // Run tests sequentially for e2e (to avoid race conditions)
   fullyParallel: false,
   workers: 1,
+
+  // Stop after first N failures to get fast feedback
+  maxFailures: process.env.CI ? 0 : 5,
 
   // Fail the build on CI if you accidentally left test.only
   forbidOnly: !!process.env.CI,
@@ -32,8 +38,8 @@ export default defineConfig({
     // Base URL for navigation
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3200",
 
-    // Screenshot always (for verification)
-    screenshot: "on",
+    // Screenshot on failure (always on CI)
+    screenshot: process.env.CI ? "on" : "only-on-failure",
 
     // Video on failure
     video: "retain-on-failure",
@@ -49,11 +55,11 @@ export default defineConfig({
   },
 
   // Timeouts
-  timeout: 60000, // 60 seconds per test
+  timeout: 60000,
 
   // Configure projects for major browsers
   projects: [
-    // Desktop Chrome (primary)
+    // Desktop Chrome (always runs)
     {
       name: "chromium-desktop",
       use: {
@@ -62,43 +68,54 @@ export default defineConfig({
       },
     },
 
-    // Desktop Firefox
-    {
-      name: "firefox-desktop",
-      use: {
-        ...devices["Desktop Firefox"],
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
+    // Desktop Firefox (CI only)
+    ...(process.env.CI
+      ? [
+          {
+            name: "firefox-desktop",
+            use: {
+              ...devices["Desktop Firefox"],
+              viewport: { width: 1920, height: 1080 },
+            },
+          },
+        ]
+      : []),
 
-    // Desktop Safari
-    {
-      name: "webkit-desktop",
-      use: {
-        ...devices["Desktop Safari"],
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
+    // Desktop Safari (CI only)
+    ...(process.env.CI
+      ? [
+          {
+            name: "webkit-desktop",
+            use: {
+              ...devices["Desktop Safari"],
+              viewport: { width: 1920, height: 1080 },
+            },
+          },
+        ]
+      : []),
 
-    // Mobile viewports
-    {
-      name: "mobile-375",
-      use: {
-        ...devices["iPhone 15"],
-        viewport: { width: 375, height: 667 },
-      },
-    },
-
-    {
-      name: "tablet-768",
-      use: {
-        ...devices["iPad Mini"],
-        viewport: { width: 768, height: 1024 },
-      },
-    },
+    // Mobile viewports (CI only)
+    ...(process.env.CI
+      ? [
+          {
+            name: "mobile-375",
+            use: {
+              ...devices["iPhone 15"],
+              viewport: { width: 375, height: 667 },
+            },
+          },
+          {
+            name: "tablet-768",
+            use: {
+              ...devices["iPad Mini"],
+              viewport: { width: 768, height: 1024 },
+            },
+          },
+        ]
+      : []),
   ],
 
-  // Start Vite dev server for E2E tests (reuses if already running)
+  // Start webpack dev server for E2E tests (reuses if already running)
   webServer: {
     command: "npm run dev",
     url: "http://localhost:3200",

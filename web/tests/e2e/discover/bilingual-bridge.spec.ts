@@ -8,7 +8,7 @@
  *   npx playwright test tests/e2e/discover/bilingual-bridge.spec.ts
  */
 
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Page } from "./helpers/discover-test";
 import { mockAuthPremium } from "./helpers/discover-fixtures";
 import {
   navigateToPlexContent,
