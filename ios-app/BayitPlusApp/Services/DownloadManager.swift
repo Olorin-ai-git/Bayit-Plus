@@ -1,5 +1,6 @@
 import AVFoundation
 import BayitCore
+import BayitLocalization
 import Foundation
 import Observation
 
@@ -11,6 +12,7 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
 
     let userRepository: any UserRepository
     let store: DownloadStore
+    let localization: LocalizationManager
     let logger = BayitLogger(category: "DownloadManager")
     var urlSession: URLSession!
     #if os(iOS)
@@ -21,9 +23,10 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
     var tasksByDownloadId: [String: URLSessionTask] = [:]
     var downloadIdByTaskId: [Int: String] = [:]
 
-    init(userRepository: any UserRepository, store: DownloadStore) {
+    init(userRepository: any UserRepository, store: DownloadStore, localization: LocalizationManager) {
         self.userRepository = userRepository
         self.store = store
+        self.localization = localization
         super.init()
         let bgConfig = URLSessionConfiguration.background(withIdentifier: "tv.bayit.plus.downloads")
         bgConfig.isDiscretionary = false
@@ -65,7 +68,7 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
 
         guard let urlString = request.streamUrl, let downloadURL = URL(string: urlString) else {
             download.status = .failed
-            download.error = "No download URL available for this content"
+            download.error = localization.t("errors.noDownloadUrl")
             upsertLocal(download)
             logger.error("No stream URL for download", context: ["contentId": request.contentId])
             return

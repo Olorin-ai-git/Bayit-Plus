@@ -73,13 +73,13 @@ struct TVChessView: View {
     private func lobbyActions(_ vm: ChessViewModel) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
-                GlassButton("New Game vs Player", variant: .primary, size: .medium) {
+                GlassButton(localization.t("chess.newGamePlayer"), variant: .primary, size: .medium) {
                     Task { await vm.createGame(color: "white", gameMode: "pvp", botDifficulty: nil) }
                 }
                 .tvFocusStyle()
                 .accessibilityLabel("Start a new player versus player game")
 
-                GlassButton("New Game vs Bot", variant: .secondary, size: .medium) {
+                GlassButton(localization.t("chess.newGameBot"), variant: .secondary, size: .medium) {
                     showBotDifficulty.toggle()
                     showJoinEntry = false
                 }
@@ -125,19 +125,19 @@ struct TVChessView: View {
 
     private func botDifficultyButtons(_ vm: ChessViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
-            GlassButton("Easy", variant: .ghost, size: .medium) {
+            GlassButton(localization.t("chess.easy"), variant: .ghost, size: .medium) {
                 Task { await vm.createGame(color: "white", gameMode: "bot", botDifficulty: "easy") }
             }
             .tvFocusStyle()
             .accessibilityLabel("Easy difficulty")
 
-            GlassButton("Medium", variant: .ghost, size: .medium) {
+            GlassButton(localization.t("chess.medium"), variant: .ghost, size: .medium) {
                 Task { await vm.createGame(color: "white", gameMode: "bot", botDifficulty: "medium") }
             }
             .tvFocusStyle()
             .accessibilityLabel("Medium difficulty")
 
-            GlassButton("Hard", variant: .ghost, size: .medium) {
+            GlassButton(localization.t("chess.hard"), variant: .ghost, size: .medium) {
                 Task { await vm.createGame(color: "white", gameMode: "bot", botDifficulty: "hard") }
             }
             .tvFocusStyle()

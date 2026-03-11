@@ -98,6 +98,7 @@
                 SceneSearchView(
                     repository: repositories.liveTV,
                     channelId: contentId,
+                    localization: localization,
                     onSeek: { time in
                         showSceneSearch = false
                         Task { await viewModel.player.seek(to: time) }
@@ -145,7 +146,7 @@
                         Text(localization.t("channelChat.chatRequiresConnection"))
                             .font(.system(size: DesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.muted)
-                        GlassButton("Close", variant: .secondary, size: .small) {
+                        GlassButton(localization.t("common.close"), variant: .secondary, size: .small) {
                             withAnimation(.spring(duration: 0.3)) {
                                 showChannelChat = false
                             }

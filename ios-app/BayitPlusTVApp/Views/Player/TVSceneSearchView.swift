@@ -13,10 +13,11 @@
         let onDismiss: () -> Void
 
         init(repository: any LiveTVRepository, channelId: String,
+             localization: LocalizationManager,
              onSeek: @escaping (TimeInterval) -> Void,
              onDismiss: @escaping () -> Void)
         {
-            _viewModel = State(initialValue: SceneSearchViewModel(repository: repository))
+            _viewModel = State(initialValue: SceneSearchViewModel(repository: repository, localization: localization))
             self.channelId = channelId
             self.onSeek = onSeek
             self.onDismiss = onDismiss
@@ -48,7 +49,7 @@
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
                 Spacer()
-                GlassButton("Close", variant: .secondary, size: .medium) { onDismiss() }
+                GlassButton(localization.t("common.close"), variant: .secondary, size: .medium) { onDismiss() }
                     .tvFocusStyle()
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -68,7 +69,7 @@
                     .onSubmit { Task { await viewModel.search(channelId: channelId) } }
 
                 if !viewModel.query.isEmpty {
-                    GlassButton("Clear", variant: .ghost, size: .small) {
+                    GlassButton(localization.t("common.clear"), variant: .ghost, size: .small) {
                         viewModel.clearResults()
                     }
                     .tvFocusStyle()
@@ -143,7 +144,7 @@
             VStack(spacing: TVDesignTokens.Spacing.xl) {
                 Spacer()
                 Text(message).foregroundStyle(DesignTokens.Text.secondary)
-                GlassButton("Retry", variant: .secondary, size: .large) {
+                GlassButton(localization.t("common.retry"), variant: .secondary, size: .large) {
                     Task { await viewModel.search(channelId: channelId) }
                 }
                 .tvFocusStyle()

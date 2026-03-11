@@ -26,7 +26,7 @@ struct TVConversationView: View {
                     typingIndicator(vm)
                     TVMessageInputBar(
                         text: $messageText,
-                        placeholder: "Type a message",
+                        placeholder: localization.t("chat.typeMessage"),
                         onSend: { text in
                             Task {
                                 await vm.sendMessage(friendId: friendId, text: text)

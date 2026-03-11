@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import Foundation
 import Observation
@@ -35,12 +36,14 @@ final class StoreManager {
 
     private let monthlyProductID: String
     private let yearlyProductID: String
+    private let localization: LocalizationManager
 
-    nonisolated init(config: EnvironmentConfiguration, apiClient: APIClient) {
+    nonisolated init(config: EnvironmentConfiguration, apiClient: APIClient, localization: LocalizationManager) {
         monthlyProductID = config.iapPlusMonthlyProductId
         yearlyProductID = config.iapPlusYearlyProductId
         productIDs = [monthlyProductID, yearlyProductID]
         self.apiClient = apiClient
+        self.localization = localization
     }
 
     func startListening() {
@@ -92,7 +95,7 @@ final class StoreManager {
                     return true
                 } else {
                     logger.error("Backend verification failed for \(product.id)")
-                    error = "Purchase verification failed"
+                    error = localization.t("errors.purchaseVerificationFailed")
                     return false
                 }
 

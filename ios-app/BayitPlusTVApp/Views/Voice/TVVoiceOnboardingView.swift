@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Simplified voice onboarding for tvOS. No mic permissions — just welcome and language.
 struct TVVoiceOnboardingView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     @State private var currentStep: OnboardingStep = .welcome
     @State private var selectedLanguage: SupportedLanguage = .english
@@ -71,20 +73,20 @@ struct TVVoiceOnboardingView: View {
 
     private var bottomActions: some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
-            GlassButton("Skip", variant: .secondary, size: .medium) {
+            GlassButton(localization.t("common.skip"), variant: .secondary, size: .medium) {
                 currentStep = .complete
             }
             .tvFocusStyle()
 
             switch currentStep {
             case .welcome:
-                GlassButton("Get Started", variant: .primary, size: .medium) {
+                GlassButton(localization.t("onboarding.getStarted"), variant: .primary, size: .medium) {
                     currentStep = .languageSelect
                 }
                 .tvFocusStyle()
 
             case .languageSelect:
-                GlassButton("Complete Setup", variant: .primary, size: .medium) {
+                GlassButton(localization.t("onboarding.completeSetup"), variant: .primary, size: .medium) {
                     currentStep = .complete
                 }
                 .tvFocusStyle()

@@ -186,7 +186,7 @@
                     .foregroundStyle(DesignTokens.Text.muted)
                     .multilineTextAlignment(.center)
 
-                GlassButton("Retry", variant: .secondary, size: .small) {
+                GlassButton(localization.t("common.retry"), variant: .secondary, size: .small) {
                     Task { await viewModel.loadAll() }
                 }
             }

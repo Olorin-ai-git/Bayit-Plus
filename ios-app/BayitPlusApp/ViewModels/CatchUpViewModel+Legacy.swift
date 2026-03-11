@@ -21,7 +21,7 @@ extension CatchUpViewModel {
                 "segmentCount": "\(segments.count)",
             ])
         } catch {
-            self.error = "Unable to load catch-up content"
+            self.error = localization.t("catchup.error.loadFailed")
             logger.error("Legacy catch-up load failed", error: error)
         }
 
@@ -31,11 +31,11 @@ extension CatchUpViewModel {
     func handleAPIError(_ apiError: APIError) {
         switch apiError {
         case .paymentRequired:
-            error = "Insufficient credits"
+            error = localization.t("catchup.error.insufficientCredits")
             errorType = .insufficientCredits
             hasCredits = false
         case let .serverError(statusCode, _) where statusCode == 503:
-            error = "Catch-up service is temporarily unavailable"
+            error = localization.t("catchup.error.serviceUnavailable")
             errorType = .serviceUnavailable
         default:
             error = apiError.localizedDescription

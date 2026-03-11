@@ -1,3 +1,4 @@
+import BayitLocalization
 import Foundation
 import Observation
 
@@ -17,9 +18,11 @@ final class SecurityViewModel {
     var confirmPassword = ""
 
     private let repository: any SettingsRepository
+    private let localization: LocalizationManager
 
-    init(repository: any SettingsRepository) {
+    init(repository: any SettingsRepository, localization: LocalizationManager) {
         self.repository = repository
+        self.localization = localization
     }
 
     @MainActor
@@ -43,11 +46,11 @@ final class SecurityViewModel {
     @MainActor
     func changePassword() async {
         guard !newPassword.isEmpty else {
-            error = "Password cannot be empty"
+            error = localization.t("settings.security.passwordEmpty")
             return
         }
         guard newPassword == confirmPassword else {
-            error = "Passwords do not match"
+            error = localization.t("settings.security.passwordMismatch")
             return
         }
 
@@ -61,7 +64,7 @@ final class SecurityViewModel {
                 newPassword: newPassword
             )
             let response = try await repository.changePassword(request: request)
-            successMessage = response.message ?? "Password changed successfully"
+            successMessage = response.message ?? localization.t("settings.security.passwordChanged")
             currentPassword = ""
             newPassword = ""
             confirmPassword = ""
@@ -93,8 +96,8 @@ final class SecurityViewModel {
 
     var passwordsValid: Bool {
         !currentPassword.isEmpty &&
-        !newPassword.isEmpty &&
-        newPassword == confirmPassword &&
-        newPassword.count >= 8
+            !newPassword.isEmpty &&
+            newPassword == confirmPassword &&
+            newPassword.count >= 8
     }
 }

@@ -140,7 +140,7 @@ struct YnetMivzakimContentView: View {
                 .font(.system(size: 12))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .multilineTextAlignment(.center)
-            GlassButton("Retry", variant: .secondary, size: .small) {
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .small) {
                 Task { await viewModel?.loadNews() }
             }
             Spacer()

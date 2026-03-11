@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import Foundation
 import Observation
@@ -17,6 +18,7 @@ final class LiveSubtitlesWebSocketService: @unchecked Sendable {
     private let webSocketManager: WebSocketManager
     private let configuration: any EnvironmentConfiguration
     private let authTokenProvider: AuthTokenProvider
+    private let localization: LocalizationManager
     private let logger = BayitLogger(category: "LiveSubtitlesWebSocket")
 
     private static var platformIdentifier: String {
@@ -30,11 +32,13 @@ final class LiveSubtitlesWebSocketService: @unchecked Sendable {
     init(
         webSocketManager: WebSocketManager,
         configuration: any EnvironmentConfiguration,
-        authTokenProvider: AuthTokenProvider
+        authTokenProvider: AuthTokenProvider,
+        localization: LocalizationManager
     ) {
         self.webSocketManager = webSocketManager
         self.configuration = configuration
         self.authTokenProvider = authTokenProvider
+        self.localization = localization
     }
 
     @MainActor
@@ -67,7 +71,7 @@ final class LiveSubtitlesWebSocketService: @unchecked Sendable {
         urlComponents?.queryItems = queryItems
 
         guard let url = urlComponents?.url else {
-            error = "Failed to construct WebSocket URL"
+            error = localization.t("errors.websocketUrlFailed")
             logger.error("Invalid WebSocket URL construction", context: [
                 "channelId": channelId,
                 "targetLanguage": targetLanguage,
@@ -80,7 +84,7 @@ final class LiveSubtitlesWebSocketService: @unchecked Sendable {
             do {
                 guard let token = try await authTokenProvider.currentToken() else {
                     await MainActor.run {
-                        self.error = "No auth token available"
+                        self.error = self.localization.t("errors.noAuthToken")
                         self.isConnected = false
                     }
                     return

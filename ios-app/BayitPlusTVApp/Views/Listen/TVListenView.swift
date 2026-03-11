@@ -68,7 +68,7 @@
 
         private func loadAllContent() async {
             if podcastsVM == nil {
-                podcastsVM = PodcastsViewModel(repository: repos.podcasts)
+                podcastsVM = PodcastsViewModel(repository: repos.podcasts, localization: localization)
             }
             if audiobooksVM == nil {
                 audiobooksVM = AudiobooksViewModel(repository: repos.audiobook)

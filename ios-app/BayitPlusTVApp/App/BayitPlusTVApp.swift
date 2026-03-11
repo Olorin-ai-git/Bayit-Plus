@@ -60,19 +60,22 @@ struct BayitPlusTVApp: App {
             authTokenProvider: authMgr.authTokenProvider
         )
 
+        let localization = LocalizationManager()
+
         let repos = TVRepositoryProvider(
             client: client,
             webSocketManager: wsManager,
             authTokenProvider: authMgr.authTokenProvider,
-            configuration: appConfig
+            configuration: appConfig,
+            localization: localization
         )
 
         _appConfig = State(initialValue: appConfig)
         _authManager = State(initialValue: authMgr)
-        _localizationManager = State(initialValue: LocalizationManager())
+        _localizationManager = State(initialValue: localization)
         _apiClient = State(initialValue: client)
         _repositories = State(initialValue: repos)
-        _downloadManager = State(initialValue: DownloadManager(userRepository: repos.user, store: DownloadStore()))
+        _downloadManager = State(initialValue: DownloadManager(userRepository: repos.user, store: DownloadStore(), localization: localization))
 
         Self.configureTabBarAppearance()
     }

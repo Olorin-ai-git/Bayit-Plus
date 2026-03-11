@@ -43,7 +43,8 @@ struct SubscriptionView: View {
         .task {
             if viewModel == nil {
                 viewModel = SubscriptionViewModel(
-                    storeManager: repos.storeManager
+                    storeManager: repos.storeManager,
+                    localization: localization
                 )
             }
             await viewModel?.load()

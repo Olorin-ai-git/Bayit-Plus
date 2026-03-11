@@ -32,7 +32,7 @@ struct TVFriendSearchResultsSection: View {
                 TVUserAvatarRow(name: result.name, avatarURL: result.avatar, isOnline: nil)
                 Spacer()
                 if !result.isFriend && !result.hasPendingRequest {
-                    GlassButton("Add", variant: .primary, size: .medium) {
+                    GlassButton(localization.t("common.add"), variant: .primary, size: .medium) {
                         Task { await onSendRequest(result.id) }
                     }
                     .tvFocusStyle()

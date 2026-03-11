@@ -1,6 +1,6 @@
-import Foundation
 import BayitCore
 import BayitNetworking
+import Foundation
 
 /// Lightweight client for the Olorin Auth Service password reset endpoints.
 ///
@@ -10,16 +10,16 @@ import BayitNetworking
 ///
 /// Calls the centralized Olorin Auth Service (auth.olorin.ai) rather than Bayit backend.
 enum PasswordResetClient {
-
-    /// Olorin Auth Service URL
-    /// In production: https://auth.olorin.ai
-    /// Can be overridden via environment variable for testing
     private static var authServiceURL: URL {
-        if let urlString = ProcessInfo.processInfo.environment["AUTH_SERVICE_URL"],
-           let url = URL(string: urlString) {
-            return url
+        let info = Bundle.main.infoDictionary ?? [:]
+        guard let urlString = info["AUTH_SERVICE_URL"] as? String
+            ?? ProcessInfo.processInfo.environment["AUTH_SERVICE_URL"],
+            !urlString.isEmpty,
+            let url = URL(string: urlString)
+        else {
+            fatalError("AUTH_SERVICE_URL must be set in Info.plist or AUTH_SERVICE_URL env var")
         }
-        return URL(string: "https://auth.olorin.ai")!
+        return url
     }
 
     /// Tenant ID for Bayit+
@@ -40,7 +40,7 @@ enum PasswordResetClient {
 
         let body: [String: String] = [
             "email": email,
-            "tenant_id": tenantID
+            "tenant_id": tenantID,
         ]
         request.httpBody = try JSONEncoder().encode(body)
 
@@ -52,13 +52,13 @@ enum PasswordResetClient {
             throw AuthError.passwordResetFailed(underlying: "Invalid response type")
         }
 
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
             logger.warning(
                 "Password reset request failed",
                 metadata: [
                     "status_code": String(httpResponse.statusCode),
-                    "error": errorMessage
+                    "error": errorMessage,
                 ]
             )
             throw AuthError.passwordResetFailed(underlying: "HTTP \(httpResponse.statusCode)")
@@ -88,7 +88,7 @@ enum PasswordResetClient {
         let body: [String: String] = [
             "token": token,
             "new_password": newPassword,
-            "tenant_id": tenantID
+            "tenant_id": tenantID,
         ]
         request.httpBody = try JSONEncoder().encode(body)
 
@@ -100,13 +100,13 @@ enum PasswordResetClient {
             throw AuthError.passwordResetFailed(underlying: "Invalid response type")
         }
 
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
             logger.warning(
                 "Password reset confirmation failed",
                 metadata: [
                     "status_code": String(httpResponse.statusCode),
-                    "error": errorMessage
+                    "error": errorMessage,
                 ]
             )
             throw AuthError.passwordResetFailed(underlying: "HTTP \(httpResponse.statusCode)")

@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS text input bar with send button for chat interfaces.
 /// Scaled up from iOS with larger send button and tvOS focus support.
 struct TVMessageInputBar: View {
+    @Environment(LocalizationManager.self) private var localization
     @Binding var text: String
     let placeholder: String
     let onSend: (String) -> Void
@@ -15,7 +17,7 @@ struct TVMessageInputBar: View {
                 .accessibilityLabel("Message input")
 
             GlassButton(
-                "Send",
+                localization.t("common.send"),
                 variant: .primary,
                 size: .medium,
                 isDisabled: text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,

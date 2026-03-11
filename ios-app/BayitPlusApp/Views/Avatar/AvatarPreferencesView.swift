@@ -41,7 +41,7 @@ struct AvatarPreferencesView: View {
                 .padding(.vertical, DesignTokens.Spacing.xl)
             }
         }
-        .navigationTitle("Avatar Preferences")
+        .navigationTitle(localization.t("avatar.preferences.title"))
         .navigationBarTitleDisplayMode(.large)
     }
 

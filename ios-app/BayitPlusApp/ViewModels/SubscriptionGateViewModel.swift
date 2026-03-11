@@ -1,3 +1,4 @@
+import BayitLocalization
 import Foundation
 import Observation
 import StoreKit
@@ -15,15 +16,18 @@ final class SubscriptionGateViewModel {
     var selectedBillingPeriod: BillingPeriod = .monthly
 
     private let storeManager: StoreManager
+    private let localization: LocalizationManager
     private let contentId: String
     private let requiredTier: String
 
     init(
         storeManager: StoreManager,
+        localization: LocalizationManager,
         contentId: String,
         requiredTier: String
     ) {
         self.storeManager = storeManager
+        self.localization = localization
         self.contentId = contentId
         self.requiredTier = requiredTier
     }
@@ -68,7 +72,7 @@ final class SubscriptionGateViewModel {
     @MainActor
     func purchase() async -> Bool {
         guard let product = selectedProduct else {
-            error = "No product selected"
+            error = localization.t("subscribe.noProductSelected")
             return false
         }
         isProcessing = true

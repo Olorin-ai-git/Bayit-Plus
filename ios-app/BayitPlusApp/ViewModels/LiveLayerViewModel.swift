@@ -16,6 +16,11 @@ final class LiveLayerViewModel {
     private var receiveTask: Task<Void, Never>?
     private var disconnectTask: Task<Void, Never>?
     private var webSocketManager: WebSocketManager?
+    private let localization: LocalizationManager
+
+    init(localization: LocalizationManager) {
+        self.localization = localization
+    }
 
     @MainActor
     func connect(
@@ -26,7 +31,7 @@ final class LiveLayerViewModel {
         webSocketManager = manager
 
         guard let wsURL = await buildWebSocketURL(contentId: contentId) else {
-            error = "Invalid URL"
+            error = localization.t("errors.invalidUrl")
             return
         }
 

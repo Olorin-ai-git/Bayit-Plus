@@ -46,7 +46,7 @@ struct PodcastsListenTab: View {
         }
         .task {
             if viewModel == nil {
-                viewModel = PodcastsViewModel(repository: repos.podcasts)
+                viewModel = PodcastsViewModel(repository: repos.podcasts, localization: localization)
             }
             await viewModel?.loadInitial()
         }

@@ -22,7 +22,7 @@ struct VODView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            PageHeader(icon: "film.fill", title: "VOD")
+            PageHeader(icon: "film.fill", title: localization.t("vod.title"))
 
             if let vm = viewModel {
                 if !continueWatchingItems.isEmpty && vm.selectedType == .all {

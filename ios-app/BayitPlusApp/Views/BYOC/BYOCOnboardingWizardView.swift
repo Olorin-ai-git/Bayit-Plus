@@ -1,4 +1,5 @@
 import BayitBYOC
+import BayitCore
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -178,7 +179,12 @@ struct BYOCOnboardingWizardView: View {
             sourceType: sourceType
         )
 
-        guard let baseURL = URL(string: "https://api.bayit.tv") else { return }
+        let config = AppConfiguration()
+        var components = URLComponents()
+        components.scheme = config.apiBaseURL.scheme
+        components.host = config.apiBaseURL.host
+        components.port = config.apiBaseURL.port
+        guard let baseURL = components.url else { return }
         let normService = BYOCNormalizationService(baseURL: baseURL)
 
         do {

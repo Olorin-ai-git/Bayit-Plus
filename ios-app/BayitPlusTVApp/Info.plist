@@ -6,6 +6,8 @@
 	<string>$(API_BASE_URL)</string>
 	<key>API_RETRYABLE_STATUS_CODES</key>
 	<string>$(API_RETRYABLE_STATUS_CODES)</string>
+	<key>AUTH_SERVICE_URL</key>
+	<string>$(AUTH_SERVICE_URL)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -21,7 +23,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0</string>
+	<string>1.0.8</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -38,7 +40,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>4</string>
 	<key>DEFAULT_CULTURE_ID</key>
 	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>GOOGLE_CLIENT_ID</key>

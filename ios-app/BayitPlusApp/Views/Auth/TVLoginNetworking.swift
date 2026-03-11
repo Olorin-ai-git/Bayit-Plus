@@ -21,7 +21,7 @@ extension TVLoginView {
             guard verified else {
                 logger.warning("Session verification failed")
                 status = .failed
-                errorMessage = "Invalid or expired session"
+                errorMessage = localization.t("errors.invalidSession")
                 return
             }
 
@@ -39,7 +39,7 @@ extension TVLoginView {
         guard authManager.isAuthenticated else {
             logger.warning("User not authenticated, cannot complete TV login")
             status = .failed
-            errorMessage = "Please sign in first"
+            errorMessage = localization.t("errors.signInRequired")
             return
         }
 

@@ -179,6 +179,7 @@
         private func initializeViewModel() async {
             viewModel = SubscriptionGateViewModel(
                 storeManager: repos.storeManager,
+                localization: localization,
                 contentId: contentId,
                 requiredTier: requiredTier
             )

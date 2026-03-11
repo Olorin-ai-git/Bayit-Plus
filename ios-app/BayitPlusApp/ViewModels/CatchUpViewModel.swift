@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import Foundation
 import Observation
@@ -48,16 +49,19 @@ final class CatchUpViewModel {
 
     let repository: any LiveTVRepository
     let preferences: CatchUpPreferencesService
+    let localization: LocalizationManager
     let logger: BayitLogger
 
     // MARK: - Init
 
     init(
         repository: any LiveTVRepository,
+        localization: LocalizationManager,
         preferences: CatchUpPreferencesService = CatchUpPreferencesService(),
         logger: BayitLogger = BayitLogger(category: "CatchUpViewModel")
     ) {
         self.repository = repository
+        self.localization = localization
         self.preferences = preferences
         self.logger = logger
     }
@@ -132,7 +136,7 @@ final class CatchUpViewModel {
         } catch let apiError as APIError {
             handleAPIError(apiError)
         } catch {
-            self.error = "Unable to generate summary"
+            self.error = localization.t("catchup.error.failed")
             errorType = .general
             logger.error("Summary fetch failed", error: error)
         }

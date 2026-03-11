@@ -49,7 +49,7 @@ extension TVPlayerView {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 600)
 
-            GlassButton("Retry", variant: .secondary, size: .large) {
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .large) {
                 Task { await resolveAndPlay() }
             }
             .frame(maxWidth: 300)

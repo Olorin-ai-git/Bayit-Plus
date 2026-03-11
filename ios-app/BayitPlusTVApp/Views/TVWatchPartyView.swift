@@ -24,7 +24,6 @@ struct TVWatchPartyView: View {
         }
     }
 
-    @ViewBuilder
     private var mainContent: some View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
@@ -116,7 +115,7 @@ struct TVWatchPartyView: View {
     }
 
     private func leaveButton(_ vm: WatchPartyViewModel) -> some View {
-        GlassButton("Leave Party", variant: .secondary, size: .medium) {
+        GlassButton(localization.t("watchParty.leave"), variant: .secondary, size: .medium) {
             Task { await vm.leaveParty() }
         }
         .tvFocusStyle()
@@ -145,9 +144,9 @@ struct TVWatchPartyView: View {
 
     private func lobbyActions(_ vm: WatchPartyViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
-            GlassButton("Create Party", variant: .primary, size: .medium) { vm.showCreateSheet = true }
+            GlassButton(localization.t("watchParty.create"), variant: .primary, size: .medium) { vm.showCreateSheet = true }
                 .tvFocusStyle().accessibilityLabel("Create a new watch party")
-            GlassButton("Join Party", variant: .secondary, size: .medium) { vm.showJoinSheet = true }
+            GlassButton(localization.t("watchParty.join"), variant: .secondary, size: .medium) { vm.showJoinSheet = true }
                 .tvFocusStyle().accessibilityLabel("Join an existing watch party")
         }
     }

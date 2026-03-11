@@ -1,3 +1,4 @@
+import BayitLocalization
 import Foundation
 import Observation
 import StoreKit
@@ -14,9 +15,11 @@ final class SubscriptionViewModel {
     var selectedBillingPeriod: BillingPeriod = .monthly
 
     private let storeManager: StoreManager
+    private let localization: LocalizationManager
 
-    init(storeManager: StoreManager) {
+    init(storeManager: StoreManager, localization: LocalizationManager) {
         self.storeManager = storeManager
+        self.localization = localization
     }
 
     var monthlyProduct: Product? {
@@ -53,7 +56,7 @@ final class SubscriptionViewModel {
     @MainActor
     func purchase() async -> Bool {
         guard let product = selectedProduct else {
-            error = "No product selected"
+            error = localization.t("subscribe.noProductSelected")
             return false
         }
         isProcessing = true

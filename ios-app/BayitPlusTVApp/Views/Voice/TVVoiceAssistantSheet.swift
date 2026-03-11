@@ -53,7 +53,7 @@
 
                 Spacer()
 
-                GlassButton("Close", variant: .secondary, size: .small) {
+                GlassButton(localization.t("common.close"), variant: .secondary, size: .small) {
                     if isRecording { audioService.cancelRecording() }
                     onDismiss()
                 }
@@ -116,7 +116,7 @@
                     .submitLabel(.send)
                     .onSubmit { processQuery() }
 
-                GlassButton("Ask", variant: .primary, size: .medium) {
+                GlassButton(localization.t("voice.ask"), variant: .primary, size: .medium) {
                     processQuery()
                 }
                 .tvFocusStyle()

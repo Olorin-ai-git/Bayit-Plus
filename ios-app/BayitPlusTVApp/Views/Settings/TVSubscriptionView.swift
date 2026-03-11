@@ -37,7 +37,7 @@ struct TVSubscriptionView: View {
         .background(DesignTokens.Background.primary)
         .task {
             if viewModel == nil {
-                viewModel = SubscriptionViewModel(storeManager: repos.storeManager)
+                viewModel = SubscriptionViewModel(storeManager: repos.storeManager, localization: localization)
             }
             await viewModel?.load()
         }

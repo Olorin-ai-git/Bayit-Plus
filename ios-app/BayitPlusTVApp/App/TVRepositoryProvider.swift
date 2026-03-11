@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import Foundation
 import Observation
@@ -67,7 +68,8 @@ final class TVRepositoryProvider {
         client: APIClient,
         webSocketManager: WebSocketManager,
         authTokenProvider: AuthTokenProvider,
-        configuration: any EnvironmentConfiguration
+        configuration: any EnvironmentConfiguration,
+        localization: LocalizationManager
     ) {
         apiClient = client
         actor = APIActorRepository(client: client)
@@ -120,6 +122,6 @@ final class TVRepositoryProvider {
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         offlineCache = OfflineCacheService()
-        storeManager = StoreManager(config: configuration, apiClient: client)
+        storeManager = StoreManager(config: configuration, apiClient: client, localization: localization)
     }
 }

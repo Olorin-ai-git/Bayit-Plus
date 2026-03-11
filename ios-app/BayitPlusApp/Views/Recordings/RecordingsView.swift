@@ -11,7 +11,7 @@ struct RecordingsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PageHeader(icon: "record.circle", title: "Recordings")
+            PageHeader(icon: "record.circle", title: localization.t("recordings.title"))
 
             ScrollView(.vertical, showsIndicators: false) {
                 if let vm = viewModel {

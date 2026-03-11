@@ -21,7 +21,7 @@ struct GlossaryView: View {
         }
         .background(DesignTokens.Background.primary)
         .walkthroughOverlay(featureId: "glossary", localize: localization.t)
-        .navigationTitle("Hebrew Glossary")
+        .navigationTitle(localization.t("glossary.title"))
         .task {
             await viewModel.fetchEntries(reset: true)
         }
@@ -72,7 +72,7 @@ struct GlossaryView: View {
             }
 
             if viewModel.hasMore && !viewModel.isLoading {
-                Button("Load More") {
+                Button(localization.t("common.loadMore")) {
                     Task { await viewModel.loadMore() }
                 }
                 .foregroundStyle(DesignTokens.Primary.p400)

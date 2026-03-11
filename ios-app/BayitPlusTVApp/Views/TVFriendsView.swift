@@ -37,7 +37,6 @@ struct TVFriendsView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: FriendsViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             searchSection(vm)
@@ -69,7 +68,7 @@ struct TVFriendsView: View {
                 .accessibilityLabel("Search for users")
 
             if !vm.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                GlassButton("Search", variant: .primary, size: .medium) {
+                GlassButton(localization.t("common.search"), variant: .primary, size: .medium) {
                     Task { await vm.searchUsers() }
                 }
                 .tvFocusStyle()
@@ -107,10 +106,10 @@ struct TVFriendsView: View {
                 .foregroundStyle(DesignTokens.Text.primary)
                 .lineLimit(1)
             HStack(spacing: TVDesignTokens.Spacing.md) {
-                GlassButton("Accept", variant: .primary, size: .medium) {
+                GlassButton(localization.t("common.accept"), variant: .primary, size: .medium) {
                     Task { await viewModel?.acceptRequest(request.id) }
                 }
-                GlassButton("Decline", variant: .secondary, size: .medium) {
+                GlassButton(localization.t("common.decline"), variant: .secondary, size: .medium) {
                     Task { await viewModel?.rejectRequest(request.id) }
                 }
             }

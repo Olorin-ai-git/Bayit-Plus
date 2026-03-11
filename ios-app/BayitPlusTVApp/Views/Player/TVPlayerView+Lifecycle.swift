@@ -129,7 +129,7 @@ extension TVPlayerView {
         resolveBYOCCapabilities()
 
         if isLive, authManager.user?.isBetaUser == true {
-            let vm = CatchUpViewModel(repository: repos.liveTV)
+            let vm = CatchUpViewModel(repository: repos.liveTV, localization: localization)
             state.catchUpVM = vm
             Task {
                 await vm.checkAvailability(
@@ -164,7 +164,8 @@ extension TVPlayerView {
             let dubbingWS = LiveDubbingWebSocketService(
                 webSocketManager: repos.webSocketManager,
                 configuration: repos.configuration,
-                authTokenProvider: repos.authTokenProvider
+                authTokenProvider: repos.authTokenProvider,
+                localization: localization
             )
             state.webSocketService = dubbingWS
             let dubbingVM = LiveDubbingViewModel(
@@ -179,7 +180,8 @@ extension TVPlayerView {
             let subtitleWS = LiveSubtitlesWebSocketService(
                 webSocketManager: repos.webSocketManager,
                 configuration: repos.configuration,
-                authTokenProvider: repos.authTokenProvider
+                authTokenProvider: repos.authTokenProvider,
+                localization: localization
             )
             let subtitleVM = LiveSubtitlesViewModel(
                 webSocketService: subtitleWS

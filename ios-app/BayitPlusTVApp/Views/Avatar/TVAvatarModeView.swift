@@ -63,7 +63,7 @@ struct TVAvatarModeView: View {
 
             Spacer()
 
-            GlassButton("Preferences", variant: .secondary, size: .small) {
+            GlassButton(localization.t("avatar.preferences"), variant: .secondary, size: .small) {
                 showPreferences = true
             }
             .tvFocusStyle()
@@ -114,7 +114,7 @@ struct TVAvatarModeView: View {
                 .submitLabel(.send)
                 .onSubmit { Task { await vm.sendTextInput() } }
 
-            GlassButton("Send", variant: .primary, size: .medium) {
+            GlassButton(localization.t("common.send"), variant: .primary, size: .medium) {
                 Task { await vm.sendTextInput() }
             }
             .tvFocusStyle()

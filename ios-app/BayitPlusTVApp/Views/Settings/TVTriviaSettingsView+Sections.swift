@@ -10,7 +10,7 @@ extension TVTriviaSettingsView {
 
     var frequencySection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(icon: "clock", title: "Frequency")
+            sectionHeader(icon: "clock", title: localization.t("trivia.settings.frequency"))
 
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 ForEach(TriviaFrequency.allCases, id: \.self) { freq in
@@ -32,7 +32,7 @@ extension TVTriviaSettingsView {
 
     var categoriesSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(icon: "folder", title: "Categories")
+            sectionHeader(icon: "folder", title: localization.t("trivia.settings.categories"))
 
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 ForEach(TriviaCategory.allCases, id: \.self) { category in
@@ -65,7 +65,7 @@ extension TVTriviaSettingsView {
 
     var durationSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(icon: "timer", title: "Display Duration")
+            sectionHeader(icon: "timer", title: localization.t("trivia.settings.displayDuration"))
 
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 ForEach([10, 15, 20, 30], id: \.self) { duration in
@@ -87,7 +87,7 @@ extension TVTriviaSettingsView {
 
     var languagesSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(icon: "globe", title: "Languages")
+            sectionHeader(icon: "globe", title: localization.t("trivia.settings.languages"))
 
             Text(localization.t("trivia.selectLanguagesHint"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
@@ -140,7 +140,7 @@ extension TVTriviaSettingsView {
     // MARK: - Done Button
 
     var doneButton: some View {
-        GlassButton("Done", variant: .secondary, size: .large) {
+        GlassButton(localization.t("common.done"), variant: .secondary, size: .large) {
             dismiss()
         }
         .focused($focusedField, equals: .done)

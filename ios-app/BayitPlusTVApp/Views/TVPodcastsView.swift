@@ -49,7 +49,7 @@ struct TVPodcastsView: View {
         }
         .task {
             if viewModel == nil {
-                viewModel = PodcastsViewModel(repository: repos.podcasts)
+                viewModel = PodcastsViewModel(repository: repos.podcasts, localization: localization)
             }
             if audiobooksViewModel == nil {
                 audiobooksViewModel = AudiobooksViewModel(repository: repos.audiobook)

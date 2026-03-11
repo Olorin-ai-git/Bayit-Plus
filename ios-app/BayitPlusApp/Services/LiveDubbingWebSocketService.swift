@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import Foundation
 import Observation
@@ -19,6 +20,7 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
     private let webSocketManager: WebSocketManager
     private let configuration: any EnvironmentConfiguration
     private let authTokenProvider: AuthTokenProvider
+    private let localization: LocalizationManager
     private let logger = BayitLogger(category: "LiveDubbingWebSocket")
 
     private static var platformIdentifier: String {
@@ -32,11 +34,13 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
     init(
         webSocketManager: WebSocketManager,
         configuration: any EnvironmentConfiguration,
-        authTokenProvider: AuthTokenProvider
+        authTokenProvider: AuthTokenProvider,
+        localization: LocalizationManager
     ) {
         self.webSocketManager = webSocketManager
         self.configuration = configuration
         self.authTokenProvider = authTokenProvider
+        self.localization = localization
     }
 
     @MainActor
@@ -63,7 +67,7 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
         urlComponents?.queryItems = queryItems
 
         guard let url = urlComponents?.url else {
-            error = "Failed to construct WebSocket URL"
+            error = localization.t("errors.websocketUrlFailed")
             logger.error("Invalid WebSocket URL construction", context: [
                 "channelId": channelId,
                 "targetLanguage": targetLanguage,
@@ -76,7 +80,7 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
             do {
                 guard let token = try await authTokenProvider.currentToken() else {
                     await MainActor.run {
-                        self.error = "No auth token available"
+                        self.error = self.localization.t("errors.noAuthToken")
                         self.isConnected = false
                     }
                     return
@@ -180,7 +184,7 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
         } else if let lat = try? decoder.decode(DubbingLatencyMessage.self, from: data) {
             latency = lat
         } else if text.contains("\"error\"") {
-            error = "Server error received"
+            error = localization.t("errors.api.serverError")
             isConnected = false
             logger.error("Server error message", context: ["message": text])
         }

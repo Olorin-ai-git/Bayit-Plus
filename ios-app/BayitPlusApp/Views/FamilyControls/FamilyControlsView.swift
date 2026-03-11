@@ -58,7 +58,8 @@ struct FamilyControlsView: View {
         .task {
             if viewModel == nil {
                 viewModel = FamilyControlsViewModel(
-                    repository: repos.familyControls
+                    repository: repos.familyControls,
+                    localization: localization
                 )
             }
             await viewModel?.loadPreferences()
@@ -93,7 +94,7 @@ struct FamilyControlsView: View {
                     AgeSliderView(
                         label: localization.t("familyControls.kidsMaxAge"),
                         value: Bindable(vm).kidsMaxAge,
-                        range: 1...17
+                        range: 1 ... 17
                     )
 
                     Rectangle()
@@ -103,7 +104,7 @@ struct FamilyControlsView: View {
                     AgeSliderView(
                         label: localization.t("familyControls.youngstersMaxAge"),
                         value: Bindable(vm).youngstersMaxAge,
-                        range: 1...18
+                        range: 1 ... 18
                     )
                 }
             }

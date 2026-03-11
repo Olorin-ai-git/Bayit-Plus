@@ -79,7 +79,7 @@ extension HomeView {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, DesignTokens.Spacing.xl)
 
-            GlassButton("Retry", variant: .secondary, size: .medium) {
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .medium) {
                 Task { await viewModel?.refresh() }
             }
             .accessibilityHint("Double tap to reload content")

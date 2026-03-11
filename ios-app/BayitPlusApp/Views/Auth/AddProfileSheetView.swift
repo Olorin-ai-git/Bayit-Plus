@@ -35,15 +35,15 @@ struct AddProfileSheetView: View {
                     .padding(DesignTokens.Spacing.xl)
                 }
             }
-            .navigationTitle("Add Profile")
+            .navigationTitle(localization.t("profile.addProfile"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(localization.t("common.cancel")) { dismiss() }
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Create") { createProfile() }
+                    Button(localization.t("common.create")) { createProfile() }
                         .foregroundStyle(
                             canCreate
                                 ? DesignTokens.Primary.default

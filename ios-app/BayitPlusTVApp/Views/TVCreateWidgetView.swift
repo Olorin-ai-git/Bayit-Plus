@@ -104,11 +104,11 @@
 
         var actionButtons: some View {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
-                GlassButton("Cancel", variant: .secondary, size: .large) {
+                GlassButton(localization.t("common.cancel"), variant: .secondary, size: .large) {
                     onDismiss()
                 }
 
-                GlassButton("Save", variant: .primary, size: .large) {
+                GlassButton(localization.t("common.save"), variant: .primary, size: .large) {
                     Task { await save() }
                 }
                 .disabled(!isFormValid || isSaving)

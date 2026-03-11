@@ -100,7 +100,7 @@ extension PlayerView {
         if mediaContentType.isLive,
            authManager.user?.isBetaUser == true
         {
-            let vm = CatchUpViewModel(repository: repositories.liveTV)
+            let vm = CatchUpViewModel(repository: repositories.liveTV, localization: localization)
             catchUpVM = vm
             Task {
                 await vm.checkAvailability(
@@ -114,7 +114,8 @@ extension PlayerView {
             let dubbingWS = LiveDubbingWebSocketService(
                 webSocketManager: repositories.webSocketManager,
                 configuration: repositories.configuration,
-                authTokenProvider: repositories.authTokenProvider
+                authTokenProvider: repositories.authTokenProvider,
+                localization: localization
             )
             liveDubbingVM = LiveDubbingViewModel(
                 repository: repositories.liveDubbing,
@@ -124,7 +125,8 @@ extension PlayerView {
             let subtitleWS = LiveSubtitlesWebSocketService(
                 webSocketManager: repositories.webSocketManager,
                 configuration: repositories.configuration,
-                authTokenProvider: repositories.authTokenProvider
+                authTokenProvider: repositories.authTokenProvider,
+                localization: localization
             )
             liveSubtitlesVM = LiveSubtitlesViewModel(
                 webSocketService: subtitleWS

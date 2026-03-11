@@ -1,3 +1,4 @@
+import BayitLocalization
 import BayitNetworking
 import Foundation
 import Observation
@@ -40,9 +41,11 @@ final class FamilyControlsViewModel {
     }()
 
     private let repository: any FamilyControlsRepository
+    private let localization: LocalizationManager
 
-    init(repository: any FamilyControlsRepository) {
+    init(repository: any FamilyControlsRepository, localization: LocalizationManager) {
         self.repository = repository
+        self.localization = localization
     }
 
     // MARK: - Load
@@ -78,7 +81,7 @@ final class FamilyControlsViewModel {
     @MainActor
     func setPin(_ pin: String) async {
         guard pin.count == 4 else {
-            error = "PIN must be 4 digits"
+            error = localization.t("familyControls.errors.pinTooShort")
             return
         }
 
@@ -109,7 +112,7 @@ final class FamilyControlsViewModel {
     @MainActor
     func verifyPin(_ pin: String) async {
         guard pin.count == 4 else {
-            error = "PIN must be 4 digits"
+            error = localization.t("familyControls.errors.pinTooShort")
             return
         }
 
@@ -126,7 +129,7 @@ final class FamilyControlsViewModel {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 #endif
             } else {
-                error = "Invalid PIN"
+                error = localization.t("familyControls.errors.invalidPin")
                 #if os(iOS)
                     UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                 #endif
@@ -163,7 +166,7 @@ final class FamilyControlsViewModel {
         do {
             let saved = try await repository.updateControls(update)
             preferences = saved
-            successMessage = "Settings saved"
+            successMessage = localization.t("familyControls.settingsSaved")
             #if os(iOS)
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             #endif

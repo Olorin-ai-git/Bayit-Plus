@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import BayitVoice
 import Foundation
@@ -67,7 +68,7 @@ final class RepositoryProvider {
     let storeManager: StoreManager
     let apiClient: APIClient
 
-    init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider, configuration: any EnvironmentConfiguration) {
+    init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider, configuration: any EnvironmentConfiguration, localization: LocalizationManager) {
         apiClient = client
         actor = APIActorRepository(client: client)
         content = APIContentRepository(client: client)
@@ -125,6 +126,6 @@ final class RepositoryProvider {
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         offlineCache = OfflineCacheService()
-        storeManager = StoreManager(config: configuration, apiClient: client)
+        storeManager = StoreManager(config: configuration, apiClient: client, localization: localization)
     }
 }

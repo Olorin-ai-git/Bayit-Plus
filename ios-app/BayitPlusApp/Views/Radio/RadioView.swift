@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Radio screen showing station cards with live status
 struct RadioView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(AudioPlaybackManager.self) private var audioManager
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: RadioViewModel?
 
     private let columns = [
@@ -14,7 +16,7 @@ struct RadioView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            PageHeader(icon: "radio.fill", title: "Radio")
+            PageHeader(icon: "radio.fill", title: localization.t("radio.title"))
 
             if let vm = viewModel {
                 if vm.isLoading && vm.stations.isEmpty {

@@ -158,7 +158,7 @@ struct ChessView: View {
             authTokenProvider: repos.authTokenProvider
         )
         vm.localUserId = authManager.user?.id
-        vm.webHost = "bayit.tv"
+        vm.webHost = repos.configuration.environment == .production ? "bayit.tv" : "staging.bayit.tv"
         viewModel = vm
         let inviteVM = ChessInviteViewModel(repository: repos.chess)
         inviteViewModel = inviteVM

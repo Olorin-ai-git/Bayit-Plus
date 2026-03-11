@@ -1,8 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Reusable error state with retry button, used across all content screens
 struct ErrorStateView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let message: String
     let onRetry: () -> Void
 
@@ -18,7 +21,7 @@ struct ErrorStateView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, DesignTokens.Spacing.xl)
 
-            GlassButton("Retry", variant: .secondary, size: .medium, action: onRetry)
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .medium, action: onRetry)
                 .frame(width: 120)
         }
         .frame(maxWidth: .infinity)

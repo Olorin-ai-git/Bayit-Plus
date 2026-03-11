@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import Foundation
 import Observation
 
@@ -18,11 +19,13 @@ final class PodcastsViewModel {
     var selectedCategory: String?
 
     private let repository: any PodcastRepository
+    private let localization: LocalizationManager
     private let logger = BayitLogger(category: "Podcasts")
     private let pageSize = 20
 
-    init(repository: any PodcastRepository) {
+    init(repository: any PodcastRepository, localization: LocalizationManager) {
         self.repository = repository
+        self.localization = localization
     }
 
     @MainActor
@@ -109,7 +112,7 @@ final class PodcastsViewModel {
             shows.removeAll { $0.id == id }
             logger.info("Podcast removed", context: ["id": id])
         } catch {
-            self.error = "Failed to remove podcast"
+            self.error = localization.t("podcasts.removeFailed")
             logger.error("Failed to remove podcast", error: error)
         }
     }

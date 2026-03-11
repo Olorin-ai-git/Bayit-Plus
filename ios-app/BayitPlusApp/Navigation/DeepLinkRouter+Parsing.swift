@@ -72,12 +72,36 @@ extension DeepLink {
         pathComponents: [String],
         url: URL
     ) -> Route? {
-        guard let contentId = pathComponents.dropFirst().first,
-              let sanitized = sanitizeID(contentId) else { return nil }
+        let contentId = pathComponents.dropFirst().first
+            .flatMap { sanitizeID($0) }
+
+        if let walkthrough = url.queryValue(for: "walkthrough") {
+            return parseWalkthroughRoute(
+                walkthrough: walkthrough,
+                contentId: contentId
+            )
+        }
+
+        guard let sanitized = contentId else { return nil }
         let typeString = url.queryValue(for: "type") ?? "movie"
         let contentType = ContentType(rawValue: typeString) ?? .movie
         let resume = url.queryValue(for: "resume") == "true"
         return .player(contentId: sanitized, contentType: contentType, resume: resume)
+    }
+
+    private static func parseWalkthroughRoute(
+        walkthrough: String,
+        contentId: String?
+    ) -> Route? {
+        switch walkthrough {
+        case "interactive_subtitles":
+            return .interactiveSubtitles(contentId: contentId ?? "")
+        case "chapters":
+            return .chapters(contentId: contentId ?? "")
+        default:
+            guard let id = contentId else { return nil }
+            return .player(contentId: id, contentType: .movie, resume: false)
+        }
     }
 
     // MARK: - TV Login Route

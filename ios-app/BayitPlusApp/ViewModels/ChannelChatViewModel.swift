@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import Foundation
 import Observation
@@ -16,15 +17,17 @@ final class ChannelChatViewModel {
 
     private let repository: any LiveTVRepository
     private let webSocketManager: WebSocketManager
+    private let localization: LocalizationManager
     private let logger = BayitLogger(category: "ChannelChatViewModel")
     private var connection: WebSocketConnection?
     private var channelId: String?
     private var receiveTask: Task<Void, Never>?
     private var disconnectTask: Task<Void, Never>?
 
-    init(repository: any LiveTVRepository, webSocketManager: WebSocketManager) {
+    init(repository: any LiveTVRepository, webSocketManager: WebSocketManager, localization: LocalizationManager) {
         self.repository = repository
         self.webSocketManager = webSocketManager
+        self.localization = localization
     }
 
     func connect(channelId: String, authToken: String) async {
@@ -57,7 +60,7 @@ final class ChannelChatViewModel {
             listenForMessages()
             logger.info("Channel chat connected", context: ["channelId": channelId])
         } catch {
-            self.error = "Unable to connect to chat"
+            self.error = localization.t("channelChat.connectionFailed")
             logger.error("Chat WebSocket connection failed", error: error)
         }
 

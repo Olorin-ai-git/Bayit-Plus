@@ -18,7 +18,7 @@
                 if let selected = selectedContent {
                     selectedContentCard(selected)
                 } else {
-                    GlassButton("Browse Content", variant: .secondary, size: .large,
+                    GlassButton(localization.t("widgets.browseContent"), variant: .secondary, size: .large,
                                 icon: Image(systemName: "square.grid.2x2"))
                     {
                         syncPickerTab(for: selectedContentType)
@@ -62,7 +62,7 @@
 
                 Spacer()
 
-                GlassButton("Change", variant: .secondary, size: .medium) {
+                GlassButton(localization.t("common.change"), variant: .secondary, size: .medium) {
                     syncPickerTab(for: selectedContentType)
                     showContentPicker = true
                 }

@@ -49,7 +49,8 @@ struct PiPWidgetContainerView: View {
                     liveTVRepo: repos.liveTV,
                     radioRepo: repos.radio,
                     podcastRepo: repos.podcasts,
-                    audiobookRepo: repos.audiobook
+                    audiobookRepo: repos.audiobook,
+                    localization: localization
                 )
             }
             await playerVM?.resolveCover(for: widget)

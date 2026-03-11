@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import BayitNetworking
 import SwiftUI
@@ -12,6 +13,7 @@ struct ContentView: View {
     @Environment(MediaPlayer.self) private var mediaPlayer
     @Environment(WidgetDataSyncService.self) private var widgetSync
     @Environment(DownloadManager.self) private var downloadManager
+    @Environment(LocalizationManager.self) private var localization
     @Environment(\.appConfiguration) private var appConfiguration
 
     @State private var showingSplash = true
@@ -138,7 +140,7 @@ struct ContentView: View {
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             GlassButton(
-                                "Close",
+                                localization.t("common.close"),
                                 variant: .secondary,
                                 size: .medium,
                                 icon: Image(systemName: "xmark")

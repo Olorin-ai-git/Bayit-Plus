@@ -24,8 +24,8 @@ struct TVCreatePartySheet: View {
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                GlassTextField("Content ID", text: $contentId)
-                    .accessibilityLabel("Content ID")
+                GlassTextField(localization.t("watchParty.contentId"), text: $contentId)
+                    .accessibilityLabel(localization.t("watchParty.contentId"))
 
                 contentTypePicker
                 participantPicker
@@ -73,7 +73,7 @@ struct TVCreatePartySheet: View {
     private var actionButtons: some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
             GlassButton(
-                "Cancel",
+                localization.t("common.cancel"),
                 variant: .secondary,
                 size: .medium,
                 action: { isPresented = false }
@@ -82,7 +82,7 @@ struct TVCreatePartySheet: View {
             .accessibilityLabel("Cancel creating party")
 
             GlassButton(
-                "Create",
+                localization.t("common.create"),
                 variant: .primary,
                 size: .medium,
                 isDisabled: contentId.trimmingCharacters(in: .whitespaces).isEmpty,

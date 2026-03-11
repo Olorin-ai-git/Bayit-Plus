@@ -6,7 +6,7 @@ import SwiftUI
 extension HomeView {
     @ViewBuilder
     func contentSections(_ vm: HomeViewModel) -> some View {
-        PageHeader(icon: "house.fill", title: "Home")
+        PageHeader(icon: "house.fill", title: localization.t("home.title"))
 
         cultureClocks
 

@@ -16,13 +16,13 @@
                     .submitLabel(.send)
                     .onSubmit { Task { await vm.sendMessage() } }
 
-                GlassButton("Send", variant: .primary, size: .medium) {
+                GlassButton(localization.t("common.send"), variant: .primary, size: .medium) {
                     Task { await vm.sendMessage() }
                 }
                 .tvFocusStyle()
                 .disabled(vm.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
-                GlassButton("New Chat", variant: .secondary, size: .medium) {
+                GlassButton(localization.t("chat.newChat"), variant: .secondary, size: .medium) {
                     vm.startNewConversation()
                 }
                 .tvFocusStyle()

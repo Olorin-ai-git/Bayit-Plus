@@ -55,7 +55,8 @@ struct TVFamilyControlsView: View {
         .task {
             if viewModel == nil {
                 viewModel = FamilyControlsViewModel(
-                    repository: repos.familyControls
+                    repository: repos.familyControls,
+                    localization: localization
                 )
             }
             await viewModel?.loadPreferences()

@@ -7,7 +7,6 @@ import SwiftUI
 /// Implements a state machine: question -> listening -> evaluating -> result.
 /// Provides Hebrew voice engagement with character-driven prompts.
 struct TalkBackOverlayView: View {
-
     @Environment(LocalizationManager.self) private var localization
     @Bindable var viewModel: TalkBackViewModel
     let sessionId: String
@@ -90,12 +89,13 @@ struct TalkBackOverlayView: View {
             )
 
             HStack(spacing: DesignTokens.Spacing.md) {
-                GlassButton("Respond", variant: .primary, size: .small,
-                    icon: Image(systemName: "mic.fill")) {
+                GlassButton(localization.t("player.talkback.respond"), variant: .primary, size: .small,
+                            icon: Image(systemName: "mic.fill"))
+                {
                     viewModel.startListening()
                 }
 
-                GlassButton("Skip", variant: .ghost, size: .small) {
+                GlassButton(localization.t("common.skip"), variant: .ghost, size: .small) {
                     viewModel.dismiss()
                 }
             }

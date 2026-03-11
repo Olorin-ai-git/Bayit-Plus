@@ -141,7 +141,7 @@ struct QuizResultsView: View {
     // MARK: - Dismiss
 
     private var dismissButton: some View {
-        GlassButton("Done", variant: .primary, size: .large) {
+        GlassButton(localization.t("common.done"), variant: .primary, size: .large) {
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
             onDismiss()

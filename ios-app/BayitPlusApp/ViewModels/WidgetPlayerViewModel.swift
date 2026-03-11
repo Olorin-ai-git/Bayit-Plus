@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitMedia
 import Foundation
 import Observation
@@ -19,6 +20,7 @@ final class WidgetPlayerViewModel {
     let radioRepo: any RadioRepository
     let podcastRepo: any PodcastRepository
     let audiobookRepo: any AudiobookRepository
+    private let localization: LocalizationManager
     private let logger = BayitLogger(category: "WidgetPlayer")
 
     init(
@@ -27,7 +29,8 @@ final class WidgetPlayerViewModel {
         liveTVRepo: any LiveTVRepository,
         radioRepo: any RadioRepository,
         podcastRepo: any PodcastRepository,
-        audiobookRepo: any AudiobookRepository
+        audiobookRepo: any AudiobookRepository,
+        localization: LocalizationManager
     ) {
         self.mediaRepo = mediaRepo
         self.contentRepo = contentRepo
@@ -35,6 +38,7 @@ final class WidgetPlayerViewModel {
         self.radioRepo = radioRepo
         self.podcastRepo = podcastRepo
         self.audiobookRepo = audiobookRepo
+        self.localization = localization
     }
 
     var isPlaying: Bool {
@@ -80,7 +84,7 @@ final class WidgetPlayerViewModel {
         do {
             let (urlString, mediaType) = try await resolveStream(for: widget)
             guard let url = URL(string: urlString) else {
-                errorMessage = "Invalid stream URL"
+                errorMessage = localization.t("errors.invalidStreamUrl")
                 isLoading = false
                 return
             }

@@ -30,7 +30,7 @@ struct CollectionDetailView: View {
             }
         }
         .background(DesignTokens.Background.primary)
-        .navigationTitle("Collection")
+        .navigationTitle(localization.t("vod.collection"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             if viewModel == nil {

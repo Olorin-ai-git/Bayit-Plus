@@ -12,10 +12,11 @@
         let onDismiss: () -> Void
 
         init(repository: any LiveTVRepository, channelId: String,
+             localization: LocalizationManager,
              onSeek: @escaping (TimeInterval) -> Void,
              onDismiss: @escaping () -> Void)
         {
-            _viewModel = State(initialValue: SceneSearchViewModel(repository: repository))
+            _viewModel = State(initialValue: SceneSearchViewModel(repository: repository, localization: localization))
             self.channelId = channelId
             self.onSeek = onSeek
             self.onDismiss = onDismiss
@@ -152,7 +153,7 @@
                 Spacer()
                 Text(message)
                     .foregroundStyle(DesignTokens.Text.secondary)
-                GlassButton("Retry", variant: .secondary) {
+                GlassButton(localization.t("common.retry"), variant: .secondary) {
                     Task { await viewModel.search(channelId: channelId) }
                 }
                 Spacer()

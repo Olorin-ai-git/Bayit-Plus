@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitMedia
 import Foundation
 import Observation
@@ -39,6 +40,21 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .discover: return "Discover"
         case .profile: return "Profile"
         case .widgets: return "Widgets"
+        }
+    }
+
+    func localizedTitle(_ localization: LocalizationManager) -> String {
+        switch self {
+        case .home: return localization.t("nav.home")
+        case .liveTV: return localization.t("nav.liveTV")
+        case .vod: return localization.t("nav.vod")
+        case .zehAni: return localization.t("nav.zehAni")
+        case .podcasts: return localization.t("nav.listen")
+        case .byoc: return localization.t("nav.byoc")
+        case .search: return localization.t("nav.search")
+        case .discover: return localization.t("nav.discover")
+        case .profile: return localization.t("nav.profile")
+        case .widgets: return localization.t("nav.widgets")
         }
     }
 

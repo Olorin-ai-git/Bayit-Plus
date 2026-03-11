@@ -20,6 +20,7 @@ struct SupportView: View {
             if viewModel == nil {
                 viewModel = SupportViewModel(
                     repository: repos.settings,
+                    localization: localization,
                     language: localization.currentLanguage.rawValue
                 )
             }

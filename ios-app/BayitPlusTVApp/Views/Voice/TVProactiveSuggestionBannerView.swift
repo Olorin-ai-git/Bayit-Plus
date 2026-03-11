@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS proactive suggestion banner. Visual only — no TTS on Apple TV.
 struct TVProactiveSuggestionBannerView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     let engine: ProactiveSuggestionEngine
     var onExecute: ((ProactiveSuggestion) -> Void)?
@@ -42,13 +44,13 @@ struct TVProactiveSuggestionBannerView: View {
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
                     Spacer()
 
-                    GlassButton("Dismiss", variant: .secondary, size: .medium) {
+                    GlassButton(localization.t("common.dismiss"), variant: .secondary, size: .medium) {
                         engine.dismissSuggestion()
                     }
                     .tvFocusStyle()
                     .accessibilityLabel("Dismiss suggestion")
 
-                    GlassButton("Accept", variant: .primary, size: .medium) {
+                    GlassButton(localization.t("common.accept"), variant: .primary, size: .medium) {
                         onExecute?(suggestion)
                         engine.dismissSuggestion()
                     }

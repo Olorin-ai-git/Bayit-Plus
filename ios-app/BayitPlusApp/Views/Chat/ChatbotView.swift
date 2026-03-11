@@ -27,7 +27,7 @@ struct ChatbotView: View {
                     .walkthroughTarget(id: "discover_chatbot_step2")
             }
         }
-        .navigationTitle("AI Assistant")
+        .navigationTitle(localization.t("chat.title"))
         .navigationBarTitleDisplayMode(.inline)
         .walkthroughOverlay(featureId: "chatbot", localize: localization.t)
         .toolbar {

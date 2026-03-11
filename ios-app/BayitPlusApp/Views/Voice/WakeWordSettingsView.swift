@@ -34,7 +34,7 @@ struct WakeWordSettingsView: View {
                 .padding(.vertical, DesignTokens.Spacing.xl)
             }
         }
-        .navigationTitle("Wake Word")
+        .navigationTitle(localization.t("voice.wakeWord.title"))
         .navigationBarTitleDisplayMode(.large)
     }
 

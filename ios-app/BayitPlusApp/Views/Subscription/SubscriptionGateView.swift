@@ -39,6 +39,7 @@ struct SubscriptionGateView: View {
             if viewModel == nil {
                 viewModel = SubscriptionGateViewModel(
                     storeManager: repos.storeManager,
+                    localization: localization,
                     contentId: contentId,
                     requiredTier: requiredTier
                 )

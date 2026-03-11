@@ -125,7 +125,7 @@ struct QuizOverlayView: View {
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
 
-            GlassButton("Retry", variant: .secondary, size: .medium) {
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .medium) {
                 Task { await viewModel?.loadQuiz(contentId: contentId, profileId: profileId) }
             }
         }

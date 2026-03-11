@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Two-column grid of audiobook authors for browsing by author
 struct AudiobookCollectionsView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var authors: [AudiobookAuthor] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -27,7 +29,7 @@ struct AudiobookCollectionsView: View {
             }
         }
         .background(DesignTokens.Background.primary)
-        .navigationTitle("Browse by Author")
+        .navigationTitle(localization.t("audiobooks.browseByAuthor"))
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadAuthors() }
     }

@@ -75,7 +75,7 @@ struct TVCredentialPanel: View {
     private var signInButtons: some View {
         VStack(spacing: TVDesignTokens.Spacing.sm) {
             GlassButton(
-                isLoading ? "Signing in..." : "Sign In",
+                isLoading ? localization.t("auth.signingIn") : localization.t("auth.signIn"),
                 variant: .primary,
                 size: .medium,
                 isDisabled: email.isEmpty || password.isEmpty,

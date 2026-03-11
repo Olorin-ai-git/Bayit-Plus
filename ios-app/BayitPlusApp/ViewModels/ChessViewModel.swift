@@ -49,7 +49,7 @@ final class ChessViewModel {
     var joinCode: String = ""
 
     var localUserId: String?
-    var webHost: String = "bayit.tv"
+    var webHost: String = ""
 
     let repository: any ChessRepository
     let authTokenProvider: AuthTokenProvider

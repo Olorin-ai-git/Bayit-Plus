@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import Foundation
 import Observation
 
@@ -7,17 +8,18 @@ import Observation
 @MainActor
 @Observable
 final class SceneSearchViewModel {
-
     private(set) var results: [SceneSearchResult] = []
     private(set) var isSearching = false
     private(set) var error: String?
     var query = ""
 
     private let repository: any LiveTVRepository
+    private let localization: LocalizationManager
     private let logger = BayitLogger(category: "SceneSearchViewModel")
 
-    init(repository: any LiveTVRepository) {
+    init(repository: any LiveTVRepository, localization: LocalizationManager) {
         self.repository = repository
+        self.localization = localization
     }
 
     func search(channelId: String) async {
@@ -35,10 +37,10 @@ final class SceneSearchViewModel {
             logger.info("Scene search completed", context: [
                 "channelId": channelId,
                 "query": trimmed,
-                "resultCount": "\(results.count)"
+                "resultCount": "\(results.count)",
             ])
         } catch {
-            self.error = "Search failed"
+            self.error = localization.t("sceneSearch.searchFailed")
             logger.error("Scene search failed", error: error)
         }
 

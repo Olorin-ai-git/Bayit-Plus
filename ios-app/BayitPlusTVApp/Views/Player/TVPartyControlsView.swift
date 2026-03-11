@@ -15,6 +15,7 @@
     }
 
     struct TVPartyControlsView<ViewModel: WatchPartyViewModelProtocol>: View {
+        @Environment(LocalizationManager.self) private var localization
         @Bindable var viewModel: ViewModel
         let onSync: () -> Void
 
@@ -56,15 +57,16 @@
             )
             .alert(isPresented: $showingRoomCode) {
                 Alert(
-                    title: Text("Room Code"),
+                    title: Text(localization.t("watchParty.roomCode")),
                     message: Text(viewModel.activeParty?.roomCode ?? ""),
-                    dismissButton: .default(Text("OK"))
+                    dismissButton: .default(Text(localization.t("common.ok")))
                 )
             }
         }
     }
 
     private struct SyncButton: View {
+        @Environment(LocalizationManager.self) private var localization
         let isConnected: Bool
         let action: () -> Void
 
@@ -76,7 +78,7 @@
                     Image(systemName: "arrow.triangle.2.circlepath")
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
 
-                    Text("Sync Playback")
+                    Text(localization.t("watchParty.syncPlayback"))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                 }
                 .foregroundColor(isConnected ? DesignTokens.Text.primary : DesignTokens.Text.muted)
@@ -98,6 +100,7 @@
     }
 
     private struct InviteButton: View {
+        @Environment(LocalizationManager.self) private var localization
         let roomCode: String
         @Binding var showingRoomCode: Bool
 
@@ -109,7 +112,7 @@
                     Image(systemName: "person.badge.plus")
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
 
-                    Text("Invite")
+                    Text(localization.t("watchParty.invite"))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                 }
                 .foregroundColor(DesignTokens.Text.primary)
@@ -130,6 +133,7 @@
     }
 
     private struct LeavePartyButton: View {
+        @Environment(LocalizationManager.self) private var localization
         @Binding var isLeavingParty: Bool
         let action: () -> Void
 
@@ -144,7 +148,7 @@
                     Image(systemName: "rectangle.portrait.and.arrow.right")
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
 
-                    Text("Leave Party")
+                    Text(localization.t("watchParty.leave"))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                 }
                 .foregroundColor(DesignTokens.ErrorColor.default)

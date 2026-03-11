@@ -5,7 +5,6 @@ import SwiftUI
 /// Displays evaluation results after a Talk Back voice response.
 /// Shows star rating, score, points earned, and encouraging feedback.
 struct TalkBackResultView: View {
-
     @Environment(LocalizationManager.self) private var localization
     let evaluation: TalkBackEvaluation
     let onTryAgain: () -> Void
@@ -40,7 +39,7 @@ struct TalkBackResultView: View {
 
     private var starsRow: some View {
         HStack(spacing: DesignTokens.Spacing.xs) {
-            ForEach(0..<maxStars, id: \.self) { index in
+            ForEach(0 ..< maxStars, id: \.self) { index in
                 Image(systemName: index < starCount ? "star.fill" : "star")
                     .foregroundStyle(DesignTokens.gold)
                     .font(.system(size: DesignTokens.FontSize.xl))
@@ -76,11 +75,11 @@ struct TalkBackResultView: View {
 
     private var actionButtons: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
-            GlassButton("Try Again", variant: .ghost, size: .small) {
+            GlassButton(localization.t("common.tryAgain"), variant: .ghost, size: .small) {
                 onTryAgain()
             }
 
-            GlassButton("Continue", variant: .primary, size: .small) {
+            GlassButton(localization.t("common.continue"), variant: .primary, size: .small) {
                 onContinue()
             }
         }

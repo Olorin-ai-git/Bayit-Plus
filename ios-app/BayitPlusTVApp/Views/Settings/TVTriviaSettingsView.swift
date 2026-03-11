@@ -77,7 +77,7 @@ struct TVTriviaSettingsView: View {
 
             // Enable/Disable Toggle
             GlassButton(
-                isEnabled ? "Trivia Enabled" : "Trivia Disabled",
+                isEnabled ? localization.t("trivia.enabled") : localization.t("trivia.disabled"),
                 variant: isEnabled ? .primary : .ghost,
                 size: .large
             ) {

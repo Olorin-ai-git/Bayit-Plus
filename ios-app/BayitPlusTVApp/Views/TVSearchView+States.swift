@@ -62,7 +62,7 @@ extension TVSearchView {
                 .font(.system(size: TVDesignTokens.FontSize.xl))
                 .foregroundStyle(DesignTokens.Text.muted)
             GlassButton(
-                "AI Search", variant: .secondary, size: .medium,
+                localization.t("search.aiSearch"), variant: .secondary, size: .medium,
                 icon: Image(systemName: "sparkles")
             ) { showAISearch = true }
                 .tvFocusStyle()

@@ -1,3 +1,4 @@
+import BayitLocalization
 import Foundation
 import Observation
 
@@ -18,10 +19,12 @@ final class SupportViewModel {
     var selectedTab: SupportTab = .faq
 
     private let repository: any SettingsRepository
+    private let localization: LocalizationManager
     private let language: String
 
-    init(repository: any SettingsRepository, language: String) {
+    init(repository: any SettingsRepository, localization: LocalizationManager, language: String) {
         self.repository = repository
+        self.localization = localization
         self.language = language
     }
 
@@ -48,7 +51,7 @@ final class SupportViewModel {
     @MainActor
     func submitTicket() async {
         guard !ticketSubject.isEmpty, !ticketMessage.isEmpty else {
-            error = "Subject and message are required"
+            error = localization.t("support.fieldsRequired")
             return
         }
 

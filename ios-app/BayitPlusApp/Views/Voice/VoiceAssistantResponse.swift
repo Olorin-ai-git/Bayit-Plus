@@ -86,7 +86,7 @@ extension VoiceAssistantSheet {
                     processTranscript()
                 }
             } catch {
-                errorMessage = "Could not start speech recognition"
+                errorMessage = localization.t("errors.speechRecognitionFailed")
                 isListening = false
             }
         }
@@ -116,7 +116,7 @@ extension VoiceAssistantSheet {
                 let response = try await chatRepository.sendMessage(request)
                 aiResponse = response.response ?? ""
             } catch {
-                errorMessage = "Could not get a response"
+                errorMessage = localization.t("errors.noResponse")
             }
             isProcessing = false
         }

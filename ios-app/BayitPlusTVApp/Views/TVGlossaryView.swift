@@ -69,7 +69,7 @@ struct TVGlossaryView: View {
             }
 
             if viewModel.hasMore && !viewModel.isLoading {
-                Button("Load More") {
+                Button(localization.t("common.loadMore")) {
                     Task { await viewModel.loadMore() }
                 }
                 .padding(.top, TVDesignTokens.Spacing.lg)

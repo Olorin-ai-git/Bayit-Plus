@@ -60,6 +60,7 @@ struct BayitPlusApp: App {
             logger: apiLogger
         )
 
+        let locMgr = LocalizationManager()
         let locProvider = AppLocationProvider()
 
         let client = APIClient(
@@ -79,7 +80,8 @@ struct BayitPlusApp: App {
             client: client,
             webSocketManager: wsManager,
             authTokenProvider: authMgr.authTokenProvider,
-            configuration: appConfig
+            configuration: appConfig,
+            localization: locMgr
         )
 
         let mp = MediaPlayer()
@@ -102,7 +104,7 @@ struct BayitPlusApp: App {
         }
 
         _authManager = State(initialValue: authMgr)
-        _localizationManager = State(initialValue: LocalizationManager())
+        _localizationManager = State(initialValue: locMgr)
         _apiClient = State(initialValue: client)
         _repositories = State(initialValue: repos)
         _mediaPlayer = State(initialValue: mp)
@@ -114,7 +116,8 @@ struct BayitPlusApp: App {
         ))
         _downloadManager = State(initialValue: DownloadManager(
             userRepository: repos.user,
-            store: DownloadStore()
+            store: DownloadStore(),
+            localization: locMgr
         ))
 
         // Expose shared instances for CarPlay and other secondary scenes

@@ -50,7 +50,7 @@ struct TVAvatarPreferencesView: View {
 
     private var styleSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(title: "Style", icon: "paintbrush")
+            sectionHeader(title: localization.t("avatar.style"), icon: "paintbrush")
 
             LazyVGrid(columns: styleColumns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(TVAvatarViewModel.availableStyles, id: \.self) { style in
@@ -88,7 +88,7 @@ struct TVAvatarPreferencesView: View {
 
     private var voiceSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(title: "Voice", icon: "speaker.wave.2")
+            sectionHeader(title: localization.t("avatar.voice"), icon: "speaker.wave.2")
 
             ForEach(TVAvatarViewModel.availableVoices, id: \.self) { voice in
                 selectionRow(title: voice.capitalized, isSelected: selectedVoice == voice) {
@@ -102,7 +102,7 @@ struct TVAvatarPreferencesView: View {
 
     private var personalitySection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(title: "Personality", icon: "face.smiling")
+            sectionHeader(title: localization.t("avatar.personality"), icon: "face.smiling")
 
             ForEach(TVAvatarViewModel.availablePersonalities, id: \.self) { personality in
                 selectionRow(
@@ -120,7 +120,7 @@ struct TVAvatarPreferencesView: View {
 
     private var animationSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(title: "Animation Level", icon: "sparkle")
+            sectionHeader(title: localization.t("avatar.animationLevel"), icon: "sparkle")
 
             VStack(spacing: TVDesignTokens.Spacing.md) {
                 HStack(spacing: TVDesignTokens.Spacing.md) {
@@ -166,7 +166,7 @@ struct TVAvatarPreferencesView: View {
     // MARK: - Save
 
     private var saveButton: some View {
-        GlassButton("Save Preferences", variant: .primary, size: .medium) {
+        GlassButton(localization.t("avatar.savePreferences"), variant: .primary, size: .medium) {
             viewModel.updatePreferences(
                 style: selectedStyle,
                 voice: selectedVoice,

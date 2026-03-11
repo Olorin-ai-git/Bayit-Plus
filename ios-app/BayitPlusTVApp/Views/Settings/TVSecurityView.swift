@@ -29,7 +29,7 @@ struct TVSecurityView: View {
         .background(DesignTokens.Background.primary)
         .task {
             if viewModel == nil {
-                viewModel = SecurityViewModel(repository: repos.settings)
+                viewModel = SecurityViewModel(repository: repos.settings, localization: localization)
             }
             await viewModel?.load()
         }
