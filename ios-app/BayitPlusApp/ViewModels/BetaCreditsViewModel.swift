@@ -10,6 +10,8 @@ final class BetaCreditsViewModel {
     private(set) var isLoading = false
     private(set) var error: String?
     private(set) var isDeducting = false
+    private(set) var showCreditToast = false
+    private(set) var lastDeductionRemaining: Int?
 
     private let repository: any BetaCreditsRepository
 
@@ -55,6 +57,8 @@ final class BetaCreditsViewModel {
         do {
             let request = CreditDeductRequest(amount: amount, reason: reason)
             balance = try await repository.deductCredits(request)
+            lastDeductionRemaining = balance?.remainingCredits
+            showCreditToast = true
         } catch {
             if let message = error.userFriendlyMessage {
                 self.error = message
@@ -62,6 +66,10 @@ final class BetaCreditsViewModel {
         }
 
         isDeducting = false
+    }
+
+    func dismissCreditToast() {
+        showCreditToast = false
     }
 
     // MARK: - Auto Refresh
