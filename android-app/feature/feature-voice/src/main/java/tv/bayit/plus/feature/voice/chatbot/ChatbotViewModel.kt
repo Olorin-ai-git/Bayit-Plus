@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ChatRepository
 import tv.bayit.plus.core.voice.SpeechRecognitionService
@@ -20,6 +21,7 @@ class ChatbotViewModel @Inject constructor(
     internal val chatRepository: ChatRepository,
     private val speechService: SpeechRecognitionService,
     internal val ttsService: TTSService,
+    internal val stringProvider: BayitStringProvider,
     internal val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -159,7 +161,7 @@ data class ChatMessage(
             return ChatMessage(
                 id = map?.get("id")?.toString().orEmpty(),
                 senderId = senderId,
-                senderName = map?.get("sender_name")?.toString() ?: "AI Assistant",
+                senderName = map?.get("sender_name")?.toString().orEmpty(),
                 content = map?.get("content")?.toString().orEmpty(),
                 timestamp = map?.get("timestamp")?.toString().orEmpty(),
                 isAi = senderId == "ai" || senderId == "assistant" || senderId == "system",

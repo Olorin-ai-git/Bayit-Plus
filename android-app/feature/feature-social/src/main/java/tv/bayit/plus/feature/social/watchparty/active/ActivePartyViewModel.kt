@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.MediaRepository
 import tv.bayit.plus.core.data.repository.WatchPartyRepository
@@ -21,6 +22,7 @@ class ActivePartyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val watchPartyRepository: WatchPartyRepository,
     private val mediaRepository: MediaRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -90,7 +92,7 @@ class ActivePartyViewModel @Inject constructor(
                     if (party != null) {
                         loadPlaybackUrl(party)
                     } else {
-                        _uiState.value = ActivePartyUiState.Error("Unexpected response format")
+                        _uiState.value = ActivePartyUiState.Error(stringProvider.string("error.social.unexpectedResponse"))
                     }
                 }
                 is BayitResult.Error -> {

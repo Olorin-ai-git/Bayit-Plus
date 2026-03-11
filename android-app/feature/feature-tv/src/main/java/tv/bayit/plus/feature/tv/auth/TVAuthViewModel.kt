@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.auth.DeviceCodeAuthService
 import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import javax.inject.Inject
 
@@ -46,6 +47,7 @@ class TVAuthViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val deviceCodeAuthService: DeviceCodeAuthService,
     private val authService: OlorinAuthService,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -98,13 +100,13 @@ class TVAuthViewModel @Inject constructor(
                 .pollForAuthorization(deviceCode, intervalSeconds)
                 .catch { e ->
                     logger.error("Polling failed", error = e)
-                    _uiState.value = TVAuthUiState.Error(e.message ?: "Polling failed")
+                    _uiState.value = TVAuthUiState.Error(e.message ?: stringProvider.string("error.tv.pollingFailed"))
                 }
                 .collect { pollResponse ->
                     when (pollResponse.status) {
                         STATUS_AUTHORIZED -> _uiState.value = TVAuthUiState.Authorized
                         STATUS_EXPIRED -> _uiState.value = TVAuthUiState.Expired
-                        STATUS_DENIED -> _uiState.value = TVAuthUiState.Error("Access denied")
+                        STATUS_DENIED -> _uiState.value = TVAuthUiState.Error(stringProvider.string("error.tv.accessDenied"))
                         STATUS_PENDING -> {
                             if (System.currentTimeMillis() >= expiresAt) {
                                 _uiState.value = TVAuthUiState.Expired
@@ -112,7 +114,9 @@ class TVAuthViewModel @Inject constructor(
                         }
                         else -> {
                             logger.warning("Unrecognised poll status", mapOf("status" to pollResponse.status))
-                            _uiState.value = TVAuthUiState.Error("Unexpected status: ${pollResponse.status}")
+                            _uiState.value = TVAuthUiState.Error(
+                                stringProvider.string("error.tv.unexpectedStatus", mapOf("status" to pollResponse.status)),
+                            )
                         }
                     }
                 }

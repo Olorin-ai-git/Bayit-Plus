@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ZehAniRepository
 import tv.bayit.plus.core.model.zehani.BiometricConsentType
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class BiometricConsentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -41,7 +43,7 @@ class BiometricConsentViewModel @Inject constructor(
     fun grantConsent(consentType: String) {
         val pin = _pinInput.value
         if (pin.length < 4) {
-            _uiState.value = ConsentUiState.Error("PIN must be at least 4 digits")
+            _uiState.value = ConsentUiState.Error(stringProvider.string("error.zehAni.pinTooShort"))
             return
         }
 

@@ -13,6 +13,7 @@ import tv.bayit.plus.core.byoc.clients.YouTubeClient
 import tv.bayit.plus.core.byoc.models.GoogleDeviceCode
 import tv.bayit.plus.core.common.GoogleClientId
 import tv.bayit.plus.core.common.GoogleClientSecret
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import javax.inject.Inject
 
@@ -33,6 +34,7 @@ class YouTubeAuthViewModel @Inject constructor(
     private val sourceManager: BYOCSourceManager,
     @GoogleClientId private val googleClientId: String,
     @GoogleClientSecret private val googleClientSecret: String,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -43,7 +45,7 @@ class YouTubeAuthViewModel @Inject constructor(
 
     fun startAuth() {
         if (googleClientSecret.isBlank()) {
-            _uiState.value = YouTubeAuthUiState.Error("YouTube authentication is not configured")
+            _uiState.value = YouTubeAuthUiState.Error(stringProvider.string("error.byoc.youtubeNotConfigured"))
             logger.error("Google client secret not configured for YouTube auth")
             return
         }
@@ -58,7 +60,7 @@ class YouTubeAuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 logger.error("YouTube auth start failed", error = e)
                 _uiState.value = YouTubeAuthUiState.Error(
-                    e.message ?: "Failed to start YouTube authentication",
+                    e.message ?: stringProvider.string("error.byoc.youtubeAuthStartFailed"),
                 )
             }
         }
@@ -87,7 +89,7 @@ class YouTubeAuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 logger.error("YouTube auth poll failed", error = e)
                 _uiState.value = YouTubeAuthUiState.Error(
-                    e.message ?: "YouTube authentication timed out",
+                    e.message ?: stringProvider.string("error.byoc.youtubeAuthTimedOut"),
                 )
             }
         }

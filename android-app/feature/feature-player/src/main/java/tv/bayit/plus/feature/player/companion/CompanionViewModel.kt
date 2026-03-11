@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.TriviaRepository
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class CompanionViewModel @Inject constructor(
     private val contentRepository: ContentRepository,
     private val triviaRepository: TriviaRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -85,7 +87,7 @@ class CompanionViewModel @Inject constructor(
                     quizIndex = 0
                     quizScore = 0
                     if (quizQuestions.isEmpty()) {
-                        _quizState.value = QuizUiState.Error("No quiz questions available")
+                        _quizState.value = QuizUiState.Error(stringProvider.string("error.player.noQuizQuestions"))
                     } else {
                         _quizState.value = QuizUiState.Active(
                             currentQuestion = quizQuestions[0].question,

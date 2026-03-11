@@ -14,7 +14,7 @@ internal fun PodcastDetailViewModel.loadPodcastDetail() {
             is BayitResult.Success -> {
                 val detail = result.data as? PodcastDetail
                 if (detail == null) {
-                    _uiState.value = PodcastDetailUiState.Error("Podcast not found")
+                    _uiState.value = PodcastDetailUiState.Error(stringProvider.string("error.podcasts.notFound"))
                     return@launch
                 }
                 logger.info(

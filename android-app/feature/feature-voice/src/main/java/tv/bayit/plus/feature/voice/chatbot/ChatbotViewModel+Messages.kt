@@ -12,7 +12,7 @@ internal fun ChatbotViewModel.loadActiveChannelAndMessages() {
             is BayitResult.Success -> {
                 val channels = result.data
                 if (channels.isEmpty()) {
-                    updateUiState(ChatbotUiState.Error("No active AI channels available"))
+                    updateUiState(ChatbotUiState.Error(stringProvider.string("error.voice.noActiveChannels")))
                     return@launch
                 }
                 val channelId = extractChannelId(channels.first())

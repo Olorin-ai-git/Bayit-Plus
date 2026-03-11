@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ZehAniRepository
 import javax.inject.Inject
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class FeedbackViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -41,7 +43,7 @@ class FeedbackViewModel @Inject constructor(
 
     fun submitFeedback() {
         if (_feedbackText.value.isBlank()) {
-            _uiState.value = FeedbackUiState.Error("Please enter your feedback")
+            _uiState.value = FeedbackUiState.Error(stringProvider.string("error.zehAni.feedbackRequired"))
             return
         }
 
