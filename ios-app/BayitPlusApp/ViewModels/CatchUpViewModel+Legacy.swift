@@ -5,24 +5,40 @@ import Foundation
 // MARK: - Legacy Fetch & Error Handling
 
 extension CatchUpViewModel {
-    /// Load the legacy catch-up endpoint for transcript segments.
-    func loadCatchUp(channelId: String) async {
+    /// Load catch-up summary and transcript segments for a channel.
+    func loadCatchUp(
+        channelId: String,
+        targetLanguage: String = "en",
+        windowMinutes: Int = 30
+    ) async {
         isLoading = true
         error = nil
+        errorType = .none
 
         do {
-            let response = try await repository.fetchCatchUp(
-                channelId: channelId
+            let response = try await repository.fetchCatchUpSummary(
+                channelId: channelId,
+                windowMinutes: windowMinutes,
+                targetLanguage: targetLanguage
             )
-            segments = response.segments ?? []
-            legacySummary = response.summary
-            logger.info("Legacy catch-up loaded", context: [
+            summary = response
+            showSummary = true
+
+            if let remaining = response.remainingCredits {
+                creditBalance = remaining
+                hasCredits = remaining > 0
+            }
+
+            logger.info("Catch-up loaded", context: [
                 "channelId": channelId,
-                "segmentCount": "\(segments.count)",
+                "cached": String(response.cached ?? false),
             ])
+        } catch let apiError as APIError {
+            handleAPIError(apiError)
         } catch {
             self.error = localization.t("catchup.error.loadFailed")
-            logger.error("Legacy catch-up load failed", error: error)
+            errorType = .general
+            logger.error("Catch-up load failed", error: error)
         }
 
         isLoading = false

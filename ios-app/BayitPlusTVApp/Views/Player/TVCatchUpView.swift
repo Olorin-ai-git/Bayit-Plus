@@ -10,6 +10,7 @@
 
         @Bindable var viewModel: CatchUpViewModel
         let channelId: String
+        let targetLanguage: String
         let onSeek: (TimeInterval) -> Void
         let onDismiss: () -> Void
 
@@ -34,7 +35,12 @@
                 }
             }
             .background(DesignTokens.Background.primary)
-            .task { await viewModel.loadCatchUp(channelId: channelId) }
+            .task {
+                await viewModel.loadCatchUp(
+                    channelId: channelId,
+                    targetLanguage: targetLanguage
+                )
+            }
         }
 
         // MARK: - Header

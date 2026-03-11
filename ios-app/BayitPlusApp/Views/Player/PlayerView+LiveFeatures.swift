@@ -72,6 +72,7 @@
                     CatchUpView(
                         viewModel: vm,
                         channelId: contentId,
+                        targetLanguage: selectedAILanguage,
                         creditBalance: vm.creditBalance,
                         onSeek: { time in
                             showCatchUp = false

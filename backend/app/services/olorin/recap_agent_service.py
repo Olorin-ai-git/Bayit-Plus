@@ -348,6 +348,13 @@ class RecapAgentService:
             "he": "Hebrew",
             "en": "English",
             "es": "Spanish",
+            "zh": "Chinese",
+            "fr": "French",
+            "it": "Italian",
+            "hi": "Hindi",
+            "ta": "Tamil",
+            "bn": "Bengali",
+            "ja": "Japanese",
         }
         target_name = language_names.get(target_language, target_language)
 
@@ -399,6 +406,94 @@ Focus on:
 
         # Fallback: return raw text as summary
         return response.content[0].text, [], tokens_used
+
+    async def summarize_transcript(
+        self,
+        transcript_text: str,
+        target_language: str = "en",
+        window_minutes: int = 30,
+    ) -> dict:
+        """Summarize raw transcript text using Claude AI.
+
+        Public method for direct summarization without requiring a session.
+
+        Args:
+            transcript_text: Raw transcript text to summarize
+            target_language: Target language code for the summary
+            window_minutes: Duration of content being summarized
+
+        Returns:
+            Dict with summary, key_points, and tokens_used
+        """
+        claude = await self._get_claude_client()
+        if not claude:
+            return self._build_fallback_summary(transcript_text)
+
+        try:
+            summary, key_points, tokens_used = await self._generate_summary(
+                transcript_text=transcript_text,
+                target_language=target_language,
+                window_minutes=window_minutes,
+            )
+            return {
+                "summary": summary,
+                "key_points": key_points,
+                "tokens_used": tokens_used,
+            }
+        except Exception as e:
+            logger.error(
+                "AI summarization failed, using fallback",
+                extra={"error": str(e)},
+            )
+            return self._build_fallback_summary(transcript_text)
+
+    @staticmethod
+    def _build_fallback_summary(transcript_text: str) -> dict:
+        """Build a structured fallback summary when AI is unavailable.
+
+        Deduplicates repeated phrases and structures the text into
+        paragraphs with extracted key points.
+
+        Args:
+            transcript_text: Raw transcript text
+
+        Returns:
+            Dict with summary and key_points
+        """
+        if not transcript_text.strip():
+            return {"summary": "", "key_points": [], "tokens_used": 0}
+
+        # Deduplicate repeated sentences
+        sentences = [s.strip() for s in transcript_text.split(". ") if s.strip()]
+        seen = set()
+        unique_sentences = []
+        for sentence in sentences:
+            normalized = sentence.lower().strip("., ")
+            if normalized and normalized not in seen:
+                seen.add(normalized)
+                unique_sentences.append(sentence)
+
+        # Build paragraphs (~3 sentences each)
+        paragraphs = []
+        for i in range(0, len(unique_sentences), 3):
+            chunk = unique_sentences[i : i + 3]
+            paragraphs.append(". ".join(chunk) + ".")
+
+        max_paragraphs = 4
+        summary_text = "\n\n".join(paragraphs[:max_paragraphs])
+
+        # Extract key points from first unique sentences
+        max_key_points = 5
+        key_points = [
+            s if s.endswith(".") else s + "."
+            for s in unique_sentences[:max_key_points]
+        ]
+
+        return {
+            "summary": summary_text,
+            "key_points": key_points,
+            "tokens_used": 0,
+        }
 
 
 # Singleton instance

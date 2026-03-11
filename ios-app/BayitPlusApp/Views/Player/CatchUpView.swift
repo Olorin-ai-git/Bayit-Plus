@@ -10,6 +10,7 @@
 
         @Bindable var viewModel: CatchUpViewModel
         let channelId: String
+        let targetLanguage: String
         let creditBalance: Int
         let onSeek: (TimeInterval) -> Void
         let onDismiss: () -> Void
@@ -33,7 +34,12 @@
                 }
             }
             .background(DesignTokens.Background.primary)
-            .task { await viewModel.loadCatchUp(channelId: channelId) }
+            .task {
+                await viewModel.loadCatchUp(
+                    channelId: channelId,
+                    targetLanguage: targetLanguage
+                )
+            }
         }
 
         // MARK: - Header
@@ -91,8 +97,19 @@
 
         // MARK: - Legacy Summary (fallback)
 
+        private func isTextRTL(_ text: String) -> Bool {
+            guard let first = text.unicodeScalars.first else { return false }
+            let value = first.value
+            return (value >= 0x0590 && value <= 0x05FF)
+                || (value >= 0x0600 && value <= 0x06FF)
+        }
+
         private func legacySummaryCard(_ summary: String) -> some View {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            let rtl = isTextRTL(summary)
+            return VStack(
+                alignment: rtl ? .trailing : .leading,
+                spacing: DesignTokens.Spacing.sm
+            ) {
                 HStack(spacing: DesignTokens.Spacing.sm) {
                     Image(systemName: "sparkles")
                         .foregroundStyle(DesignTokens.Primary.p300)
@@ -106,7 +123,12 @@
                 Text(summary)
                     .font(.system(size: DesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.primary)
-                    .lineSpacing(4)
+                    .lineSpacing(6)
+                    .multilineTextAlignment(rtl ? .trailing : .leading)
+                    .frame(
+                        maxWidth: .infinity,
+                        alignment: rtl ? .trailing : .leading
+                    )
             }
             .padding(DesignTokens.Spacing.base)
             .background(DesignTokens.Glass.purpleLight)
@@ -144,7 +166,12 @@
                     localization.t("catchup.error.retry"),
                     variant: .secondary
                 ) {
-                    Task { await viewModel.loadCatchUp(channelId: channelId) }
+                    Task {
+                        await viewModel.loadCatchUp(
+                            channelId: channelId,
+                            targetLanguage: targetLanguage
+                        )
+                    }
                 }
                 Spacer()
             }

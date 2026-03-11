@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import LiveChannel
 from app.models.user import User
+from app.services.olorin.recap_agent_service import recap_agent_service
 from app.services.transcript_bus import get_transcript_bus
 
 router = APIRouter()
@@ -94,14 +95,29 @@ async def get_channel_catchup_summary(
                 "window_minutes": window_minutes,
             }
 
-        combined_text = " ".join(evt.text for evt in segments)
-        key_points = [
-            evt.text[:120] for evt in segments[-5:]
-        ]
+        # Build timestamped transcript for AI summarization
+        lines = []
+        for evt in segments:
+            ts = getattr(evt, "timestamp", 0) or 0
+            minutes_val = int(ts // 60)
+            seconds_val = int(ts % 60)
+            speaker = getattr(evt, "speaker", None)
+            if speaker:
+                lines.append(f"[{minutes_val:02d}:{seconds_val:02d}] {speaker}: {evt.text}")
+            else:
+                lines.append(f"[{minutes_val:02d}:{seconds_val:02d}] {evt.text}")
+        transcript_text = "\n".join(lines)
+
+        # Generate AI summary (falls back to structured extraction if unavailable)
+        summary_result = await recap_agent_service.summarize_transcript(
+            transcript_text=transcript_text,
+            target_language=target_language,
+            window_minutes=window_minutes,
+        )
 
         return {
-            "summary": combined_text,
-            "key_points": key_points,
+            "summary": summary_result.get("summary", ""),
+            "key_points": summary_result.get("key_points", []),
             "program_info": {
                 "title": getattr(channel, "name", None),
                 "description": getattr(channel, "description", None),

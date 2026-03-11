@@ -143,6 +143,7 @@ extension TVPlayerView {
             TVCatchUpView(
                 viewModel: vm,
                 channelId: channelId ?? contentId,
+                targetLanguage: state.selectedAILanguage,
                 onSeek: { time in
                     state.showCatchUp = false
                     Task { await mediaPlayer.seek(to: time) }

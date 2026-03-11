@@ -45,7 +45,10 @@
                     size: .large
                 ) {
                     Task {
-                        await viewModel.loadCatchUp(channelId: channelId)
+                        await viewModel.loadCatchUp(
+                            channelId: channelId,
+                            targetLanguage: targetLanguage
+                        )
                     }
                 }
                 .tvFocusStyle()
@@ -68,7 +71,10 @@
                     size: .large
                 ) {
                     Task {
-                        await viewModel.loadCatchUp(channelId: channelId)
+                        await viewModel.loadCatchUp(
+                            channelId: channelId,
+                            targetLanguage: targetLanguage
+                        )
                     }
                 }
                 .tvFocusStyle()
