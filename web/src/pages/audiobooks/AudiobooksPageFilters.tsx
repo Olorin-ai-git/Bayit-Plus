@@ -26,12 +26,7 @@ const AUDIO_QUALITIES: AudioQuality[] = [
   "premium",
   "lossless",
 ];
-const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
-  "free",
-  "basic",
-  "premium",
-  "family",
-];
+const SUBSCRIPTION_TIERS: SubscriptionTier[] = ["free", "plus"];
 const SORT_OPTIONS = ["title", "newest", "views", "rating"] as const;
 const PAGE_SIZE = 20;
 

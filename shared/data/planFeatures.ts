@@ -1,148 +1,131 @@
-import { PlanFeature, PlanTier } from '../types/subscription';
+import { PlanFeature, PlanTier } from "../types/subscription";
 
 /**
- * Comprehensive Plan Feature Matrix
+ * Plan Feature Matrix
  *
- * Defines all features across 5 subscription tiers:
- * - Non-Registered: Browse only, no account required
- * - Registered Free: Free account with limited features
- * - Basic: Entry-level paid plan
- * - Premium: Mid-tier with live TV and AI features
- * - Family: Full-featured family plan
+ * Two-tier model: Free and Plus.
+ * Bayit+ is an AI enhancement layer over Plex/IPTV.
+ * Plus unlocks AI features (dubbing, subtitles, search, catch-up).
  *
  * Feature Value Types:
  * - boolean: true (included) / false (not included)
- * - string: specific value (e.g., "SD", "2 devices", "Limited")
+ * - string: specific value (translation key for display)
  */
 
 export const PLAN_FEATURES: PlanFeature[] = [
   // ===== CONTENT ACCESS =====
   {
-    id: 'browse_content',
-    category: 'content',
-    translationKey: 'plans.comparison.features.browseContent',
+    id: "live_channels",
+    category: "content",
+    translationKey: "plans.comparison.features.liveChannels",
     availability: {
-      [PlanTier.NON_REGISTERED]: true,
-      [PlanTier.REGISTERED_FREE]: true,
-      [PlanTier.BASIC]: true,
-      [PlanTier.PREMIUM]: true,
-      [PlanTier.FAMILY]: true,
+      [PlanTier.FREE]: true,
+      [PlanTier.PLUS]: true,
     },
   },
   {
-    id: 'vod_access',
-    category: 'content',
-    translationKey: 'plans.comparison.features.vodAccess',
+    id: "radio_podcasts",
+    category: "content",
+    translationKey: "plans.comparison.features.radioPodcasts",
     availability: {
-      [PlanTier.NON_REGISTERED]: false,
-      [PlanTier.REGISTERED_FREE]: false,
-      [PlanTier.BASIC]: true,
-      [PlanTier.PREMIUM]: true,
-      [PlanTier.FAMILY]: true,
+      [PlanTier.FREE]: true,
+      [PlanTier.PLUS]: true,
     },
   },
   {
-    id: 'live_channels',
-    category: 'content',
-    translationKey: 'plans.comparison.features.liveChannels',
+    id: "audiobooks",
+    category: "content",
+    translationKey: "plans.comparison.features.audiobooks",
     availability: {
-      [PlanTier.NON_REGISTERED]: false,
-      [PlanTier.REGISTERED_FREE]: false,
-      [PlanTier.BASIC]: false,
-      [PlanTier.PREMIUM]: true,
-      [PlanTier.FAMILY]: true,
+      [PlanTier.FREE]: true,
+      [PlanTier.PLUS]: true,
     },
   },
   {
-    id: 'radio_podcasts',
-    category: 'content',
-    translationKey: 'plans.comparison.features.radioPodcasts',
+    id: "byoc_plex_iptv",
+    category: "content",
+    translationKey: "plans.comparison.features.byocPlexIptv",
     availability: {
-      [PlanTier.NON_REGISTERED]: false,
-      [PlanTier.REGISTERED_FREE]: 'Limited',
-      [PlanTier.BASIC]: true,
-      [PlanTier.PREMIUM]: true,
-      [PlanTier.FAMILY]: true,
+      [PlanTier.FREE]: true,
+      [PlanTier.PLUS]: true,
     },
   },
 
-  // ===== QUALITY & PERFORMANCE =====
+  // ===== AI FEATURES =====
   {
-    id: 'video_quality',
-    category: 'quality',
-    translationKey: 'plans.comparison.features.videoQuality',
+    id: "ai_credits",
+    category: "ai",
+    translationKey: "plans.comparison.features.aiCredits",
     availability: {
-      [PlanTier.NON_REGISTERED]: '-',
-      [PlanTier.REGISTERED_FREE]: '-',
-      [PlanTier.BASIC]: 'SD',
-      [PlanTier.PREMIUM]: 'HD',
-      [PlanTier.FAMILY]: '4K',
+      [PlanTier.FREE]: "plans.comparison.values.fiftyCredits",
+      [PlanTier.PLUS]: "plans.comparison.values.fiveHundredCredits",
+    },
+  },
+  {
+    id: "ai_dubbing",
+    category: "ai",
+    translationKey: "plans.comparison.features.aiDubbing",
+    availability: {
+      [PlanTier.FREE]: "plans.comparison.values.creditBased",
+      [PlanTier.PLUS]: true,
+    },
+  },
+  {
+    id: "ai_subtitles",
+    category: "ai",
+    translationKey: "plans.comparison.features.aiSubtitles",
+    availability: {
+      [PlanTier.FREE]: "plans.comparison.values.creditBased",
+      [PlanTier.PLUS]: true,
+    },
+  },
+  {
+    id: "ai_search",
+    category: "ai",
+    translationKey: "plans.comparison.features.aiSearch",
+    availability: {
+      [PlanTier.FREE]: "plans.comparison.values.creditBased",
+      [PlanTier.PLUS]: true,
+    },
+  },
+  {
+    id: "ai_catchup",
+    category: "ai",
+    translationKey: "plans.comparison.features.aiCatchup",
+    availability: {
+      [PlanTier.FREE]: false,
+      [PlanTier.PLUS]: true,
+    },
+  },
+  {
+    id: "ai_talkback",
+    category: "ai",
+    translationKey: "plans.comparison.features.aiTalkback",
+    availability: {
+      [PlanTier.FREE]: false,
+      [PlanTier.PLUS]: true,
     },
   },
 
-  // ===== DEVICES & STREAMING =====
+  // ===== STREAMING =====
   {
-    id: 'simultaneous_devices',
-    category: 'devices',
-    translationKey: 'plans.comparison.features.simultaneousDevices',
+    id: "simultaneous_devices",
+    category: "streaming",
+    translationKey: "plans.comparison.features.simultaneousDevices",
     availability: {
-      [PlanTier.NON_REGISTERED]: '-',
-      [PlanTier.REGISTERED_FREE]: '1',
-      [PlanTier.BASIC]: '1',
-      [PlanTier.PREMIUM]: '2',
-      [PlanTier.FAMILY]: '4',
+      [PlanTier.FREE]: "1",
+      [PlanTier.PLUS]: "4",
     },
   },
 
-  // ===== PREMIUM FEATURES =====
+  // ===== SUPPORT =====
   {
-    id: 'ai_assistant',
-    category: 'features',
-    translationKey: 'plans.comparison.features.aiAssistant',
+    id: "customer_support",
+    category: "support",
+    translationKey: "plans.comparison.features.customerSupport",
     availability: {
-      [PlanTier.NON_REGISTERED]: false,
-      [PlanTier.REGISTERED_FREE]: false,
-      [PlanTier.BASIC]: false,
-      [PlanTier.PREMIUM]: true,
-      [PlanTier.FAMILY]: true,
-    },
-  },
-  {
-    id: 'family_profiles',
-    category: 'features',
-    translationKey: 'plans.comparison.features.familyProfiles',
-    availability: {
-      [PlanTier.NON_REGISTERED]: false,
-      [PlanTier.REGISTERED_FREE]: false,
-      [PlanTier.BASIC]: false,
-      [PlanTier.PREMIUM]: false,
-      [PlanTier.FAMILY]: '5 profiles',
-    },
-  },
-  {
-    id: 'offline_downloads',
-    category: 'features',
-    translationKey: 'plans.comparison.features.offlineDownloads',
-    availability: {
-      [PlanTier.NON_REGISTERED]: false,
-      [PlanTier.REGISTERED_FREE]: false,
-      [PlanTier.BASIC]: false,
-      [PlanTier.PREMIUM]: false,
-      [PlanTier.FAMILY]: true,
-    },
-  },
-
-  // ===== CUSTOMER SUPPORT =====
-  {
-    id: 'customer_support',
-    category: 'support',
-    translationKey: 'plans.comparison.features.customerSupport',
-    availability: {
-      [PlanTier.NON_REGISTERED]: 'Email',
-      [PlanTier.REGISTERED_FREE]: 'Email',
-      [PlanTier.BASIC]: 'Email + Chat',
-      [PlanTier.PREMIUM]: 'Priority',
-      [PlanTier.FAMILY]: 'Priority',
+      [PlanTier.FREE]: "plans.comparison.values.emailSupport",
+      [PlanTier.PLUS]: "plans.comparison.values.prioritySupport",
     },
   },
 ];

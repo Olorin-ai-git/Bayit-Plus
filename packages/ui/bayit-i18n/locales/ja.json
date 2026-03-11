@@ -4576,7 +4576,8 @@
       "shabbatSongs": "シャバットの歌",
       "parashaStudy": "パラシャ",
       "shabbatRecipes": "レシピ",
-      "prayers": "祈り"
+      "prayers": "祈り",
+      "parashat": "Parashat {{name}}"
     },
     "items": "アイテム",
     "empty": "コンテンツがありません",
@@ -4905,103 +4906,61 @@
     "podcastsLabel": "ポッドキャスト"
   },
   "plans": {
-    "title": "プラン",
-    "subtitle": "最適なプランを選択",
-    "free": "無料",
-    "basic": {
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "All VOD content",
+        "Live TV Channels",
         "Radio & Podcasts",
-        "Watch on 1 device",
-        "SD quality"
-      ],
-      "name": "Basic",
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
+        "Audiobooks",
+        "50 AI Credits/month"
       ]
     },
-    "standard": "スタンダード",
-    "premium": {
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "69.90",
       "features": [
-        "All VOD content",
-        "Live channels",
-        "Radio & Podcasts",
-        "Smart AI Assistant",
-        "Watch on 2 devices",
-        "HD quality"
-      ],
-      "name": "Premium",
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
+        "500 AI Credits/month",
+        "Unlimited AI Dubbing",
+        "Smart Subtitles",
+        "AI Scene Search",
+        "AI Catch-Up",
+        "Talk-Back to Characters",
+        "4 Simultaneous Devices",
+        "Priority Support"
       ]
-    },
-    "family": {
-      "features": [
-        "All VOD content",
-        "Live channels",
-        "Radio & Podcasts",
-        "Smart AI Assistant",
-        "Watch on 4 devices",
-        "4K quality",
-        "5 family profiles",
-        "Download for offline"
-      ],
-      "name": "Family",
-      "notIncluded": []
-    },
-    "student": "学生",
-    "features": "機能",
-    "adFree": "広告なし",
-    "hdQuality": "HD画質",
-    "uhdQuality": "4K UHD画質",
-    "downloads": "ダウンロード",
-    "screens": "同時視聴画面数",
-    "profiles": "プロフィール数",
-    "liveTV": "ライブTV",
-    "dvr": "クラウドDVR",
-    "dvrHours": "DVR時間数",
-    "unlimitedDvr": "無制限DVR",
-    "skipAds": "広告スキップ",
-    "earlyAccess": "早期アクセス",
-    "exclusiveContent": "限定コンテンツ",
-    "prioritySupport": "優先サポート",
-    "compare": "プランを比較",
-    "selectPlan": "プランを選択",
-    "currentPlan": "現在のプラン",
-    "upgrade": "アップグレード",
-    "downgrade": "ダウングレード",
-    "non_registered": {
-      "name": "閲覧のみ",
-      "description": "コンテンツライブラリを探索"
-    },
-    "registered_free": {
-      "name": "無料アカウント",
-      "description": "無料機能のアカウントを作成"
     },
     "comparison": {
-      "title": "プランを比較",
-      "subtitle": "あなたに最適なプランを見つける",
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "content": "コンテンツアクセス",
-        "quality": "品質とパフォーマンス",
-        "devices": "デバイスとストリーミング",
-        "features": "プレミアム機能",
-        "support": "カスタマーサポート"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       },
       "features": {
-        "browseContent": "コンテンツライブラリを閲覧",
-        "vodAccess": "オンデマンド映画とシリーズ",
-        "liveChannels": "ライブTVチャンネル",
-        "radioPodcasts": "ラジオとポッドキャスト",
-        "videoQuality": "ビデオ品質",
-        "simultaneousDevices": "同時デバイス数",
-        "aiAssistant": "AIスマートアシスタント",
-        "familyProfiles": "ファミリープロフィール",
-        "offlineDownloads": "オフライン用ダウンロード",
-        "customerSupport": "カスタマーサポート"
+        "liveChannels": "Live TV Channels",
+        "radioPodcasts": "Radio & Podcasts",
+        "audiobooks": "Audiobooks",
+        "byocPlexIptv": "Plex & IPTV Integration",
+        "aiCredits": "AI Credits",
+        "aiDubbing": "AI Dubbing",
+        "aiSubtitles": "Smart Subtitles",
+        "aiSearch": "AI Scene Search",
+        "aiCatchup": "AI Catch-Up",
+        "aiTalkback": "Talk-Back to Characters",
+        "simultaneousDevices": "Simultaneous Devices",
+        "customerSupport": "Customer Support"
+      },
+      "values": {
+        "fiftyCredits": "50/month",
+        "fiveHundredCredits": "500/month",
+        "creditBased": "Credit-based",
+        "emailSupport": "Email",
+        "prioritySupport": "Priority"
       }
     }
   },
@@ -5219,7 +5178,8 @@
       "timerSet": "{{minutes}}分のスリープタイマーを設定しました",
       "timerExtended": "タイマーを{{minutes}}分延長しました",
       "timerCancelled": "スリープタイマーがキャンセルされました"
-    }
+    },
+    "invalidEpisodeUrl": "Invalid episode URL"
   },
   "listen": {
     "title": "聴く"
@@ -6469,11 +6429,10 @@
       "perMonth": "/月",
       "scrollHint": "← スクロールしてすべてのプランを表示 →",
       "categories": {
-        "content": "コンテンツアクセス",
-        "quality": "品質とパフォーマンス",
-        "devices": "デバイスとストリーミング",
-        "features": "機能",
-        "support": "サポート"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       }
     },
     "save2Months": "2ヶ月分お得",
@@ -6610,7 +6569,10 @@
     "startSplitScreen": "Start Split Screen",
     "subtitleSettings": "Subtitle Settings",
     "twoLanguagesSideBySide": "Show two languages side-by-side",
-    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh."
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "notGenerated": "Not generated",
+    "cuesCount": "({{count}} cues)",
+    "failedReason": "- {{language}}: {{reason}}"
   },
   "support": {
     "title": "サポート",
@@ -6814,7 +6776,11 @@
     "percentCorrect": "{{percent}}% correct",
     "questionCount": "Question {{current}} / {{total}}",
     "quizComplete": "Quiz Complete",
-    "score": "Score: {{score}}"
+    "score": "Score: {{score}}",
+    "loading": "Loading trivia...",
+    "selectContent": "Select content to start a trivia quiz",
+    "correct": "Correct!",
+    "notQuite": "Not quite!"
   },
   "vod": {
     "title": "ビデオオンデマンド",
@@ -7914,7 +7880,13 @@
     "startVoice": "音声を開始",
     "stopVoice": "音声を停止",
     "voiceInputHint": "音声入力のヒント",
-    "watching": "視聴中"
+    "watching": "視聴中",
+    "roomCodeDisplay": "Room Code: {{code}}",
+    "status": {
+      "speaking": "Speaking",
+      "muted": "Muted",
+      "ready": "Ready"
+    }
   },
   "chapters": {
     "title": "チャプター",
@@ -9185,7 +9157,12 @@
         "strong": "強い"
       }
     },
-    "logout": "サインアウト"
+    "logout": "サインアウト",
+    "signInWithApple": "Sign In with Apple",
+    "signInWithEmail": "Sign In with Email",
+    "signingIn": "Signing in...",
+    "email": "Email",
+    "password": "Password"
   },
   "email": {
     "greeting": "こんにちは",
@@ -10506,7 +10483,10 @@
       "useSubtitles": "字幕を使用",
       "maintainStreak": "連続記録を維持",
       "learnPhrase": "フレーズを学ぶ"
-    }
+    },
+    "tapToClaim": "TAP TO CLAIM",
+    "shekels": "Shekels",
+    "loading": "Loading missions..."
   },
   "shekels": {
     "title": "シェケル",
@@ -10633,7 +10613,11 @@
     "player": {
       "episode": "エピソード {{number}}",
       "back": "戻る"
-    }
+    },
+    "characters": "Characters",
+    "loading": "Loading stories...",
+    "noEpisodes": "No episodes yet",
+    "createEpisodesHint": "Create episodes on your mobile device to watch here"
   },
   "glossary": {
     "title": "用語集",
@@ -11017,7 +11001,10 @@
     "sharedControls": "Shared Controls",
     "subtitle": "Manage your family household and shared controls",
     "success": "Success!",
-    "title": "Household Management"
+    "title": "Household Management",
+    "loading": "Loading household...",
+    "memberCountDisplay": "{{current}} / {{max}} Members",
+    "myHousehold": "My Household"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -11065,7 +11052,9 @@
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Powered by Olorin.ai"
+    "poweredBy": "Powered by Olorin.ai",
+    "company": "Olorin.ai",
+    "companyLLC": "LLC"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -11159,7 +11148,8 @@
       "noHighlights": "ハイライトがまだありません",
       "momentsCount": "{{count}}の瞬間",
       "sendToFamily": "家族に送信"
-    }
+    },
+    "title": "Zeh Ani"
   },
   "security": {
     "mfa": {
@@ -11265,7 +11255,8 @@
       "youtube": "YouTube",
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
-    }
+    },
+    "plexLinkUrl": "plex.tv/link"
   },
   "a11y": {
     "openProfile": "{{name}}、プロフィールを開く",

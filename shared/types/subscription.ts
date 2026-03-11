@@ -1,33 +1,22 @@
 /**
  * Subscription Plan Types
  *
- * Comprehensive type definitions for subscription tiers and plan features
- * Used across web, mobile, and TV platforms
+ * Two-tier model matching backend: Free and Plus.
+ * Plus is the AI enhancement tier for Plex/IPTV content.
  */
 
 export enum PlanTier {
-  NON_REGISTERED = 'non_registered',
-  REGISTERED_FREE = 'registered_free',
-  BASIC = 'basic',
-  PREMIUM = 'premium',
-  FAMILY = 'family',
+  FREE = "free",
+  PLUS = "plus",
 }
 
-export type FeatureCategory =
-  | 'content'
-  | 'quality'
-  | 'devices'
-  | 'features'
-  | 'support';
+export type FeatureCategory = "content" | "ai" | "streaming" | "support";
 
 export type FeatureValue = boolean | string;
 
 export interface PlanFeatureAvailability {
-  [PlanTier.NON_REGISTERED]: FeatureValue;
-  [PlanTier.REGISTERED_FREE]: FeatureValue;
-  [PlanTier.BASIC]: FeatureValue;
-  [PlanTier.PREMIUM]: FeatureValue;
-  [PlanTier.FAMILY]: FeatureValue;
+  [PlanTier.FREE]: FeatureValue;
+  [PlanTier.PLUS]: FeatureValue;
 }
 
 export interface PlanFeature {
@@ -45,8 +34,8 @@ export interface PlanConfig {
 
 export interface SubscriptionMetadata {
   planId: string;
-  billingPeriod: 'monthly' | 'yearly';
+  billingPeriod: "monthly" | "yearly";
   startDate: string;
   endDate?: string;
-  status: 'active' | 'cancelled' | 'expired' | 'trial';
+  status: "active" | "cancelled" | "expired" | "trial";
 }

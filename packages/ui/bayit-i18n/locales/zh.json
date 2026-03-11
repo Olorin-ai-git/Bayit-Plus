@@ -3292,7 +3292,10 @@
     "mute": "Mute",
     "showAll": "Show All",
     "unmute": "Unmute",
-    "tryAgain": "请重试"
+    "tryAgain": "请重试",
+    "unknown": "Unknown",
+    "submit": "Submit",
+    "continue": "Continue"
   },
   "components": {
     "select": {
@@ -4166,7 +4169,8 @@
       "shabbatSongs": "安息日歌曲",
       "parashaStudy": "每周圣经",
       "shabbatRecipes": "食谱",
-      "prayers": "祈祷"
+      "prayers": "祈祷",
+      "parashat": "Parashat {{name}}"
     },
     "calendar": {
       "dafYomi": "每日一页",
@@ -4460,78 +4464,61 @@
     "chat": "输入您的消息..."
   },
   "plans": {
-    "basic": {
-      "name": "基础版",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
+        "Live TV Channels",
+        "Radio & Podcasts",
+        "Audiobooks",
+        "50 AI Credits/month"
       ]
     },
-    "premium": {
-      "name": "高级版",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "69.90",
       "features": [
-        "所有点播内容",
-        "直播频道",
-        "广播与播客",
-        "智能 AI 助手",
-        "2台设备观看",
-        "高清画质"
-      ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
+        "500 AI Credits/month",
+        "Unlimited AI Dubbing",
+        "Smart Subtitles",
+        "AI Scene Search",
+        "AI Catch-Up",
+        "Talk-Back to Characters",
+        "4 Simultaneous Devices",
+        "Priority Support"
       ]
-    },
-    "family": {
-      "name": "家庭版",
-      "features": [
-        "所有点播内容",
-        "直播频道",
-        "广播与播客",
-        "智能 AI 助手",
-        "4台设备观看",
-        "4K 画质",
-        "5个家庭档案",
-        "离线下载"
-      ],
-      "notIncluded": []
-    },
-    "non_registered": {
-      "name": "仅浏览",
-      "description": "探索我们的内容库"
-    },
-    "registered_free": {
-      "name": "免费账户",
-      "description": "创建账户享受免费功能"
     },
     "comparison": {
-      "title": "比较套餐",
-      "subtitle": "找到最适合您的套餐",
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "content": "内容访问",
-        "quality": "质量与性能",
-        "devices": "设备和流媒体",
-        "features": "高级功能",
-        "support": "客户支持"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       },
       "features": {
-        "browseContent": "浏览内容库",
-        "vodAccess": "点播电影和电视剧",
-        "liveChannels": "直播电视频道",
-        "radioPodcasts": "广播和播客",
-        "videoQuality": "视频质量",
-        "simultaneousDevices": "同时使用设备数",
-        "aiAssistant": "AI智能助手",
-        "familyProfiles": "家庭档案",
-        "offlineDownloads": "离线下载",
-        "customerSupport": "客户支持"
+        "liveChannels": "Live TV Channels",
+        "radioPodcasts": "Radio & Podcasts",
+        "audiobooks": "Audiobooks",
+        "byocPlexIptv": "Plex & IPTV Integration",
+        "aiCredits": "AI Credits",
+        "aiDubbing": "AI Dubbing",
+        "aiSubtitles": "Smart Subtitles",
+        "aiSearch": "AI Scene Search",
+        "aiCatchup": "AI Catch-Up",
+        "aiTalkback": "Talk-Back to Characters",
+        "simultaneousDevices": "Simultaneous Devices",
+        "customerSupport": "Customer Support"
+      },
+      "values": {
+        "fiftyCredits": "50/month",
+        "fiveHundredCredits": "500/month",
+        "creditBased": "Credit-based",
+        "emailSupport": "Email",
+        "prioritySupport": "Priority"
       }
     }
   },
@@ -4702,7 +4689,8 @@
       "timerSet": "睡眠定时器已设置{{minutes}}分钟",
       "timerExtended": "定时器延长{{minutes}}分钟",
       "timerCancelled": "睡眠定时器已取消"
-    }
+    },
+    "invalidEpisodeUrl": "Invalid episode URL"
   },
   "listen": {
     "title": "收听"
@@ -5797,11 +5785,10 @@
       "perMonth": "/月",
       "scrollHint": "← 滚动查看所有计划 →",
       "categories": {
-        "content": "内容访问",
-        "quality": "质量和性能",
-        "devices": "设备和流媒体",
-        "features": "功能",
-        "support": "支持"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       }
     },
     "noProductSelected": "No product selected"
@@ -5932,7 +5919,10 @@
     "startSplitScreen": "Start Split Screen",
     "subtitleSettings": "Subtitle Settings",
     "twoLanguagesSideBySide": "Show two languages side-by-side",
-    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh."
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "notGenerated": "Not generated",
+    "cuesCount": "({{count}} cues)",
+    "failedReason": "- {{language}}: {{reason}}"
   },
   "support": {
     "title": "支持中心",
@@ -6134,7 +6124,11 @@
     "percentCorrect": "{{percent}}% correct",
     "questionCount": "Question {{current}} / {{total}}",
     "quizComplete": "Quiz Complete",
-    "score": "Score: {{score}}"
+    "score": "Score: {{score}}",
+    "loading": "Loading trivia...",
+    "selectContent": "Select content to start a trivia quiz",
+    "correct": "Correct!",
+    "notQuite": "Not quite!"
   },
   "tvLogin": {
     "invalidQR": "无效的二维码。请从电视重新扫描。",
@@ -6411,7 +6405,13 @@
     "startVoice": "开始语音",
     "stopVoice": "停止语音",
     "voiceInputHint": "语音输入提示",
-    "watching": "观看中"
+    "watching": "观看中",
+    "roomCodeDisplay": "Room Code: {{code}}",
+    "status": {
+      "speaking": "Speaking",
+      "muted": "Muted",
+      "ready": "Ready"
+    }
   },
   "playlist": {
     "title": "我的播放列表",
@@ -7761,7 +7761,12 @@
         "strong": "强"
       }
     },
-    "logout": "退出登录"
+    "logout": "退出登录",
+    "signInWithApple": "Sign In with Apple",
+    "signInWithEmail": "Sign In with Email",
+    "signingIn": "Signing in...",
+    "email": "Email",
+    "password": "Password"
   },
   "email": {
     "greeting": "您好",
@@ -9082,7 +9087,10 @@
       "useSubtitles": "使用字幕",
       "maintainStreak": "保持连续",
       "learnPhrase": "学习短语"
-    }
+    },
+    "tapToClaim": "TAP TO CLAIM",
+    "shekels": "Shekels",
+    "loading": "Loading missions..."
   },
   "shekels": {
     "title": "谢克尔",
@@ -9209,7 +9217,11 @@
     "player": {
       "episode": "第 {{number}} 集",
       "back": "返回"
-    }
+    },
+    "characters": "Characters",
+    "loading": "Loading stories...",
+    "noEpisodes": "No episodes yet",
+    "createEpisodesHint": "Create episodes on your mobile device to watch here"
   },
   "glossary": {
     "title": "词汇表",
@@ -9593,7 +9605,10 @@
     "sharedControls": "Shared Controls",
     "subtitle": "Manage your family household and shared controls",
     "success": "Success!",
-    "title": "Household Management"
+    "title": "Household Management",
+    "loading": "Loading household...",
+    "memberCountDisplay": "{{current}} / {{max}} Members",
+    "myHousehold": "My Household"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -9641,7 +9656,9 @@
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "由 Olorin.ai 提供支持"
+    "poweredBy": "由 Olorin.ai 提供支持",
+    "company": "Olorin.ai",
+    "companyLLC": "LLC"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9735,7 +9752,8 @@
       "noHighlights": "还没有精彩时刻",
       "momentsCount": "{{count}} 个时刻",
       "sendToFamily": "发送给家人"
-    }
+    },
+    "title": "Zeh Ani"
   },
   "security": {
     "mfa": {
@@ -9841,7 +9859,8 @@
       "youtube": "YouTube",
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
-    }
+    },
+    "plexLinkUrl": "plex.tv/link"
   },
   "a11y": {
     "openProfile": "{{name}}, 打开个人资料",

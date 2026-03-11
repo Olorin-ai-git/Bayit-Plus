@@ -3234,7 +3234,10 @@
     "restart": "Restart",
     "showAll": "Show All",
     "unmute": "Unmute",
-    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+    "unknown": "Unknown",
+    "submit": "Submit",
+    "continue": "Continue"
   },
   "content": {
     "play": "இயக்கு",
@@ -3732,7 +3735,8 @@
       "shabbatSongs": "ஷப்பத் பாடல்கள்",
       "parashaStudy": "பராஷா",
       "shabbatRecipes": "சமையல் குறிப்புகள்",
-      "prayers": "பிரார்த்தனைகள்"
+      "prayers": "பிரார்த்தனைகள்",
+      "parashat": "Parashat {{name}}"
     },
     "calendar": {
       "dafYomi": "தப் யோமி",
@@ -3983,75 +3987,61 @@
     "podcastsLabel": "பாட்காஸ்ட்கள்"
   },
   "plans": {
-    "basic": {
-      "name": "அடிப்படை",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "அனைத்து VOD உள்ளடக்கம்",
-        "வானொலி & பாட்காஸ்ட்கள்",
-        "1 சாதனத்தில் பார்",
-        "SD தரம்"
-      ],
-      "notIncluded": [
-        "நேரலை சேனல்கள்",
-        "AI உதவியாளர்",
-        "ஆஃப்லைன் பார்வை"
+        "Live TV Channels",
+        "Radio & Podcasts",
+        "Audiobooks",
+        "50 AI Credits/month"
       ]
     },
-    "premium": {
-      "name": "பிரீமியம்",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "69.90",
       "features": [
-        "அனைத்து VOD உள்ளடக்கம்",
-        "நேரலை சேனல்கள்",
-        "வானொலி & பாட்காஸ்ட்கள்",
-        "ஸ்மார்ட் AI உதவியாளர்",
-        "2 சாதனங்களில் பார்",
-        "HD தரம்"
-      ],
-      "notIncluded": [
-        "ஆஃப்லைன் பார்வை",
-        "குடும்ப சுயவிவரங்கள்"
+        "500 AI Credits/month",
+        "Unlimited AI Dubbing",
+        "Smart Subtitles",
+        "AI Scene Search",
+        "AI Catch-Up",
+        "Talk-Back to Characters",
+        "4 Simultaneous Devices",
+        "Priority Support"
       ]
-    },
-    "family": {
-      "name": "குடும்பம்",
-      "features": [
-        "அனைத்து VOD உள்ளடக்கம்",
-        "நேரலை சேனல்கள்",
-        "4 சாதனங்களில் பார்",
-        "4K தரம்",
-        "5 குடும்ப சுயவிவரங்கள்"
-      ],
-      "notIncluded": []
-    },
-    "non_registered": {
-      "name": "உலாவல் மட்டும்",
-      "description": "எங்கள் உள்ளடக்க நூலகத்தை ஆராயுங்கள்"
-    },
-    "registered_free": {
-      "name": "இலவச கணக்கு",
-      "description": "இலவச அம்சங்களுக்காக கணக்கை உருவாக்கவும்"
     },
     "comparison": {
-      "title": "திட்டங்களை ஒப்பிடுக",
-      "subtitle": "உங்கள் தேவைகளுக்கு ஏற்ற திட்டத்தைக் கண்டறியுங்கள்",
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "content": "உள்ளடக்க அணுகல்",
-        "quality": "தரம் மற்றும் செயல்திறன்",
-        "devices": "சாதனங்கள் மற்றும் ஸ்ட்ரீமிங்",
-        "features": "பிரீமியம் அம்சங்கள்",
-        "support": "வாடிக்கையாளர் ஆதரவு"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       },
       "features": {
-        "browseContent": "உள்ளடக்க நூலகத்தை உலாவவும்",
-        "vodAccess": "தேவைக்கேற்ற திரைப்படங்கள் மற்றும் தொடர்கள்",
-        "liveChannels": "நேரடி டிவி சேனல்கள்",
-        "radioPodcasts": "வானொலி மற்றும் பாட்காஸ்ட்கள்",
-        "videoQuality": "வீடியோ தரம்",
-        "simultaneousDevices": "ஒரே நேரத்தில் சாதனங்கள்",
-        "aiAssistant": "AI ஸ்மார்ட் உதவியாளர்",
-        "familyProfiles": "குடும்ப சுயவிவரங்கள்",
-        "offlineDownloads": "ஆஃப்லைனுக்கு பதிவிறக்கவும்",
-        "customerSupport": "வாடிக்கையாளர் ஆதரவு"
+        "liveChannels": "Live TV Channels",
+        "radioPodcasts": "Radio & Podcasts",
+        "audiobooks": "Audiobooks",
+        "byocPlexIptv": "Plex & IPTV Integration",
+        "aiCredits": "AI Credits",
+        "aiDubbing": "AI Dubbing",
+        "aiSubtitles": "Smart Subtitles",
+        "aiSearch": "AI Scene Search",
+        "aiCatchup": "AI Catch-Up",
+        "aiTalkback": "Talk-Back to Characters",
+        "simultaneousDevices": "Simultaneous Devices",
+        "customerSupport": "Customer Support"
+      },
+      "values": {
+        "fiftyCredits": "50/month",
+        "fiveHundredCredits": "500/month",
+        "creditBased": "Credit-based",
+        "emailSupport": "Email",
+        "prioritySupport": "Priority"
       }
     }
   },
@@ -4222,7 +4212,8 @@
       "timerSet": "{{minutes}} நிமிடங்களுக்கு தூக்க டைமர் அமைக்கப்பட்டது",
       "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
       "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
-    }
+    },
+    "invalidEpisodeUrl": "Invalid episode URL"
   },
   "listen": {
     "title": "கேளுங்கள்"
@@ -5253,11 +5244,10 @@
       "perMonth": "/மாதம்",
       "scrollHint": "← அனைத்து திட்டங்களையும் பார்க்க உருட்டவும் →",
       "categories": {
-        "content": "உள்ளடக்க அணுகல்",
-        "quality": "தரம் மற்றும் செயல்திறன்",
-        "devices": "சாதனங்கள் மற்றும் ஸ்ட்ரீமிங்",
-        "features": "அம்சங்கள்",
-        "support": "ஆதரவு"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       }
     },
     "save2Months": "2 மாதங்கள் சேமிக்கவும்",
@@ -5393,7 +5383,10 @@
     "startSplitScreen": "Start Split Screen",
     "subtitleSettings": "Subtitle Settings",
     "twoLanguagesSideBySide": "Show two languages side-by-side",
-    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh."
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "notGenerated": "Not generated",
+    "cuesCount": "({{count}} cues)",
+    "failedReason": "- {{language}}: {{reason}}"
   },
   "support": {
     "title": "ஆதரவு மையம்",
@@ -5560,7 +5553,11 @@
     "percentCorrect": "{{percent}}% correct",
     "questionCount": "Question {{current}} / {{total}}",
     "quizComplete": "Quiz Complete",
-    "score": "Score: {{score}}"
+    "score": "Score: {{score}}",
+    "loading": "Loading trivia...",
+    "selectContent": "Select content to start a trivia quiz",
+    "correct": "Correct!",
+    "notQuite": "Not quite!"
   },
   "vod": {
     "title": "திரைப்படங்கள் & தொடர்கள்",
@@ -6571,7 +6568,13 @@
     "startVoice": "குரலைத் தொடங்கு",
     "stopVoice": "குரலை நிறுத்து",
     "voiceInputHint": "குரல் உள்ளீட்டு குறிப்பு",
-    "watching": "பார்க்கிறது"
+    "watching": "பார்க்கிறது",
+    "roomCodeDisplay": "Room Code: {{code}}",
+    "status": {
+      "speaking": "Speaking",
+      "muted": "Muted",
+      "ready": "Ready"
+    }
   },
   "chapters": {
     "title": "அத்தியாயங்கள்",
@@ -7832,7 +7835,12 @@
         "strong": "வலுவான"
       }
     },
-    "logout": "வெளியேறு"
+    "logout": "வெளியேறு",
+    "signInWithApple": "Sign In with Apple",
+    "signInWithEmail": "Sign In with Email",
+    "signingIn": "Signing in...",
+    "email": "Email",
+    "password": "Password"
   },
   "email": {
     "greeting": "வணக்கம்",
@@ -9153,7 +9161,10 @@
       "useSubtitles": "வசன வரிகளைப் பயன்படுத்துங்கள்",
       "maintainStreak": "தொடர்ச்சியை பராமரிக்கவும்",
       "learnPhrase": "ஒரு சொற்றொடர் கற்றுக்கொள்ளுங்கள்"
-    }
+    },
+    "tapToClaim": "TAP TO CLAIM",
+    "shekels": "Shekels",
+    "loading": "Loading missions..."
   },
   "shekels": {
     "title": "ஷெக்கல்கள்",
@@ -9280,7 +9291,11 @@
     "player": {
       "episode": "அத்தியாயம் {{number}}",
       "back": "பின்செல்"
-    }
+    },
+    "characters": "Characters",
+    "loading": "Loading stories...",
+    "noEpisodes": "No episodes yet",
+    "createEpisodesHint": "Create episodes on your mobile device to watch here"
   },
   "glossary": {
     "title": "சொற்களஞ்சியம்",
@@ -9664,7 +9679,10 @@
     "sharedControls": "Shared Controls",
     "subtitle": "Manage your family household and shared controls",
     "success": "Success!",
-    "title": "Household Management"
+    "title": "Household Management",
+    "loading": "Loading household...",
+    "memberCountDisplay": "{{current}} / {{max}} Members",
+    "myHousehold": "My Household"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -9712,7 +9730,9 @@
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Olorin.ai ஆல் இயக்கப்படுகிறது"
+    "poweredBy": "Olorin.ai ஆல் இயக்கப்படுகிறது",
+    "company": "Olorin.ai",
+    "companyLLC": "LLC"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9806,7 +9826,8 @@
       "noHighlights": "இன்னும் சிறப்பம்சங்கள் இல்லை",
       "momentsCount": "{{count}} தருணங்கள்",
       "sendToFamily": "குடும்பத்திற்கு அனுப்பு"
-    }
+    },
+    "title": "Zeh Ani"
   },
   "security": {
     "mfa": {
@@ -9912,7 +9933,8 @@
       "youtube": "YouTube",
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
-    }
+    },
+    "plexLinkUrl": "plex.tv/link"
   },
   "a11y": {
     "openProfile": "{{name}}, சுயவிவரத்தைத் திற",

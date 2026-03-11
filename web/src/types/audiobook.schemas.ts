@@ -3,24 +3,24 @@
  * Runtime validation for API requests and responses
  */
 
-import { z } from 'zod'
+import { z } from "zod";
 
 // ============ ENUM SCHEMAS ============
 
 export const AudioQualitySchema = z.enum([
-  '8-bit',
-  '16-bit',
-  '24-bit',
-  '32-bit',
-  'high-fidelity',
-  'standard',
-  'premium',
-  'lossless',
-])
+  "8-bit",
+  "16-bit",
+  "24-bit",
+  "32-bit",
+  "high-fidelity",
+  "standard",
+  "premium",
+  "lossless",
+]);
 
-export const SubscriptionTierSchema = z.enum(['free', 'basic', 'premium', 'family'])
+export const SubscriptionTierSchema = z.enum(["free", "plus"]);
 
-export const VisibilityModeSchema = z.enum(['public', 'private', 'restricted'])
+export const VisibilityModeSchema = z.enum(["public", "private", "restricted"]);
 
 // ============ CORE SCHEMAS ============
 
@@ -45,28 +45,28 @@ export const AudiobookSchema = z.object({
   view_count: z.number().int().default(0),
   avg_rating: z.number().min(0).max(5).default(0),
   is_featured: z.boolean().default(false),
-  requires_subscription: SubscriptionTierSchema.default('basic'),
-  content_format: z.literal('audiobook'),
+  requires_subscription: SubscriptionTierSchema.default("free"),
+  content_format: z.literal("audiobook"),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
-})
+});
 
 /**
  * Admin audiobook schema with publishing details
  */
 export const AudiobookAdminSchema = AudiobookSchema.extend({
   stream_url: z.string().url(),
-  stream_type: z.enum(['hls', 'dash', 'rtmp', 'rtmps']).default('hls'),
+  stream_type: z.enum(["hls", "dash", "rtmp", "rtmps"]).default("hls"),
   is_drm_protected: z.boolean().default(false),
   drm_key_id: z.string().optional(),
   is_published: z.boolean().default(false),
-  visibility_mode: VisibilityModeSchema.default('public'),
+  visibility_mode: VisibilityModeSchema.default("public"),
   section_ids: z.array(z.string()).default([]),
   primary_section_id: z.string().optional(),
   genre_ids: z.array(z.string()).default([]),
   audience_id: z.string().optional(),
   topic_tags: z.array(z.string()).default([]),
-})
+});
 
 // ============ REQUEST SCHEMAS ============
 
@@ -84,7 +84,7 @@ export const AudiobookCreateRequestSchema = z.object({
   thumbnail: z.string().url().optional(),
   backdrop: z.string().url().optional(),
   stream_url: z.string().url(),
-  stream_type: z.enum(['hls', 'dash', 'rtmp', 'rtmps']).default('hls'),
+  stream_type: z.enum(["hls", "dash", "rtmp", "rtmps"]).default("hls"),
   is_drm_protected: z.boolean().default(false),
   drm_key_id: z.string().optional(),
   audio_quality: AudioQualitySchema.optional(),
@@ -96,15 +96,16 @@ export const AudiobookCreateRequestSchema = z.object({
   genre_ids: z.array(z.string()).default([]),
   audience_id: z.string().optional(),
   topic_tags: z.array(z.string()).default([]),
-  requires_subscription: SubscriptionTierSchema.default('basic'),
-  visibility_mode: VisibilityModeSchema.default('public'),
+  requires_subscription: SubscriptionTierSchema.default("free"),
+  visibility_mode: VisibilityModeSchema.default("public"),
   is_published: z.boolean().default(false),
-})
+});
 
 /**
  * Update audiobook request schema (all fields optional)
  */
-export const AudiobookUpdateRequestSchema = AudiobookCreateRequestSchema.partial()
+export const AudiobookUpdateRequestSchema =
+  AudiobookCreateRequestSchema.partial();
 
 // ============ RESPONSE SCHEMAS ============
 
@@ -117,7 +118,7 @@ export const AudiobookListResponseSchema = z.object({
   page: z.number().int().min(1),
   page_size: z.number().int().min(1).max(500),
   total_pages: z.number().int(),
-})
+});
 
 /**
  * Admin paginated list response
@@ -128,7 +129,7 @@ export const AudiobookAdminListResponseSchema = z.object({
   page: z.number().int().min(1),
   page_size: z.number().int().min(1).max(500),
   total_pages: z.number().int(),
-})
+});
 
 /**
  * Stream response schema
@@ -139,11 +140,11 @@ export const AudiobookStreamResponseSchema = z.object({
   author: z.string().optional(),
   narrator: z.string().optional(),
   stream_url: z.string().url(),
-  stream_type: z.enum(['hls', 'dash', 'rtmp', 'rtmps']),
+  stream_type: z.enum(["hls", "dash", "rtmp", "rtmps"]),
   duration: z.string().optional(),
   audio_quality: AudioQualitySchema.optional(),
   is_drm_protected: z.boolean(),
-})
+});
 
 /**
  * Feature response schema
@@ -152,7 +153,7 @@ export const AudiobookFeatureResponseSchema = z.object({
   message: z.string(),
   audiobook_id: z.string(),
   is_featured: z.boolean(),
-})
+});
 
 // ============ UTILITY SCHEMAS ============
 
@@ -163,7 +164,7 @@ export const AudiobookUserRatingSchema = z.object({
   audiobook_id: z.string(),
   rating: z.number().int().min(1).max(5),
   review_text: z.string().max(1000).optional(),
-})
+});
 
 /**
  * User favorite schema
@@ -172,4 +173,4 @@ export const AudiobookFavoriteSchema = z.object({
   audiobook_id: z.string(),
   is_favorite: z.boolean(),
   added_at: z.string().datetime().optional(),
-})
+});

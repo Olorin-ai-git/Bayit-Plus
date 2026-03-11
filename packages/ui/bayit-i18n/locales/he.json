@@ -3738,7 +3738,10 @@
     "minutesShort": "דק'",
     "notAvailable": "לא זמין",
     "showAll": "Show All",
-    "tryAgain": "אנא נסה שוב"
+    "tryAgain": "אנא נסה שוב",
+    "unknown": "לא ידוע",
+    "submit": "שלח",
+    "continue": "המשך"
   },
   "badges": {
     "aiEnhanced": "משופר בינה מלאכותית",
@@ -5023,7 +5026,8 @@
       "shabbatSongs": "שירי שבת",
       "parashaStudy": "פרשה",
       "shabbatRecipes": "מתכונים",
-      "prayers": "תפילות"
+      "prayers": "תפילות",
+      "parashat": "פרשת {{name}}"
     },
     "calendar": {
       "dafYomi": "דף יומי",
@@ -5387,78 +5391,61 @@
     "chat": "הקלד הודעה..."
   },
   "plans": {
-    "non_registered": {
-      "name": "דפדוף בלבד",
-      "description": "גלה את ספריית התוכן שלנו"
-    },
-    "registered_free": {
-      "name": "חשבון חינם",
-      "description": "צור חשבון לתכונות בחינם"
-    },
-    "basic": {
-      "name": "בסיסי",
+    "free": {
+      "name": "חינם",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "כל תוכן ה-VOD",
+        "ערוצי טלוויזיה חיה",
         "רדיו ופודקאסטים",
-        "צפייה על מכשיר אחד",
-        "איכות SD"
-      ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
+        "ספרי שמע",
+        "50 קרדיטים AI/חודש"
       ]
     },
-    "premium": {
-      "name": "פרימיום",
+    "plus": {
+      "name": "פלוס",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "69.90",
       "features": [
-        "כל תוכן ה-VOD",
-        "ערוצי שידור חי",
-        "רדיו ופודקאסטים",
-        "עוזר AI חכם",
-        "צפייה על 2 מכשירים",
-        "איכות HD"
-      ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
+        "500 קרדיטים AI/חודש",
+        "דיבוב AI ללא הגבלה",
+        "כתוביות חכמות",
+        "חיפוש סצנות AI",
+        "AI Catch-Up",
+        "דיבור עם דמויות",
+        "4 מכשירים בו-זמנית",
+        "תמיכה מועדפת"
       ]
-    },
-    "family": {
-      "name": "משפחתי",
-      "features": [
-        "כל תוכן ה-VOD",
-        "ערוצי שידור חי",
-        "רדיו ופודקאסטים",
-        "עוזר AI חכם",
-        "צפייה על 4 מכשירים",
-        "איכות 4K",
-        "5 פרופילים משפחתיים",
-        "הורדה לצפייה אופליין"
-      ],
-      "notIncluded": []
     },
     "comparison": {
       "title": "השווה מסלולים",
       "subtitle": "מצא את המסלול המושלם עבורך",
       "categories": {
         "content": "גישה לתוכן",
-        "quality": "איכות וביצועים",
-        "devices": "מכשירים ושידור",
-        "features": "תכונות פרימיום",
-        "support": "תמיכת לקוחות"
+        "ai": "תכונות AI",
+        "streaming": "סטרימינג",
+        "support": "תמיכה"
       },
       "features": {
-        "browseContent": "דפדוף בספריית תוכן",
-        "vodAccess": "סרטים וסדרות לפי דרישה",
         "liveChannels": "ערוצי טלוויזיה חיה",
         "radioPodcasts": "רדיו ופודקאסטים",
-        "videoQuality": "איכות וידאו",
+        "audiobooks": "ספרי שמע",
+        "byocPlexIptv": "אינטגרציית Plex ו-IPTV",
+        "aiCredits": "קרדיטים AI",
+        "aiDubbing": "דיבוב AI",
+        "aiSubtitles": "כתוביות חכמות",
+        "aiSearch": "חיפוש סצנות AI",
+        "aiCatchup": "AI Catch-Up",
+        "aiTalkback": "דיבור עם דמויות",
         "simultaneousDevices": "מכשירים בו-זמניים",
-        "aiAssistant": "עוזר AI חכם",
-        "familyProfiles": "פרופילים משפחתיים",
-        "offlineDownloads": "הורדה לצפייה אופליין",
         "customerSupport": "תמיכת לקוחות"
+      },
+      "values": {
+        "fiftyCredits": "50/חודש",
+        "fiveHundredCredits": "500/חודש",
+        "creditBased": "מבוסס קרדיטים",
+        "emailSupport": "אימייל",
+        "prioritySupport": "מועדף"
       }
     }
   },
@@ -5638,7 +5625,8 @@
       "timerSet": "טיימר שינה הוגדר ל-{{minutes}} דקות",
       "timerExtended": "הטיימר הוארך ב-{{minutes}} דקות",
       "timerCancelled": "טיימר שינה בוטל"
-    }
+    },
+    "invalidEpisodeUrl": "כתובת פרק לא תקינה"
   },
   "listen": {
     "title": "האזנה"
@@ -6734,9 +6722,8 @@
       "scrollHint": "→ גלול כדי לראות את כל המסלולים ←",
       "categories": {
         "content": "גישה לתוכן",
-        "quality": "איכות וביצועים",
-        "devices": "מכשירים וסטרימינג",
-        "features": "תכונות",
+        "ai": "תכונות AI",
+        "streaming": "סטרימינג",
         "support": "תמיכה"
       }
     },
@@ -6868,7 +6855,10 @@
     "startSplitScreen": "Start Split Screen",
     "subtitleSettings": "Subtitle Settings",
     "twoLanguagesSideBySide": "Show two languages side-by-side",
-    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh."
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "notGenerated": "לא נוצר",
+    "cuesCount": "({{count}} כתוביות)",
+    "failedReason": "- {{language}}: {{reason}}"
   },
   "support": {
     "title": "מרכז תמיכה",
@@ -7070,7 +7060,11 @@
     "percentCorrect": "{{percent}}% correct",
     "questionCount": "Question {{current}} / {{total}}",
     "quizComplete": "Quiz Complete",
-    "score": "Score: {{score}}"
+    "score": "Score: {{score}}",
+    "loading": "טוען טריוויה...",
+    "selectContent": "בחר תוכן להתחלת חידון",
+    "correct": "נכון!",
+    "notQuite": "לא בדיוק!"
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -7345,7 +7339,13 @@
     "startVoice": "התחל שיחה קולית",
     "stopVoice": "עצור שיחה קולית",
     "voiceInputHint": "לחץ והחזק כדי לדבר",
-    "watching": "צופה"
+    "watching": "צופה",
+    "roomCodeDisplay": "קוד חדר: {{code}}",
+    "status": {
+      "speaking": "מדבר",
+      "muted": "מושתק",
+      "ready": "מוכן"
+    }
   },
   "playlist": {
     "title": "הרשימה שלי",
@@ -7866,7 +7866,12 @@
         "strong": "חזקה"
       }
     },
-    "logout": "התנתק"
+    "logout": "התנתק",
+    "signInWithApple": "התחבר עם Apple",
+    "signInWithEmail": "התחבר עם אימייל",
+    "signingIn": "מתחבר...",
+    "email": "אימייל",
+    "password": "סיסמה"
   },
   "email": {
     "greeting": "שלום",
@@ -9214,7 +9219,10 @@
       "useSubtitles": "השתמש בכתוביות",
       "maintainStreak": "שמור על רצף",
       "learnPhrase": "למד ביטוי"
-    }
+    },
+    "tapToClaim": "הקש לקבלה",
+    "shekels": "שקלים",
+    "loading": "טוען משימות..."
   },
   "shekels": {
     "title": "שקלים",
@@ -9341,7 +9349,11 @@
     "player": {
       "episode": "פרק {{number}}",
       "back": "חזור"
-    }
+    },
+    "characters": "דמויות",
+    "loading": "טוען סיפורים...",
+    "noEpisodes": "עדיין אין פרקים",
+    "createEpisodesHint": "צור פרקים במכשיר הנייד שלך לצפייה כאן"
   },
   "glossary": {
     "title": "מילון מונחים",
@@ -9701,7 +9713,10 @@
     "sharedControls": "Shared Controls",
     "subtitle": "Manage your family household and shared controls",
     "success": "Success!",
-    "title": "Household Management"
+    "title": "Household Management",
+    "loading": "טוען משק בית...",
+    "memberCountDisplay": "{{current}} / {{max}} חברים",
+    "myHousehold": "משק הבית שלי"
   },
   "profileControls": {
     "effectiveControls": {
@@ -9746,7 +9761,9 @@
   "splash": {
     "bayit": "בית",
     "plus": "+",
-    "poweredBy": "Powered by Olorin.ai"
+    "poweredBy": "Powered by Olorin.ai",
+    "company": "Olorin.ai",
+    "companyLLC": "LLC"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9840,7 +9857,8 @@
       "noHighlights": "אין עדיין רגעים נבחרים",
       "momentsCount": "{{count}} רגעים",
       "sendToFamily": "שלח למשפחה"
-    }
+    },
+    "title": "זה אני"
   },
   "security": {
     "mfa": {
@@ -9946,7 +9964,8 @@
       "youtube": "YouTube",
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
-    }
+    },
+    "plexLinkUrl": "plex.tv/link"
   },
   "a11y": {
     "openProfile": "{{name}}, פתח פרופיל",

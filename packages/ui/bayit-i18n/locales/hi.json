@@ -3151,7 +3151,10 @@
     "restart": "Restart",
     "showAll": "Show All",
     "unmute": "Unmute",
-    "tryAgain": "कृपया पुनः प्रयास करें"
+    "tryAgain": "कृपया पुनः प्रयास करें",
+    "unknown": "Unknown",
+    "submit": "Submit",
+    "continue": "Continue"
   },
   "content": {
     "play": "चलाएं",
@@ -3800,7 +3803,8 @@
       "shabbatSongs": "शब्बत गाने",
       "parashaStudy": "पराशा",
       "shabbatRecipes": "व्यंजन विधि",
-      "prayers": "प्रार्थनाएं"
+      "prayers": "प्रार्थनाएं",
+      "parashat": "Parashat {{name}}"
     },
     "calendar": {
       "dafYomi": "दफ़ योमी",
@@ -4051,81 +4055,63 @@
     "podcastsLabel": "पॉडकास्ट"
   },
   "plans": {
-    "basic": {
-      "name": "बेसिक",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "सभी VOD सामग्री",
-        "रेडियो और पॉडकास्ट",
-        "1 डिवाइस पर देखें",
-        "SD गुणवत्ता"
-      ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
+        "Live TV Channels",
+        "Radio & Podcasts",
+        "Audiobooks",
+        "50 AI Credits/month"
       ]
     },
-    "premium": {
-      "name": "प्रीमियम",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "69.90",
       "features": [
-        "सभी VOD सामग्री",
-        "लाइव चैनल",
-        "रेडियो और पॉडकास्ट",
-        "स्मार्ट AI सहायक",
-        "2 डिवाइस पर देखें",
-        "HD गुणवत्ता"
-      ],
-      "notIncluded": [
-        "ऑफ़लाइन देखना",
-        "फैमिली प्रोफाइल"
+        "500 AI Credits/month",
+        "Unlimited AI Dubbing",
+        "Smart Subtitles",
+        "AI Scene Search",
+        "AI Catch-Up",
+        "Talk-Back to Characters",
+        "4 Simultaneous Devices",
+        "Priority Support"
       ]
-    },
-    "family": {
-      "name": "फैमिली",
-      "features": [
-        "सभी VOD सामग्री",
-        "लाइव चैनल",
-        "रेडियो और पॉडकास्ट",
-        "स्मार्ट AI सहायक",
-        "4 डिवाइस पर देखें",
-        "4K गुणवत्ता",
-        "5 फैमिली प्रोफाइल",
-        "ऑफ़लाइन डाउनलोड"
-      ],
-      "notIncluded": []
-    },
-    "non_registered": {
-      "name": "केवल ब्राउज़ करें",
-      "description": "हमारी सामग्री लाइब्रेरी का अन्वेषण करें"
-    },
-    "registered_free": {
-      "name": "निःशुल्क खाता",
-      "description": "निःशुल्क सुविधाओं के लिए खाता बनाएं"
     },
     "comparison": {
-      "title": "योजनाओं की तुलना करें",
-      "subtitle": "अपनी आवश्यकताओं के लिए सही योजना खोजें",
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "content": "सामग्री पहुंच",
-        "quality": "गुणवत्ता और प्रदर्शन",
-        "devices": "उपकरण और स्ट्रीमिंग",
-        "features": "प्रीमियम सुविधाएं",
-        "support": "ग्राहक सहायता"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       },
       "features": {
-        "browseContent": "सामग्री लाइब्रेरी ब्राउज़ करें",
-        "vodAccess": "ऑन-डिमांड फिल्में और सीरीज़",
-        "liveChannels": "लाइव टीवी चैनल",
-        "radioPodcasts": "रेडियो और पॉडकास्ट",
-        "videoQuality": "वीडियो गुणवत्ता",
-        "simultaneousDevices": "समवर्ती उपकरण",
-        "aiAssistant": "AI स्मार्ट असिस्टेंट",
-        "familyProfiles": "परिवार प्रोफाइल",
-        "offlineDownloads": "ऑफ़लाइन डाउनलोड करें",
-        "customerSupport": "ग्राहक सहायता"
+        "liveChannels": "Live TV Channels",
+        "radioPodcasts": "Radio & Podcasts",
+        "audiobooks": "Audiobooks",
+        "byocPlexIptv": "Plex & IPTV Integration",
+        "aiCredits": "AI Credits",
+        "aiDubbing": "AI Dubbing",
+        "aiSubtitles": "Smart Subtitles",
+        "aiSearch": "AI Scene Search",
+        "aiCatchup": "AI Catch-Up",
+        "aiTalkback": "Talk-Back to Characters",
+        "simultaneousDevices": "Simultaneous Devices",
+        "customerSupport": "Customer Support"
+      },
+      "values": {
+        "fiftyCredits": "50/month",
+        "fiveHundredCredits": "500/month",
+        "creditBased": "Credit-based",
+        "emailSupport": "Email",
+        "prioritySupport": "Priority"
       }
-    },
-    "notIncluded": []
+    }
   },
   "player": {
     "loading": "लोड हो रहा है...",
@@ -4294,7 +4280,8 @@
       "timerSet": "{{minutes}} मिनट के लिए स्लीप टाइमर सेट",
       "timerExtended": "टाइमर {{minutes}} मिनट बढ़ाया गया",
       "timerCancelled": "स्लीप टाइमर रद्द किया गया"
-    }
+    },
+    "invalidEpisodeUrl": "Invalid episode URL"
   },
   "listen": {
     "title": "सुनें"
@@ -5324,11 +5311,10 @@
       "perMonth": "/महीना",
       "scrollHint": "← सभी योजनाओं को देखने के लिए स्क्रॉल करें →",
       "categories": {
-        "content": "सामग्री एक्सेस",
-        "quality": "गुणवत्ता और प्रदर्शन",
-        "devices": "डिवाइस और स्ट्रीमिंग",
-        "features": "विशेषताएं",
-        "support": "सहायता"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       }
     },
     "noCharge": "ट्रायल अवधि के दौरान आपके क्रेडिट कार्ड से शुल्क नहीं लिया जाएगा",
@@ -5460,7 +5446,10 @@
     "startSplitScreen": "Start Split Screen",
     "subtitleSettings": "Subtitle Settings",
     "twoLanguagesSideBySide": "Show two languages side-by-side",
-    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh."
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "notGenerated": "Not generated",
+    "cuesCount": "({{count}} cues)",
+    "failedReason": "- {{language}}: {{reason}}"
   },
   "support": {
     "title": "सहायता केंद्र",
@@ -5629,7 +5618,11 @@
     "percentCorrect": "{{percent}}% correct",
     "questionCount": "Question {{current}} / {{total}}",
     "quizComplete": "Quiz Complete",
-    "score": "Score: {{score}}"
+    "score": "Score: {{score}}",
+    "loading": "Loading trivia...",
+    "selectContent": "Select content to start a trivia quiz",
+    "correct": "Correct!",
+    "notQuite": "Not quite!"
   },
   "tvLogin": {
     "invalidQR": "अमान्य QR कोड।",
@@ -6492,7 +6485,13 @@
     "startVoice": "आवाज़ शुरू करें",
     "stopVoice": "आवाज़ बंद करें",
     "voiceInputHint": "आवाज़ इनपुट संकेत",
-    "watching": "देख रहे हैं"
+    "watching": "देख रहे हैं",
+    "roomCodeDisplay": "Room Code: {{code}}",
+    "status": {
+      "speaking": "Speaking",
+      "muted": "Muted",
+      "ready": "Ready"
+    }
   },
   "chapters": {
     "title": "अध्याय",
@@ -7761,7 +7760,12 @@
         "strong": "मज़बूत"
       }
     },
-    "logout": "साइन आउट"
+    "logout": "साइन आउट",
+    "signInWithApple": "Sign In with Apple",
+    "signInWithEmail": "Sign In with Email",
+    "signingIn": "Signing in...",
+    "email": "Email",
+    "password": "Password"
   },
   "email": {
     "greeting": "नमस्ते",
@@ -9085,7 +9089,10 @@
       "useSubtitles": "उपशीर्षक का उपयोग करें",
       "maintainStreak": "लगातार बनाए रखें",
       "learnPhrase": "एक वाक्यांश सीखें"
-    }
+    },
+    "tapToClaim": "TAP TO CLAIM",
+    "shekels": "Shekels",
+    "loading": "Loading missions..."
   },
   "shekels": {
     "title": "शेकेल",
@@ -9212,7 +9219,11 @@
     "player": {
       "episode": "एपिसोड {{number}}",
       "back": "वापस"
-    }
+    },
+    "characters": "Characters",
+    "loading": "Loading stories...",
+    "noEpisodes": "No episodes yet",
+    "createEpisodesHint": "Create episodes on your mobile device to watch here"
   },
   "glossary": {
     "title": "शब्दावली",
@@ -9596,7 +9607,10 @@
     "sharedControls": "Shared Controls",
     "subtitle": "Manage your family household and shared controls",
     "success": "Success!",
-    "title": "Household Management"
+    "title": "Household Management",
+    "loading": "Loading household...",
+    "memberCountDisplay": "{{current}} / {{max}} Members",
+    "myHousehold": "My Household"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -9644,7 +9658,9 @@
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Olorin.ai द्वारा संचालित"
+    "poweredBy": "Olorin.ai द्वारा संचालित",
+    "company": "Olorin.ai",
+    "companyLLC": "LLC"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9738,7 +9754,8 @@
       "noHighlights": "अभी तक कोई मुख्य अंश नहीं",
       "momentsCount": "{{count}} पल",
       "sendToFamily": "परिवार को भेजें"
-    }
+    },
+    "title": "Zeh Ani"
   },
   "security": {
     "mfa": {
@@ -9844,7 +9861,8 @@
       "youtube": "YouTube",
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
-    }
+    },
+    "plexLinkUrl": "plex.tv/link"
   },
   "a11y": {
     "openProfile": "{{name}}, प्रोफ़ाइल खोलें",

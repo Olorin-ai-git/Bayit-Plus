@@ -3394,7 +3394,10 @@
     "restart": "Restart",
     "showAll": "Show All",
     "unmute": "Unmute",
-    "tryAgain": "Riprova per favore"
+    "tryAgain": "Riprova per favore",
+    "unknown": "Unknown",
+    "submit": "Submit",
+    "continue": "Continue"
   },
   "content": {
     "play": "Riproduci",
@@ -3970,7 +3973,8 @@
       "shabbatSongs": "Canti dello Shabbat",
       "parashaStudy": "Parasha",
       "shabbatRecipes": "Ricette",
-      "prayers": "Preghiere"
+      "prayers": "Preghiere",
+      "parashat": "Parashat {{name}}"
     },
     "calendar": {
       "dafYomi": "Daf Yomi",
@@ -4211,78 +4215,61 @@
     "skip": "Salta"
   },
   "plans": {
-    "basic": {
-      "name": "Base",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "Tutti i contenuti VOD",
-        "Radio e Podcast",
-        "Guarda su 1 dispositivo",
-        "Qualità SD"
-      ],
-      "notIncluded": [
-        "Canali in diretta",
-        "Assistente AI",
-        "Visione offline"
+        "Live TV Channels",
+        "Radio & Podcasts",
+        "Audiobooks",
+        "50 AI Credits/month"
       ]
     },
-    "premium": {
-      "name": "Premium",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "69.90",
       "features": [
-        "Tutti i contenuti VOD",
-        "Canali in diretta",
-        "Radio e Podcast",
-        "Assistente AI intelligente",
-        "Guarda su 2 dispositivi",
-        "Qualità HD"
-      ],
-      "notIncluded": [
-        "Visione offline",
-        "Profili familiari"
+        "500 AI Credits/month",
+        "Unlimited AI Dubbing",
+        "Smart Subtitles",
+        "AI Scene Search",
+        "AI Catch-Up",
+        "Talk-Back to Characters",
+        "4 Simultaneous Devices",
+        "Priority Support"
       ]
-    },
-    "family": {
-      "name": "Famiglia",
-      "features": [
-        "Tutti i contenuti VOD",
-        "Canali in diretta",
-        "Radio e Podcast",
-        "Assistente AI intelligente",
-        "Guarda su 4 dispositivi",
-        "Qualità 4K",
-        "5 profili familiari",
-        "Download offline"
-      ],
-      "notIncluded": []
-    },
-    "non_registered": {
-      "name": "Solo navigazione",
-      "description": "Esplora la nostra libreria di contenuti"
-    },
-    "registered_free": {
-      "name": "Account gratuito",
-      "description": "Crea un account per funzionalità gratuite"
     },
     "comparison": {
-      "title": "Confronta i piani",
-      "subtitle": "Trova il piano perfetto per le tue esigenze",
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "content": "Accesso ai contenuti",
-        "quality": "Qualità e prestazioni",
-        "devices": "Dispositivi e streaming",
-        "features": "Funzionalità premium",
-        "support": "Supporto clienti"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       },
       "features": {
-        "browseContent": "Sfoglia la libreria di contenuti",
-        "vodAccess": "Film e serie on demand",
-        "liveChannels": "Canali TV in diretta",
-        "radioPodcasts": "Radio e podcast",
-        "videoQuality": "Qualità video",
-        "simultaneousDevices": "Dispositivi simultanei",
-        "aiAssistant": "Assistente intelligente IA",
-        "familyProfiles": "Profili famiglia",
-        "offlineDownloads": "Scarica per offline",
-        "customerSupport": "Supporto clienti"
+        "liveChannels": "Live TV Channels",
+        "radioPodcasts": "Radio & Podcasts",
+        "audiobooks": "Audiobooks",
+        "byocPlexIptv": "Plex & IPTV Integration",
+        "aiCredits": "AI Credits",
+        "aiDubbing": "AI Dubbing",
+        "aiSubtitles": "Smart Subtitles",
+        "aiSearch": "AI Scene Search",
+        "aiCatchup": "AI Catch-Up",
+        "aiTalkback": "Talk-Back to Characters",
+        "simultaneousDevices": "Simultaneous Devices",
+        "customerSupport": "Customer Support"
+      },
+      "values": {
+        "fiftyCredits": "50/month",
+        "fiveHundredCredits": "500/month",
+        "creditBased": "Credit-based",
+        "emailSupport": "Email",
+        "prioritySupport": "Priority"
       }
     }
   },
@@ -4453,7 +4440,8 @@
       "timerSet": "Timer impostato per {{minutes}} minuti",
       "timerExtended": "Timer esteso di {{minutes}} minuti",
       "timerCancelled": "Timer di spegnimento annullato"
-    }
+    },
+    "invalidEpisodeUrl": "Invalid episode URL"
   },
   "listen": {
     "title": "Ascolta"
@@ -5413,11 +5401,10 @@
       "perMonth": "/mese",
       "scrollHint": "← Scorri per vedere tutti i piani →",
       "categories": {
-        "content": "Accesso ai Contenuti",
-        "quality": "Qualità e Prestazioni",
-        "devices": "Dispositivi e Streaming",
-        "features": "Caratteristiche",
-        "support": "Supporto"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       }
     },
     "noProductSelected": "No product selected"
@@ -5548,7 +5535,10 @@
     "startSplitScreen": "Start Split Screen",
     "subtitleSettings": "Subtitle Settings",
     "twoLanguagesSideBySide": "Show two languages side-by-side",
-    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh."
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "notGenerated": "Not generated",
+    "cuesCount": "({{count}} cues)",
+    "failedReason": "- {{language}}: {{reason}}"
   },
   "support": {
     "title": "Centro assistenza",
@@ -5715,7 +5705,11 @@
     "percentCorrect": "{{percent}}% correct",
     "questionCount": "Question {{current}} / {{total}}",
     "quizComplete": "Quiz Complete",
-    "score": "Score: {{score}}"
+    "score": "Score: {{score}}",
+    "loading": "Loading trivia...",
+    "selectContent": "Select content to start a trivia quiz",
+    "correct": "Correct!",
+    "notQuite": "Not quite!"
   },
   "vod": {
     "title": "Film e Serie",
@@ -6724,7 +6718,13 @@
     "startVoice": "Avvia voce",
     "stopVoice": "Ferma voce",
     "voiceInputHint": "Suggerimento input vocale",
-    "watching": "Guardando"
+    "watching": "Guardando",
+    "roomCodeDisplay": "Room Code: {{code}}",
+    "status": {
+      "speaking": "Speaking",
+      "muted": "Muted",
+      "ready": "Ready"
+    }
   },
   "chapters": {
     "title": "Capitoli",
@@ -7995,7 +7995,12 @@
         "strong": "Forte"
       }
     },
-    "logout": "Esci"
+    "logout": "Esci",
+    "signInWithApple": "Sign In with Apple",
+    "signInWithEmail": "Sign In with Email",
+    "signingIn": "Signing in...",
+    "email": "Email",
+    "password": "Password"
   },
   "email": {
     "greeting": "Ciao",
@@ -9326,7 +9331,10 @@
       "useSubtitles": "Usa Sottotitoli",
       "maintainStreak": "Mantieni Serie",
       "learnPhrase": "Impara una Frase"
-    }
+    },
+    "tapToClaim": "TAP TO CLAIM",
+    "shekels": "Shekels",
+    "loading": "Loading missions..."
   },
   "shekels": {
     "title": "Shekel",
@@ -9453,7 +9461,11 @@
     "player": {
       "episode": "Episodio {{number}}",
       "back": "Indietro"
-    }
+    },
+    "characters": "Characters",
+    "loading": "Loading stories...",
+    "noEpisodes": "No episodes yet",
+    "createEpisodesHint": "Create episodes on your mobile device to watch here"
   },
   "glossary": {
     "title": "Glossario",
@@ -9837,7 +9849,10 @@
     "sharedControls": "Shared Controls",
     "subtitle": "Manage your family household and shared controls",
     "success": "Success!",
-    "title": "Household Management"
+    "title": "Household Management",
+    "loading": "Loading household...",
+    "memberCountDisplay": "{{current}} / {{max}} Members",
+    "myHousehold": "My Household"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -9885,7 +9900,9 @@
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Realizzato da Olorin.ai"
+    "poweredBy": "Realizzato da Olorin.ai",
+    "company": "Olorin.ai",
+    "companyLLC": "LLC"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9979,7 +9996,8 @@
       "noHighlights": "Ancora nessun momento saliente",
       "momentsCount": "{{count}} momenti",
       "sendToFamily": "Invia alla Famiglia"
-    }
+    },
+    "title": "Zeh Ani"
   },
   "security": {
     "mfa": {
@@ -10085,7 +10103,8 @@
       "youtube": "YouTube",
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
-    }
+    },
+    "plexLinkUrl": "plex.tv/link"
   },
   "a11y": {
     "openProfile": "{{name}}, apri profilo",

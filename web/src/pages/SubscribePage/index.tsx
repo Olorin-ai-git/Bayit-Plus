@@ -12,11 +12,12 @@ import { BillingToggle } from "./components/BillingToggle";
 import { EnhancedPlanCard } from "./components/EnhancedPlanCard";
 import { EnhancedComparisonTable } from "./components/EnhancedComparisonTable";
 import { PremiumFeaturesShowcase } from "./components/PremiumFeaturesShowcase";
+import { PlanTier } from "../../../../shared/types/subscription";
 import logger from "@/utils/logger";
 
 const plansConfig = [
-  { id: "free", price: "$0", popular: false },
-  { id: "ai_premium", price: "$6.99", popular: true },
+  { id: PlanTier.FREE, popular: false },
+  { id: PlanTier.PLUS, popular: true },
 ];
 
 export default function SubscribePage() {
@@ -24,7 +25,7 @@ export default function SubscribePage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
 
-  const [selectedPlan, setSelectedPlan] = useState("ai_premium");
+  const [selectedPlan, setSelectedPlan] = useState(PlanTier.PLUS);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
     "monthly",
   );
@@ -89,7 +90,6 @@ export default function SubscribePage() {
             <EnhancedPlanCard
               key={plan.id}
               planId={plan.id}
-              price={plan.price}
               isPopular={plan.popular}
               isSelected={selectedPlan === plan.id}
               onSelect={() => setSelectedPlan(plan.id)}

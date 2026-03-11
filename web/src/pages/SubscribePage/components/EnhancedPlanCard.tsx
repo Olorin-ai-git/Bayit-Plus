@@ -1,24 +1,22 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Check, Sparkles } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
-import { sanitizeI18n } from '@/utils/security/sanitizeI18n';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import React, { useState } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { Check, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { LinearGradient } from "expo-linear-gradient";
+import { GlassCard, GlassButton } from "@bayit/shared/ui";
+import { sanitizeI18n } from "@/utils/security/sanitizeI18n";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
 
 interface EnhancedPlanCardProps {
   planId: string;
-  price: string;
   isPopular?: boolean;
   isSelected: boolean;
   onSelect: () => void;
-  billingPeriod: 'monthly' | 'yearly';
+  billingPeriod: "monthly" | "yearly";
 }
 
 export function EnhancedPlanCard({
   planId,
-  price,
   isPopular,
   isSelected,
   onSelect,
@@ -29,11 +27,13 @@ export function EnhancedPlanCard({
 
   const planKey = `plans.${planId}`;
   const name = sanitizeI18n(t(`${planKey}.name`));
-  const features = t(`${planKey}.features`, { returnObjects: true, defaultValue: [] } as any);
-
-  const monthlyPrice = parseFloat(price.slice(1));
-  const yearlyPrice = (monthlyPrice * 10).toFixed(2);
-  const displayPrice = billingPeriod === 'yearly' ? yearlyPrice : price.slice(1);
+  const features = t(`${planKey}.features`, {
+    returnObjects: true,
+    defaultValue: [],
+  } as any);
+  const monthlyPrice = sanitizeI18n(t(`${planKey}.monthlyPrice`));
+  const yearlyPrice = sanitizeI18n(t(`${planKey}.yearlyPrice`));
+  const displayPrice = billingPeriod === "yearly" ? yearlyPrice : monthlyPrice;
 
   return (
     <Pressable
@@ -54,14 +54,14 @@ export function EnhancedPlanCard({
         {isPopular && (
           <View style={styles.popularBadge}>
             <LinearGradient
-              colors={['rgba(168, 85, 247, 0.8)', 'rgba(139, 92, 246, 0.8)']}
+              colors={["rgba(168, 85, 247, 0.8)", "rgba(139, 92, 246, 0.8)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.popularGradient}
             >
               <Sparkles size={14} color={colors.text} />
               <Text style={styles.popularText}>
-                {sanitizeI18n(t('subscribe.popular'))}
+                {sanitizeI18n(t("subscribe.popular"))}
               </Text>
             </LinearGradient>
           </View>
@@ -81,14 +81,14 @@ export function EnhancedPlanCard({
             <Text style={styles.priceAmount}>{displayPrice}</Text>
           </View>
           <Text style={styles.pricePeriod}>
-            {billingPeriod === 'monthly'
-              ? sanitizeI18n(t('subscribe.period'))
-              : sanitizeI18n(t('subscribe.perYear'))}
+            {billingPeriod === "monthly"
+              ? sanitizeI18n(t("subscribe.period"))
+              : sanitizeI18n(t("subscribe.perYear"))}
           </Text>
-          {billingPeriod === 'yearly' && (
+          {billingPeriod === "yearly" && (
             <View style={styles.savingsBadge}>
               <Text style={styles.savingsText}>
-                {sanitizeI18n(t('subscribe.save2Months'))}
+                {sanitizeI18n(t("subscribe.save2Months"))}
               </Text>
             </View>
           )}
@@ -103,7 +103,11 @@ export function EnhancedPlanCard({
             features.slice(0, 4).map((feature, i) => (
               <View key={i} style={styles.featureRow}>
                 <View style={styles.checkIcon}>
-                  <Check size={14} color={colors.success.DEFAULT} strokeWidth={3} />
+                  <Check
+                    size={14}
+                    color={colors.success.DEFAULT}
+                    strokeWidth={3}
+                  />
                 </View>
                 <Text style={styles.featureText}>{sanitizeI18n(feature)}</Text>
               </View>
@@ -114,11 +118,11 @@ export function EnhancedPlanCard({
         <GlassButton
           title={
             isSelected
-              ? sanitizeI18n(t('subscribe.selected'))
-              : sanitizeI18n(t('subscribe.select'))
+              ? sanitizeI18n(t("subscribe.selected"))
+              : sanitizeI18n(t("subscribe.select"))
           }
           onPress={onSelect}
-          variant={isSelected ? 'primary' : 'secondary'}
+          variant={isSelected ? "primary" : "secondary"}
           style={styles.selectButton}
         />
       </GlassCard>
@@ -142,36 +146,36 @@ const styles = StyleSheet.create({
   cardSelected: {
     borderWidth: 2,
     borderColor: colors.primary.DEFAULT,
-    backgroundColor: 'rgba(168, 85, 247, 0.05)',
+    backgroundColor: "rgba(168, 85, 247, 0.05)",
   },
   cardHovered: {
     transform: [{ translateY: -4 }],
   },
   cardPopular: {
     borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
+    borderColor: "rgba(168, 85, 247, 0.3)",
   },
   popularBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.sm,
     left: spacing.lg,
     right: spacing.lg,
     borderRadius: borderRadius.full,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   popularGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.xs,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
   },
   popularText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.text,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   header: {
@@ -179,30 +183,30 @@ const styles = StyleSheet.create({
   },
   planName: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   planNamePopular: {
     fontSize: 26,
   },
   priceSection: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: spacing.lg,
   },
   priceRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
   },
   currency: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.primary.DEFAULT,
     marginTop: 4,
   },
   priceAmount: {
     fontSize: 36,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.primary.DEFAULT,
     lineHeight: 40,
   },
@@ -212,7 +216,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   savingsBadge: {
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    backgroundColor: "rgba(34, 197, 94, 0.15)",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.full,
@@ -220,20 +224,20 @@ const styles = StyleSheet.create({
   },
   savingsText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.success.DEFAULT,
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     marginBottom: spacing.lg,
   },
   featuresSection: {
     marginBottom: spacing.md,
   },
   featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
@@ -241,9 +245,9 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(34, 197, 94, 0.15)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   featureText: {
     fontSize: 15,
@@ -252,6 +256,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   selectButton: {
-    width: '100%',
+    width: "100%",
   },
 });

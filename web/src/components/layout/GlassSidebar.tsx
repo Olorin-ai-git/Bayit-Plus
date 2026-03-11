@@ -245,7 +245,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
   // User display info
   const displayName = user?.name || t("account.guest", "Guest");
   const displayInitial = displayName.charAt(0).toUpperCase();
-  const subscriptionPlan = user?.subscription?.plan || "basic";
+  const subscriptionPlan = user?.subscription?.plan || "free";
 
   // Mobile: drawer mode (280px fixed width)
   // Desktop/TV: collapsible sidebar
@@ -353,9 +353,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
   // Dynamically add menu items based on user role and subscription
   const menuSections = useMemo(() => {
     const isAdmin = user?.role === "admin";
-    const isPremium =
-      user?.subscription?.plan === "premium" ||
-      user?.subscription?.plan === "family";
+    const isPremium = user?.subscription?.plan === "plus";
 
     let sections = baseMenuSections.map((section) => {
       // Filter out games section from non-admin users
@@ -654,9 +652,9 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
               {isAuthenticated ? (
                 <View style={styles.subscriptionBadge}>
                   <Text style={styles.subscriptionText}>
-                    {subscriptionPlan === "premium"
-                      ? t("account.premium", "Premium")
-                      : t("account.basic", "Basic")}
+                    {subscriptionPlan === "plus"
+                      ? t("account.plus", "Plus")
+                      : t("account.free", "Free")}
                   </Text>
                 </View>
               ) : (

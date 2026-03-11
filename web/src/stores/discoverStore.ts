@@ -96,7 +96,7 @@ export const useDiscoverStore = create<DiscoverStore>((set, get) => ({
     const user = useAuthStore.getState().user;
     const unmet = feature.prerequisites.filter((p) => {
       if (p.type === "subscription") {
-        return !user?.subscription || user.subscription.plan === "basic";
+        return !user?.subscription || user.subscription.plan === "free";
       }
       if (p.type === "avatar") {
         return !user?.avatar;

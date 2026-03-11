@@ -3151,7 +3151,10 @@
     "restart": "Restart",
     "showAll": "Show All",
     "unmute": "Unmute",
-    "tryAgain": "আবার চেষ্টা করুন"
+    "tryAgain": "আবার চেষ্টা করুন",
+    "unknown": "Unknown",
+    "submit": "Submit",
+    "continue": "Continue"
   },
   "content": {
     "play": "চালান",
@@ -3649,7 +3652,8 @@
       "shabbatSongs": "শাব্বাত গান",
       "parashaStudy": "পরশা",
       "shabbatRecipes": "রেসিপি",
-      "prayers": "প্রার্থনা"
+      "prayers": "প্রার্থনা",
+      "parashat": "Parashat {{name}}"
     },
     "calendar": {
       "dafYomi": "দাফ ইয়োমি",
@@ -3900,75 +3904,61 @@
     "podcastsLabel": "পডকাস্ট"
   },
   "plans": {
-    "basic": {
-      "name": "বেসিক",
+    "free": {
+      "name": "Free",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
       "features": [
-        "সব VOD কন্টেন্ট",
-        "রেডিও ও পডকাস্ট",
-        "১টি ডিভাইসে দেখুন",
-        "SD মান"
-      ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
+        "Live TV Channels",
+        "Radio & Podcasts",
+        "Audiobooks",
+        "50 AI Credits/month"
       ]
     },
-    "premium": {
-      "name": "প্রিমিয়াম",
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "69.90",
       "features": [
-        "সব VOD কন্টেন্ট",
-        "লাইভ চ্যানেল",
-        "রেডিও ও পডকাস্ট",
-        "স্মার্ট AI সহায়ক",
-        "২টি ডিভাইসে দেখুন",
-        "HD মান"
-      ],
-      "notIncluded": [
-        "অফলাইন দেখা",
-        "পরিবার প্রোফাইল"
+        "500 AI Credits/month",
+        "Unlimited AI Dubbing",
+        "Smart Subtitles",
+        "AI Scene Search",
+        "AI Catch-Up",
+        "Talk-Back to Characters",
+        "4 Simultaneous Devices",
+        "Priority Support"
       ]
-    },
-    "family": {
-      "name": "ফ্যামিলি",
-      "features": [
-        "সব VOD কন্টেন্ট",
-        "লাইভ চ্যানেল",
-        "৪টি ডিভাইসে দেখুন",
-        "4K মান",
-        "৫টি ফ্যামিলি প্রোফাইল"
-      ],
-      "notIncluded": []
-    },
-    "non_registered": {
-      "name": "শুধুমাত্র ব্রাউজ করুন",
-      "description": "আমাদের কন্টেন্ট লাইব্রেরি অন্বেষণ করুন"
-    },
-    "registered_free": {
-      "name": "বিনামূল্যে অ্যাকাউন্ট",
-      "description": "বিনামূল্যে বৈশিষ্ট্যের জন্য অ্যাকাউন্ট তৈরি করুন"
     },
     "comparison": {
-      "title": "পরিকল্পনা তুলনা করুন",
-      "subtitle": "আপনার প্রয়োজনের জন্য নিখুঁত পরিকল্পনা খুঁজুন",
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "categories": {
-        "content": "কন্টেন্ট অ্যাক্সেস",
-        "quality": "মান এবং কর্মক্ষমতা",
-        "devices": "ডিভাইস এবং স্ট্রিমিং",
-        "features": "প্রিমিয়াম বৈশিষ্ট্য",
-        "support": "গ্রাহক সহায়তা"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       },
       "features": {
-        "browseContent": "কন্টেন্ট লাইব্রেরি ব্রাউজ করুন",
-        "vodAccess": "অন-ডিমান্ড মুভি এবং সিরিজ",
-        "liveChannels": "লাইভ টিভি চ্যানেল",
-        "radioPodcasts": "রেডিও এবং পডকাস্ট",
-        "videoQuality": "ভিডিও মান",
-        "simultaneousDevices": "একযোগে ডিভাইস",
-        "aiAssistant": "AI স্মার্ট সহায়ক",
-        "familyProfiles": "পারিবারিক প্রোফাইল",
-        "offlineDownloads": "অফলাইনের জন্য ডাউনলোড করুন",
-        "customerSupport": "গ্রাহক সহায়তা"
+        "liveChannels": "Live TV Channels",
+        "radioPodcasts": "Radio & Podcasts",
+        "audiobooks": "Audiobooks",
+        "byocPlexIptv": "Plex & IPTV Integration",
+        "aiCredits": "AI Credits",
+        "aiDubbing": "AI Dubbing",
+        "aiSubtitles": "Smart Subtitles",
+        "aiSearch": "AI Scene Search",
+        "aiCatchup": "AI Catch-Up",
+        "aiTalkback": "Talk-Back to Characters",
+        "simultaneousDevices": "Simultaneous Devices",
+        "customerSupport": "Customer Support"
+      },
+      "values": {
+        "fiftyCredits": "50/month",
+        "fiveHundredCredits": "500/month",
+        "creditBased": "Credit-based",
+        "emailSupport": "Email",
+        "prioritySupport": "Priority"
       }
     }
   },
@@ -4139,7 +4129,8 @@
       "timerSet": "{{minutes}} মিনিটের জন্য স্লিপ টাইমার সেট",
       "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
       "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
-    }
+    },
+    "invalidEpisodeUrl": "Invalid episode URL"
   },
   "listen": {
     "title": "শুনুন"
@@ -5165,11 +5156,10 @@
       "perMonth": "/মাস",
       "scrollHint": "← সমস্ত পরিকল্পনা দেখতে স্ক্রোল করুন →",
       "categories": {
-        "content": "কন্টেন্ট অ্যাক্সেস",
-        "quality": "মান এবং কর্মক্ষমতা",
-        "devices": "ডিভাইস এবং স্ট্রিমিং",
-        "features": "বৈশিষ্ট্যসমূহ",
-        "support": "সহায়তা"
+        "content": "Content Access",
+        "ai": "AI Features",
+        "streaming": "Streaming",
+        "support": "Support"
       }
     },
     "save2Months": "২ মাস সাশ্রয় করুন",
@@ -5305,7 +5295,10 @@
     "startSplitScreen": "Start Split Screen",
     "subtitleSettings": "Subtitle Settings",
     "twoLanguagesSideBySide": "Show two languages side-by-side",
-    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh."
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "notGenerated": "Not generated",
+    "cuesCount": "({{count}} cues)",
+    "failedReason": "- {{language}}: {{reason}}"
   },
   "support": {
     "title": "সাপোর্ট সেন্টার",
@@ -5472,7 +5465,11 @@
     "percentCorrect": "{{percent}}% correct",
     "questionCount": "Question {{current}} / {{total}}",
     "quizComplete": "Quiz Complete",
-    "score": "Score: {{score}}"
+    "score": "Score: {{score}}",
+    "loading": "Loading trivia...",
+    "selectContent": "Select content to start a trivia quiz",
+    "correct": "Correct!",
+    "notQuite": "Not quite!"
   },
   "vod": {
     "title": "সিনেমা ও সিরিজ",
@@ -6477,7 +6474,13 @@
     "startVoice": "ভয়েস শুরু করুন",
     "stopVoice": "ভয়েস বন্ধ করুন",
     "voiceInputHint": "ভয়েস ইনপুট ইঙ্গিত",
-    "watching": "দেখছে"
+    "watching": "দেখছে",
+    "roomCodeDisplay": "Room Code: {{code}}",
+    "status": {
+      "speaking": "Speaking",
+      "muted": "Muted",
+      "ready": "Ready"
+    }
   },
   "chapters": {
     "title": "অধ্যায়",
@@ -7740,7 +7743,12 @@
         "strong": "শক্তিশালী"
       }
     },
-    "logout": "সাইন আউট"
+    "logout": "সাইন আউট",
+    "signInWithApple": "Sign In with Apple",
+    "signInWithEmail": "Sign In with Email",
+    "signingIn": "Signing in...",
+    "email": "Email",
+    "password": "Password"
   },
   "email": {
     "greeting": "নমস্কার",
@@ -9061,7 +9069,10 @@
       "useSubtitles": "সাবটাইটেল ব্যবহার করুন",
       "maintainStreak": "ধারাবাহিকতা বজায় রাখুন",
       "learnPhrase": "একটি বাক্যাংশ শিখুন"
-    }
+    },
+    "tapToClaim": "TAP TO CLAIM",
+    "shekels": "Shekels",
+    "loading": "Loading missions..."
   },
   "shekels": {
     "title": "শেকেল",
@@ -9188,7 +9199,11 @@
     "player": {
       "episode": "এপিসোড {{number}}",
       "back": "পিছনে"
-    }
+    },
+    "characters": "Characters",
+    "loading": "Loading stories...",
+    "noEpisodes": "No episodes yet",
+    "createEpisodesHint": "Create episodes on your mobile device to watch here"
   },
   "glossary": {
     "title": "শব্দকোষ",
@@ -9572,7 +9587,10 @@
     "sharedControls": "Shared Controls",
     "subtitle": "Manage your family household and shared controls",
     "success": "Success!",
-    "title": "Household Management"
+    "title": "Household Management",
+    "loading": "Loading household...",
+    "memberCountDisplay": "{{current}} / {{max}} Members",
+    "myHousehold": "My Household"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -9620,7 +9638,9 @@
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Olorin.ai দ্বারা পরিচালিত"
+    "poweredBy": "Olorin.ai দ্বারা পরিচালিত",
+    "company": "Olorin.ai",
+    "companyLLC": "LLC"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9714,7 +9734,8 @@
       "noHighlights": "এখনো কোনো হাইলাইট নেই",
       "momentsCount": "{{count}} মুহূর্ত",
       "sendToFamily": "পরিবারে পাঠান"
-    }
+    },
+    "title": "Zeh Ani"
   },
   "security": {
     "mfa": {
@@ -9820,7 +9841,8 @@
       "youtube": "YouTube",
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
-    }
+    },
+    "plexLinkUrl": "plex.tv/link"
   },
   "a11y": {
     "openProfile": "{{name}}, প্রোফাইল খুলুন",

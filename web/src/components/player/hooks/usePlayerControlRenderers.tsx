@@ -185,9 +185,7 @@ export function usePlayerControlRenderers({
   onHoveredButtonChange,
 }: UsePlayerControlRenderersParams) {
   const { t } = useTranslation();
-  const isPremium =
-    user?.subscription?.plan === "premium" ||
-    user?.subscription?.plan === "family";
+  const isPremium = user?.subscription?.plan === "plus";
 
   const subtitleQuotaExceeded =
     !isAdmin &&
