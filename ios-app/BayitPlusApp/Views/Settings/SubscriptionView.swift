@@ -8,6 +8,7 @@ struct SubscriptionView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) var localization
     @State var viewModel: SubscriptionViewModel?
+    @State private var creditBalance: CreditBalance?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -24,6 +25,7 @@ struct SubscriptionView: View {
                         }
                     } else {
                         headerSection
+                        creditBalanceCard(vm)
                         if let error = vm.error {
                             errorBanner(error, vm)
                         }
@@ -46,7 +48,10 @@ struct SubscriptionView: View {
                     storeManager: repos.storeManager
                 )
             }
-            await viewModel?.load()
+            async let subLoad: Void = viewModel?.load() ?? ()
+            async let balanceFetch = repos.betaCredits.fetchBalance()
+            await subLoad
+            creditBalance = try? await balanceFetch
         }
     }
 
