@@ -153,6 +153,7 @@
 		124675E64DD101845DE197F2 /* ZehAniModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D38DC71EAAEF883D8D0BDBE4 /* ZehAniModels.swift */; };
 		1248817556C56BA489805CD8 /* thumb_pause_and_ask.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C39C5D4E012E5333FFBADB8A /* thumb_pause_and_ask.jpg */; };
 		1278CCDA5DD6D696AD070C31 /* TVCollectionPromoBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B786C95D08511444B7297FD0 /* TVCollectionPromoBannerView.swift */; };
+		0EB0077FCF3490AFFF3C688C /* PlusFeatureCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3D03230314B2FD16BBFC047 /* PlusFeatureCardView.swift */; };
 		1305E757611B4AC9BDBF7111 /* SubscriptionGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D61A45D0E7426FF6AE61D142 /* SubscriptionGateView.swift */; };
 		132114399AEF8840FF5366BA /* TVAvatarManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3323CFD166A1977F11D2DCE9 /* TVAvatarManagementView.swift */; };
 		132DD576F9CF6F65F66A04B0 /* FamilyControlsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA05C5D5419ED36365490CF /* FamilyControlsRepository.swift */; };
@@ -3159,6 +3160,7 @@
 		D5809F2F19E6D9B13A1A064F /* PageHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageHeader.swift; sourceTree = "<group>"; };
 		D5FEA204EA9061175F89CEF7 /* TVPodcastsView+AudioSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPodcastsView+AudioSections.swift"; sourceTree = "<group>"; };
 		D61852EF01F5EC6E5462309B /* EPGRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPGRepository.swift; sourceTree = "<group>"; };
+		A3D03230314B2FD16BBFC047 /* PlusFeatureCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusFeatureCardView.swift; sourceTree = "<group>"; };
 		D61A45D0E7426FF6AE61D142 /* SubscriptionGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionGateView.swift; sourceTree = "<group>"; };
 		D64AB222E81E3EE0BA65ECCC /* InteractiveMissionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveMissionModels.swift; sourceTree = "<group>"; };
 		D6545D76EBBB6A57D933BA6D /* PrivacySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacySettingsView.swift; sourceTree = "<group>"; };
@@ -4295,6 +4297,7 @@
 		63C7083EF26CA8844E34FBAF /* Subscription */ = {
 			isa = PBXGroup;
 			children = (
+				A3D03230314B2FD16BBFC047 /* PlusFeatureCardView.swift */,
 				D61A45D0E7426FF6AE61D142 /* SubscriptionGateView.swift */,
 			);
 			path = Subscription;
@@ -8059,6 +8062,7 @@
 				942C1E51E72CFF179B0FB75B /* StreamLimitExceededView.swift in Sources */,
 				831368F4D867549659D3F320 /* StreamQualityModels.swift in Sources */,
 				53E8F4F1B516D6C1FB1FDDEB /* StreamResolver.swift in Sources */,
+				0EB0077FCF3490AFFF3C688C /* PlusFeatureCardView.swift in Sources */,
 				1305E757611B4AC9BDBF7111 /* SubscriptionGateView.swift in Sources */,
 				AA10C3D50905801EB99970E9 /* SubscriptionGateViewModel.swift in Sources */,
 				CA13235CEAD0DE596AE07BFE /* SubscriptionPlanCard.swift in Sources */,
