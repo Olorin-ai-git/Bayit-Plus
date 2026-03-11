@@ -41,7 +41,7 @@ struct TVShabbatEveView: View {
                     }
 
                     if let parasha = getParasha(vm) {
-                        Text("Parashat \(parasha)")
+                        Text(localization.t("judaism.erevShabbat.parashat", ["name": parasha]))
                             .font(.system(size: TVDesignTokens.FontSize.lg))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }

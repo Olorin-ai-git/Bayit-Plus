@@ -44,6 +44,7 @@ struct TVSubtitleOffButton: View {
 // MARK: - Language Button
 
 struct TVSubtitleLanguageButton: View {
+    @Environment(LocalizationManager.self) private var localization
     let item: SubtitlePickerItem
     let isSelected: Bool
     let isAvailable: Bool
@@ -87,7 +88,7 @@ struct TVSubtitleLanguageButton: View {
                                     .font(.system(size: 14))
                                     .foregroundStyle(DesignTokens.Primary.p400)
                             } else {
-                                Text("Not generated")
+                                Text(localization.t("subtitles.notGenerated"))
                                     .font(.system(
                                         size: TVDesignTokens.FontSize.xs
                                     ))

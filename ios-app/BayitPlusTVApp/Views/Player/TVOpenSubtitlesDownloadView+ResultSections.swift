@@ -27,7 +27,7 @@ extension TVOpenSubtitlesDownloadView {
                         .foregroundStyle(DesignTokens.Text.muted)
 
                     if let count = track.cueCount {
-                        Text("(\(count) cues)")
+                        Text(localization.t("subtitles.cuesCount", ["count": "\(count)"]))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.muted)
                     }
@@ -50,7 +50,7 @@ extension TVOpenSubtitlesDownloadView {
             }
 
             ForEach(failed, id: \.language) { track in
-                Text("- \(track.language): \(track.reason ?? "Unknown")")
+                Text(localization.t("subtitles.failedReason", ["language": track.language, "reason": track.reason ?? localization.t("common.unknown")]))
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .padding(.leading, TVDesignTokens.Spacing.lg)

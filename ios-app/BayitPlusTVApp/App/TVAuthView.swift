@@ -1,6 +1,7 @@
 import AuthenticationServices
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -9,6 +10,7 @@ import UIKit
 /// Google Sign-In with presenting VC is not available on tvOS.
 struct TVAuthView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
 
     let onAuthSuccess: () -> Void
 
@@ -46,10 +48,10 @@ struct TVAuthView: View {
                 }
 
                 VStack(spacing: DesignTokens.Spacing.xl) {
-                    TextField("Email", text: $email)
+                    TextField(localization.t("auth.email"), text: $email)
                         .autocorrectionDisabled()
 
-                    SecureField("Password", text: $password)
+                    SecureField(localization.t("auth.password"), text: $password)
                 }
                 .frame(maxWidth: 600)
 
@@ -61,7 +63,7 @@ struct TVAuthView: View {
 
                 VStack(spacing: DesignTokens.Spacing.lg) {
                     Button(action: signInWithEmail) {
-                        Text(isLoading ? "Signing in..." : "Sign In with Email")
+                        Text(isLoading ? localization.t("auth.signingIn") : localization.t("auth.signInWithEmail"))
                             .font(.headline)
                             .frame(maxWidth: 400)
                     }
@@ -70,7 +72,7 @@ struct TVAuthView: View {
                     Button(action: signInWithApple) {
                         HStack(spacing: DesignTokens.Spacing.sm) {
                             Image(systemName: "applelogo")
-                            Text("Sign In with Apple")
+                            Text(localization.t("auth.signInWithApple"))
                         }
                         .font(.headline)
                         .frame(maxWidth: 400)

@@ -47,11 +47,11 @@ struct TVHouseholdView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Primary.p400)
 
-            Text(vm.household?.name ?? "My Household")
+            Text(vm.household?.name ?? localization.t("household.myHousehold"))
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("\(vm.memberCount) / \(vm.maxProfiles) Members")
+            Text(localization.t("household.memberCountDisplay", ["current": "\(vm.memberCount)", "max": "\(vm.maxProfiles)"]))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -83,7 +83,7 @@ struct TVHouseholdView: View {
 
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
                     HStack(spacing: TVDesignTokens.Spacing.md) {
-                        Text(member.displayName ?? "Unknown")
+                        Text(member.displayName ?? localization.t("common.unknown"))
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .medium))
                             .foregroundStyle(DesignTokens.Text.primary)
 

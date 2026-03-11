@@ -61,7 +61,7 @@ struct TVStarStoryPlayerView: View {
         VStack {
             HStack {
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                    Text("Star in Story")
+                    Text(localization.t("starStory.title"))
                         .font(.system(size: TVDesignTokens.FontSize.base))
                         .foregroundStyle(DesignTokens.Text.muted)
 
@@ -137,7 +137,7 @@ struct TVStarStoryPlayerView: View {
 
     private func loadStream() {
         guard let url = URL(string: hlsUrl) else {
-            streamError = "Invalid episode URL"
+            streamError = localization.t("player.invalidEpisodeUrl")
             isLoading = false
             return
         }
@@ -174,7 +174,7 @@ struct TVStarStoryPlayerView: View {
             Text(message)
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
-            GlassButton("Retry", variant: .secondary, size: .large) {
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .large) {
                 loadStream()
             }
         }

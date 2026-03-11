@@ -33,7 +33,6 @@ struct TVDailyMissionsView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: MissionsViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             headerSection(vm)
@@ -118,11 +117,11 @@ struct TVDailyMissionsView: View {
                 }
 
                 if mission.isClaimed {
-                    Text("CLAIMED")
+                    Text(localization.t("missions.claimed"))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.muted)
                 } else if mission.isCompleted {
-                    Text("TAP TO CLAIM")
+                    Text(localization.t("missions.tapToClaim"))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
                         .foregroundStyle(DesignTokens.Colors.Semantic.success)
                 } else {

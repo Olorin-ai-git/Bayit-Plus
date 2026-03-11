@@ -57,7 +57,7 @@
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Text.secondary)
 
-                Text("plex.tv/link")
+                Text(localization.t("byoc.plexLinkUrl"))
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Primary.p400)
 

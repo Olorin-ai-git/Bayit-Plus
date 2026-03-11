@@ -15,7 +15,7 @@
                 Text(localization.t("catchup.error.insufficientCredits"))
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Text.primary)
-                Text("\(viewModel.creditBalance) credits remaining")
+                Text(localization.t("catchup.summary.creditsRemaining", ["count": "\(viewModel.creditBalance)"]))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.secondary)
                 GlassButton(

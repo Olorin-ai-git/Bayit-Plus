@@ -100,11 +100,11 @@ struct TVSplashView: View {
     // MARK: - Footer
 
     private var poweredByFooter: some View {
-        (Text("Powered by ")
+        (Text(localization.t("splash.poweredBy") + " ")
             .foregroundColor(DesignTokens.Text.muted)
-            + Text("Olorin.ai")
+            + Text(localization.t("splash.company"))
             .foregroundColor(DesignTokens.Colors.Primary.dark)
-            + Text(" LLC")
+            + Text(" " + localization.t("splash.companyLLC"))
             .foregroundColor(DesignTokens.Text.muted))
             .font(.system(size: TVDesignTokens.FontSize.sm))
     }

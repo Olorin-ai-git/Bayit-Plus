@@ -80,7 +80,7 @@
                         )
                     )
 
-                Text("Zeh Ani")
+                Text(localization.t("zehAni.title"))
                     .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 

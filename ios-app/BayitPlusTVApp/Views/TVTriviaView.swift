@@ -58,7 +58,6 @@ struct TVTriviaView: View {
         .padding(.top, TVDesignTokens.Spacing.xxxxl)
     }
 
-    @ViewBuilder
     private func questionView(_ question: QuizQuestion, vm: TriviaViewModel) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.xxl) {
             progressBar(vm)
@@ -87,7 +86,7 @@ struct TVTriviaView: View {
         .padding(TVDesignTokens.Spacing.xxl)
     }
 
-    private func progressBar(_ vm: TriviaViewModel) -> some View {
+    private func progressBar(_: TriviaViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
             Text(localization.t("trivia.questionCount"))
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
@@ -104,7 +103,7 @@ struct TVTriviaView: View {
 
     private func answerButton(
         option: String,
-        index: Int,
+        index _: Int,
         isSelected: Bool,
         isCorrect: Bool,
         isAnswered: Bool,
@@ -144,8 +143,7 @@ struct TVTriviaView: View {
         return DesignTokens.Glass.bg
     }
 
-    @ViewBuilder
-    private func resultView(_ result: QuizResult, vm: TriviaViewModel) -> some View {
+    private func resultView(_ result: QuizResult, vm _: TriviaViewModel) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.xxl) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: TVDesignTokens.FontSize.hero))
@@ -161,7 +159,7 @@ struct TVTriviaView: View {
 
             if let total = result.total, total > 0, let score = result.score {
                 let pct = Int(Double(score) / Double(total) * 100)
-                Text("\(pct)% correct")
+                Text(localization.t("trivia.percentCorrect", ["percent": "\(pct)"]))
                     .font(.system(size: TVDesignTokens.FontSize.xl))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }

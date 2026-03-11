@@ -56,7 +56,7 @@ struct TVStarStoryGalleryView: View {
             Image(systemName: "sparkles")
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Primary.default)
-            Text("Star in Story")
+            Text(localization.t("starStory.title"))
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             Text(localization.t("starStory.subtitle"))
