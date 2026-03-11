@@ -63,6 +63,33 @@
             .walkthroughTarget(id: "discover_live_trivia_step2")
         }
 
+        @ViewBuilder
+        var catchUpButton: some View {
+            if isCatchUpAvailable {
+                GlassLiveControlButton(
+                    icon: "clock.arrow.circlepath",
+                    activeIcon: "clock.arrow.circlepath",
+                    label: localization.t("player.catchUp"),
+                    state: isCatchUpActive ? .enabled : .idle,
+                    onTap: onCatchUpTap
+                )
+                .walkthroughTarget(id: "discover_catch_up_step2")
+                .walkthroughTarget(id: "discover_catch_up_step3")
+            }
+        }
+
+        var sceneSearchButton: some View {
+            GlassLiveControlButton(
+                icon: "magnifyingglass",
+                activeIcon: "magnifyingglass",
+                label: localization.t("sceneSearch.title"),
+                state: isSceneSearchActive ? .enabled : .idle,
+                onTap: onSceneSearchTap
+            )
+            .walkthroughTarget(id: "discover_scene_search_step2")
+            .walkthroughTarget(id: "discover_scene_search_step3")
+        }
+
         var subtitleControlState: GlassLiveControlButton.ControlState {
             if isSubtitlesPremiumLocked { return .premiumLocked }
             if isSubtitlesConnecting { return .connecting }

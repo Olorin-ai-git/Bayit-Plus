@@ -24,10 +24,15 @@
         let isDubbingPremiumLocked: Bool
         let isTriviaEnabled: Bool
         let isTriviaConnecting: Bool
+        let isCatchUpAvailable: Bool
+        let isCatchUpActive: Bool
+        let isSceneSearchActive: Bool
         let onSubtitlesTap: () -> Void
         let onSplitSubtitlesTap: () -> Void
         let onDubbingTap: () -> Void
         let onTriviaTap: () -> Void
+        let onCatchUpTap: () -> Void
+        let onSceneSearchTap: () -> Void
 
         private let panelHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 56 : 48
 
@@ -138,9 +143,10 @@
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DesignTokens.Spacing.sm) {
                     liveTranslateButton
-                    splitSubtitlesButton
                     liveDubbingButton
                     liveTriviaButton
+                    catchUpButton
+                    sceneSearchButton
                 }
                 .padding(.horizontal, DesignTokens.Spacing.sm)
             }

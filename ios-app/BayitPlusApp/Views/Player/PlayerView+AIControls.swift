@@ -29,10 +29,15 @@
                 isDubbingPremiumLocked: liveDubbingVM?.isPremiumRequired ?? false,
                 isTriviaEnabled: triviaVM?.isEnabled ?? false,
                 isTriviaConnecting: isTriviaConnecting,
+                isCatchUpAvailable: catchUpVM?.isAvailable == true,
+                isCatchUpActive: showCatchUp,
+                isSceneSearchActive: showSceneSearch,
                 onSubtitlesTap: { toggleLiveTranslation() },
                 onSplitSubtitlesTap: { toggleSplitSubtitles() },
                 onDubbingTap: { toggleLiveDubbing() },
-                onTriviaTap: { toggleLiveTrivia() }
+                onTriviaTap: { toggleLiveTrivia() },
+                onCatchUpTap: { toggleCatchUp() },
+                onSceneSearchTap: { toggleSceneSearch() }
             )
         }
 
@@ -50,12 +55,29 @@
         func toggleLiveTranslation() {
             if selectedSubtitleLanguage != nil {
                 handleSubtitleSelection(nil)
+                // Auto-stop trivia when translation is disabled
+                if triviaVM?.isEnabled == true {
+                    triviaVM?.disconnectLiveTrivia()
+                }
             } else {
                 // Disable dubbing when enabling subtitles (mutual exclusivity)
                 if liveDubbingVM?.isEnabled == true {
                     liveDubbingVM?.toggleDubbing(channelId: contentId)
                 }
                 handleSubtitleSelection(selectedAILanguage)
+                // Auto-start trivia when translation is enabled
+                if let vm = triviaVM, !vm.isEnabled, mediaContentType.isLive {
+                    let triviaWS = LiveTriviaWebSocketService(
+                        webSocketManager: repositories.webSocketManager,
+                        configuration: repositories.configuration,
+                        authTokenProvider: repositories.authTokenProvider
+                    )
+                    vm.toggleTrivia(
+                        channelId: contentId,
+                        language: selectedAILanguage,
+                        webSocketService: triviaWS
+                    )
+                }
             }
         }
 
@@ -163,6 +185,26 @@
                     language: selectedAILanguage,
                     webSocketService: triviaWS
                 )
+            }
+        }
+
+        // MARK: - Toggle Catch Up
+
+        func toggleCatchUp() {
+            withAnimation(.spring(duration: 0.3)) {
+                showCatchUp.toggle()
+                showSceneSearch = false
+                showChannelChat = false
+            }
+        }
+
+        // MARK: - Toggle Scene Search
+
+        func toggleSceneSearch() {
+            withAnimation(.spring(duration: 0.3)) {
+                showSceneSearch.toggle()
+                showCatchUp = false
+                showChannelChat = false
             }
         }
 

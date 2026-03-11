@@ -32,53 +32,6 @@
         @ViewBuilder
         var liveFeatureButtons: some View {
             if mediaContentType.isLive {
-                // Catch-up button: gated behind availability (beta user + server check)
-                if catchUpVM?.isAvailable == true {
-                    Button {
-                        withAnimation(.spring(duration: 0.3)) {
-                            showCatchUp.toggle()
-                            showSceneSearch = false
-                            showChannelChat = false
-                        }
-                    } label: {
-                        Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 18))
-                            .foregroundStyle(
-                                showCatchUp
-                                    ? DesignTokens.Primary.p400 : .white
-                            )
-                            .frame(width: 44, height: 44)
-                    }
-                    .accessibilityLabel("Catch up")
-                    .walkthroughTarget(id: "discover_catch_up_step2")
-                    .walkthroughTarget(id: "discover_catch_up_step3")
-                    .featureTooltip(
-                        featureKey: "catchup",
-                        titleKey: "tooltip.catchup.title",
-                        descriptionKey: "tooltip.catchup.description",
-                        arrowDirection: .top
-                    )
-                }
-
-                Button {
-                    withAnimation(.spring(duration: 0.3)) {
-                        showSceneSearch.toggle()
-                        showCatchUp = false
-                        showChannelChat = false
-                    }
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 18))
-                        .foregroundStyle(
-                            showSceneSearch
-                                ? DesignTokens.Primary.p400 : .white
-                        )
-                        .frame(width: 44, height: 44)
-                }
-                .accessibilityLabel("Scene search")
-                .walkthroughTarget(id: "discover_scene_search_step2")
-                .walkthroughTarget(id: "discover_scene_search_step3")
-
                 Button {
                     withAnimation(.spring(duration: 0.3)) {
                         showChannelChat.toggle()
