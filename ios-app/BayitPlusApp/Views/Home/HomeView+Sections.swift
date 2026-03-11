@@ -13,6 +13,9 @@ extension HomeView {
         ShabbatBannerView()
         ShabbatEveView()
 
+        CreditsBadgeView()
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
         if appConfiguration.ownerMode && !vm.spotlight.isEmpty {
             HeroCarousel(items: vm.spotlight, coordinator: coordinator)
         }
