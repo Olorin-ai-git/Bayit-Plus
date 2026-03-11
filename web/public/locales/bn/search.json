@@ -1,0 +1,60 @@
+{
+  "controls": {
+    "placeholder": "কন্টেন্ট অনুসন্ধান করুন...",
+    "voiceSearch": "ভয়েস সার্চ",
+    "llmSearch": "AI-চালিত অনুসন্ধান",
+    "filters": "ফিল্টার",
+    "contentTypes": {
+      "all": "সব",
+      "vod": "VOD",
+      "live": "লাইভ",
+      "radio": "রেডিও",
+      "podcast": "পডকাস্ট"
+    },
+    "hints": {
+      "searchInput": "অনুসন্ধানের জন্য কীওয়ার্ড দিন",
+      "llmSearch": "AI-চালিত প্রাসঙ্গিক অনুসন্ধান",
+      "filters": "উন্নত অনুসন্ধান ফিল্টার"
+    }
+  },
+  "semantic": {
+    "keyword": "কীওয়ার্ড",
+    "semantic": "অর্থগত",
+    "info": "অর্থগত অনুসন্ধান প্রসঙ্গ বুঝতে এবং শুধু কীওয়ার্ড নয়, অর্থের ভিত্তিতে কন্টেন্ট খুঁজে পেতে AI ব্যবহার করে। নির্দিষ্ট দৃশ্য বা সংলাপ খুঁজে পেতে আদর্শ।",
+    "infoTitle": "অর্থগত অনুসন্ধান সম্পর্কে"
+  },
+  "viewMode": {
+    "grid": "গ্রিড ভিউ",
+    "list": "তালিকা ভিউ",
+    "cards": "কার্ড ভিউ"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 ট্রেন্ডিং অনুসন্ধান",
+    "categoriesTitle": "বিভাগ",
+    "recentTitle": "সাম্প্রতিক অনুসন্ধান",
+    "clearRecent": "মুছুন"
+  },
+  "empty": {
+    "noResults": "কোনো ফলাফল পাওয়া যায়নি",
+    "noResultsMessage": "\"{{query}}\" এর সাথে মিলে এমন কিছু পাওয়া যায়নি",
+    "tryAgain": "চেষ্টা করুন:",
+    "checkSpelling": "• বানান পরীক্ষা করুন",
+    "differentKeywords": "• ভিন্ন কীওয়ার্ড ব্যবহার করুন",
+    "searchLanguage": "• হিব্রু বা ইংরেজিতে অনুসন্ধান করুন",
+    "useVoice": "• ভয়েস সার্চ ব্যবহার করুন 🎤",
+    "startSearching": "অনুসন্ধান শুরু করুন",
+    "startSearchingMessage": "চলচ্চিত্র, সিরিজ, পডকাস্ট এবং আরো অনেক কিছু অনুসন্ধান করুন",
+    "clearSearch": "অনুসন্ধান মুছুন",
+    "tryAgainButton": "আবার চেষ্টা করুন"
+  },
+  "errors": {
+    "somethingWrong": "কিছু একটা ভুল হয়েছে",
+    "retrySearch": "আবার চেষ্টা করুন"
+  },
+  "loading": "লোড হচ্ছে...",
+  "results": {
+    "premium": "Premium",
+    "kids": "শিশু",
+    "featured": "বৈশিষ্ট্যযুক্ত"
+  }
+}

@@ -183,6 +183,21 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: i18n-validate
+        name: i18n locale validation
+        entry: bash -c
+        args:
+          - -c
+          - |
+            SCRIPT="$(git rev-parse --show-toplevel)/olorin-core/scripts/validate-i18n.sh"
+            if [[ -x "$SCRIPT" ]]; then
+              "$SCRIPT" --mode quick --changed-only
+            fi
+        language: system
+        files: '.*/locales/.*\.json$'
+        pass_filenames: false
+        stages: [pre-commit]
+
 # Configuration for specific hooks
 default_language_version:
   python: python3.13

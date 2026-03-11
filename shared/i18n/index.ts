@@ -8,36 +8,36 @@
  * - React Native: import { initNativeI18n } from '@olorin/i18n/native'
  */
 
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
-import he from './locales/he.json';
-import en from './locales/en.json';
-import es from './locales/es.json';
-import zh from './locales/zh.json';
-import fr from './locales/fr.json';
-import it from './locales/it.json';
-import hi from './locales/hi.json';
-import ta from './locales/ta.json';
-import bn from './locales/bn.json';
-import ja from './locales/ja.json';
+import he from "../../packages/ui/bayit-i18n/locales/he.json";
+import en from "../../packages/ui/bayit-i18n/locales/en.json";
+import es from "../../packages/ui/bayit-i18n/locales/es.json";
+import zh from "../../packages/ui/bayit-i18n/locales/zh.json";
+import fr from "../../packages/ui/bayit-i18n/locales/fr.json";
+import it from "../../packages/ui/bayit-i18n/locales/it.json";
+import hi from "../../packages/ui/bayit-i18n/locales/hi.json";
+import ta from "../../packages/ui/bayit-i18n/locales/ta.json";
+import bn from "../../packages/ui/bayit-i18n/locales/bn.json";
+import ja from "../../packages/ui/bayit-i18n/locales/ja.json";
 
-import type { LanguageCode, LanguageInfo } from './types';
-import { getInitialLanguageWeb } from './web';
-import { logger } from '../utils/logger';
+import type { LanguageCode, LanguageInfo } from "./types";
+import { getInitialLanguageWeb } from "./web";
+import { logger } from "../utils/logger";
 
 // Language metadata matching Olorin ecosystem standards
 export const languages: LanguageInfo[] = [
-  { code: 'he', name: 'עברית', flag: '🇮🇱', rtl: true },
-  { code: 'en', name: 'English', flag: '🇺🇸', rtl: false },
-  { code: 'es', name: 'Español', flag: '🇪🇸', rtl: false },
-  { code: 'zh', name: '中文', flag: '🇨🇳', rtl: false },
-  { code: 'fr', name: 'Français', flag: '🇫🇷', rtl: false },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹', rtl: false },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', rtl: false },
-  { code: 'ta', name: 'தமிழ्', flag: '🇮🇳', rtl: false },
-  { code: 'bn', name: 'বাংলা', flag: '🇧🇩', rtl: false },
-  { code: 'ja', name: '日本語', flag: '🇯🇵', rtl: false },
+  { code: "he", name: "עברית", flag: "🇮🇱", rtl: true },
+  { code: "en", name: "English", flag: "🇺🇸", rtl: false },
+  { code: "es", name: "Español", flag: "🇪🇸", rtl: false },
+  { code: "zh", name: "中文", flag: "🇨🇳", rtl: false },
+  { code: "fr", name: "Français", flag: "🇫🇷", rtl: false },
+  { code: "it", name: "Italiano", flag: "🇮🇹", rtl: false },
+  { code: "hi", name: "हिन्दी", flag: "🇮🇳", rtl: false },
+  { code: "ta", name: "தமிழ्", flag: "🇮🇳", rtl: false },
+  { code: "bn", name: "বাংলা", flag: "🇧🇩", rtl: false },
+  { code: "ja", name: "日本語", flag: "🇯🇵", rtl: false },
 ];
 
 // Translation resources for all supported languages
@@ -57,21 +57,19 @@ const resources = {
 // Initialize i18next with sensible defaults
 // Note: Language is set to 'he' by default, platform-specific init will update it
 const initialLang = getInitialLanguageWeb();
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: initialLang,
-    fallbackLng: 'he',
-    interpolation: {
-      escapeValue: false,
-    },
-    react: {
-      useSuspense: false,
-    },
-    // Use v4 format (i18next 25.x+ dropped v3 support)
-    compatibilityJSON: 'v4',
-  });
+i18n.use(initReactI18next).init({
+  resources,
+  lng: initialLang,
+  fallbackLng: "he",
+  interpolation: {
+    escapeValue: false,
+  },
+  react: {
+    useSuspense: false,
+  },
+  // Use v4 format (i18next 25.x+ dropped v3 support)
+  compatibilityJSON: "v4",
+});
 
 /**
  * Load saved language preference from storage.
@@ -87,26 +85,39 @@ export const loadSavedLanguage = async (): Promise<void> => {
     let savedLang: string | null = null;
 
     // Try web first
-    if (typeof window !== 'undefined' && window.localStorage) {
-      savedLang = window.localStorage.getItem('@olorin_language');
+    if (typeof window !== "undefined" && window.localStorage) {
+      savedLang = window.localStorage.getItem("@olorin_language");
     } else {
       // Try AsyncStorage for React Native
       try {
-        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-        savedLang = await AsyncStorage.getItem('@olorin_language');
+        const AsyncStorage = (
+          await import("@react-native-async-storage/async-storage")
+        ).default;
+        savedLang = await AsyncStorage.getItem("@olorin_language");
       } catch {
         // AsyncStorage not available
       }
     }
 
     if (savedLang) {
-      const validLanguages: LanguageCode[] = ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'];
+      const validLanguages: LanguageCode[] = [
+        "he",
+        "en",
+        "es",
+        "zh",
+        "fr",
+        "it",
+        "hi",
+        "ta",
+        "bn",
+        "ja",
+      ];
       if (validLanguages.includes(savedLang as LanguageCode)) {
         await i18n.changeLanguage(savedLang);
       }
     }
   } catch (error) {
-    logger.warn('Error loading saved language', 'I18n', error);
+    logger.warn("Error loading saved language", "I18n", error);
   }
 };
 
@@ -122,13 +133,15 @@ export const loadSavedLanguage = async (): Promise<void> => {
 export const saveLanguage = async (lang: LanguageCode): Promise<void> => {
   try {
     // Try web first
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem('@olorin_language', lang);
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem("@olorin_language", lang);
     } else {
       // Try AsyncStorage for React Native
       try {
-        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-        await AsyncStorage.setItem('@olorin_language', lang);
+        const AsyncStorage = (
+          await import("@react-native-async-storage/async-storage")
+        ).default;
+        await AsyncStorage.setItem("@olorin_language", lang);
       } catch {
         // AsyncStorage not available
       }
@@ -136,7 +149,7 @@ export const saveLanguage = async (lang: LanguageCode): Promise<void> => {
 
     await i18n.changeLanguage(lang);
   } catch (error) {
-    logger.warn('Error saving language', 'I18n', error);
+    logger.warn("Error saving language", "I18n", error);
   }
 };
 
@@ -145,7 +158,9 @@ export const saveLanguage = async (lang: LanguageCode): Promise<void> => {
  * @returns Language info object with code, name, flag, RTL status
  */
 export const getCurrentLanguage = (): LanguageInfo => {
-  const current = languages.find(l => l.code === (i18n.language as LanguageCode));
+  const current = languages.find(
+    (l) => l.code === (i18n.language as LanguageCode),
+  );
   return current || languages[0];
 };
 

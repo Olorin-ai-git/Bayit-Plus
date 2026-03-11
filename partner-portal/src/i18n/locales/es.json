@@ -101,7 +101,7 @@
     "errors": "Errores",
     "avgLatency": "Latencia promedio",
     "p95Latency": "Latencia P95",
-    "endpoint": "Endpoint",
+    "endpoint": "Punto de acceso",
     "exportCsv": "Exportar CSV",
     "exportJson": "Exportar JSON"
   },

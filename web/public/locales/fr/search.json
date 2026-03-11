@@ -1,0 +1,60 @@
+{
+  "controls": {
+    "placeholder": "Rechercher du contenu...",
+    "voiceSearch": "Recherche vocale",
+    "llmSearch": "Recherche par IA",
+    "filters": "Filtres",
+    "contentTypes": {
+      "all": "Tout",
+      "vod": "VOD",
+      "live": "En direct",
+      "radio": "Radio",
+      "podcast": "Podcasts"
+    },
+    "hints": {
+      "searchInput": "Saisissez des mots-clés pour rechercher",
+      "llmSearch": "Recherche contextuelle par IA",
+      "filters": "Filtres de recherche avancés"
+    }
+  },
+  "semantic": {
+    "keyword": "Mot-clé",
+    "semantic": "Sémantique",
+    "info": "La recherche sémantique utilise l'IA pour comprendre le contexte et trouver du contenu par sens, pas seulement par mots-clés. Idéal pour trouver des scènes ou des dialogues spécifiques.",
+    "infoTitle": "À propos de la recherche sémantique"
+  },
+  "viewMode": {
+    "grid": "Vue grille",
+    "list": "Vue liste",
+    "cards": "Vue cartes"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 Recherches populaires",
+    "categoriesTitle": "Catégories",
+    "recentTitle": "Recherches récentes",
+    "clearRecent": "Effacer"
+  },
+  "empty": {
+    "noResults": "Aucun résultat trouvé",
+    "noResultsMessage": "Nous n'avons rien trouvé correspondant à « {{query}} »",
+    "tryAgain": "Essayez :",
+    "checkSpelling": "• Vérifier l'orthographe",
+    "differentKeywords": "• Utiliser des mots-clés différents",
+    "searchLanguage": "• Chercher en hébreu ou en anglais",
+    "useVoice": "• Utiliser la recherche vocale 🎤",
+    "startSearching": "Commencer à rechercher",
+    "startSearchingMessage": "Recherchez des films, séries, podcasts et plus encore",
+    "clearSearch": "Effacer la recherche",
+    "tryAgainButton": "Réessayer"
+  },
+  "errors": {
+    "somethingWrong": "Une erreur s'est produite",
+    "retrySearch": "Réessayer"
+  },
+  "loading": "Chargement...",
+  "results": {
+    "premium": "Premium",
+    "kids": "Enfants",
+    "featured": "À la une"
+  }
+}

@@ -48,6 +48,7 @@
     "actions": "פעולות",
     "pageOf": "עמוד {{page}} מתוך {{total}}",
     "noData": "אין נתונים זמינים",
+    "filters": "מסננים",
     "clear": "נקה",
     "clearSelection": "נקה",
     "expand": "הרחב",
@@ -60,7 +61,6 @@
     "goBack": "חזרה",
     "pause": "השהה",
     "tryAgain": "נסה שוב",
-    "filters": "Filters",
     "refresh": "רענון"
   },
   "demo": {
@@ -113,11 +113,11 @@
     "name": "שם",
     "termsNotice": "בהתחברות, אתה מסכים לתנאי השימוש ומדיניות הפרטיות שלנו",
     "errors": {
-      "fillAllFields": "נא למלא את כל השדות",
+      "emailRequired": "דואר אלקטרוני נדרש",
+      "passwordRequired": "סיסמה נדרשת",
       "loginFailed": "שגיאה בהתחברות. נסה שוב.",
-      "emailRequired": "Email is required",
-      "googleFailed": "Google sign-in failed. Please try again.",
-      "passwordRequired": "Password is required"
+      "googleFailed": "כניסה עם Google נכשלה. אנא נסה שוב.",
+      "fillAllFields": "נא למלא את כל השדות"
     },
     "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
     "methodQR": "קוד QR",
@@ -140,7 +140,7 @@
     "send": "שלח",
     "createAccount": "צור חשבון",
     "bayitThinking": "בית חושב...",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "אירעה שגיאה בלתי צפויה"
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -562,14 +562,9 @@
       "moveUp": "הזז למעלה",
       "moveDown": "הזז למטה",
       "order": "סדר",
-      "removeConfirm": "להסיר פריט זה?",
-      "removeConfirmYes": "כן, הסר",
-      "removeConfirmNo": "ביטול",
-      "maxItems": "מקסימום {{max}} פריטים. הסר פריט כדי להוסיף עוד.",
-      "emptyAi": "ה-AI יבחר תוכן אוטומטית בהתאם להעדפותיך.",
-      "more": "פריטים נוספים",
-      "maxReached": "Maximum {{max}} items reached",
-      "confirmRemove": "Click again to confirm removal"
+      "confirmRemove": "לחץ שוב לאישור ההסרה",
+      "maxReached": "הגעת למקסימום {{max}} פריטים",
+      "more": "פריטים נוספים"
     },
     "days": {
       "sunday": "ראשון",
@@ -589,14 +584,12 @@
       "selectAll": "בחר הכל",
       "deselectAll": "בטל בחירה",
       "title": "ימים פעילים",
-      "allDays": "כל 7 הימים",
-      "everyDay": "כל יום",
       "everyday": "כל יום",
-      "noneSelected": "לא נבחרו ימים",
-      "selectedCount": "{{count}} ימים נבחרו",
+      "everyDay": "כל יום",
       "weekdays": "ימי חול",
       "weekends": "סופי שבוע",
-      "dayCount": "{{count}} ימים"
+      "noneSelected": "לא נבחרו ימים",
+      "selectedCount": "{{count}} ימים נבחרו"
     },
     "trigger": {
       "type": "סוג טריגר",
@@ -610,9 +603,7 @@
       "calculatedTime": "זמן מחושב",
       "thisWeek": "השבוע: {{day}} ב-{{time}}",
       "comingSoon": "טריגרים לחגים בקרוב",
-      "startTime": "שעת התחלה",
-      "endTime": "שעת סיום",
-      "locationBased": "Times based on your location"
+      "locationBased": "זמנים לפי מיקומך"
     },
     "examples": {
       "title": "רצפים לדוגמה",
@@ -644,12 +635,10 @@
     "validation": {
       "nameRequired": "שם הרצף נדרש",
       "startTimeRequired": "שעת התחלה נדרשת לטריגר לפי זמן",
-      "noDaysSelected": "בחר לפחות יום אחד",
-      "invalidTime": "פורמט זמן לא תקין",
-      "endTimeRequired": "End time is required",
-      "timeRange": "End time must be after start time",
-      "contentRequired": "Add content or enable AI",
-      "daysRequired": "Select at least one day"
+      "endTimeRequired": "שעת סיום נדרשת",
+      "timeRange": "שעת הסיום חייבת להיות אחרי שעת ההתחלה",
+      "daysRequired": "בחר לפחות יום אחד",
+      "contentRequired": "הוסף תוכן או הפעל AI"
     },
     "tv": {
       "useCompanion": "להתאמה מלאה, השתמש באפליקציית Bayit+ בטלפון או בקר ב-bayit.plus במחשב."
@@ -831,15 +820,15 @@
     "appLanguage": "שפת האפליקציה",
     "selectLanguage": "בחר שפה",
     "languages": {
-      "en": "English",
+      "en": "אנגלית",
       "he": "עברית",
-      "es": "Español",
+      "es": "ספרדית",
       "zh": "中文",
-      "fr": "Français",
-      "it": "Italiano",
-      "hi": "हिन्दी",
-      "ta": "தமிழ்",
-      "bn": "বাংলা",
+      "fr": "צרפתית",
+      "it": "איטלקית",
+      "hi": "הינדי",
+      "ta": "טמילית",
+      "bn": "בנגלית",
       "ja": "日本語"
     },
     "chatTranslation": "תרגום צ'אט",
@@ -932,7 +921,6 @@
     "categories": {
       "getting-started": "התחלה",
       "features": "תכונות",
-      "social": "חברתי",
       "judaism": "יהדות",
       "platform-guides": "מדריכי פלטפורמה",
       "account": "חשבון",
@@ -940,6 +928,17 @@
       "parents": "להורים",
       "admin": "מנהלים",
       "developer": "מפתחים"
+    },
+    "faq": {
+      "title": "שאלות נפוצות",
+      "q1": "איך משנים תוכנית מנוי?",
+      "a1": "עברו להגדרות > מנוי כדי לצפות ולשנות את התוכנית הנוכחית. אפשר לשדרג או להוריד דרגה בכל עת.",
+      "q2": "איך מורידים תוכן לצפייה אופליין?",
+      "a2": "לחצו על אייקון ההורדה בכל תוכן כדי לשמור אותו לצפייה אופליין. ההורדות זמינות במכשירים ניידים בלבד.",
+      "q3": "למה הסרטון לא מתנגן?",
+      "a3": "בדקו את חיבור האינטרנט. אם הבעיה נמשכת, נסו לנקות את מטמון האפליקציה או להפעיל מחדש.",
+      "q4": "איך מבטלים מנוי?",
+      "a4": "אפשר לבטל את המנוי בכל עת דרך הגדרות > מנוי > ביטול תוכנית. הגישה תישמר עד סוף תקופת החיוב."
     },
     "onboarding": {
       "welcome": {
@@ -962,17 +961,6 @@
         "title": "פרופילים משפחתיים",
         "description": "צרו פרופילים מותאמים אישית לכל בן משפחה עם בקרת הורים."
       }
-    },
-    "faq": {
-      "title": "שאלות נפוצות",
-      "q1": "איך משנים תוכנית מנוי?",
-      "a1": "עברו להגדרות > מנוי כדי לצפות ולשנות את התוכנית הנוכחית. אפשר לשדרג או להוריד דרגה בכל עת.",
-      "q2": "איך מורידים תוכן לצפייה אופליין?",
-      "a2": "לחצו על אייקון ההורדה בכל תוכן כדי לשמור אותו לצפייה אופליין. ההורדות זמינות במכשירים ניידים בלבד.",
-      "q3": "למה הסרטון לא מתנגן?",
-      "a3": "בדקו את חיבור האינטרנט. אם הבעיה נמשכת, נסו לנקות את מטמון האפליקציה או להפעיל מחדש.",
-      "q4": "איך מבטלים מנוי?",
-      "a4": "אפשר לבטל את המנוי בכל עת דרך הגדרות > מנוי > ביטול תוכנית. הגישה תישמר עד סוף תקופת החיוב."
     }
   },
   "voice": {
@@ -1058,12 +1046,6 @@
     "restart": "התחל מההתחלה",
     "subtitlesOff": "כבוי",
     "speed": "מהירות",
-    "selectQuality": "בחר איכות וידאו",
-    "quality4k": "4K Ultra HD",
-    "quality1080p": "1080p Full HD",
-    "quality720p": "720p HD",
-    "quality480p": "480p SD",
-    "qualityUnknown": "לא ידוע",
     "subscription": {
       "requiredTitle": "נדרשת הנתקה",
       "requiredMessage": "דורש מנוי בתשלום",
@@ -1446,6 +1428,136 @@
     "typeRadio": "רדיו",
     "typeVideo": "וידאו"
   },
+  "watchParty": {
+    "title": "מסיבת צפייה",
+    "create": "צור מסיבה",
+    "join": "הצטרף למסיבה",
+    "active": "מסיבה פעילה",
+    "createTitle": "יצירת מסיבת צפייה",
+    "joinTitle": "הצטרפות למסיבה",
+    "enterCode": "הזן קוד חדר",
+    "roomCode": "קוד החדר",
+    "copyCode": "העתק קוד",
+    "codeCopied": "הקוד הועתק!",
+    "participants": "משתתפים",
+    "host": "מארח",
+    "you": "אתה",
+    "leave": "עזוב מסיבה",
+    "end": "סיים מסיבה",
+    "chat": "צ'אט",
+    "sendMessage": "שלח הודעה",
+    "typeMessage": "הקלד הודעה...",
+    "synced": "מסונכרן",
+    "syncing": "מסנכרן...",
+    "hostPaused": "המארח השהה",
+    "userJoined": "{{name}} הצטרף/ה",
+    "userLeft": "{{name}} עזב/ה",
+    "partyEnded": "המסיבה הסתיימה",
+    "connecting": "מתחבר...",
+    "options": {
+      "chatEnabled": "אפשר צ'אט",
+      "syncPlayback": "סנכרן ניגון"
+    },
+    "errors": {
+      "invalidCode": "קוד לא תקין",
+      "partyFull": "המסיבה מלאה",
+      "partyEnded": "המסיבה הסתיימה",
+      "connectionError": "שגיאת חיבור",
+      "createFailed": "שגיאה ביצירת מסיבה",
+      "joinFailed": "שגיאה בהצטרפות"
+    },
+    "audio": {
+      "mute": "השתק",
+      "unmute": "בטל השתקה",
+      "speaking": "מדבר",
+      "connecting": "מתחבר לשמע...",
+      "noAudio": "שמע לא זמין"
+    },
+    "textOnlyMode": "צ'אט טקסט בלבד",
+    "endParty": "סיים מסיבה"
+  },
+  "footer": {
+    "brandDescription": "הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית.",
+    "browse": "עיון",
+    "account": "חשבון",
+    "support": "תמיכה",
+    "legal": "משפטי",
+    "location": "ניו יורק, ארה״ב",
+    "links": {
+      "home": "דף הבית",
+      "liveTV": "שידור חי",
+      "vod": "סרטים וסדרות",
+      "radio": "רדיו",
+      "podcasts": "פודקאסטים",
+      "judaism": "יהדות",
+      "profile": "הפרופיל שלי",
+      "favorites": "מועדפים",
+      "watchlist": "רשימת צפייה",
+      "subscribe": "הרשמה",
+      "downloads": "הורדות",
+      "help": "מרכז עזרה",
+      "faq": "שאלות נפוצות",
+      "contact": "צור קשר",
+      "feedback": "משוב",
+      "terms": "תנאי שימוש",
+      "privacy": "מדיניות פרטיות",
+      "cookies": "מדיניות עוגיות",
+      "licenses": "רישיונות"
+    },
+    "newsletter": {
+      "title": "הישאר מעודכן",
+      "description": "הירשם לניוזלטר שלנו לקבלת עדכונים ותוכן בלעדי.",
+      "placeholder": "הזן את האימייל שלך",
+      "success": "תודה על ההרשמה!"
+    },
+    "apps": {
+      "title": "הורד את האפליקציה",
+      "downloadOn": "הורד מ",
+      "getItOn": "קבל ב",
+      "appStore": "App Store",
+      "googlePlay": "Google Play"
+    },
+    "social": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "youtube": "YouTube"
+    },
+    "copyright": "© {{year}} בית+. כל הזכויות שמורות.",
+    "poweredBy": "מופעל על ידי",
+    "sitemap": "מפת אתר",
+    "accessibility": "נגישות",
+    "navigation": "ניווט",
+    "liveTV": "שידור חי",
+    "moviesAndSeries": "סרטים וסדרות",
+    "radioStations": "תחנות רדיו",
+    "myProfile": "הפרופיל שלי",
+    "subscriptions": "מנויים",
+    "helpAndSupport": "עזרה ותמיכה",
+    "termsOfUse": "תנאי שימוש",
+    "privacyPolicy": "מדיניות פרטיות",
+    "contactUs": "צור קשר"
+  },
+  "chapters": {
+    "title": "פרקים",
+    "noChapters": "אין פרקים זמינים",
+    "generating": "יוצר פרקים...",
+    "jumpTo": "קפוץ אל",
+    "current": "עכשיו",
+    "categories": {
+      "intro": "פתיחה",
+      "news": "חדשות",
+      "security": "ביטחון",
+      "politics": "פוליטיקה",
+      "economy": "כלכלה",
+      "sports": "ספורט",
+      "weather": "מזג אוויר",
+      "culture": "תרבות",
+      "conclusion": "סיום"
+    },
+    "chapterLabel": "פרק {{number}}",
+    "chapter_number": "פרק {{number}}"
+  },
   "admin": {
     "brand": {
       "title": "ביית+ ניהול",
@@ -1453,7 +1565,6 @@
     },
     "backToApp": "חזרה לאפליקציה",
     "refunds": {
-      "title": "החזרים",
       "subtitle": "ניהול בקשות להחזר",
       "approveModal": {
         "title": "אישור החזר",
@@ -1490,7 +1601,8 @@
       "emptyMessage": "לא נמצאו בקשות להחזר",
       "errors": {
         "rejectReasonRequired": "נא להזין סיבת דחייה"
-      }
+      },
+      "title": "החזרים"
     },
     "plans": {
       "title": "ניהול תוכניות",
@@ -1522,7 +1634,6 @@
       "confirmDelete": "מחק את התוכנית \"{{name}}\"?"
     },
     "emailCampaigns": {
-      "title": "קמפיינים בדוא״ל",
       "subtitle": "יצירה וניהול קמפייני דוא״ל",
       "createButton": "קמפיין חדש",
       "searchPlaceholder": "חפש קמפיין...",
@@ -1605,7 +1716,7 @@
       "totalRevenue": "סה״כ הכנסות",
       "revenueToday": "הכנסות היום",
       "revenueMonth": "הכנסות החודש",
-      "arpu": "ARPU",
+      "arpu": "הכנסה ממוצעת למשתמש",
       "activeSubscriptions": "מנויים פעילים",
       "churnRate": "שיעור נטישה"
     },
@@ -1628,6 +1739,7 @@
       "subscription_created": "מנוי נוצר",
       "subscription_updated": "מנוי עודכן",
       "subscription_canceled": "מנוי בוטל",
+      "subscription_deleted": "מנוי נמחק",
       "refund_processed": "החזר עובד",
       "payment_received": "תשלום התקבל",
       "settings_updated": "הגדרות עודכנו",
@@ -1658,8 +1770,7 @@
       "widget_updated": "ווידג'ט עודכן",
       "widget_deleted": "ווידג'ט נמחק",
       "widget_published": "ווידג'ט פורסם",
-      "widget_unpublished": "ווידג'ט בוטל פרסומו",
-      "subscription_deleted": "Subscription Deleted"
+      "widget_unpublished": "ווידג'ט בוטל פרסומו"
     },
     "placeholder": {
       "userId": "הזן מזהה משתמש",
@@ -2064,12 +2175,12 @@
           "aiAgent": "סוכן AI"
         },
         "levels": {
-          "debug": "DEBUG",
-          "info": "INFO",
+          "debug": "ניפוי",
+          "info": "מידע",
           "warn": "אזהרה",
           "error": "שגיאה",
           "success": "הצלחה",
-          "trace": "TRACE"
+          "trace": "מעקב"
         },
         "auditStarted": "הביקורת החלה",
         "brokenStreamsFound": "נמצאו {{count}} סטרימ(ים) שבור(ים)",
@@ -2088,12 +2199,6 @@
         "types": {
           "aiAgent": "סוכן AI",
           "dailyIncremental": "יומי מצטבר"
-        },
-        "status": {
-          "running": "פעיל",
-          "starting": "מתחיל...",
-          "idle": "לא פעיל",
-          "never": "אף פעם"
         },
         "pause": "השהה",
         "resume": "המשך",
@@ -2297,7 +2402,7 @@
       "trialDays": "ימי תקופת ניסיון",
       "maintenanceMode": "מצב תחזוקה",
       "maintenanceModeDesc": "כאשר פעיל, המערכת תהיה לא נגישה למשתמשים",
-      "featureFlags": "Feature Flags",
+      "featureFlags": "דגלי תכונות",
       "systemActions": "פעולות מערכת",
       "clearCache": "נקה קאש",
       "resetAnalytics": "אפס אנליטיקס",
@@ -2386,7 +2491,7 @@
         "order": "סדר",
         "name": "שם",
         "slug": "מזהה",
-        "subtitles": "Subtitles"
+        "subtitles": "כתוביות"
       },
       "validation": {
         "titleRequired": "כותרת נדרשת",
@@ -2568,18 +2673,18 @@
     "liveChannels": {
       "subtitle": "ניהול ערוצי טלוויזיה חיים",
       "emptyMessage": "לא נמצאו ערוצים חיים",
+      "subtitleSettings": "הגדרות כתוביות חיות",
       "form": {
         "name": "שם הערוץ",
         "streamUrl": "כתובת הזרמה",
         "epgSource": "כתובת מקור EPG (אופציונלי)",
         "currentShow": "תוכנית נוכחית",
         "order": "מיקום",
-        "targetLanguagesHelp": "Select which languages users can translate to in real-time",
-        "supportsSubtitles": "Enable Live Subtitles",
-        "primaryLanguage": "Primary Language (Source)",
-        "targetLanguages": "Available Translation Languages"
-      },
-      "subtitleSettings": "Live Subtitle Settings"
+        "supportsSubtitles": "הפעל כתוביות חיות",
+        "primaryLanguage": "שפה ראשית (מקור)",
+        "targetLanguages": "שפות תרגום זמינות",
+        "targetLanguagesHelp": "בחר לאילו שפות משתמשים יכולים לתרגם בזמן אמת"
+      }
     },
     "radioStations": {
       "subtitle": "ניהול תחנות רדיו",
@@ -2716,6 +2821,13 @@
       "perMonth": "/חודש",
       "searchPlaceholder": "חפש מנוי...",
       "emptyMessage": "לא נמצאו מנויים",
+      "actions": {
+        "changePlan": "שנה מסלול",
+        "pause": "השהה",
+        "resume": "המשך",
+        "cancel": "ביטול",
+        "delete": "מחק"
+      },
       "editPlan": {
         "title": "שינוי תוכנית מנוי",
         "user": "משתמש",
@@ -2735,14 +2847,7 @@
       "selectToDelete": "אנא בחר מנויים למחיקה",
       "confirmDeleteMultiple": "למחוק {{count}} מנויים?",
       "selected": "נבחרו",
-      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול.",
-      "actions": {
-        "delete": "Delete",
-        "cancel": "Cancel",
-        "changePlan": "Change Plan",
-        "pause": "Pause",
-        "resume": "Resume"
-      }
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול."
     },
     "marketingDashboard": {
       "subtitle": "סקירת שיווק",
@@ -2819,136 +2924,6 @@
       "confirmDelete": "מחק את ההתראה \"{{title}}\"?",
       "fillRequired": "נא למלא כותרת ותוכן"
     }
-  },
-  "watchParty": {
-    "title": "מסיבת צפייה",
-    "create": "צור מסיבה",
-    "join": "הצטרף למסיבה",
-    "active": "מסיבה פעילה",
-    "createTitle": "יצירת מסיבת צפייה",
-    "joinTitle": "הצטרפות למסיבה",
-    "enterCode": "הזן קוד חדר",
-    "roomCode": "קוד החדר",
-    "copyCode": "העתק קוד",
-    "codeCopied": "הקוד הועתק!",
-    "participants": "משתתפים",
-    "host": "מארח",
-    "you": "אתה",
-    "leave": "עזוב מסיבה",
-    "end": "סיים מסיבה",
-    "chat": "צ'אט",
-    "sendMessage": "שלח הודעה",
-    "typeMessage": "הקלד הודעה...",
-    "synced": "מסונכרן",
-    "syncing": "מסנכרן...",
-    "hostPaused": "המארח השהה",
-    "userJoined": "{{name}} הצטרף/ה",
-    "userLeft": "{{name}} עזב/ה",
-    "partyEnded": "המסיבה הסתיימה",
-    "connecting": "מתחבר...",
-    "options": {
-      "chatEnabled": "אפשר צ'אט",
-      "syncPlayback": "סנכרן ניגון"
-    },
-    "errors": {
-      "invalidCode": "קוד לא תקין",
-      "partyFull": "המסיבה מלאה",
-      "partyEnded": "המסיבה הסתיימה",
-      "connectionError": "שגיאת חיבור",
-      "createFailed": "שגיאה ביצירת מסיבה",
-      "joinFailed": "שגיאה בהצטרפות"
-    },
-    "audio": {
-      "mute": "השתק",
-      "unmute": "בטל השתקה",
-      "speaking": "מדבר",
-      "connecting": "מתחבר לשמע...",
-      "noAudio": "שמע לא זמין"
-    },
-    "textOnlyMode": "צ'אט טקסט בלבד",
-    "endParty": "סיים מסיבה"
-  },
-  "footer": {
-    "brandDescription": "הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית.",
-    "browse": "עיון",
-    "account": "חשבון",
-    "support": "תמיכה",
-    "legal": "משפטי",
-    "location": "ניו יורק, ארה״ב",
-    "links": {
-      "home": "דף הבית",
-      "liveTV": "שידור חי",
-      "vod": "סרטים וסדרות",
-      "radio": "רדיו",
-      "podcasts": "פודקאסטים",
-      "judaism": "יהדות",
-      "profile": "הפרופיל שלי",
-      "favorites": "מועדפים",
-      "watchlist": "רשימת צפייה",
-      "subscribe": "הרשמה",
-      "downloads": "הורדות",
-      "help": "מרכז עזרה",
-      "faq": "שאלות נפוצות",
-      "contact": "צור קשר",
-      "feedback": "משוב",
-      "terms": "תנאי שימוש",
-      "privacy": "מדיניות פרטיות",
-      "cookies": "מדיניות עוגיות",
-      "licenses": "רישיונות"
-    },
-    "newsletter": {
-      "title": "הישאר מעודכן",
-      "description": "הירשם לניוזלטר שלנו לקבלת עדכונים ותוכן בלעדי.",
-      "placeholder": "הזן את האימייל שלך",
-      "success": "תודה על ההרשמה!"
-    },
-    "apps": {
-      "title": "הורד את האפליקציה",
-      "downloadOn": "הורד מ",
-      "getItOn": "קבל ב",
-      "appStore": "App Store",
-      "googlePlay": "Google Play"
-    },
-    "social": {
-      "facebook": "Facebook",
-      "twitter": "Twitter",
-      "instagram": "Instagram",
-      "youtube": "YouTube"
-    },
-    "copyright": "© {{year}} בית+. כל הזכויות שמורות.",
-    "poweredBy": "מופעל על ידי",
-    "sitemap": "מפת אתר",
-    "accessibility": "נגישות",
-    "navigation": "ניווט",
-    "liveTV": "שידור חי",
-    "moviesAndSeries": "סרטים וסדרות",
-    "radioStations": "תחנות רדיו",
-    "myProfile": "הפרופיל שלי",
-    "subscriptions": "מנויים",
-    "helpAndSupport": "עזרה ותמיכה",
-    "termsOfUse": "תנאי שימוש",
-    "privacyPolicy": "מדיניות פרטיות",
-    "contactUs": "צור קשר"
-  },
-  "chapters": {
-    "title": "פרקים",
-    "noChapters": "אין פרקים זמינים",
-    "generating": "יוצר פרקים...",
-    "jumpTo": "קפוץ אל",
-    "current": "עכשיו",
-    "categories": {
-      "intro": "פתיחה",
-      "news": "חדשות",
-      "security": "ביטחון",
-      "politics": "פוליטיקה",
-      "economy": "כלכלה",
-      "sports": "ספורט",
-      "weather": "מזג אוויר",
-      "culture": "תרבות",
-      "conclusion": "סיום"
-    },
-    "chapterLabel": "פרק {{number}}",
-    "chapter_number": "פרק {{number}}"
   },
   "placeholder": {
     "email": "your@email.com",
@@ -3083,7 +3058,9 @@
     "loading": "טוען פרופילים...",
     "manage": "ניהול פרופילים",
     "whoIsWatching": "מי צופה?",
-    "manageProfiles": "ניהול פרופילים"
+    "manageProfiles": "ניהול פרופילים",
+    "kids": "ילדים",
+    "addIcon": "+"
   },
   "watch": {
     "notFound": "התוכן לא נמצא",
@@ -3117,9 +3094,9 @@
   "judaism": {
     "title": "יהדות",
     "items": "פריטים",
-    "dashboard": "לוח היהדות שלך",
     "empty": "אין תוכן זמין",
     "emptyHint": "נסה לבחור קטגוריה אחרת",
+    "dashboard": "לוח היהדות שלך",
     "categories": {
       "news": "חדשות יהודיות",
       "community": "קהילה"
@@ -3337,7 +3314,7 @@
         "description": "כתוביות אנגלית סטנדרטיות"
       },
       "heblish": {
-        "title": "Heblish",
+        "title": "עברנגלית",
         "description": "אנגלית עם הזרקות מילים עבריות ללמידה אימרסיבית",
         "unavailableReason": "עיבוד Heblish לא זמין לתוכן זה"
       },
@@ -3379,7 +3356,7 @@
     "splitMode": "מצב מפוצל",
     "primary_language": "שפה ראשית",
     "secondary_language": "שפה משנית",
-    "layout_mode": "Layout Mode",
+    "layout_mode": "מצב פריסה",
     "interactive_title": "כתוביות אינטראקטיביות"
   },
   "video": {
@@ -3466,24 +3443,24 @@
       "title": "צ'אט",
       "inputPlaceholder": "הקלד הודעה..."
     },
-    "declineDraw": "Decline Draw",
-    "whiteCaptured": "White Captured",
-    "you": "You",
-    "offline": "Offline",
-    "noFriendsYet": "No friends yet",
-    "blackTurn": "Black's Turn",
-    "online": "Online",
-    "challengeFriend": "Challenge Friend",
-    "copyCode": "Copy Code",
-    "declineInvite": "Decline Invite",
-    "blackCaptured": "Black Captured",
-    "whiteTurn": "White's Turn",
-    "challengeViaWhatsApp": "Challenge via WhatsApp",
-    "joinByGameCode": "Join by Game Code",
-    "opponent": "Opponent",
-    "acceptInvite": "Accept Invite",
-    "drawOffered": "Draw Offered",
-    "acceptDraw": "Accept Draw"
+    "acceptDraw": "קבל תיקו",
+    "acceptInvite": "קבל הזמנה",
+    "blackCaptured": "שחור נלכד",
+    "blackTurn": "תור השחור",
+    "challengeFriend": "אתגר חבר",
+    "challengeViaWhatsApp": "אתגר דרך WhatsApp",
+    "copyCode": "העתק קוד",
+    "declineDraw": "סרב לתיקו",
+    "declineInvite": "סרב להזמנה",
+    "drawOffered": "הוצע תיקו",
+    "joinByGameCode": "הצטרף עם קוד משחק",
+    "noFriendsYet": "אין חברים עדיין",
+    "offline": "לא מקוון",
+    "online": "מקוון",
+    "opponent": "יריב",
+    "whiteCaptured": "לבן נלכד",
+    "whiteTurn": "תור הלבן",
+    "you": "You"
   },
   "friends": {
     "title": "חברים ויריבים",
@@ -4073,13 +4050,27 @@
     "biometricEnrollSkip": "דלג",
     "biometricEnrollTitle": "הפעל התחברות ביומטרית",
     "biometricSignIn": "התחבר עם ביומטריה",
-    "signOut": "התנתק"
+    "signOut": "התנתק",
+    "register": {
+      "createAccount": "יצירת חשבון",
+      "email": "אימייל",
+      "password": "סיסמה",
+      "confirmPassword": "אישור סיסמה",
+      "register": "הרשמה",
+      "alreadyHaveAccount": "כבר יש לך חשבון? התחבר",
+      "passwordStrength": {
+        "weak": "חלשה",
+        "medium": "בינונית",
+        "strong": "חזקה"
+      }
+    }
   },
   "recording": {
     "stop": "עצור הקלטה",
     "start": "התחל הקלטה"
   },
   "discover": {
+    "title": "גלה",
     "subtitle": "גלה 19 תכונות מבוססות בינה מלאכותית",
     "description": "Bayit+ משתמשת בבינה מלאכותית כדי לשפר את חוויית הצפייה, ההאזנה והלמידה שלך. גלה מה זמין בפלטפורמה שלך.",
     "featureCount": "{{count}} תכונות",
@@ -4103,8 +4094,8 @@
     "platform": {
       "web": "Web",
       "ios": "iOS",
-      "tvos": "Apple TV",
-      "android": "אנדרואיד"
+      "android": "אנדרואיד",
+      "tvos": "Apple TV"
     },
     "category": {
       "watching_movies": "צפייה בסרטים",
@@ -4333,10 +4324,18 @@
         "step2": "הקלד את השאלה או הבקשה",
         "step3": "קרא את תגובת ה-AI"
       }
-    },
-    "title": "Discover"
+    }
   },
   "byoc": {
+    "home": {
+      "title": "הביאו תוכן משלכם",
+      "subtitle": "חברו את מקורות ה-IPTV, Plex או YouTube שלכם ותהנו מתכונות AI של Bayit+ על התוכן שלכם",
+      "connectButton": "חבר מקורות",
+      "aiFeatures": {
+        "dubbing": "דיבוב AI זמין",
+        "subtitles": "כתוביות חיות זמינות"
+      }
+    },
     "pageSubtitle": "הבא את התוכן שלך - הוסף מקורות IPTV ושידור",
     "addSource": "הוסף מקור",
     "sync": "סנכרן",
@@ -4410,14 +4409,28 @@
       "normalizationFailed": "עיבוד התוכן נכשל",
       "normalizationPollFailed": "החיבור אבד במהלך העיבוד"
     },
-    "home": {
-      "title": "הביאו תוכן משלכם",
-      "subtitle": "חברו את מקורות ה-IPTV, Plex או YouTube שלכם ותהנו מתכונות AI של Bayit+ על התוכן שלכם",
-      "connectButton": "חבר מקורות",
-      "aiFeatures": {
-        "dubbing": "דיבוב AI זמין",
-        "subtitles": "כתוביות חיות זמינות"
-      }
+    "plex": {
+      "connectPlex": "חיבור Plex",
+      "enterCodeAt": "הזן קוד זה ב",
+      "waitingForAuth": "ממתין לאישור...",
+      "selectServer": "בחר שרת Plex",
+      "connecting": "מתחבר ל-{{serverName}}...",
+      "connected": "מחובר",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "מקורות התוכן שלך",
+      "refresh": "רענון",
+      "noSources": "לא מחוברים מקורות תוכן",
+      "noSourcesSubtitle": "חבר את Plex, YouTube, IPTV או ספק Xtream שלך",
+      "removeSource": "הסר מקור",
+      "plexSubtitle": "הזרם משרת Plex שלך",
+      "youtubeSubtitle": "גש לספריית YouTube שלך",
+      "iptvXtreamLabel": "IPTV / Xtream",
+      "iptvXtreamSubtitle": "הוסף רשימת M3U או קודי Xtream",
+      "youtube": "YouTube",
+      "xtreamCodes": "קודי Xtream",
+      "iptv": "IPTV"
     }
   },
   "onboarding": {
@@ -4452,7 +4465,7 @@
         "title": "כתוביות אינטראקטיביות",
         "description": "הקש על כל מילה בכתוביות לתרגום מיידי והגייה",
         "sample": "המשפחה התכנסה לארוחת Shabbat",
-        "word": "Shabbat",
+        "word": "שבת",
         "translation": "שבת - יום מנוחה שבועי"
       },
       "interaction": {
@@ -4684,172 +4697,172 @@
   },
   "watch_now": "צפה עכשיו",
   "culture": {
-    "title": "Israeli Culture",
-    "description": "Jerusalem, Tel Aviv, and Israeli heritage",
+    "title": "תרבות ישראלית",
+    "description": "ירושלים, תל אביב ומורשת ישראלית",
     "shabbat": {
-      "title": "Shabbat Mode",
-      "enableShabbatMode": "Enable Shabbat Mode",
-      "shabbatTimes": "Shabbat Times",
-      "timesDescription": "Candle Lighting and Havdalah times will be displayed here",
-      "aboutTitle": "About Shabbat Mode",
-      "aboutDescription": "When enabled, Shabbat Mode will pause notifications, reduce screen brightness, and enable a simplified interface during Shabbat hours."
+      "title": "מצב שבת",
+      "enableShabbatMode": "הפעל מצב שבת",
+      "shabbatTimes": "זמני שבת",
+      "timesDescription": "זמני הדלקת נרות והבדלה יוצגו כאן",
+      "aboutTitle": "אודות מצב שבת",
+      "aboutDescription": "כאשר מופעל, מצב שבת ישהה התראות, יפחית בהירות מסך ויפעיל ממשק מפושט בשעות השבת."
     },
     "judaism": {
-      "holidaysAndTorah": "Holidays & Torah",
-      "parashaOfTheWeek": "Parasha of the Week",
-      "parashaDescription": "Weekly Torah reading and commentary"
+      "holidaysAndTorah": "חגים ותורה",
+      "parashaOfTheWeek": "פרשת השבוע",
+      "parashaDescription": "קריאת תורה שבועית ופרשנות"
     },
     "morning": {
-      "title": "Morning Ritual",
-      "description": "Start your day with intention and gratitude",
-      "dailyInspiration": "Daily Inspiration",
-      "dailyInspirationDescription": "Curated content for your morning routine",
-      "modehAni": "Modeh Ani",
-      "modehAniDescription": "Morning gratitude prayer",
-      "netilatYadayim": "Netilat Yadayim",
-      "netilatYadayimDescription": "Ritual hand washing",
-      "shacharit": "Shacharit",
-      "shacharitDescription": "Morning prayer service"
+      "title": "טקס בוקר",
+      "description": "התחל את היום שלך בכוונה ובהכרת תודה",
+      "dailyInspiration": "השראה יומית",
+      "dailyInspirationDescription": "תוכן מותאם לשגרת הבוקר שלך",
+      "modehAni": "מודה אני",
+      "modehAniDescription": "תפילת הודיה של הבוקר",
+      "netilatYadayim": "נטילת ידיים",
+      "netilatYadayimDescription": "נטילת ידיים",
+      "shacharit": "שחרית",
+      "shacharitDescription": "תפילת שחרית"
     },
     "glossary": {
-      "termDetail": "Term Detail",
-      "definition": "Definition",
-      "pronunciation": "Pronunciation",
-      "examples": "Examples"
+      "termDetail": "פרטי מונח",
+      "definition": "הגדרה",
+      "pronunciation": "הגייה",
+      "examples": "דוגמאות"
     },
     "jerusalem": {
-      "title": "Jerusalem"
+      "title": "ירושלים"
     },
     "telaviv": {
-      "title": "Tel Aviv"
+      "title": "תל אביב"
     }
   },
   "zehAni": {
     "dashboard": {
-      "title": "Zeh Ani",
-      "biometricConsent": "Biometric Consent",
-      "activeConsents": "{{count}} active consents",
-      "magicMirror": "Magic Mirror",
-      "magicMirrorDescription": "Daily greetings and face ID",
-      "v2vPractice": "V2V Practice",
-      "v2vPracticeDescription": "Voice-to-voice pronunciation",
-      "avatar3d": "3D Avatar",
-      "avatar3dDescription": "Your personalized avatar mesh",
-      "movieInteractions": "Movie Interactions",
-      "movieInteractionsDescription": "Browse and talk to movie characters",
-      "contacts": "Contacts",
-      "contactsDescription": "WhatsApp sharing contacts",
-      "feedback": "Feedback",
-      "feedbackDescription": "Share your experience",
-      "consent": "Consent",
-      "consentDescription": "Biometric consent management",
-      "chess": "Chess",
-      "chessDescription": "Play chess with friends and family"
+      "title": "זה אני",
+      "biometricConsent": "הסכמה ביומטרית",
+      "activeConsents": "{{count}} הסכמות פעילות",
+      "magicMirror": "מראה קסומה",
+      "magicMirrorDescription": "ברכות יומיות וזיהוי פנים",
+      "v2vPractice": "תרגול קול-לקול",
+      "v2vPracticeDescription": "הגייה קול-לקול",
+      "avatar3d": "אווטאר תלת-ממדי",
+      "avatar3dDescription": "רשת האווטאר המותאמת שלך",
+      "movieInteractions": "אינטראקציות עם סרטים",
+      "movieInteractionsDescription": "דפדף ושוחח עם דמויות מסרטים",
+      "contacts": "אנשי קשר",
+      "contactsDescription": "שיתוף אנשי קשר ב-WhatsApp",
+      "feedback": "משוב",
+      "feedbackDescription": "שתף את החוויה שלך",
+      "consent": "הסכמה",
+      "consentDescription": "ניהול הסכמה ביומטרית",
+      "chess": "שחמט",
+      "chessDescription": "שחק שחמט עם חברים ומשפחה"
     },
     "mirror": {
-      "title": "Magic Mirror",
-      "avatarContentDescription": "Avatar",
-      "wordOfTheDay": "Word of the Day",
-      "playLipsync": "Play Lipsync",
-      "noAvatarYet": "No avatar yet",
-      "noAvatarDescription": "Create a 3D avatar to see yourself in the story",
-      "createAvatar": "Create Avatar"
+      "title": "מראה קסומה",
+      "avatarContentDescription": "אווטאר",
+      "wordOfTheDay": "מילת היום",
+      "playLipsync": "הפעל סנכרון שפתיים",
+      "noAvatarYet": "אין אווטאר עדיין",
+      "noAvatarDescription": "צור אווטאר תלת-ממדי כדי לראות את עצמך בסיפור",
+      "createAvatar": "צור אווטאר"
     },
     "mode": {
-      "title": "Avatar Mode",
-      "enableAvatarMode": "Enable Avatar Mode",
-      "enableDescription": "Show your avatar reacting to content",
-      "avatarPreview": "Avatar Preview",
-      "avatarPreviewContentDescription": "Avatar preview",
-      "noAvatarConfigured": "No avatar configured",
-      "reactionStyle": "Reaction Style"
+      "title": "מצב אווטאר",
+      "enableAvatarMode": "הפעל מצב אווטאר",
+      "enableDescription": "הצג את האווטאר שלך מגיב לתוכן",
+      "avatarPreview": "תצוגה מקדימה של אווטאר",
+      "avatarPreviewContentDescription": "תצוגה מקדימה של אווטאר",
+      "noAvatarConfigured": "לא הוגדר אווטאר",
+      "reactionStyle": "סגנון תגובה"
     },
     "wardrobe": {
-      "title": "Wardrobe",
-      "equippedContentDescription": "Equipped"
+      "title": "מלתחה",
+      "equippedContentDescription": "מצויד"
     },
     "settings": {
-      "title": "Avatar Settings",
-      "privacy": "Privacy",
-      "privateAvatarMode": "Private Avatar Mode",
-      "privateAvatarDescription": "Hide your avatar from other users",
-      "appearance": "Appearance",
-      "enableAnimations": "Enable Animations",
-      "animationsDescription": "Animate avatar movements and expressions",
-      "availableOutfits": "Available Outfits"
+      "title": "הגדרות אווטאר",
+      "privacy": "פרטיות",
+      "privateAvatarMode": "מצב אווטאר פרטי",
+      "privateAvatarDescription": "הסתר את האווטאר שלך ממשתמשים אחרים",
+      "appearance": "מראה",
+      "enableAnimations": "הפעל אנימציות",
+      "animationsDescription": "הנפש תנועות והבעות של האווטאר",
+      "availableOutfits": "תלבושות זמינות"
     },
     "selfie": {
-      "title": "Video Selfie",
-      "camera": "Camera",
-      "cameraPreview": "Camera Preview",
-      "startRecording": "Start Recording",
-      "stopRecording": "Stop Recording",
+      "title": "סלפי וידאו",
+      "camera": "מצלמה",
+      "cameraPreview": "תצוגה מקדימה של מצלמה",
+      "startRecording": "התחל הקלטה",
+      "stopRecording": "הפסק הקלטה",
       "rec": "REC",
-      "enterPin": "Enter your PIN to create avatar",
+      "enterPin": "הזן את הקוד שלך ליצירת אווטאר",
       "pinLabel": "PIN",
-      "retake": "Retake",
-      "creatingAvatar": "Creating your avatar...",
-      "avatarCreated": "Avatar created successfully",
-      "avatarPreviewContentDescription": "Avatar Preview",
-      "createAnother": "Create Another"
+      "retake": "צלם מחדש",
+      "creatingAvatar": "יוצר את האווטאר שלך...",
+      "avatarCreated": "האווטאר נוצר בהצלחה",
+      "avatarPreviewContentDescription": "תצוגה מקדימה של אווטאר",
+      "createAnother": "צור נוסף"
     },
     "mesh": {
-      "title": "3D Avatar",
-      "meshViewer": "3D Mesh Viewer",
-      "meshViewerDescription": "3D mesh viewer requires WebView or GLSurfaceView integration",
-      "skinTone": "Skin Tone",
-      "hairStyle": "Hair Style",
-      "accessories": "Accessories",
-      "saveChanges": "Save Changes"
+      "title": "אווטאר תלת-ממדי",
+      "meshViewer": "מציג רשת תלת-ממדית",
+      "meshViewerDescription": "מציג רשת תלת-ממדית דורש שילוב WebView או GLSurfaceView",
+      "skinTone": "גוון עור",
+      "hairStyle": "תסרוקת",
+      "accessories": "אביזרים",
+      "saveChanges": "שמור שינויים"
     },
     "v2v": {
-      "title": "Voice Practice",
-      "nextPhrase": "Next Phrase",
-      "stop": "Stop",
-      "record": "Record",
+      "title": "תרגול קולי",
+      "nextPhrase": "ביטוי הבא",
+      "stop": "עצור",
+      "record": "הקלט",
       "mic": "MIC",
-      "viewProgress": "View Progress",
-      "analyzingPronunciation": "Analyzing pronunciation...",
-      "pronunciationFeedback": "Pronunciation Feedback",
-      "similarity": "Similarity: {{score}}%",
-      "yourProgress": "Your Progress",
-      "transforms": "Transforms: {{count}}",
-      "improvement": "Improvement: {{score}}%",
-      "continuePracticing": "Continue Practicing"
+      "viewProgress": "הצג התקדמות",
+      "analyzingPronunciation": "מנתח הגייה...",
+      "pronunciationFeedback": "משוב על הגייה",
+      "similarity": "דמיון: {{score}}%",
+      "yourProgress": "ההתקדמות שלך",
+      "transforms": "טרנספורמציות: {{count}}",
+      "improvement": "שיפור: {{score}}%",
+      "continuePracticing": "המשך לתרגל"
     },
     "characters": {
-      "title": "Characters",
-      "noCharactersFound": "No characters found for this movie",
-      "characterCount": "{{count}} characters"
+      "title": "דמויות",
+      "noCharactersFound": "לא נמצאו דמויות לסרט זה",
+      "characterCount": "{{count}} דמויות"
     },
     "interactions": {
-      "title": "Movie Interactions",
-      "noInteractableMovies": "No interactable movies available"
+      "title": "אינטראקציות עם סרטים",
+      "noInteractableMovies": "אין סרטים אינטראקטיביים זמינים"
     },
     "feedbackInbox": {
-      "title": "Feedback Inbox",
-      "refreshContentDescription": "Refresh",
-      "noFeedbackYet": "No feedback yet",
-      "feedbackAppearHere": "Feedback from your contacts will appear here",
-      "playVoiceMessage": "Play Voice Message"
+      "title": "תיבת משוב",
+      "refreshContentDescription": "רענן",
+      "noFeedbackYet": "אין משוב עדיין",
+      "feedbackAppearHere": "משוב מאנשי הקשר שלך יופיע כאן",
+      "playVoiceMessage": "הפעל הודעה קולית"
     },
     "addContact": {
-      "title": "Add Contact",
-      "nameLabel": "Name",
-      "phoneLabel": "Phone",
-      "relationship": "Relationship",
-      "language": "Language"
+      "title": "הוסף איש קשר",
+      "nameLabel": "שם",
+      "phoneLabel": "טלפון",
+      "relationship": "קשר",
+      "language": "שפה"
     },
     "avatar3d": {
-      "title": "3D Avatar",
-      "glbMeshViewer": "GLB Mesh Viewer",
-      "controls": "Controls",
-      "animate": "Animate",
-      "vertices": "Vertices",
-      "bones": "Bones",
-      "blendShapes": "Blend Shapes",
-      "hasGlb": "Has GLB",
-      "status": "Status: {{value}}"
+      "title": "אווטאר תלת-ממדי",
+      "glbMeshViewer": "מציג רשת GLB",
+      "controls": "פקדים",
+      "animate": "הנפשה",
+      "vertices": "קודקודים",
+      "bones": "עצמות",
+      "blendShapes": "צורות מיזוג",
+      "hasGlb": "כולל GLB",
+      "status": "סטטוס: {{value}}"
     }
   },
   "plus": {
@@ -4890,6 +4903,10 @@
       "upgradeList": "שחררו 19 תכונות AI, ווידג'טים ללא הגבלה, פרופילים ללא הגבלה ותמיכה בעדיפות",
       "subscribeNow": "הרשמו עכשיו",
       "hasAccess": "יש לכם גישה"
-    }
+    },
+    "title": "מנוי",
+    "choosePlan": "בחר מסלול",
+    "subscribe": "הרשמה למנוי",
+    "loadingPlans": "טוען מסלולים..."
   }
 }

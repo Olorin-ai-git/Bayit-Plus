@@ -1,0 +1,60 @@
+{
+  "controls": {
+    "placeholder": "搜索内容...",
+    "voiceSearch": "语音搜索",
+    "llmSearch": "AI 智能搜索",
+    "filters": "筛选器",
+    "contentTypes": {
+      "all": "全部",
+      "vod": "VOD",
+      "live": "直播",
+      "radio": "广播",
+      "podcast": "播客"
+    },
+    "hints": {
+      "searchInput": "输入关键词进行搜索",
+      "llmSearch": "AI 上下文智能搜索",
+      "filters": "高级搜索筛选器"
+    }
+  },
+  "semantic": {
+    "keyword": "关键词",
+    "semantic": "语义",
+    "info": "语义搜索使用 AI 理解上下文，通过含义而非仅仅关键词来查找内容。非常适合查找特定场景或对话。",
+    "infoTitle": "关于语义搜索"
+  },
+  "viewMode": {
+    "grid": "网格视图",
+    "list": "列表视图",
+    "cards": "卡片视图"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 热门搜索",
+    "categoriesTitle": "分类",
+    "recentTitle": "最近搜索",
+    "clearRecent": "清除"
+  },
+  "empty": {
+    "noResults": "未找到结果",
+    "noResultsMessage": "未找到与“{{query}}”匹配的内容",
+    "tryAgain": "尝试：",
+    "checkSpelling": "• 检查拼写",
+    "differentKeywords": "• 使用不同的关键词",
+    "searchLanguage": "• 用希伯来语或英语搜索",
+    "useVoice": "• 使用语音搜索 🎤",
+    "startSearching": "开始搜索",
+    "startSearchingMessage": "搜索电影、剧集、播客等更多内容",
+    "clearSearch": "清除搜索",
+    "tryAgainButton": "重试"
+  },
+  "errors": {
+    "somethingWrong": "出现错误",
+    "retrySearch": "重试"
+  },
+  "loading": "加载中...",
+  "results": {
+    "premium": "Premium",
+    "kids": "儿童",
+    "featured": "精选"
+  }
+}

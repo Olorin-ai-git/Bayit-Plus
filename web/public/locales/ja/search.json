@@ -1,0 +1,60 @@
+{
+  "controls": {
+    "placeholder": "コンテンツを検索...",
+    "voiceSearch": "音声検索",
+    "llmSearch": "AI 検索",
+    "filters": "フィルター",
+    "contentTypes": {
+      "all": "すべて",
+      "vod": "VOD",
+      "live": "ライブ",
+      "radio": "ラジオ",
+      "podcast": "ポッドキャスト"
+    },
+    "hints": {
+      "searchInput": "検索するキーワードを入力",
+      "llmSearch": "AI による文脈検索",
+      "filters": "高度な検索フィルター"
+    }
+  },
+  "semantic": {
+    "keyword": "キーワード",
+    "semantic": "セマンティック",
+    "info": "セマンティック検索は AI を使用して文脈を理解し、キーワードだけでなく意味によってコンテンツを見つけます。特定のシーンや台詞を見つけるのに最適です。",
+    "infoTitle": "セマンティック検索について"
+  },
+  "viewMode": {
+    "grid": "グリッド表示",
+    "list": "リスト表示",
+    "cards": "カード表示"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 人気の検索",
+    "categoriesTitle": "カテゴリ",
+    "recentTitle": "最近の検索",
+    "clearRecent": "クリア"
+  },
+  "empty": {
+    "noResults": "結果が見つかりません",
+    "noResultsMessage": "「{{query}}」に一致するものが見つかりませんでした",
+    "tryAgain": "試してみてください:",
+    "checkSpelling": "• スペルを確認する",
+    "differentKeywords": "• 別のキーワードを使用する",
+    "searchLanguage": "• ヘブライ語または英語で検索する",
+    "useVoice": "• 音声検索を使用する 🎤",
+    "startSearching": "検索を開始",
+    "startSearchingMessage": "映画、シリーズ、ポッドキャストなどを検索",
+    "clearSearch": "検索をクリア",
+    "tryAgainButton": "再試行"
+  },
+  "errors": {
+    "somethingWrong": "問題が発生しました",
+    "retrySearch": "再試行"
+  },
+  "loading": "読み込み中...",
+  "results": {
+    "premium": "Premium",
+    "kids": "キッズ",
+    "featured": "注目"
+  }
+}

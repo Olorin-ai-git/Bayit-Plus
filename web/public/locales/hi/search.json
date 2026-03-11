@@ -1,0 +1,60 @@
+{
+  "controls": {
+    "placeholder": "सामग्री खोजें...",
+    "voiceSearch": "आवाज़ खोज",
+    "llmSearch": "AI-संचालित खोज",
+    "filters": "फ़िल्टर",
+    "contentTypes": {
+      "all": "सभी",
+      "vod": "VOD",
+      "live": "लाइव",
+      "radio": "रेडियो",
+      "podcast": "पॉडकास्ट"
+    },
+    "hints": {
+      "searchInput": "खोजने के लिए कीवर्ड दर्ज करें",
+      "llmSearch": "AI-संचालित संदर्भ खोज",
+      "filters": "उन्नत खोज फ़िल्टर"
+    }
+  },
+  "semantic": {
+    "keyword": "कीवर्ड",
+    "semantic": "अर्थ-संबंधी",
+    "info": "अर्थ-संबंधी खोज संदर्भ को समझने और केवल कीवर्ड नहीं बल्कि अर्थ के आधार पर सामग्री खोजने के लिए AI का उपयोग करती है। विशिष्ट दृश्य या संवाद खोजने के लिए आदर्श।",
+    "infoTitle": "अर्थ-संबंधी खोज के बारे में"
+  },
+  "viewMode": {
+    "grid": "ग्रिड दृश्य",
+    "list": "सूची दृश्य",
+    "cards": "कार्ड दृश्य"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 ट्रेंडिंग खोजें",
+    "categoriesTitle": "श्रेणियाँ",
+    "recentTitle": "हाल की खोजें",
+    "clearRecent": "साफ़ करें"
+  },
+  "empty": {
+    "noResults": "कोई परिणाम नहीं मिला",
+    "noResultsMessage": "हमें \"{{query}}\" से मेल खाने वाला कुछ नहीं मिला",
+    "tryAgain": "प्रयास करें:",
+    "checkSpelling": "• वर्तनी जाँचें",
+    "differentKeywords": "• अलग कीवर्ड का उपयोग करें",
+    "searchLanguage": "• हिब्रू या अंग्रेज़ी में खोजें",
+    "useVoice": "• आवाज़ खोज का उपयोग करें 🎤",
+    "startSearching": "खोजना शुरू करें",
+    "startSearchingMessage": "फ़िल्में, सीरीज़, पॉडकास्ट और बहुत कुछ खोजें",
+    "clearSearch": "खोज साफ़ करें",
+    "tryAgainButton": "पुनः प्रयास करें"
+  },
+  "errors": {
+    "somethingWrong": "कुछ गलत हो गया",
+    "retrySearch": "पुनः प्रयास करें"
+  },
+  "loading": "लोड हो रहा है...",
+  "results": {
+    "premium": "Premium",
+    "kids": "बच्चे",
+    "featured": "विशेष रुप से प्रदर्शित"
+  }
+}

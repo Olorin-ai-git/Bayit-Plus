@@ -1,0 +1,60 @@
+{
+  "controls": {
+    "placeholder": "Cerca contenuti...",
+    "voiceSearch": "Ricerca vocale",
+    "llmSearch": "Ricerca con IA",
+    "filters": "Filtri",
+    "contentTypes": {
+      "all": "Tutto",
+      "vod": "VOD",
+      "live": "Live",
+      "radio": "Radio",
+      "podcast": "Podcast"
+    },
+    "hints": {
+      "searchInput": "Inserisci parole chiave per cercare",
+      "llmSearch": "Ricerca contestuale con IA",
+      "filters": "Filtri di ricerca avanzati"
+    }
+  },
+  "semantic": {
+    "keyword": "Parola chiave",
+    "semantic": "Semantica",
+    "info": "La ricerca semantica usa l'IA per comprendere il contesto e trovare contenuti per significato, non solo per parole chiave. Perfetto per trovare scene o dialoghi specifici.",
+    "infoTitle": "Informazioni sulla ricerca semantica"
+  },
+  "viewMode": {
+    "grid": "Vista griglia",
+    "list": "Vista elenco",
+    "cards": "Vista schede"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 Ricerche popolari",
+    "categoriesTitle": "Categorie",
+    "recentTitle": "Ricerche recenti",
+    "clearRecent": "Cancella"
+  },
+  "empty": {
+    "noResults": "Nessun risultato trovato",
+    "noResultsMessage": "Non abbiamo trovato nulla che corrisponda a \"{{query}}\"",
+    "tryAgain": "Prova:",
+    "checkSpelling": "• Controllare l'ortografia",
+    "differentKeywords": "• Usare parole chiave diverse",
+    "searchLanguage": "• Cercare in ebraico o inglese",
+    "useVoice": "• Usare la ricerca vocale 🎤",
+    "startSearching": "Inizia a cercare",
+    "startSearchingMessage": "Cerca film, serie, podcast e altro ancora",
+    "clearSearch": "Cancella ricerca",
+    "tryAgainButton": "Riprova"
+  },
+  "errors": {
+    "somethingWrong": "Qualcosa è andato storto",
+    "retrySearch": "Riprova"
+  },
+  "loading": "Caricamento...",
+  "results": {
+    "premium": "Premium",
+    "kids": "Bambini",
+    "featured": "In evidenza"
+  }
+}

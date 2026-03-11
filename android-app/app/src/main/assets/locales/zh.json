@@ -55,12 +55,12 @@
     "collapse": "收起",
     "upgrade": "升级到高级版",
     "skip": "跳过",
+    "thisContent": "[zh] this content",
+    "backToHome": "[zh] Back to Home",
     "dismiss": "[zh] Dismiss",
     "goBack": "[zh] Go Back",
     "pause": "[zh] Pause",
     "tryAgain": "[zh] Try Again",
-    "backToHome": "[zh] Back to Home",
-    "thisContent": "[zh] this content",
     "refresh": "刷新"
   },
   "demo": {
@@ -246,6 +246,7 @@
     "discover": "发现",
     "account": "账户",
     "subscribe": "订阅",
+    "plans": "[zh] Plans",
     "admin": "管理",
     "games": "游戏",
     "friends": "好友",
@@ -253,7 +254,7 @@
     "missions": "任务",
     "audiobooks": "有声书",
     "playlist": "播放列表",
-    "zehAniHub": "Zeh Ani",
+    "zehAniHub": "泽·阿尼",
     "support": "支持",
     "discoverHub": "发现AI",
     "listen": "收听",
@@ -261,8 +262,7 @@
     "household": "家庭",
     "messages": "消息",
     "myContent": "我的内容",
-    "social": "社交",
-    "plans": "[zh] Plans"
+    "social": "社交"
   },
   "epg": {
     "title": "电视指南",
@@ -419,8 +419,6 @@
   },
   "radio": {
     "title": "广播",
-    "playing": "播放中",
-    "fmSuffix": "FM",
     "categories": {
       "all": "全部",
       "music": "音乐",
@@ -429,7 +427,9 @@
       "jewish": "犹太"
     },
     "noStations": "无可用电台",
-    "tryLater": "请稍后重试"
+    "tryLater": "请稍后重试",
+    "playing": "播放中",
+    "fmSuffix": "FM"
   },
   "podcasts": {
     "title": "播客",
@@ -471,9 +471,9 @@
     "allCategories": "全部",
     "emptyTitle": "无可用内容",
     "emptyDescription": "请选择其他分类",
+    "allContent": "[zh] All Content",
     "noContent": "[zh] No content available",
-    "noContentInCategory": "[zh] No content found in this category",
-    "allContent": "[zh] All Content"
+    "noContentInCategory": "[zh] No content found in this category"
   },
   "account": {
     "title": "我的账户",
@@ -820,15 +820,15 @@
     "appLanguage": "应用语言",
     "selectLanguage": "选择语言",
     "languages": {
-      "en": "English",
-      "he": "עברית",
-      "es": "Español",
+      "en": "英语",
+      "he": "希伯来语",
+      "es": "西班牙语",
       "zh": "中文",
-      "fr": "Français",
-      "it": "Italiano",
-      "hi": "हिन्दी",
-      "ta": "தமிழ்",
-      "bn": "বাংলা",
+      "fr": "法语",
+      "it": "意大利语",
+      "hi": "印地语",
+      "ta": "泰米尔语",
+      "bn": "孟加拉语",
       "ja": "日本語"
     },
     "chatTranslation": "聊天翻译",
@@ -894,6 +894,41 @@
     "phone": "电话支持",
     "chat": "在线客服",
     "chatAvailable": "全天候可用",
+    "openTooltip": "[zh] Open help tooltip",
+    "openHelp": "[zh] Open help menu",
+    "howTo": "[zh] How to use",
+    "relatedArticles": "[zh] Related articles",
+    "stillNeedHelp": "[zh] Still need help?",
+    "contactSupport": "[zh] Contact Support",
+    "previous": "[zh] Previous",
+    "next": "[zh] Next",
+    "getStarted": "[zh] Get Started",
+    "skipTutorial": "[zh] Skip tutorial",
+    "actions": {
+      "search": "[zh] Search Help",
+      "docs": "[zh] Documentation",
+      "faq": "[zh] FAQ",
+      "support": "[zh] Contact Support",
+      "tutorial": "[zh] View Tutorial"
+    },
+    "search": {
+      "placeholder": "[zh] Search help...",
+      "noResults": "[zh] No results found for \"{{query}}\"",
+      "noResultsHint": "[zh] Try different keywords or browse categories",
+      "recent": "[zh] Recent",
+      "popular": "[zh] Popular"
+    },
+    "categories": {
+      "getting-started": "[zh] Getting Started",
+      "features": "[zh] Features",
+      "judaism": "[zh] Judaism",
+      "platform-guides": "[zh] Platform Guides",
+      "account": "[zh] Account",
+      "troubleshooting": "[zh] Troubleshooting",
+      "parents": "[zh] For Parents",
+      "admin": "[zh] Admin Guide",
+      "developer": "[zh] Developer API"
+    },
     "faq": {
       "title": "常见问题",
       "q1": "如何更改我的订阅套餐？",
@@ -905,63 +940,28 @@
       "q4": "如何取消我的订阅？",
       "a4": "您可以随时通过设置 > 订阅 > 取消套餐取消订阅。您将在计费周期结束前继续拥有访问权限。"
     },
-    "openTooltip": "[zh] Open help tooltip",
-    "getStarted": "[zh] Get Started",
-    "howTo": "[zh] How to use",
-    "search": {
-      "noResultsHint": "[zh] Try different keywords or browse categories",
-      "popular": "[zh] Popular",
-      "recent": "[zh] Recent",
-      "placeholder": "[zh] Search help...",
-      "noResults": "[zh] No results found for \"{{query}}\""
-    },
     "onboarding": {
-      "profiles": {
-        "title": "[zh] Family Profiles",
-        "description": "[zh] Create profiles for each family member with personalized recommendations"
-      },
-      "voice": {
-        "title": "[zh] Voice Control",
-        "description": "[zh] Say 'Bayit' to control the app with your voice"
-      },
       "welcome": {
-        "description": "[zh] Your home for Israeli entertainment, anywhere in the world",
-        "title": "[zh] Welcome to Bayit+"
+        "title": "[zh] Welcome to Bayit+",
+        "description": "[zh] Your home for Israeli entertainment, anywhere in the world"
       },
       "liveTv": {
         "title": "[zh] Live TV",
         "description": "[zh] Watch Israeli channels live, including news, sports, and entertainment"
       },
       "vod": {
-        "description": "[zh] Browse movies, series, and documentaries anytime",
-        "title": "[zh] On-Demand Content"
+        "title": "[zh] On-Demand Content",
+        "description": "[zh] Browse movies, series, and documentaries anytime"
+      },
+      "voice": {
+        "title": "[zh] Voice Control",
+        "description": "[zh] Say 'Bayit' to control the app with your voice"
+      },
+      "profiles": {
+        "title": "[zh] Family Profiles",
+        "description": "[zh] Create profiles for each family member with personalized recommendations"
       }
-    },
-    "categories": {
-      "troubleshooting": "[zh] Troubleshooting",
-      "platform-guides": "[zh] Platform Guides",
-      "parents": "[zh] For Parents",
-      "developer": "[zh] Developer API",
-      "features": "[zh] Features",
-      "account": "[zh] Account",
-      "getting-started": "[zh] Getting Started",
-      "judaism": "[zh] Judaism",
-      "admin": "[zh] Admin Guide"
-    },
-    "actions": {
-      "support": "[zh] Contact Support",
-      "docs": "[zh] Documentation",
-      "tutorial": "[zh] View Tutorial",
-      "search": "[zh] Search Help",
-      "faq": "[zh] FAQ"
-    },
-    "stillNeedHelp": "[zh] Still need help?",
-    "contactSupport": "[zh] Contact Support",
-    "openHelp": "[zh] Open help menu",
-    "relatedArticles": "[zh] Related articles",
-    "skipTutorial": "[zh] Skip tutorial",
-    "next": "[zh] Next",
-    "previous": "[zh] Previous"
+    }
   },
   "voice": {
     "panelTitle": "语音助手",
@@ -1054,57 +1054,57 @@
     },
     "ai": {
       "dub": "Dub",
-      "dubbing": "Dubbing",
-      "featuresTitle": "AI Features",
-      "languagePrimary": "Primary",
-      "languageSecondary": "Secondary (Optional)",
-      "languageTitle": "AI Language",
-      "liveTranslate": "Live Translate",
-      "selectLanguage": "Select Language",
-      "split": "Split",
-      "togglePanel": "Toggle AI Panel",
-      "translate": "Translate",
-      "trivia": "Trivia",
+      "dubbing": "配音",
+      "featuresTitle": "AI 功能",
+      "languagePrimary": "主要",
+      "languageSecondary": "次要（可选）",
+      "languageTitle": "AI 语言",
+      "liveTranslate": "实时翻译",
+      "selectLanguage": "选择语言",
+      "split": "分割",
+      "togglePanel": "切换 AI 面板",
+      "translate": "翻译",
+      "trivia": "问答",
       "triviaToggle": "[zh] Trivia"
     },
     "catchup": {
-      "description": "Missed the beginning? Get an AI-powered summary of what happened so far.",
-      "generateSummary": "Generate Summary",
-      "summaryTitle": "Summary",
-      "title": "Catch Up",
+      "description": "错过了开头？获取 AI 生成的剧情摘要。",
+      "generateSummary": "生成摘要",
+      "summaryTitle": "摘要",
+      "title": "回看",
       "keyPoints": "[zh] Key Points",
       "transcript": "[zh] Transcript"
     },
     "chat": {
-      "title": "Live Chat",
-      "messagePlaceholder": "Type a message..."
+      "title": "实时聊天",
+      "messagePlaceholder": "输入消息..."
     },
     "companion": {
-      "noContext": "No cultural context available for this content yet.",
-      "quizComplete": "Quiz Complete",
-      "quizRetry": "Retry",
-      "quizStart": "Start Quiz",
-      "quizTitle": "Ready to test your knowledge?",
-      "quizTryAgain": "Try Again",
-      "tabContext": "Context",
-      "tabQuiz": "Quiz",
-      "tabVocabulary": "Vocabulary",
-      "tapWords": "Tap words in subtitles to add them here",
-      "title": "AI Companion"
+      "noContext": "此内容暂无文化背景信息。",
+      "quizComplete": "测验完成",
+      "quizRetry": "重试",
+      "quizStart": "开始测验",
+      "quizTitle": "准备好测试您的知识了吗？",
+      "quizTryAgain": "重试",
+      "tabContext": "上下文",
+      "tabQuiz": "测验",
+      "tabVocabulary": "词汇",
+      "tapWords": "点击字幕中的单词添加到此处",
+      "title": "AI 伴侣"
     },
     "controls": {
-      "audioTrack": "Audio Track",
-      "continueWatching": "Continue Watching",
-      "dismiss": "Dismiss",
-      "goBack": "Go Back",
-      "navigateBack": "Navigate back",
+      "audioTrack": "音轨",
+      "continueWatching": "继续观看",
+      "dismiss": "关闭",
+      "goBack": "返回",
+      "navigateBack": "返回导航",
       "on": "ON",
-      "pause": "Pause",
-      "play": "Play",
-      "preview": "Preview",
-      "selected": "Selected",
-      "send": "Send",
-      "skip": "Skip",
+      "pause": "暂停",
+      "play": "播放",
+      "preview": "预览",
+      "selected": "已选择",
+      "send": "发送",
+      "skip": "跳过",
       "close": "[zh] Close",
       "exitFullscreen": "[zh] Exit Fullscreen",
       "fullscreen": "[zh] Fullscreen",
@@ -1118,14 +1118,14 @@
       "premiumMessage": "实时配音需要Plus订阅",
       "premiumTitle": "Plus功能",
       "upgrade": "升级到Plus",
-      "voiceTitle": "Dubbing Voice",
+      "voiceTitle": "配音声音",
       "settings_title": "实时配音设置",
       "target_language": "目标语言"
     },
     "errors": {
-      "streamLimitMessage": "You have reached the maximum of {{maxStreams}} concurrent streams. Please stop another stream or upgrade your plan.",
-      "streamLimitTitle": "Stream Limit Reached",
-      "upgradePlan": "Upgrade Plan"
+      "streamLimitMessage": "您已达到 {{maxStreams}} 个并发串流的上限。请停止其他串流或升级您的方案。",
+      "streamLimitTitle": "已达串流上限",
+      "upgradePlan": "升级方案"
     },
     "audio_description": "音频描述",
     "dismiss": "关闭",
@@ -1255,9 +1255,9 @@
     },
     "title": "观看列表",
     "items": "项目",
+    "watched": "[zh] watched",
     "empty": "您的观看列表为空",
-    "emptyHint": "开始观看，项目将显示在此处",
-    "watched": "[zh] watched"
+    "emptyHint": "开始观看，项目将显示在此处"
   },
   "widgets": {
     "empty": "暂无小组件",
@@ -1298,7 +1298,7 @@
       "fromLibrary": "从资料库",
       "iframe": "iFrame",
       "selectContent": "选择内容（频道、播客、节目等）",
-      "iframeUrl": "iFrame URL",
+      "iframeUrl": "iFrame 网址",
       "iframeUrlRequired": "iFrame URL 为必填项",
       "iframeTitle": "iFrame 标题",
       "positionSize": "位置与大小",
@@ -1330,6 +1330,78 @@
       "weather": "天气",
       "health": "健康",
       "general": "综合"
+    }
+  },
+  "cultures": {
+    "title": "文化",
+    "select": "选择文化",
+    "selectCulture": "选择您的文化",
+    "selectCultureDescription": "选择一种文化来个性化您的内容",
+    "changeCulture": "更改文化",
+    "israeli": {
+      "name": "以色列",
+      "description": "以色列社区内容"
+    },
+    "chinese": {
+      "name": "中国",
+      "description": "中国社区内容"
+    },
+    "japanese": {
+      "name": "日本",
+      "description": "日本社区内容"
+    },
+    "korean": {
+      "name": "韩国",
+      "description": "韩国社区内容"
+    },
+    "indian": {
+      "name": "印度",
+      "description": "印度社区内容"
+    }
+  },
+  "cultureTrending": {
+    "whatsHotIn": "{{location}}热门",
+    "noTopics": "暂无热门话题",
+    "sources": "来源",
+    "categories": {
+      "security": "[zh] Security",
+      "politics": "[zh] Politics",
+      "tech": "[zh] Tech",
+      "technology": "[zh] Technology",
+      "culture": "[zh] Culture",
+      "sports": "[zh] Sports",
+      "economy": "[zh] Economy",
+      "finance": "[zh] Finance",
+      "entertainment": "[zh] Entertainment",
+      "weather": "[zh] Weather",
+      "health": "[zh] Health",
+      "food": "[zh] Food",
+      "fashion": "[zh] Fashion",
+      "travel": "[zh] Travel",
+      "history": "[zh] History",
+      "expat": "[zh] Expat Life",
+      "general": "[zh] General"
+    }
+  },
+  "cultureClock": {
+    "timeIn": "{{location}}时间",
+    "shabbat": "安息日",
+    "weekend": "周末"
+  },
+  "cultureCities": {
+    "connectionTo": "{{city}}连接",
+    "explore": "[zh] Explore {{city}}",
+    "noContent": "暂无内容",
+    "categories": {
+      "all": "全部",
+      "history": "[zh] History",
+      "culture": "文化",
+      "finance": "[zh] Finance",
+      "tech": "科技",
+      "food": "美食",
+      "expat": "[zh] Expat Life",
+      "news": "新闻",
+      "entertainment": "娱乐"
     }
   },
   "clock": {
@@ -1483,714 +1555,8 @@
       "culture": "文化",
       "conclusion": "结论"
     },
-    "chapterLabel": "Chapter {{number}}",
+    "chapterLabel": "第 {{number}} 章",
     "chapter_number": "第{{number}}章"
-  },
-  "placeholder": {
-    "email": "your@email.com",
-    "password": "••••••••",
-    "pin": "••••",
-    "dateRange": {
-      "from": "从（YYYY-MM-DD）",
-      "to": "到（YYYY-MM-DD）"
-    },
-    "amount": {
-      "min": "最小",
-      "max": "最大",
-      "price": "0.00"
-    },
-    "chatMessage": "在此输入...",
-    "deepLink": "bayitplus://content/123",
-    "scheduleDateTime": "YYYY-MM-DDTHH:mm",
-    "roomCode": "ABCD1234",
-    "time": {
-      "start": "08:00",
-      "end": "10:00"
-    },
-    "filter": {
-      "userId": "输入用户 ID"
-    },
-    "datetime": "YYYY-MM-DDTHH:mm",
-    "number": "0",
-    "chat": "输入您的消息..."
-  },
-  "components": {
-    "select": {
-      "default": "选择..."
-    }
-  },
-  "plans": {
-    "free": {
-      "name": "Free",
-      "monthlyPrice": "0",
-      "yearlyPrice": "0",
-      "features": [
-        "BYOC平台（直播电视、广播、播客）",
-        "50 AI积分（一次性）",
-        "1个小组件",
-        "1个家庭配置文件"
-      ]
-    },
-    "plus": {
-      "name": "Plus",
-      "monthlyPrice": "6.99",
-      "yearlyPrice": "49.90",
-      "features": [
-        "19项AI功能 - 无限制",
-        "无限小组件",
-        "无限家庭配置文件",
-        "优先支持"
-      ],
-      "aiCategories": {
-        "dubbingSubtitles": "配音与字幕",
-        "dubbingSubtitlesCount": "8项功能",
-        "searchDiscovery": "搜索与发现",
-        "searchDiscoveryCount": "3项功能",
-        "languageTools": "语言工具",
-        "languageToolsCount": "4项功能",
-        "creativeInteractive": "创意与互动",
-        "creativeInteractiveCount": "4项功能"
-      }
-    },
-    "comparison": {
-      "title": "比较方案",
-      "subtitle": "找到适合您的方案",
-      "categories": {
-        "ai": "AI功能",
-        "platform": "平台",
-        "support": "支持"
-      },
-      "features": {
-        "aiFeatures": "AI功能（19项）",
-        "widgets": "小组件",
-        "familyProfiles": "家庭配置文件",
-        "customerSupport": "客户支持"
-      },
-      "values": {
-        "fiftyCredits": "50积分（一次性）",
-        "unlimited": "无限制",
-        "emailSupport": "电子邮件",
-        "prioritySupport": "优先"
-      }
-    }
-  },
-  "subscribe": {
-    "title": "选择您的方案",
-    "subtitle": "随时取消。",
-    "monthly": "月付",
-    "yearly": "年付",
-    "save2Months": "节省2个月",
-    "popular": "最受欢迎",
-    "period": "/月",
-    "perYear": "/年",
-    "select": "选择方案",
-    "selected": "已选择",
-    "processing": "处理中...",
-    "viewComparison": "查看完整比较",
-    "viewCards": "查看方案",
-    "noProductSelected": "未选择产品",
-    "comparison": {
-      "title": "比较方案",
-      "subtitle": "找到适合您的方案",
-      "features": "功能",
-      "perMonth": "/月",
-      "categories": {
-        "ai": "AI功能",
-        "platform": "平台",
-        "support": "支持"
-      }
-    }
-  },
-  "notFound": {
-    "title": "页面未找到",
-    "description": "您查找的页面不存在或已被移动。",
-    "homeButton": "返回首页",
-    "searchButton": "搜索",
-    "orTry": "或者尝试：",
-    "liveChannel": "直播",
-    "vodLabel": "电影",
-    "podcastsLabel": "播客"
-  },
-  "profiles": {
-    "addProfile": "添加档案",
-    "enterPin": "输入 PIN",
-    "selectError": "选择档案出错",
-    "wrongPin": "PIN 不正确",
-    "loading": "加载档案中...",
-    "manage": "管理档案",
-    "whoIsWatching": "谁在观看？",
-    "manageProfiles": "管理档案"
-  },
-  "watch": {
-    "notFound": "未找到内容",
-    "backToHome": "返回首页",
-    "episodes": "剧集",
-    "addToList": "添加到列表",
-    "like": "喜欢",
-    "share": "分享",
-    "cast": "演员",
-    "episodesList": "剧集",
-    "schedule": "时间表",
-    "now": "现在",
-    "related": "相关内容",
-    "deleteEpisode": "删除剧集",
-    "confirmDeleteEpisode": "删除此剧集？"
-  },
-  "live": {
-    "title": "直播电视",
-    "next": "下一个：",
-    "noChannels": "无可用频道",
-    "tryLater": "请稍后重试",
-    "categories": {
-      "all": "全部",
-      "news": "新闻",
-      "entertainment": "娱乐",
-      "sports": "体育",
-      "kids": "儿童",
-      "music": "音乐"
-    }
-  },
-  "judaism": {
-    "title": "犹太教",
-    "items": "项目",
-    "empty": "无可用内容",
-    "emptyHint": "尝试选择其他分类",
-    "dashboard": "您的犹太教仪表板",
-    "categories": {
-      "news": "犹太新闻",
-      "community": "社区"
-    },
-    "shabbat": {
-      "title": "安息日时间",
-      "shabbatShalom": "安息日平安！",
-      "shabbatMode": "安息日模式",
-      "endsIn": "安息日结束于",
-      "candleLighting": "点蜡烛",
-      "havdalah": "哈夫达拉",
-      "parashat": "每周圣经",
-      "friday": "星期五",
-      "saturday": "星期六",
-      "noData": "无法加载安息日时间"
-    },
-    "erevShabbat": {
-      "title": "安息日前夜",
-      "prepareFor": "准备安息日",
-      "inTime": "{{time}} 后",
-      "featuredContent": "安息日内容",
-      "noContent": "安息日内容即将推出！",
-      "shabbatShalom": "安息日平安！",
-      "timeUntil": "距安息日时间",
-      "shabbatSongs": "安息日歌曲",
-      "parashaStudy": "每周圣经",
-      "shabbatRecipes": "食谱",
-      "prayers": "祈祷"
-    }
-  },
-  "children": {
-    "title": "儿童",
-    "items": "项目",
-    "empty": "无可用内容",
-    "emptyHint": "尝试其他分类",
-    "exitKidsMode": "退出儿童模式",
-    "exitDescription": "输入家长代码以退出",
-    "parentCode": "家长代码",
-    "confirm": "确认",
-    "wrongCode": "代码不正确",
-    "noContent": "无可用内容",
-    "tryAnotherCategory": "尝试选择其他分类",
-    "categories": {
-      "all": "全部",
-      "cartoons": "动画片",
-      "educational": "教育",
-      "music": "音乐",
-      "hebrew": "希伯来语",
-      "stories": "故事",
-      "jewish": "犹太"
-    },
-    "ageRatings": {
-      "3": "3岁以上",
-      "5": "5岁以上",
-      "7": "7岁以上",
-      "10": "10岁以上",
-      "12": "12岁以上"
-    },
-    "moderation": {
-      "pending": "待审核",
-      "approved": "已批准",
-      "rejected": "已拒绝"
-    },
-    "admin": {
-      "stats": "儿童内容管理器",
-      "seedContent": "导入内容",
-      "importArchive": "导入 Archive.org",
-      "syncPodcasts": "同步播客",
-      "syncYouTube": "同步 YouTube",
-      "tagVod": "标记点播",
-      "pendingModeration": "待审核"
-    }
-  },
-  "chatbot": {
-    "title": "Bayit+ 助手",
-    "greeting": "您好！我是 Bayit+ 智能助手。今天我能为您做什么？点击麦克风说话，或输入消息。",
-    "openChat": "打开聊天",
-    "welcome": "您好！我是 Bayit+ 智能助手。今天我能为您做什么？点击麦克风说话，或输入消息。",
-    "placeholder": "在此输入...",
-    "recording": "录音中...再次点击停止",
-    "transcribing": "转录中...",
-    "stopRecording": "停止录音",
-    "startRecording": "开始语音录音",
-    "recommendations": "以下是一些推荐：",
-    "showMultipleSuccess": "在小组件中显示 {{count}} 个内容项目",
-    "showMultipleNotFound": "无法找到请求的内容。请尝试不同的名称。",
-    "resolvingContent": "正在查找您的内容...",
-    "errors": {
-      "micPermission": "无法访问麦克风。请在浏览器中检查麦克风权限。",
-      "transcribeFailed": "无法转录录音。请重试。",
-      "general": "抱歉，出现问题。请重试。"
-    },
-    "suggestions": {
-      "whatToWatch": "今天看什么？",
-      "israeliMovies": "推荐的以色列电影",
-      "whatsOnNow": "现在播放什么？",
-      "popularPodcasts": "热门播客"
-    },
-    "voiceCommands": {
-      "showChannels": "显示频道...",
-      "playChess": "开始国际象棋游戏...",
-      "multiContent": "并排显示..."
-    }
-  },
-  "chat": {
-    "title": "Bayit+ 助手",
-    "greeting": "您好！我是 Bayit+ 智能助手。今天我能为您做什么？点击麦克风说话，或输入消息。"
-  },
-  "subtitles": {
-    "nikud": "Nikud",
-    "selection": "选择",
-    "translation": "翻译",
-    "translating": "翻译中...",
-    "close": "关闭",
-    "unavailable": "不可用",
-    "off": "关闭",
-    "none": "无",
-    "autoGenerated": "自动生成",
-    "selectLanguage": "选择字幕语言",
-    "liveTranslate": "实时翻译",
-    "translateTo": "翻译为",
-    "downloadMore": "下载更多字幕...",
-    "downloading": "正在搜索 OpenSubtitles...",
-    "opensubtitlesSource": "来自 OpenSubtitles.com",
-    "downloadSuccess": "已下载 {{count}} 个字幕",
-    "noSubtitlesFound": "未找到此内容的字幕",
-    "smartSubs": "智能字幕",
-    "smartSubsDescription": "双视图：简化希伯来语 + 英语，带词根高亮",
-    "smartSubsDualView": "双视图",
-    "shoreshToggle": "词根高亮",
-    "shoreshOn": "Shoresh 高亮已启用",
-    "shoreshOff": "Shoresh 高亮已禁用",
-    "nikudLive": "带 Nikud 的希伯来语",
-    "nikudLiveDescription": "带变音符号的希伯来语字幕，便于阅读",
-    "nikudEnabled": "Nikud 字幕已启用",
-    "nikudDisabled": "Nikud 字幕已禁用",
-    "nikudSubtitleLabel": "带 nikud 的希伯来语：{{text}}",
-    "available": "字幕",
-    "clickToEnable": "点击启用实时翻译",
-    "connectionError": "实时翻译错误",
-    "inputLanguageTooltip": "检查输入语言",
-    "premiumRequired": "需要高级订阅",
-    "selectInputLanguage": "选择输入语言",
-    "translateActive": "实时翻译已激活",
-    "noEnglishSubtitles": "此内容没有可用的英语字幕。",
-    "hebrewMode": {
-      "title": "希伯来语显示模式",
-      "unavailable": "不可用",
-      "generate": "生成",
-      "regular": {
-        "title": "普通希伯来语",
-        "description": "不带元音符号的标准希伯来语文本"
-      },
-      "nikud": {
-        "title": "带 Nikud 的希伯来语",
-        "description": "带元音符号的希伯来语，便于阅读",
-        "unavailableReason": "此内容无法进行 AI 处理"
-      },
-      "shoresh": {
-        "title": "Shoresh（词根）",
-        "description": "带词根分析的希伯来语单词：单词 [词根]",
-        "unavailableReason": "此内容无法进行词根分析"
-      }
-    },
-    "englishMode": {
-      "title": "英语显示模式",
-      "unavailable": "不可用",
-      "generate": "生成",
-      "firstTimeHint": "这些 AI 驱动的模式帮助您在学习英语句子结构的同时保持希伯来语。每种模式都提供独特的学习体验。",
-      "regular": {
-        "title": "普通英语",
-        "description": "标准英语字幕"
-      },
-      "heblish": {
-        "title": "Heblish",
-        "description": "带希伯来语词汇注入的英语，实现沉浸式学习",
-        "unavailableReason": "此内容无法进行 Heblish 处理"
-      },
-      "grammarFlip": {
-        "title": "Grammar-Flip",
-        "description": "希伯来语词汇配合英语句子结构（主语-动词-宾语）",
-        "unavailableReason": "此内容无法进行 Grammar-Flip 处理"
-      },
-      "slangSynthesis": {
-        "title": "Slang Synthesis",
-        "description": "现代以色列和美国俚语混合，内容更加生动",
-        "unavailableReason": "此内容无法进行 Slang Synthesis 处理"
-      }
-    },
-    "loading": "加载字幕中...",
-    "error": {
-      "title": "字幕错误",
-      "retry": "重试",
-      "loadFailed": "加载字幕失败",
-      "cuesFailed": "加载字幕文本失败",
-      "networkError": "网络错误 - 请检查您的连接",
-      "serverError": "服务器错误 - 请稍后重试"
-    },
-    "aiModesAvailable": "AI modes available",
-    "aiModesTitle": "AI Subtitle Modes",
-    "fetchSubtitles": "Fetch Subtitles",
-    "fontSize": "Font Size",
-    "mode": {
-      "engrew": "Engrew",
-      "heblish": "Heblish",
-      "shoresh": "Shoresh",
-      "standard": "Standard"
-    },
-    "opensubtitles": "OpenSubtitles",
-    "searchExternal": "Search for external subtitles",
-    "settingsTitle": "Subtitle Settings",
-    "showBackground": "Show Background",
-    "singleMode": "Single Mode",
-    "splitMode": "Split Mode",
-    "primary_language": "主要语言",
-    "secondary_language": "次要语言",
-    "layout_mode": "Layout Mode",
-    "interactive_title": "交互式字幕"
-  },
-  "video": {
-    "watchTrailer": "观看预告片",
-    "closeTrailer": "关闭预告片",
-    "deleteConfirm": "删除此剧集？"
-  },
-  "recordings": {
-    "title": "我的录制",
-    "subtitle": "查看和管理您录制的直播流",
-    "record": "录制",
-    "recording": "录制中",
-    "storageUsed": "已用存储",
-    "totalRecordings": "总录制数",
-    "maxDuration": "最长时长",
-    "noRecordings": "暂无录制",
-    "noRecordingsHint": "从任何直播频道开始录制！",
-    "confirmDelete": "确定要删除此录制？此操作无法撤销。",
-    "deleteRecording": "删除录制",
-    "deleteFailed": "删除录制失败",
-    "expires": "过期",
-    "subtitlesAvailable": "可用字幕",
-    "recordingSaved": "录制已保存！",
-    "savedSuccess": "录制保存成功！时长：{{duration}}",
-    "viewInMyRecordings": "在我的录制中查看",
-    "error": "录制错误",
-    "startFailed": "启动录制失败。请重试。",
-    "stopFailed": "停止录制失败。请重试。",
-    "page": "页"
-  },
-  "chess": {
-    "title": "国际象棋",
-    "welcome": "欢迎来到国际象棋",
-    "subtitle": "与世界各地的朋友和家人下棋",
-    "createGame": "创建新游戏",
-    "joinGame": "加入游戏",
-    "gameCode": "游戏代码",
-    "enterGameCode": "输入游戏代码",
-    "invalidGameCode": "无效的游戏代码。必须为6个字符。",
-    "joinFailed": "加入游戏失败",
-    "join": "加入",
-    "create": "创建",
-    "chooseColor": "选择您的颜色",
-    "white": "白方",
-    "black": "黑方",
-    "chatPlaceholder": "输入消息...（@bot 获取建议）",
-    "botHint": "在消息中标记 @bot 以从我们的 AI 助手获取国际象棋建议",
-    "bot": "国际象棋助手",
-    "mute": "静音",
-    "unmute": "取消静音",
-    "speaking": "参与者",
-    "resign": "认输",
-    "offerDraw": "提议和棋",
-    "newGame": "新游戏",
-    "checkmate": "将死！",
-    "stalemate": "僵局",
-    "draw": "和棋",
-    "resigned": "已认输",
-    "reconnecting": "重新连接中...",
-    "moveHistory": "走棋历史",
-    "noMoves": "暂无走棋",
-    "showHints": "显示指南提示",
-    "yourTurn": "轮到您",
-    "opponentTurn": "对手回合",
-    "waitingForOpponent": "等待对手...",
-    "gameOver": "游戏结束",
-    "sendingInvite": "正在向 {{name}} 发送游戏邀请...",
-    "inviteSent": "游戏邀请已发送给 {{name}}！游戏代码：{{code}}",
-    "inviteFailed": "找不到该用户。请检查名称后重试。",
-    "inviteReceived": "{{name}} 邀请您下国际象棋！",
-    "joinInvite": "加入游戏",
-    "challenge": "挑战",
-    "playedAsWhite": "执白",
-    "playedAsBlack": "执黑",
-    "gameMode": "游戏模式",
-    "playVsFriend": "对战好友",
-    "playVsBot": "对战机器人",
-    "difficulty": "难度",
-    "easy": "简单",
-    "medium": "中等",
-    "hard": "困难",
-    "chessBot": "国际象棋机器人",
-    "chat": {
-      "title": "聊天",
-      "inputPlaceholder": "输入消息..."
-    },
-    "challengeViaWhatsApp": "[zh] Challenge via WhatsApp",
-    "online": "[zh] Online",
-    "joinByGameCode": "[zh] Join by Game Code",
-    "you": "[zh] You",
-    "noFriendsYet": "[zh] No friends yet",
-    "acceptDraw": "[zh] Accept Draw",
-    "challengeFriend": "[zh] Challenge Friend",
-    "whiteTurn": "[zh] White's Turn",
-    "acceptInvite": "[zh] Accept Invite",
-    "drawOffered": "[zh] Draw Offered",
-    "offline": "[zh] Offline",
-    "copyCode": "[zh] Copy Code",
-    "blackTurn": "[zh] Black's Turn",
-    "blackCaptured": "[zh] Black Captured",
-    "opponent": "[zh] Opponent",
-    "declineDraw": "[zh] Decline Draw",
-    "whiteCaptured": "[zh] White Captured",
-    "declineInvite": "[zh] Decline Invite"
-  },
-  "friends": {
-    "title": "好友与对手",
-    "subtitle": "与玩家联系并挑战好友",
-    "myFriends": "我的好友",
-    "requests": "请求",
-    "findPlayers": "查找玩家",
-    "friendsLabel": "好友",
-    "pendingLabel": "待处理",
-    "add": "添加好友",
-    "remove": "移除",
-    "accept": "接受",
-    "reject": "拒绝",
-    "cancel": "取消",
-    "noFriends": "暂无好友",
-    "noFriendsDesc": "搜索玩家并发送好友请求",
-    "lastGame": "上次游戏：{{time}}",
-    "friendsSince": "好友自 {{date}}",
-    "incomingRequests": "收到的请求",
-    "outgoingRequests": "发出的请求",
-    "noIncoming": "无收到的请求",
-    "noOutgoing": "无发出的请求",
-    "sentAt": "发送于 {{time}}",
-    "searchPlaceholder": "按名称搜索...",
-    "noResults": "未找到玩家",
-    "noResultsDesc": "尝试搜索其他名称",
-    "requestSent": "好友请求已发送！",
-    "requestAccepted": "好友请求已接受！",
-    "requestRejected": "好友请求已拒绝",
-    "requestCancelled": "好友请求已取消",
-    "friendRemoved": "好友已移除",
-    "searchFailed": "搜索用户失败",
-    "requestFailed": "发送请求失败",
-    "acceptFailed": "接受请求失败",
-    "rejectFailed": "拒绝请求失败",
-    "cancelFailed": "取消请求失败",
-    "removeFailed": "移除好友失败",
-    "friendsCount": "{{count}} 个好友",
-    "gamesCount": "{{count}} 场游戏",
-    "alreadyFriends": "好友"
-  },
-  "stats": {
-    "statistics": "统计",
-    "matchHistory": "比赛历史",
-    "headToHead": "正面交锋",
-    "gamesPlayed": "已玩游戏",
-    "wins": "胜",
-    "losses": "负",
-    "draws": "和",
-    "winRate": "胜率",
-    "rating": "评分",
-    "peakRating": "最高评分",
-    "peak": "最高",
-    "winStreak": "连胜",
-    "currentStreak": "当前连胜",
-    "bestStreak": "最佳连胜",
-    "performance": "表现",
-    "achievements": "成就",
-    "currentRating": "当前评分",
-    "totalGames": "总游戏数",
-    "noGames": "暂无游戏记录",
-    "moves": "步",
-    "won": "胜",
-    "lost": "负",
-    "draw": "和",
-    "overall": "总战绩",
-    "yourWins": "您的胜场",
-    "theirWins": "对方胜场",
-    "totalGamesPlayed": "总计：{{count}} 场游戏",
-    "recentGames": "最近游戏"
-  },
-  "support": {
-    "title": "支持中心",
-    "subtitle": "今天我们能帮您什么？",
-    "tabs": {
-      "docs": "文档",
-      "faq": "常见问题",
-      "contact": "联系",
-      "tickets": "我的工单"
-    },
-    "categories": {
-      "title": "浏览文档",
-      "loading": "加载文档中...",
-      "loadError": "加载分类失败",
-      "articleCount": "{{count}} 篇文章",
-      "gettingStarted": "入门",
-      "features": "功能",
-      "troubleshooting": "故障排除",
-      "account": "账户"
-    },
-    "docs": {
-      "loading": "加载文档中...",
-      "loadError": "加载文档失败",
-      "backToList": "返回文档列表"
-    },
-    "search": {
-      "placeholder": "搜索文档...",
-      "noResults": "未找到结果"
-    },
-    "faq": {
-      "title": "常见问题",
-      "loading": "加载常见问题...",
-      "loadError": "加载常见问题失败",
-      "empty": "此分类暂无常见问题",
-      "categories": {
-        "all": "所有话题",
-        "general": "综合",
-        "billing": "账单",
-        "technical": "技术",
-        "features": "功能"
-      }
-    },
-    "contact": {
-      "voiceTitle": "语音支持",
-      "voiceDescription": "点击头像按钮或说 \"Jarvis\" 开始与我们的 AI 助手语音对话。",
-      "ticketTitle": "创建支持工单",
-      "ticketDescription": "需要人工帮助？创建支持工单，我们的团队将在24小时内回复。",
-      "createTicket": "创建工单",
-      "emailTitle": "邮件支持",
-      "emailDescription": "更喜欢邮件？如有任何问题或疑虑，请联系 support@bayit.tv。"
-    },
-    "ticket": {
-      "title": "创建支持工单",
-      "subject": "主题",
-      "subjectPlaceholder": "问题的简要描述",
-      "message": "消息",
-      "messagePlaceholder": "详细描述您的问题...",
-      "categoryLabel": "分类",
-      "priorityLabel": "优先级",
-      "submit": "提交工单",
-      "category": {
-        "billing": "账单",
-        "technical": "技术",
-        "feature": "功能请求",
-        "general": "综合"
-      },
-      "priority": {
-        "low": "低",
-        "medium": "中",
-        "high": "高",
-        "urgent": "紧急"
-      },
-      "status": {
-        "open": "待处理",
-        "in_progress": "处理中",
-        "resolved": "已解决",
-        "closed": "已关闭"
-      },
-      "created": "已创建",
-      "error": {
-        "required": "请填写所有必填字段",
-        "submit": "创建工单失败。请重试。"
-      }
-    },
-    "tickets": {
-      "title": "我的支持工单",
-      "loading": "加载工单中...",
-      "loadError": "加载工单失败",
-      "empty": "暂无支持工单",
-      "emptyFilter": "无此状态的工单",
-      "create": "新工单",
-      "createFirst": "创建您的第一个工单",
-      "filter": {
-        "all": "全部",
-        "open": "待处理",
-        "inProgress": "处理中",
-        "resolved": "已解决"
-      }
-    },
-    "voice": {
-      "title": "语音助手",
-      "listening": "我在听...",
-      "thinking": "让我想想...",
-      "speaking": "正在说话...",
-      "error": "抱歉，我没听清。再试一次？",
-      "ready": "您想知道什么？",
-      "listeningNow": "正在听...",
-      "wakeWordHint": "说 \"Jarvis\" 说话"
-    },
-    "wizard": {
-      "role": "您的向导"
-    }
-  },
-  "jerusalem": {
-    "title": "耶路撒冷连接",
-    "subtitle": "与以色列的心脏保持联系",
-    "noContent": "无可用耶路撒冷内容",
-    "sources": "来源",
-    "kotelLive": "西墙直播",
-    "categories": {
-      "kotel": "西墙",
-      "idf-ceremony": "以色列国防军仪式",
-      "diaspora-connection": "散居联系",
-      "holy-sites": "圣地",
-      "jerusalem-events": "耶路撒冷活动",
-      "general": "耶路撒冷"
-    }
-  },
-  "telAviv": {
-    "title": "特拉维夫连接",
-    "subtitle": "永不停歇的城市",
-    "noContent": "无可用特拉维夫内容",
-    "sources": "来源",
-    "beachLive": "海滩摄像头",
-    "categories": {
-      "beaches": "海滩",
-      "nightlife": "夜生活",
-      "culture": "文化与艺术",
-      "music": "音乐现场",
-      "food": "美食",
-      "tech": "科技与创业",
-      "events": "活动",
-      "general": "特拉维夫"
-    }
   },
   "admin": {
     "brand": {
@@ -2350,7 +1716,7 @@
       "totalRevenue": "总收入",
       "revenueToday": "今日收入",
       "revenueMonth": "本月收入",
-      "arpu": "ARPU",
+      "arpu": "每用户平均收入",
       "activeSubscriptions": "活跃订阅",
       "churnRate": "流失率"
     },
@@ -2940,7 +2306,7 @@
         "contentType": "内容类型",
         "selectChannel": "选择直播频道",
         "channelPlaceholder": "-- 选择频道 --",
-        "iframeUrl": "Iframe URL",
+        "iframeUrl": "Iframe 网址",
         "iframeTitle": "Iframe 标题（用于无障碍）",
         "position": "默认位置",
         "behavior": "行为",
@@ -3124,7 +2490,7 @@
         "episodes": "剧集",
         "order": "顺序",
         "name": "名称",
-        "slug": "Slug",
+        "slug": "别名",
         "subtitles": "字幕"
       },
       "validation": {
@@ -3205,7 +2571,7 @@
           "authorPlaceholder": "播客作者",
           "podcastCategory": "分类",
           "podcastCategoryPlaceholder": "新闻、科学等",
-          "rssFeed": "RSS Feed URL",
+          "rssFeed": "RSS 订阅源 URL",
           "rssFeedPlaceholder": "https://example.com/feed.xml",
           "website": "网站 URL",
           "websitePlaceholder": "https://example.com",
@@ -3301,7 +2667,7 @@
       "form": {
         "nameHebrew": "分类名称（希伯来文）",
         "nameEnglish": "分类名称（英文）",
-        "slug": "Slug"
+        "slug": "别名"
       }
     },
     "liveChannels": {
@@ -3342,7 +2708,7 @@
         "author": "作者",
         "description": "描述",
         "category": "分类",
-        "rssFeed": "RSS Feed URL",
+        "rssFeed": "RSS 订阅源 URL",
         "website": "网站 URL（可选）"
       },
       "episodes": {
@@ -3559,88 +2925,756 @@
       "fillRequired": "请填写标题和内容"
     }
   },
-  "cultures": {
-    "title": "文化",
-    "select": "选择文化",
-    "selectCulture": "选择您的文化",
-    "selectCultureDescription": "选择一种文化来个性化您的内容",
-    "changeCulture": "更改文化",
-    "current": "当前文化",
-    "israeli": {
-      "name": "以色列",
-      "description": "以色列社区内容"
+  "placeholder": {
+    "email": "your@email.com",
+    "password": "••••••••",
+    "pin": "••••",
+    "dateRange": {
+      "from": "从（YYYY-MM-DD）",
+      "to": "到（YYYY-MM-DD）"
     },
-    "chinese": {
-      "name": "中国",
-      "description": "中国社区内容"
+    "amount": {
+      "min": "最小",
+      "max": "最大",
+      "price": "0.00"
     },
-    "japanese": {
-      "name": "日本",
-      "description": "日本社区内容"
+    "chatMessage": "在此输入...",
+    "deepLink": "bayitplus://content/123",
+    "scheduleDateTime": "YYYY-MM-DDTHH:mm",
+    "roomCode": "ABCD1234",
+    "time": {
+      "start": "08:00",
+      "end": "10:00"
     },
-    "korean": {
-      "name": "韩国",
-      "description": "韩国社区内容"
+    "filter": {
+      "userId": "输入用户 ID"
     },
-    "indian": {
-      "name": "印度",
-      "description": "印度社区内容"
+    "datetime": "YYYY-MM-DDTHH:mm",
+    "number": "0",
+    "chat": "输入您的消息..."
+  },
+  "components": {
+    "select": {
+      "default": "选择..."
     }
   },
-  "cultureTrending": {
-    "title": "热门话题",
-    "whatsHotIn": "{{location}}热门",
-    "noTopics": "暂无热门话题",
-    "sources": "来源",
-    "topStory": "头条新闻",
-    "refreshing": "刷新中...",
-    "lastUpdated": "最后更新",
-    "categories": {
-      "culture": "[zh] Culture",
-      "technology": "[zh] Technology",
-      "fashion": "[zh] Fashion",
-      "travel": "[zh] Travel",
-      "weather": "[zh] Weather",
-      "history": "[zh] History",
-      "expat": "[zh] Expat Life",
-      "health": "[zh] Health",
-      "economy": "[zh] Economy",
-      "politics": "[zh] Politics",
-      "finance": "[zh] Finance",
-      "tech": "[zh] Tech",
-      "security": "[zh] Security",
-      "entertainment": "[zh] Entertainment",
-      "food": "[zh] Food",
-      "sports": "[zh] Sports",
-      "general": "[zh] General"
+  "plans": {
+    "free": {
+      "name": "免费",
+      "monthlyPrice": "0",
+      "yearlyPrice": "0",
+      "features": [
+        "BYOC平台（直播电视、广播、播客）",
+        "50 AI积分（一次性）",
+        "1个小组件",
+        "1个家庭配置文件"
+      ]
+    },
+    "plus": {
+      "name": "Plus",
+      "monthlyPrice": "6.99",
+      "yearlyPrice": "49.90",
+      "features": [
+        "19项AI功能 - 无限制",
+        "无限小组件",
+        "无限家庭配置文件",
+        "优先支持"
+      ],
+      "aiCategories": {
+        "dubbingSubtitles": "配音与字幕",
+        "dubbingSubtitlesCount": "8项功能",
+        "searchDiscovery": "搜索与发现",
+        "searchDiscoveryCount": "3项功能",
+        "languageTools": "语言工具",
+        "languageToolsCount": "4项功能",
+        "creativeInteractive": "创意与互动",
+        "creativeInteractiveCount": "4项功能"
+      }
+    },
+    "comparison": {
+      "title": "比较方案",
+      "subtitle": "找到适合您的方案",
+      "categories": {
+        "ai": "AI功能",
+        "platform": "平台",
+        "support": "支持"
+      },
+      "features": {
+        "aiFeatures": "AI功能（19项）",
+        "widgets": "小组件",
+        "familyProfiles": "家庭配置文件",
+        "customerSupport": "客户支持"
+      },
+      "values": {
+        "fiftyCredits": "50积分（一次性）",
+        "unlimited": "无限制",
+        "emailSupport": "电子邮件",
+        "prioritySupport": "优先"
+      }
     }
   },
-  "cultureClock": {
-    "timeIn": "{{location}}时间",
-    "localTime": "本地时间",
-    "shabbat": "安息日",
-    "weekend": "周末",
-    "weekday": "工作日"
+  "subscribe": {
+    "title": "选择您的方案",
+    "subtitle": "随时取消。",
+    "monthly": "月付",
+    "yearly": "年付",
+    "save2Months": "节省2个月",
+    "popular": "最受欢迎",
+    "period": "/月",
+    "perYear": "/年",
+    "select": "选择方案",
+    "selected": "已选择",
+    "processing": "处理中...",
+    "viewComparison": "查看完整比较",
+    "viewCards": "查看方案",
+    "noProductSelected": "未选择产品",
+    "comparison": {
+      "title": "比较方案",
+      "subtitle": "找到适合您的方案",
+      "features": "功能",
+      "perMonth": "/月",
+      "categories": {
+        "ai": "AI功能",
+        "platform": "平台",
+        "support": "支持"
+      }
+    }
   },
-  "cultureCities": {
-    "connectionTo": "{{city}}连接",
-    "noContent": "暂无内容",
-    "sources": "来源",
-    "viewMore": "查看更多",
+  "notFound": {
+    "title": "页面未找到",
+    "description": "您查找的页面不存在或已被移动。",
+    "homeButton": "返回首页",
+    "searchButton": "搜索",
+    "orTry": "或者尝试：",
+    "liveChannel": "直播",
+    "vodLabel": "电影",
+    "podcastsLabel": "播客"
+  },
+  "profiles": {
+    "addProfile": "添加档案",
+    "enterPin": "输入 PIN",
+    "selectError": "选择档案出错",
+    "wrongPin": "PIN 不正确",
+    "loading": "加载档案中...",
+    "manage": "管理档案",
+    "whoIsWatching": "谁在观看？",
+    "manageProfiles": "管理档案",
+    "kids": "儿童",
+    "addIcon": "+"
+  },
+  "watch": {
+    "notFound": "未找到内容",
+    "backToHome": "返回首页",
+    "episodes": "剧集",
+    "addToList": "添加到列表",
+    "like": "喜欢",
+    "share": "分享",
+    "cast": "演员",
+    "episodesList": "剧集",
+    "schedule": "时间表",
+    "now": "现在",
+    "related": "相关内容",
+    "deleteEpisode": "删除剧集",
+    "confirmDeleteEpisode": "删除此剧集？"
+  },
+  "live": {
+    "title": "直播电视",
+    "next": "下一个：",
+    "noChannels": "无可用频道",
+    "tryLater": "请稍后重试",
     "categories": {
       "all": "全部",
       "news": "新闻",
-      "culture": "文化",
-      "food": "美食",
-      "tech": "科技",
       "entertainment": "娱乐",
       "sports": "体育",
-      "business": "商业",
-      "finance": "[zh] Finance",
-      "expat": "[zh] Expat Life",
-      "history": "[zh] History"
+      "kids": "儿童",
+      "music": "音乐"
+    }
+  },
+  "judaism": {
+    "title": "犹太教",
+    "items": "项目",
+    "empty": "无可用内容",
+    "emptyHint": "尝试选择其他分类",
+    "dashboard": "您的犹太教仪表板",
+    "categories": {
+      "news": "犹太新闻",
+      "community": "社区"
     },
-    "explore": "[zh] Explore {{city}}"
+    "shabbat": {
+      "title": "安息日时间",
+      "shabbatShalom": "安息日平安！",
+      "shabbatMode": "安息日模式",
+      "endsIn": "安息日结束于",
+      "candleLighting": "点蜡烛",
+      "havdalah": "哈夫达拉",
+      "parashat": "每周圣经",
+      "friday": "星期五",
+      "saturday": "星期六",
+      "noData": "无法加载安息日时间"
+    },
+    "erevShabbat": {
+      "title": "安息日前夜",
+      "prepareFor": "准备安息日",
+      "inTime": "{{time}} 后",
+      "featuredContent": "安息日内容",
+      "noContent": "安息日内容即将推出！",
+      "shabbatShalom": "安息日平安！",
+      "timeUntil": "距安息日时间",
+      "shabbatSongs": "安息日歌曲",
+      "parashaStudy": "每周圣经",
+      "shabbatRecipes": "食谱",
+      "prayers": "祈祷"
+    }
+  },
+  "children": {
+    "title": "儿童",
+    "items": "项目",
+    "empty": "无可用内容",
+    "emptyHint": "尝试其他分类",
+    "exitKidsMode": "退出儿童模式",
+    "exitDescription": "输入家长代码以退出",
+    "parentCode": "家长代码",
+    "confirm": "确认",
+    "wrongCode": "代码不正确",
+    "noContent": "无可用内容",
+    "tryAnotherCategory": "尝试选择其他分类",
+    "categories": {
+      "all": "全部",
+      "cartoons": "动画片",
+      "educational": "教育",
+      "music": "音乐",
+      "hebrew": "希伯来语",
+      "stories": "故事",
+      "jewish": "犹太"
+    },
+    "ageRatings": {
+      "3": "3岁以上",
+      "5": "5岁以上",
+      "7": "7岁以上",
+      "10": "10岁以上",
+      "12": "12岁以上"
+    },
+    "moderation": {
+      "pending": "待审核",
+      "approved": "已批准",
+      "rejected": "已拒绝"
+    },
+    "admin": {
+      "stats": "儿童内容管理器",
+      "seedContent": "导入内容",
+      "importArchive": "导入 Archive.org",
+      "syncPodcasts": "同步播客",
+      "syncYouTube": "同步 YouTube",
+      "tagVod": "标记点播",
+      "pendingModeration": "待审核"
+    }
+  },
+  "youngsters": {
+    "title": "[zh] Youngsters",
+    "items": "[zh] items",
+    "empty": "[zh] No content available",
+    "emptyHint": "[zh] Try another category",
+    "exitYoungstersMode": "[zh] Exit Youngsters Mode",
+    "exitDescription": "[zh] Enter parent code to exit",
+    "parentCode": "[zh] Parent code",
+    "confirm": "[zh] Confirm",
+    "wrongCode": "[zh] Incorrect code",
+    "noContent": "[zh] No content available",
+    "tryAnotherCategory": "[zh] Try selecting another category",
+    "categories": {
+      "all": "[zh] All",
+      "trending": "[zh] Trending",
+      "news": "[zh] News",
+      "culture": "[zh] Culture",
+      "educational": "[zh] Educational",
+      "music": "[zh] Music",
+      "entertainment": "[zh] Entertainment",
+      "sports": "[zh] Sports",
+      "tech": "[zh] Technology",
+      "judaism": "[zh] Judaism"
+    },
+    "ageGroups": {
+      "middle-school": "[zh] Middle School (12-14)",
+      "high-school": "[zh] High School (15-17)"
+    },
+    "moderation": {
+      "pending": "[zh] Pending Review",
+      "approved": "[zh] Approved",
+      "rejected": "[zh] Rejected"
+    },
+    "admin": {
+      "stats": "[zh] Youngsters Content Manager",
+      "seedContent": "[zh] Seed Content",
+      "importArchive": "[zh] Import Archive.org",
+      "syncPodcasts": "[zh] Sync Podcasts",
+      "syncYouTube": "[zh] Sync YouTube",
+      "tagVod": "[zh] Tag VOD",
+      "pendingModeration": "[zh] Pending Moderation"
+    }
+  },
+  "chatbot": {
+    "title": "Bayit+ 助手",
+    "greeting": "您好！我是 Bayit+ 智能助手。今天我能为您做什么？点击麦克风说话，或输入消息。",
+    "openChat": "打开聊天",
+    "welcome": "您好！我是 Bayit+ 智能助手。今天我能为您做什么？点击麦克风说话，或输入消息。",
+    "placeholder": "在此输入...",
+    "recording": "录音中...再次点击停止",
+    "transcribing": "转录中...",
+    "stopRecording": "停止录音",
+    "startRecording": "开始语音录音",
+    "recommendations": "以下是一些推荐：",
+    "showMultipleSuccess": "在小组件中显示 {{count}} 个内容项目",
+    "showMultipleNotFound": "无法找到请求的内容。请尝试不同的名称。",
+    "resolvingContent": "正在查找您的内容...",
+    "errors": {
+      "micPermission": "无法访问麦克风。请在浏览器中检查麦克风权限。",
+      "transcribeFailed": "无法转录录音。请重试。",
+      "general": "抱歉，出现问题。请重试。"
+    },
+    "suggestions": {
+      "whatToWatch": "今天看什么？",
+      "israeliMovies": "推荐的以色列电影",
+      "whatsOnNow": "现在播放什么？",
+      "popularPodcasts": "热门播客"
+    },
+    "voiceCommands": {
+      "showChannels": "显示频道...",
+      "playChess": "开始国际象棋游戏...",
+      "multiContent": "并排显示..."
+    }
+  },
+  "chat": {
+    "title": "Bayit+ 助手",
+    "greeting": "您好！我是 Bayit+ 智能助手。今天我能为您做什么？点击麦克风说话，或输入消息。"
+  },
+  "subtitles": {
+    "nikud": "尼库德",
+    "selection": "选择",
+    "translation": "翻译",
+    "translating": "翻译中...",
+    "close": "关闭",
+    "unavailable": "不可用",
+    "off": "关闭",
+    "none": "无",
+    "autoGenerated": "自动生成",
+    "selectLanguage": "选择字幕语言",
+    "liveTranslate": "实时翻译",
+    "translateTo": "翻译为",
+    "downloadMore": "下载更多字幕...",
+    "downloading": "正在搜索 OpenSubtitles...",
+    "opensubtitlesSource": "来自 OpenSubtitles.com",
+    "downloadSuccess": "已下载 {{count}} 个字幕",
+    "noSubtitlesFound": "未找到此内容的字幕",
+    "smartSubs": "智能字幕",
+    "smartSubsDescription": "双视图：简化希伯来语 + 英语，带词根高亮",
+    "smartSubsDualView": "双视图",
+    "shoreshToggle": "词根高亮",
+    "shoreshOn": "Shoresh 高亮已启用",
+    "shoreshOff": "Shoresh 高亮已禁用",
+    "nikudLive": "带 Nikud 的希伯来语",
+    "nikudLiveDescription": "带变音符号的希伯来语字幕，便于阅读",
+    "nikudEnabled": "Nikud 字幕已启用",
+    "nikudDisabled": "Nikud 字幕已禁用",
+    "nikudSubtitleLabel": "带 nikud 的希伯来语：{{text}}",
+    "available": "字幕",
+    "clickToEnable": "点击启用实时翻译",
+    "connectionError": "实时翻译错误",
+    "inputLanguageTooltip": "检查输入语言",
+    "premiumRequired": "需要高级订阅",
+    "selectInputLanguage": "选择输入语言",
+    "translateActive": "实时翻译已激活",
+    "noEnglishSubtitles": "此内容没有可用的英语字幕。",
+    "hebrewMode": {
+      "title": "希伯来语显示模式",
+      "unavailable": "不可用",
+      "generate": "生成",
+      "regular": {
+        "title": "普通希伯来语",
+        "description": "不带元音符号的标准希伯来语文本"
+      },
+      "nikud": {
+        "title": "带 Nikud 的希伯来语",
+        "description": "带元音符号的希伯来语，便于阅读",
+        "unavailableReason": "此内容无法进行 AI 处理"
+      },
+      "shoresh": {
+        "title": "Shoresh（词根）",
+        "description": "带词根分析的希伯来语单词：单词 [词根]",
+        "unavailableReason": "此内容无法进行词根分析"
+      }
+    },
+    "englishMode": {
+      "title": "英语显示模式",
+      "unavailable": "不可用",
+      "generate": "生成",
+      "firstTimeHint": "这些 AI 驱动的模式帮助您在学习英语句子结构的同时保持希伯来语。每种模式都提供独特的学习体验。",
+      "regular": {
+        "title": "普通英语",
+        "description": "标准英语字幕"
+      },
+      "heblish": {
+        "title": "希伯来英语混合",
+        "description": "带希伯来语词汇注入的英语，实现沉浸式学习",
+        "unavailableReason": "此内容无法进行 Heblish 处理"
+      },
+      "grammarFlip": {
+        "title": "语法翻转",
+        "description": "希伯来语词汇配合英语句子结构（主语-动词-宾语）",
+        "unavailableReason": "此内容无法进行 Grammar-Flip 处理"
+      },
+      "slangSynthesis": {
+        "title": "俚语合成",
+        "description": "现代以色列和美国俚语混合，内容更加生动",
+        "unavailableReason": "此内容无法进行 Slang Synthesis 处理"
+      }
+    },
+    "loading": "加载字幕中...",
+    "error": {
+      "title": "字幕错误",
+      "retry": "重试",
+      "loadFailed": "加载字幕失败",
+      "cuesFailed": "加载字幕文本失败",
+      "networkError": "网络错误 - 请检查您的连接",
+      "serverError": "服务器错误 - 请稍后重试"
+    },
+    "aiModesAvailable": "可用的 AI 模式",
+    "aiModesTitle": "AI 字幕模式",
+    "fetchSubtitles": "获取字幕",
+    "fontSize": "字体大小",
+    "mode": {
+      "engrew": "英希混合",
+      "heblish": "希伯来英语混合",
+      "shoresh": "词根",
+      "standard": "标准"
+    },
+    "opensubtitles": "OpenSubtitles",
+    "searchExternal": "搜索外部字幕",
+    "settingsTitle": "字幕设置",
+    "showBackground": "显示背景",
+    "singleMode": "单一模式",
+    "splitMode": "分割模式",
+    "primary_language": "主要语言",
+    "secondary_language": "次要语言",
+    "layout_mode": "布局模式",
+    "interactive_title": "交互式字幕"
+  },
+  "video": {
+    "watchTrailer": "观看预告片",
+    "closeTrailer": "关闭预告片",
+    "deleteConfirm": "删除此剧集？"
+  },
+  "recordings": {
+    "title": "我的录制",
+    "subtitle": "查看和管理您录制的直播流",
+    "record": "录制",
+    "recording": "录制中",
+    "storageUsed": "已用存储",
+    "totalRecordings": "总录制数",
+    "maxDuration": "最长时长",
+    "noRecordings": "暂无录制",
+    "noRecordingsHint": "从任何直播频道开始录制！",
+    "confirmDelete": "确定要删除此录制？此操作无法撤销。",
+    "deleteRecording": "删除录制",
+    "deleteFailed": "删除录制失败",
+    "expires": "过期",
+    "subtitlesAvailable": "可用字幕",
+    "recordingSaved": "录制已保存！",
+    "savedSuccess": "录制保存成功！时长：{{duration}}",
+    "viewInMyRecordings": "在我的录制中查看",
+    "error": "录制错误",
+    "startFailed": "启动录制失败。请重试。",
+    "stopFailed": "停止录制失败。请重试。",
+    "page": "页"
+  },
+  "chess": {
+    "title": "国际象棋",
+    "welcome": "欢迎来到国际象棋",
+    "subtitle": "与世界各地的朋友和家人下棋",
+    "createGame": "创建新游戏",
+    "joinGame": "加入游戏",
+    "gameCode": "游戏代码",
+    "enterGameCode": "输入游戏代码",
+    "invalidGameCode": "无效的游戏代码。必须为6个字符。",
+    "joinFailed": "加入游戏失败",
+    "join": "加入",
+    "create": "创建",
+    "chooseColor": "选择您的颜色",
+    "white": "白方",
+    "black": "黑方",
+    "chatPlaceholder": "输入消息...（@bot 获取建议）",
+    "botHint": "在消息中标记 @bot 以从我们的 AI 助手获取国际象棋建议",
+    "bot": "国际象棋助手",
+    "mute": "静音",
+    "unmute": "取消静音",
+    "speaking": "参与者",
+    "resign": "认输",
+    "offerDraw": "提议和棋",
+    "newGame": "新游戏",
+    "checkmate": "将死！",
+    "stalemate": "僵局",
+    "draw": "和棋",
+    "resigned": "已认输",
+    "reconnecting": "重新连接中...",
+    "moveHistory": "走棋历史",
+    "noMoves": "暂无走棋",
+    "showHints": "显示指南提示",
+    "yourTurn": "轮到您",
+    "opponentTurn": "对手回合",
+    "waitingForOpponent": "等待对手...",
+    "gameOver": "游戏结束",
+    "sendingInvite": "正在向 {{name}} 发送游戏邀请...",
+    "inviteSent": "游戏邀请已发送给 {{name}}！游戏代码：{{code}}",
+    "inviteFailed": "找不到该用户。请检查名称后重试。",
+    "inviteReceived": "{{name}} 邀请您下国际象棋！",
+    "joinInvite": "加入游戏",
+    "challenge": "挑战",
+    "playedAsWhite": "执白",
+    "playedAsBlack": "执黑",
+    "gameMode": "游戏模式",
+    "playVsFriend": "对战好友",
+    "playVsBot": "对战机器人",
+    "difficulty": "难度",
+    "easy": "简单",
+    "medium": "中等",
+    "hard": "困难",
+    "chessBot": "国际象棋机器人",
+    "chat": {
+      "title": "聊天",
+      "inputPlaceholder": "输入消息..."
+    },
+    "acceptDraw": "[zh] Accept Draw",
+    "acceptInvite": "[zh] Accept Invite",
+    "blackCaptured": "[zh] Black Captured",
+    "blackTurn": "[zh] Black's Turn",
+    "challengeFriend": "[zh] Challenge Friend",
+    "challengeViaWhatsApp": "[zh] Challenge via WhatsApp",
+    "copyCode": "[zh] Copy Code",
+    "declineDraw": "[zh] Decline Draw",
+    "declineInvite": "[zh] Decline Invite",
+    "drawOffered": "[zh] Draw Offered",
+    "joinByGameCode": "[zh] Join by Game Code",
+    "noFriendsYet": "[zh] No friends yet",
+    "offline": "[zh] Offline",
+    "online": "[zh] Online",
+    "opponent": "[zh] Opponent",
+    "whiteCaptured": "[zh] White Captured",
+    "whiteTurn": "[zh] White's Turn",
+    "you": "[zh] You"
+  },
+  "friends": {
+    "title": "好友与对手",
+    "subtitle": "与玩家联系并挑战好友",
+    "myFriends": "我的好友",
+    "requests": "请求",
+    "findPlayers": "查找玩家",
+    "friendsLabel": "好友",
+    "pendingLabel": "待处理",
+    "add": "添加好友",
+    "remove": "移除",
+    "accept": "接受",
+    "reject": "拒绝",
+    "cancel": "取消",
+    "noFriends": "暂无好友",
+    "noFriendsDesc": "搜索玩家并发送好友请求",
+    "lastGame": "上次游戏：{{time}}",
+    "friendsSince": "好友自 {{date}}",
+    "incomingRequests": "收到的请求",
+    "outgoingRequests": "发出的请求",
+    "noIncoming": "无收到的请求",
+    "noOutgoing": "无发出的请求",
+    "sentAt": "发送于 {{time}}",
+    "searchPlaceholder": "按名称搜索...",
+    "noResults": "未找到玩家",
+    "noResultsDesc": "尝试搜索其他名称",
+    "requestSent": "好友请求已发送！",
+    "requestAccepted": "好友请求已接受！",
+    "requestRejected": "好友请求已拒绝",
+    "requestCancelled": "好友请求已取消",
+    "friendRemoved": "好友已移除",
+    "searchFailed": "搜索用户失败",
+    "requestFailed": "发送请求失败",
+    "acceptFailed": "接受请求失败",
+    "rejectFailed": "拒绝请求失败",
+    "cancelFailed": "取消请求失败",
+    "removeFailed": "移除好友失败",
+    "friendsCount": "{{count}} 个好友",
+    "gamesCount": "{{count}} 场游戏",
+    "alreadyFriends": "好友"
+  },
+  "stats": {
+    "statistics": "统计",
+    "matchHistory": "比赛历史",
+    "headToHead": "正面交锋",
+    "gamesPlayed": "已玩游戏",
+    "wins": "胜",
+    "losses": "负",
+    "draws": "和",
+    "winRate": "胜率",
+    "rating": "评分",
+    "peakRating": "最高评分",
+    "peak": "最高",
+    "winStreak": "连胜",
+    "currentStreak": "当前连胜",
+    "bestStreak": "最佳连胜",
+    "performance": "表现",
+    "achievements": "成就",
+    "currentRating": "当前评分",
+    "totalGames": "总游戏数",
+    "noGames": "暂无游戏记录",
+    "moves": "步",
+    "won": "胜",
+    "lost": "负",
+    "draw": "和",
+    "overall": "总战绩",
+    "yourWins": "您的胜场",
+    "theirWins": "对方胜场",
+    "totalGamesPlayed": "总计：{{count}} 场游戏",
+    "recentGames": "最近游戏"
+  },
+  "support": {
+    "title": "支持中心",
+    "subtitle": "今天我们能帮您什么？",
+    "tabs": {
+      "docs": "文档",
+      "faq": "常见问题",
+      "contact": "联系",
+      "tickets": "我的工单"
+    },
+    "categories": {
+      "title": "浏览文档",
+      "loading": "加载文档中...",
+      "loadError": "加载分类失败",
+      "articleCount": "{{count}} 篇文章",
+      "gettingStarted": "入门",
+      "features": "功能",
+      "troubleshooting": "故障排除",
+      "account": "账户"
+    },
+    "docs": {
+      "loading": "加载文档中...",
+      "loadError": "加载文档失败",
+      "backToList": "返回文档列表"
+    },
+    "search": {
+      "placeholder": "搜索文档...",
+      "noResults": "未找到结果"
+    },
+    "faq": {
+      "title": "常见问题",
+      "loading": "加载常见问题...",
+      "loadError": "加载常见问题失败",
+      "empty": "此分类暂无常见问题",
+      "categories": {
+        "all": "所有话题",
+        "general": "综合",
+        "billing": "账单",
+        "technical": "技术",
+        "features": "功能"
+      }
+    },
+    "contact": {
+      "voiceTitle": "语音支持",
+      "voiceDescription": "点击头像按钮或说 \"Jarvis\" 开始与我们的 AI 助手语音对话。",
+      "ticketTitle": "创建支持工单",
+      "ticketDescription": "需要人工帮助？创建支持工单，我们的团队将在24小时内回复。",
+      "createTicket": "创建工单",
+      "emailTitle": "邮件支持",
+      "emailDescription": "更喜欢邮件？如有任何问题或疑虑，请联系 support@bayit.tv。"
+    },
+    "ticket": {
+      "title": "创建支持工单",
+      "subject": "主题",
+      "subjectPlaceholder": "问题的简要描述",
+      "message": "消息",
+      "messagePlaceholder": "详细描述您的问题...",
+      "categoryLabel": "分类",
+      "priorityLabel": "优先级",
+      "submit": "提交工单",
+      "category": {
+        "billing": "账单",
+        "technical": "技术",
+        "feature": "功能请求",
+        "general": "综合"
+      },
+      "priority": {
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "urgent": "紧急"
+      },
+      "status": {
+        "open": "待处理",
+        "in_progress": "处理中",
+        "resolved": "已解决",
+        "closed": "已关闭"
+      },
+      "created": "已创建",
+      "error": {
+        "required": "请填写所有必填字段",
+        "submit": "创建工单失败。请重试。"
+      }
+    },
+    "tickets": {
+      "title": "我的支持工单",
+      "loading": "加载工单中...",
+      "loadError": "加载工单失败",
+      "empty": "暂无支持工单",
+      "emptyFilter": "无此状态的工单",
+      "create": "新工单",
+      "createFirst": "创建您的第一个工单",
+      "filter": {
+        "all": "全部",
+        "open": "待处理",
+        "inProgress": "处理中",
+        "resolved": "已解决"
+      }
+    },
+    "voice": {
+      "title": "语音助手",
+      "listening": "我在听...",
+      "thinking": "让我想想...",
+      "speaking": "正在说话...",
+      "error": "抱歉，我没听清。再试一次？",
+      "ready": "您想知道什么？",
+      "listeningNow": "正在听...",
+      "wakeWordHint": "说 \"Jarvis\" 说话"
+    },
+    "wizard": {
+      "role": "您的向导"
+    }
+  },
+  "jerusalem": {
+    "title": "耶路撒冷连接",
+    "subtitle": "与以色列的心脏保持联系",
+    "noContent": "无可用耶路撒冷内容",
+    "sources": "来源",
+    "kotelLive": "西墙直播",
+    "categories": {
+      "kotel": "西墙",
+      "idf-ceremony": "以色列国防军仪式",
+      "diaspora-connection": "散居联系",
+      "holy-sites": "圣地",
+      "jerusalem-events": "耶路撒冷活动",
+      "general": "耶路撒冷"
+    }
+  },
+  "telAviv": {
+    "title": "特拉维夫连接",
+    "subtitle": "永不停歇的城市",
+    "noContent": "无可用特拉维夫内容",
+    "sources": "来源",
+    "beachLive": "海滩摄像头",
+    "categories": {
+      "beaches": "海滩",
+      "nightlife": "夜生活",
+      "culture": "文化与艺术",
+      "music": "音乐现场",
+      "food": "美食",
+      "tech": "科技与创业",
+      "events": "活动",
+      "general": "特拉维夫"
+    }
   },
   "voiceOnboarding": {
     "welcome": {
@@ -3697,6 +3731,156 @@
     "training": {
       "message": "[zh] Read the phrases aloud to train voice recognition.",
       "title": "[zh] Voice Training"
+    }
+  },
+  "taxonomy": {
+    "sections": {
+      "movies": "[zh] Movies",
+      "series": "[zh] Series",
+      "kids": "[zh] Kids",
+      "youngsters": "[zh] Youngsters",
+      "music": "[zh] Music",
+      "documentaries": "[zh] Documentaries",
+      "podcasts": "[zh] Podcasts",
+      "live": "[zh] Live TV"
+    },
+    "subcategories": {
+      "learning-hebrew": "[zh] Learning Hebrew",
+      "young-science": "[zh] Young Science",
+      "math-fun": "[zh] Fun Math",
+      "nature-animals": "[zh] Nature & Animals",
+      "interactive": "[zh] Interactive",
+      "hebrew-songs": "[zh] Hebrew Songs",
+      "nursery-rhymes": "[zh] Nursery Rhymes",
+      "kids-movies": "[zh] Kids Movies",
+      "kids-series": "[zh] Kids Series",
+      "jewish-holidays": "[zh] Jewish Holidays",
+      "torah-stories": "[zh] Torah Stories",
+      "bedtime-stories": "[zh] Bedtime Stories",
+      "tiktok-trends": "[zh] TikTok Trends",
+      "viral-videos": "[zh] Viral Videos",
+      "memes": "[zh] Memes",
+      "israel-news": "[zh] Israel News",
+      "world-news": "[zh] World News",
+      "science-news": "[zh] Science News",
+      "sports-news": "[zh] Sports News",
+      "music-culture": "[zh] Music Culture",
+      "film-culture": "[zh] Film Culture",
+      "art-culture": "[zh] Art Culture",
+      "food-culture": "[zh] Food Culture",
+      "study-help": "[zh] Study Help",
+      "career-prep": "[zh] Career Prep",
+      "life-skills": "[zh] Life Skills",
+      "teen-movies": "[zh] Teen Movies",
+      "teen-series": "[zh] Teen Series",
+      "gaming": "[zh] Gaming",
+      "coding": "[zh] Coding",
+      "gadgets": "[zh] Gadgets",
+      "bar-bat-mitzvah": "[zh] Bar/Bat Mitzvah",
+      "teen-torah": "[zh] Teen Torah",
+      "jewish-history": "[zh] Jewish History",
+      "learning-hebrew.description": "儿童希伯来语阅读、写作和词汇学习",
+      "young-science.description": "适合儿童的实验和科学解释",
+      "math-fun.description": "以有趣的方式学习数字和算术",
+      "nature-animals.description": "好奇儿童的动物和自然世界",
+      "interactive.description": "儿童互动参与内容",
+      "hebrew-songs.description": "经典和新以色列儿童歌曲",
+      "nursery-rhymes.description": "幼儿和婴儿的歌曲和旋律",
+      "kids-movies.description": "适合儿童的长篇电影",
+      "kids-series.description": "儿童动画系列和电视节目",
+      "jewish-holidays.description": "面向儿童的犹太节日和传统内容",
+      "torah-stories.description": "托拉和犹太传统故事",
+      "bedtime-stories.description": "睡前放松故事",
+      "tiktok-trends.description": "TikTok热门趋势和挑战",
+      "viral-videos.description": "社交媒体热门病毒视频",
+      "memes.description": "搞笑梗图和网络文化",
+      "israel-news.description": "适合青少年的以色列新闻",
+      "world-news.description": "青少年国际新闻",
+      "science-news.description": "科学发现和技术创新",
+      "sports-news.description": "体育动态和比赛结果",
+      "music-culture.description": "音乐圈、艺术家和音乐节",
+      "film-culture.description": "电影、剧集和评论",
+      "art-culture.description": "艺术、画廊与创意",
+      "food-culture.description": "烹饪、食谱和饮食文化",
+      "study-help.description": "考试帮助、总结和备考",
+      "career-prep.description": "大学和职业准备",
+      "life-skills.description": "生活技能、理财和独立",
+      "teen-movies.description": "青少年推荐电影",
+      "teen-series.description": "青少年热门剧集",
+      "gaming.description": "电子游戏、电竞和游戏",
+      "coding.description": "编程、代码和软件开发",
+      "gadgets.description": "数码产品、科技和评测",
+      "bar-bat-mitzvah.description": "成年礼的准备和庆祝",
+      "teen-torah.description": "青少年托拉课程和每周读经",
+      "jewish-history.description": "犹太民族历史"
+    }
+  },
+  "passkey": {
+    "manager": {
+      "title": "[zh] Passkeys",
+      "subtitle": "[zh] Manage your passkeys for secure content access"
+    },
+    "unsupported": "[zh] Passkeys are not supported on this device",
+    "fetchError": "[zh] Failed to load passkeys",
+    "registerError": "[zh] Failed to register passkey",
+    "deleteError": "[zh] Failed to delete passkey",
+    "cancelled": "[zh] Passkey operation was cancelled",
+    "noPasskeys": "[zh] No passkeys registered yet. Add one to unlock private content.",
+    "unknownDevice": "[zh] Unknown Device",
+    "created": "[zh] Created",
+    "lastUsed": "[zh] Last used",
+    "never": "[zh] Never",
+    "addPasskey": "[zh] Add Passkey",
+    "deleteConfirmTitle": "[zh] Delete Passkey?",
+    "deleteConfirmText": "[zh] This passkey will no longer be able to unlock content. You can always add it again later.",
+    "unlock": "[zh] Unlock",
+    "unlockContent": "[zh] Unlock Private Content",
+    "unlockDescription": "[zh] Use your passkey to access private movies and series",
+    "auth": {
+      "title": "[zh] Unlock Content",
+      "description": "[zh] Use your fingerprint, face, or device PIN to unlock private movies and series.",
+      "unlock": "[zh] Unlock with Passkey",
+      "authenticating": "[zh] Authenticating...",
+      "success": "[zh] Content Unlocked!",
+      "cancelled": "[zh] Authentication was cancelled",
+      "error": "[zh] Authentication failed. Please try again."
+    },
+    "qr": {
+      "useQR": "[zh] Use Phone to Unlock",
+      "scanWithPhone": "[zh] Scan with your phone",
+      "instruction": "[zh] Open the camera on your phone and scan the QR code to authenticate",
+      "error": "[zh] Failed to generate QR code",
+      "expired": "[zh] QR code expired. Please try again."
+    }
+  },
+  "olorin": {
+    "errors": {
+      "session_not_found": "[zh] Session not found",
+      "session_different_partner": "[zh] Session belongs to different partner",
+      "session_invalid_status": "[zh] Session is {status}, cannot add transcript",
+      "max_sessions_reached": "[zh] Maximum concurrent sessions ({limit}) reached",
+      "invalid_api_key": "[zh] Invalid API key",
+      "missing_api_key": "[zh] Missing {header} header",
+      "capability_disabled": "[zh] Capability '{capability}' is currently disabled",
+      "capability_not_enabled": "[zh] Capability '{capability}' not enabled for this partner",
+      "source_language_not_supported": "[zh] Source language '{language}' not supported. Supported: {supported}",
+      "target_language_not_supported": "[zh] Target language '{language}' not supported. Supported: {supported}",
+      "partner_not_found": "[zh] Partner not found",
+      "partner_registration_failed": "[zh] Failed to register partner",
+      "no_updates_provided": "[zh] No updates provided",
+      "webhook_config_failed": "[zh] Failed to configure webhook",
+      "webhook_url_not_configured": "[zh] Webhook URL not configured",
+      "webhook_secret_not_configured": "[zh] Webhook secret not configured",
+      "search_failed": "[zh] Search failed",
+      "indexing_failed": "[zh] Indexing failed",
+      "detection_failed": "[zh] Detection failed",
+      "explanation_failed": "[zh] Failed to get explanation",
+      "reference_not_found": "[zh] Reference '{reference_id}' not found",
+      "enrichment_failed": "[zh] Enrichment failed",
+      "get_references_failed": "[zh] Failed to get references",
+      "create_session_failed": "[zh] Failed to create session",
+      "add_transcript_failed": "[zh] Failed to add transcript",
+      "generate_recap_failed": "[zh] Failed to generate recap"
     }
   },
   "portal": {
@@ -3851,16 +4035,42 @@
       "enableTrivia": "[zh] Enable Trivia",
       "title": "[zh] Trivia Settings"
     },
-    "aiTrivia": "AI Trivia",
-    "tellMeMore": "Tell me more",
+    "aiTrivia": "AI 问答",
+    "tellMeMore": "告诉我更多",
     "more": "更多",
     "follow_up": "跟进"
+  },
+  "auth": {
+    "loginRequired": "[zh] Login Required",
+    "loginToWatch": "[zh] Please sign in to watch {{title}}",
+    "login": "[zh] Login",
+    "signUp": "[zh] Sign Up",
+    "biometricEnrollEnable": "[zh] Enable",
+    "biometricEnrollMessage": "[zh] Use Face ID or fingerprint for faster sign-in next time.",
+    "biometricEnrollSkip": "[zh] Skip",
+    "biometricEnrollTitle": "[zh] Enable Biometric Sign-In",
+    "biometricSignIn": "[zh] Sign in with Biometrics",
+    "signOut": "[zh] Sign Out",
+    "register": {
+      "createAccount": "创建账户",
+      "email": "电子邮件",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "register": "注册",
+      "alreadyHaveAccount": "已有账户？登录",
+      "passwordStrength": {
+        "weak": "弱",
+        "medium": "中",
+        "strong": "强"
+      }
+    }
   },
   "recording": {
     "stop": "停止录制",
     "start": "开始录制"
   },
   "discover": {
+    "title": "[zh] Discover",
     "subtitle": "探索19项AI驱动功能",
     "description": "Bayit+利用AI提升您的观看、收听和学习体验。探索您平台上可用的功能。",
     "featureCount": "{{count}} 项功能",
@@ -3884,8 +4094,8 @@
     "platform": {
       "web": "Web",
       "ios": "iOS",
-      "tvos": "Apple TV",
-      "android": "Android"
+      "android": "Android",
+      "tvos": "Apple TV"
     },
     "category": {
       "watching_movies": "观看电影",
@@ -4114,10 +4324,18 @@
         "step2": "[zh] Type your question or request",
         "step3": "[zh] Read the AI response"
       }
-    },
-    "title": "[zh] Discover"
+    }
   },
   "byoc": {
+    "home": {
+      "title": "[zh] Bring Your Own Content",
+      "subtitle": "[zh] Connect your IPTV, Plex, or YouTube sources and enjoy Bayit+ AI features on your own content",
+      "connectButton": "[zh] Connect Sources",
+      "aiFeatures": {
+        "dubbing": "[zh] AI Dubbing available",
+        "subtitles": "[zh] Live Subtitles available"
+      }
+    },
     "pageSubtitle": "带来您自己的内容 - 添加 IPTV 和流媒体来源",
     "addSource": "添加来源",
     "sync": "同步",
@@ -4191,14 +4409,28 @@
       "normalizationFailed": "内容处理失败",
       "normalizationPollFailed": "处理过程中连接中断"
     },
-    "home": {
-      "title": "[zh] Bring Your Own Content",
-      "subtitle": "[zh] Connect your IPTV, Plex, or YouTube sources and enjoy Bayit+ AI features on your own content",
-      "connectButton": "[zh] Connect Sources",
-      "aiFeatures": {
-        "dubbing": "[zh] AI Dubbing available",
-        "subtitles": "[zh] Live Subtitles available"
-      }
+    "plex": {
+      "connectPlex": "连接Plex",
+      "enterCodeAt": "在此输入代码",
+      "waitingForAuth": "等待授权...",
+      "selectServer": "选择Plex服务器",
+      "connecting": "正在连接{{serverName}}...",
+      "connected": "已连接",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "您的内容来源",
+      "refresh": "刷新",
+      "noSources": "未连接内容来源",
+      "noSourcesSubtitle": "连接您的Plex、YouTube、IPTV或Xtream提供商",
+      "removeSource": "移除来源",
+      "plexSubtitle": "从您的Plex媒体服务器串流",
+      "youtubeSubtitle": "访问您的YouTube媒体库",
+      "iptvXtreamLabel": "IPTV / Xtream",
+      "iptvXtreamSubtitle": "添加M3U播放列表或Xtream代码",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream代码",
+      "iptv": "IPTV"
     }
   },
   "onboarding": {
@@ -4233,7 +4465,7 @@
         "title": "互动字幕",
         "description": "点击字幕中的任意单词即可获得即时翻译和发音",
         "sample": "一家人聚在一起吃 Shabbat 晚餐",
-        "word": "Shabbat",
+        "word": "安息日",
         "translation": "安息日 - 每周休息日"
       },
       "interaction": {
@@ -4271,6 +4503,36 @@
       }
     }
   },
+  "dm": {
+    "title": "消息",
+    "conversations": "对话",
+    "conversation": "对话",
+    "empty": {
+      "title": "暂无消息",
+      "subtitle": "与朋友开始一段对话"
+    },
+    "input": {
+      "placeholder": "输入消息...",
+      "send": "发送"
+    },
+    "translate": "翻译",
+    "react": "表情回应",
+    "read": "已读",
+    "sent": "已发送",
+    "loadMore": "加载更早的消息",
+    "startConversation": "发送消息以开始对话",
+    "reaction": {
+      "like": "点赞",
+      "love": "喜爱",
+      "laugh": "哈哈",
+      "surprise": "哇",
+      "sad": "悲伤"
+    },
+    "error": {
+      "fetchFailed": "加载消息失败",
+      "sendFailed": "发送消息失败"
+    }
+  },
   "household": {
     "empty": {
       "title": "尚未创建家庭",
@@ -4302,36 +4564,6 @@
       "removeFailed": "移除成员失败"
     }
   },
-  "dm": {
-    "title": "消息",
-    "conversations": "对话",
-    "conversation": "对话",
-    "empty": {
-      "title": "暂无消息",
-      "subtitle": "与朋友开始一段对话"
-    },
-    "input": {
-      "placeholder": "输入消息...",
-      "send": "发送"
-    },
-    "translate": "翻译",
-    "react": "表情回应",
-    "read": "已读",
-    "sent": "已发送",
-    "loadMore": "加载更早的消息",
-    "startConversation": "发送消息以开始对话",
-    "reaction": {
-      "like": "点赞",
-      "love": "喜爱",
-      "laugh": "哈哈",
-      "surprise": "哇",
-      "sad": "悲伤"
-    },
-    "error": {
-      "fetchFailed": "加载消息失败",
-      "sendFailed": "发送消息失败"
-    }
-  },
   "aiChat": {
     "retryButton": "[zh] Retry",
     "sendButton": "[zh] Send",
@@ -4359,18 +4591,6 @@
       "description": "[zh] Bayit+ uses AI to enhance your viewing experience with dubbing, subtitles, and more.",
       "title": "[zh] Welcome to Bayit+ AI"
     }
-  },
-  "auth": {
-    "biometricEnrollEnable": "[zh] Enable",
-    "biometricEnrollMessage": "[zh] Use Face ID or fingerprint for faster sign-in next time.",
-    "biometricEnrollSkip": "[zh] Skip",
-    "biometricEnrollTitle": "[zh] Enable Biometric Sign-In",
-    "biometricSignIn": "[zh] Sign in with Biometrics",
-    "signOut": "[zh] Sign Out",
-    "signUp": "[zh] Sign Up",
-    "loginToWatch": "[zh] Please sign in to watch {{title}}",
-    "login": "[zh] Login",
-    "loginRequired": "[zh] Login Required"
   },
   "auth_device_authorized": "[zh] Device authorized",
   "auth_device_code_expired": "[zh] Code expired",
@@ -4476,332 +4696,173 @@
     "title": "[zh] Voice Wizard"
   },
   "watch_now": "[zh] Watch Now",
-  "youngsters": {
-    "tryAnotherCategory": "[zh] Try selecting another category",
-    "admin": {
-      "tagVod": "[zh] Tag VOD",
-      "syncYouTube": "[zh] Sync YouTube",
-      "seedContent": "[zh] Seed Content",
-      "stats": "[zh] Youngsters Content Manager",
-      "pendingModeration": "[zh] Pending Moderation",
-      "syncPodcasts": "[zh] Sync Podcasts",
-      "importArchive": "[zh] Import Archive.org"
-    },
-    "categories": {
-      "trending": "[zh] Trending",
-      "all": "[zh] All",
-      "tech": "[zh] Technology",
-      "educational": "[zh] Educational",
-      "culture": "[zh] Culture",
-      "judaism": "[zh] Judaism",
-      "entertainment": "[zh] Entertainment",
-      "music": "[zh] Music",
-      "sports": "[zh] Sports",
-      "news": "[zh] News"
-    },
-    "ageGroups": {
-      "high-school": "[zh] High School (15-17)",
-      "middle-school": "[zh] Middle School (12-14)"
-    },
-    "wrongCode": "[zh] Incorrect code",
-    "parentCode": "[zh] Parent code",
-    "title": "[zh] Youngsters",
-    "items": "[zh] items",
-    "exitYoungstersMode": "[zh] Exit Youngsters Mode",
-    "moderation": {
-      "rejected": "[zh] Rejected",
-      "approved": "[zh] Approved",
-      "pending": "[zh] Pending Review"
-    },
-    "empty": "[zh] No content available",
-    "noContent": "[zh] No content available",
-    "emptyHint": "[zh] Try another category",
-    "confirm": "[zh] Confirm",
-    "exitDescription": "[zh] Enter parent code to exit"
-  },
-  "olorin": {
-    "errors": {
-      "capability_not_enabled": "[zh] Capability '{capability}' not enabled for this partner",
-      "webhook_url_not_configured": "[zh] Webhook URL not configured",
-      "enrichment_failed": "[zh] Enrichment failed",
-      "partner_not_found": "[zh] Partner not found",
-      "no_updates_provided": "[zh] No updates provided",
-      "search_failed": "[zh] Search failed",
-      "reference_not_found": "[zh] Reference '{reference_id}' not found",
-      "generate_recap_failed": "[zh] Failed to generate recap",
-      "source_language_not_supported": "[zh] Source language '{language}' not supported. Supported: {supported}",
-      "explanation_failed": "[zh] Failed to get explanation",
-      "target_language_not_supported": "[zh] Target language '{language}' not supported. Supported: {supported}",
-      "capability_disabled": "[zh] Capability '{capability}' is currently disabled",
-      "invalid_api_key": "[zh] Invalid API key",
-      "session_not_found": "[zh] Session not found",
-      "session_invalid_status": "[zh] Session is {status}, cannot add transcript",
-      "max_sessions_reached": "[zh] Maximum concurrent sessions ({limit}) reached",
-      "partner_registration_failed": "[zh] Failed to register partner",
-      "webhook_secret_not_configured": "[zh] Webhook secret not configured",
-      "detection_failed": "[zh] Detection failed",
-      "missing_api_key": "[zh] Missing {header} header",
-      "session_different_partner": "[zh] Session belongs to different partner",
-      "create_session_failed": "[zh] Failed to create session",
-      "get_references_failed": "[zh] Failed to get references",
-      "indexing_failed": "[zh] Indexing failed",
-      "webhook_config_failed": "[zh] Failed to configure webhook",
-      "add_transcript_failed": "[zh] Failed to add transcript"
-    }
-  },
-  "taxonomy": {
-    "subcategories": {
-      "learning-hebrew": "[zh] Learning Hebrew",
-      "world-news": "[zh] World News",
-      "coding": "[zh] Coding",
-      "math-fun": "[zh] Fun Math",
-      "gadgets": "[zh] Gadgets",
-      "film-culture": "[zh] Film Culture",
-      "kids-series": "[zh] Kids Series",
-      "teen-torah": "[zh] Teen Torah",
-      "jewish-holidays": "[zh] Jewish Holidays",
-      "young-science": "[zh] Young Science",
-      "art-culture": "[zh] Art Culture",
-      "nature-animals": "[zh] Nature & Animals",
-      "nursery-rhymes": "[zh] Nursery Rhymes",
-      "interactive": "[zh] Interactive",
-      "food-culture": "[zh] Food Culture",
-      "teen-movies": "[zh] Teen Movies",
-      "viral-videos": "[zh] Viral Videos",
-      "career-prep": "[zh] Career Prep",
-      "teen-series": "[zh] Teen Series",
-      "bar-bat-mitzvah": "[zh] Bar/Bat Mitzvah",
-      "hebrew-songs": "[zh] Hebrew Songs",
-      "torah-stories": "[zh] Torah Stories",
-      "kids-movies": "[zh] Kids Movies",
-      "jewish-history": "[zh] Jewish History",
-      "gaming": "[zh] Gaming",
-      "memes": "[zh] Memes",
-      "bedtime-stories": "[zh] Bedtime Stories",
-      "science-news": "[zh] Science News",
-      "sports-news": "[zh] Sports News",
-      "music-culture": "[zh] Music Culture",
-      "israel-news": "[zh] Israel News",
-      "life-skills": "[zh] Life Skills",
-      "study-help": "[zh] Study Help",
-      "tiktok-trends": "[zh] TikTok Trends"
-    },
-    "sections": {
-      "series": "[zh] Series",
-      "music": "[zh] Music",
-      "movies": "[zh] Movies",
-      "kids": "[zh] Kids",
-      "live": "[zh] Live TV",
-      "youngsters": "[zh] Youngsters",
-      "documentaries": "[zh] Documentaries",
-      "podcasts": "[zh] Podcasts"
-    }
-  },
-  "passkey": {
-    "qr": {
-      "instruction": "[zh] Open the camera on your phone and scan the QR code to authenticate",
-      "useQR": "[zh] Use Phone to Unlock",
-      "scanWithPhone": "[zh] Scan with your phone",
-      "error": "[zh] Failed to generate QR code",
-      "expired": "[zh] QR code expired. Please try again."
-    },
-    "unlock": "[zh] Unlock",
-    "unlockContent": "[zh] Unlock Private Content",
-    "deleteConfirmTitle": "[zh] Delete Passkey?",
-    "deleteConfirmText": "[zh] This passkey will no longer be able to unlock content. You can always add it again later.",
-    "fetchError": "[zh] Failed to load passkeys",
-    "auth": {
-      "error": "[zh] Authentication failed. Please try again.",
-      "title": "[zh] Unlock Content",
-      "description": "[zh] Use your fingerprint, face, or device PIN to unlock private movies and series.",
-      "cancelled": "[zh] Authentication was cancelled",
-      "unlock": "[zh] Unlock with Passkey",
-      "authenticating": "[zh] Authenticating...",
-      "success": "[zh] Content Unlocked!"
-    },
-    "addPasskey": "[zh] Add Passkey",
-    "unsupported": "[zh] Passkeys are not supported on this device",
-    "deleteError": "[zh] Failed to delete passkey",
-    "never": "[zh] Never",
-    "registerError": "[zh] Failed to register passkey",
-    "manager": {
-      "subtitle": "[zh] Manage your passkeys for secure content access",
-      "title": "[zh] Passkeys"
-    },
-    "lastUsed": "[zh] Last used",
-    "cancelled": "[zh] Passkey operation was cancelled",
-    "unlockDescription": "[zh] Use your passkey to access private movies and series",
-    "noPasskeys": "[zh] No passkeys registered yet. Add one to unlock private content.",
-    "created": "[zh] Created",
-    "unknownDevice": "[zh] Unknown Device"
-  },
   "culture": {
-    "title": "Israeli Culture",
-    "description": "Jerusalem, Tel Aviv, and Israeli heritage",
+    "title": "以色列文化",
+    "description": "耶路撒冷、特拉维夫和以色列遗产",
     "shabbat": {
-      "title": "Shabbat Mode",
-      "enableShabbatMode": "Enable Shabbat Mode",
-      "shabbatTimes": "Shabbat Times",
-      "timesDescription": "Candle Lighting and Havdalah times will be displayed here",
-      "aboutTitle": "About Shabbat Mode",
-      "aboutDescription": "When enabled, Shabbat Mode will pause notifications, reduce screen brightness, and enable a simplified interface during Shabbat hours."
+      "title": "安息日模式",
+      "enableShabbatMode": "启用安息日模式",
+      "shabbatTimes": "安息日时间",
+      "timesDescription": "蜡烛点燃和哈夫达拉时间将在此显示",
+      "aboutTitle": "关于安息日模式",
+      "aboutDescription": "启用后，安息日模式将在安息日时间内暂停通知、降低屏幕亮度并启用简化界面。"
     },
     "judaism": {
-      "holidaysAndTorah": "Holidays & Torah",
-      "parashaOfTheWeek": "Parasha of the Week",
-      "parashaDescription": "Weekly Torah reading and commentary"
+      "holidaysAndTorah": "节日与托拉",
+      "parashaOfTheWeek": "本周读经",
+      "parashaDescription": "每周托拉诵读和注释"
     },
     "morning": {
-      "title": "Morning Ritual",
-      "description": "Start your day with intention and gratitude",
-      "dailyInspiration": "Daily Inspiration",
-      "dailyInspirationDescription": "Curated content for your morning routine",
-      "modehAni": "Modeh Ani",
-      "modehAniDescription": "Morning gratitude prayer",
-      "netilatYadayim": "Netilat Yadayim",
-      "netilatYadayimDescription": "Ritual hand washing",
-      "shacharit": "Shacharit",
-      "shacharitDescription": "Morning prayer service"
+      "title": "晨间仪式",
+      "description": "以意愿和感恩开始新的一天",
+      "dailyInspiration": "每日灵感",
+      "dailyInspirationDescription": "为您的早晨日程精选的内容",
+      "modehAni": "莫代阿尼",
+      "modehAniDescription": "晨间感恩祈祷",
+      "netilatYadayim": "涅提拉特·亚达伊姆",
+      "netilatYadayimDescription": "仪式性洗手",
+      "shacharit": "沙哈里特",
+      "shacharitDescription": "晨间祈祷仪式"
     },
     "glossary": {
-      "termDetail": "Term Detail",
-      "definition": "Definition",
-      "pronunciation": "Pronunciation",
-      "examples": "Examples"
+      "termDetail": "术语详情",
+      "definition": "定义",
+      "pronunciation": "发音",
+      "examples": "示例"
     },
     "jerusalem": {
-      "title": "Jerusalem"
+      "title": "耶路撒冷"
     },
     "telaviv": {
-      "title": "Tel Aviv"
+      "title": "特拉维夫"
     }
   },
   "zehAni": {
     "dashboard": {
-      "title": "Zeh Ani",
-      "biometricConsent": "Biometric Consent",
-      "activeConsents": "{{count}} active consents",
-      "magicMirror": "Magic Mirror",
-      "magicMirrorDescription": "Daily greetings and face ID",
-      "v2vPractice": "V2V Practice",
-      "v2vPracticeDescription": "Voice-to-voice pronunciation",
-      "avatar3d": "3D Avatar",
-      "avatar3dDescription": "Your personalized avatar mesh",
-      "movieInteractions": "Movie Interactions",
-      "movieInteractionsDescription": "Browse and talk to movie characters",
-      "contacts": "Contacts",
-      "contactsDescription": "WhatsApp sharing contacts",
-      "feedback": "Feedback",
-      "feedbackDescription": "Share your experience",
-      "consent": "Consent",
-      "consentDescription": "Biometric consent management",
-      "chess": "Chess",
-      "chessDescription": "Play chess with friends and family"
+      "title": "泽·阿尼",
+      "biometricConsent": "生物识别同意",
+      "activeConsents": "{{count}} 个有效同意",
+      "magicMirror": "魔镜",
+      "magicMirrorDescription": "每日问候和面部识别",
+      "v2vPractice": "V2V 练习",
+      "v2vPracticeDescription": "语音对语音发音",
+      "avatar3d": "3D 虚拟形象",
+      "avatar3dDescription": "您的个性化虚拟形象网格",
+      "movieInteractions": "电影互动",
+      "movieInteractionsDescription": "浏览并与电影角色对话",
+      "contacts": "联系人",
+      "contactsDescription": "WhatsApp 分享联系人",
+      "feedback": "反馈",
+      "feedbackDescription": "分享您的体验",
+      "consent": "同意",
+      "consentDescription": "生物识别同意管理",
+      "chess": "国际象棋",
+      "chessDescription": "与朋友和家人下棋"
     },
     "mirror": {
-      "title": "Magic Mirror",
-      "avatarContentDescription": "Avatar",
-      "wordOfTheDay": "Word of the Day",
-      "playLipsync": "Play Lipsync",
-      "noAvatarYet": "No avatar yet",
-      "noAvatarDescription": "Create a 3D avatar to see yourself in the story",
-      "createAvatar": "Create Avatar"
+      "title": "魔镜",
+      "avatarContentDescription": "虚拟形象",
+      "wordOfTheDay": "每日一词",
+      "playLipsync": "播放唇形同步",
+      "noAvatarYet": "尚无虚拟形象",
+      "noAvatarDescription": "创建 3D 虚拟形象，在故事中看到自己",
+      "createAvatar": "创建虚拟形象"
     },
     "mode": {
-      "title": "Avatar Mode",
-      "enableAvatarMode": "Enable Avatar Mode",
-      "enableDescription": "Show your avatar reacting to content",
-      "avatarPreview": "Avatar Preview",
-      "avatarPreviewContentDescription": "Avatar preview",
-      "noAvatarConfigured": "No avatar configured",
-      "reactionStyle": "Reaction Style"
+      "title": "虚拟形象模式",
+      "enableAvatarMode": "启用虚拟形象模式",
+      "enableDescription": "显示您的虚拟形象对内容的反应",
+      "avatarPreview": "虚拟形象预览",
+      "avatarPreviewContentDescription": "虚拟形象预览",
+      "noAvatarConfigured": "未配置虚拟形象",
+      "reactionStyle": "反应风格"
     },
     "wardrobe": {
-      "title": "Wardrobe",
-      "equippedContentDescription": "Equipped"
+      "title": "衣橱",
+      "equippedContentDescription": "已装备"
     },
     "settings": {
-      "title": "Avatar Settings",
-      "privacy": "Privacy",
-      "privateAvatarMode": "Private Avatar Mode",
-      "privateAvatarDescription": "Hide your avatar from other users",
-      "appearance": "Appearance",
-      "enableAnimations": "Enable Animations",
-      "animationsDescription": "Animate avatar movements and expressions",
-      "availableOutfits": "Available Outfits"
+      "title": "虚拟形象设置",
+      "privacy": "隐私",
+      "privateAvatarMode": "私密虚拟形象模式",
+      "privateAvatarDescription": "向其他用户隐藏您的虚拟形象",
+      "appearance": "外观",
+      "enableAnimations": "启用动画",
+      "animationsDescription": "为虚拟形象的动作和表情添加动画",
+      "availableOutfits": "可用服装"
     },
     "selfie": {
-      "title": "Video Selfie",
-      "camera": "Camera",
-      "cameraPreview": "Camera Preview",
-      "startRecording": "Start Recording",
-      "stopRecording": "Stop Recording",
+      "title": "视频自拍",
+      "camera": "相机",
+      "cameraPreview": "相机预览",
+      "startRecording": "开始录制",
+      "stopRecording": "停止录制",
       "rec": "REC",
-      "enterPin": "Enter your PIN to create avatar",
+      "enterPin": "输入您的 PIN 以创建虚拟形象",
       "pinLabel": "PIN",
-      "retake": "Retake",
-      "creatingAvatar": "Creating your avatar...",
-      "avatarCreated": "Avatar created successfully",
-      "avatarPreviewContentDescription": "Avatar Preview",
-      "createAnother": "Create Another"
+      "retake": "重拍",
+      "creatingAvatar": "正在创建您的虚拟形象...",
+      "avatarCreated": "虚拟形象创建成功",
+      "avatarPreviewContentDescription": "虚拟形象预览",
+      "createAnother": "再创建一个"
     },
     "mesh": {
-      "title": "3D Avatar",
-      "meshViewer": "3D Mesh Viewer",
-      "meshViewerDescription": "3D mesh viewer requires WebView or GLSurfaceView integration",
-      "skinTone": "Skin Tone",
-      "hairStyle": "Hair Style",
-      "accessories": "Accessories",
-      "saveChanges": "Save Changes"
+      "title": "3D 虚拟形象",
+      "meshViewer": "3D 网格查看器",
+      "meshViewerDescription": "3D 网格查看器需要 WebView 或 GLSurfaceView 集成",
+      "skinTone": "肤色",
+      "hairStyle": "发型",
+      "accessories": "配件",
+      "saveChanges": "保存更改"
     },
     "v2v": {
-      "title": "Voice Practice",
-      "nextPhrase": "Next Phrase",
-      "stop": "Stop",
-      "record": "Record",
+      "title": "语音练习",
+      "nextPhrase": "下一个短语",
+      "stop": "停止",
+      "record": "录制",
       "mic": "MIC",
-      "viewProgress": "View Progress",
-      "analyzingPronunciation": "Analyzing pronunciation...",
-      "pronunciationFeedback": "Pronunciation Feedback",
-      "similarity": "Similarity: {{score}}%",
-      "yourProgress": "Your Progress",
-      "transforms": "Transforms: {{count}}",
-      "improvement": "Improvement: {{score}}%",
-      "continuePracticing": "Continue Practicing"
+      "viewProgress": "查看进度",
+      "analyzingPronunciation": "正在分析发音...",
+      "pronunciationFeedback": "发音反馈",
+      "similarity": "相似度: {{score}}%",
+      "yourProgress": "您的进度",
+      "transforms": "变换: {{count}}",
+      "improvement": "改进: {{score}}%",
+      "continuePracticing": "继续练习"
     },
     "characters": {
-      "title": "Characters",
-      "noCharactersFound": "No characters found for this movie",
-      "characterCount": "{{count}} characters"
+      "title": "角色",
+      "noCharactersFound": "未找到该电影的角色",
+      "characterCount": "{{count}} 个角色"
     },
     "interactions": {
-      "title": "Movie Interactions",
-      "noInteractableMovies": "No interactable movies available"
+      "title": "电影互动",
+      "noInteractableMovies": "没有可互动的电影"
     },
     "feedbackInbox": {
-      "title": "Feedback Inbox",
-      "refreshContentDescription": "Refresh",
-      "noFeedbackYet": "No feedback yet",
-      "feedbackAppearHere": "Feedback from your contacts will appear here",
-      "playVoiceMessage": "Play Voice Message"
+      "title": "反馈收件箱",
+      "refreshContentDescription": "刷新",
+      "noFeedbackYet": "暂无反馈",
+      "feedbackAppearHere": "来自您联系人的反馈将显示在此处",
+      "playVoiceMessage": "播放语音消息"
     },
     "addContact": {
-      "title": "Add Contact",
-      "nameLabel": "Name",
-      "phoneLabel": "Phone",
-      "relationship": "Relationship",
-      "language": "Language"
+      "title": "添加联系人",
+      "nameLabel": "名称",
+      "phoneLabel": "电话",
+      "relationship": "关系",
+      "language": "语言"
     },
     "avatar3d": {
-      "title": "3D Avatar",
-      "glbMeshViewer": "GLB Mesh Viewer",
-      "controls": "Controls",
-      "animate": "Animate",
-      "vertices": "Vertices",
-      "bones": "Bones",
-      "blendShapes": "Blend Shapes",
-      "hasGlb": "Has GLB",
-      "status": "Status: {{value}}"
+      "title": "3D 虚拟形象",
+      "glbMeshViewer": "GLB 网格查看器",
+      "controls": "控制",
+      "animate": "动画",
+      "vertices": "顶点",
+      "bones": "骨骼",
+      "blendShapes": "混合形状",
+      "hasGlb": "包含 GLB",
+      "status": "状态: {{value}}"
     }
   },
   "plus": {
@@ -4846,6 +4907,6 @@
     "title": "订阅",
     "choosePlan": "选择方案",
     "subscribe": "选择方案",
-    "loadingPlans": "Loading plans..."
+    "loadingPlans": "加载套餐中..."
   }
 }
