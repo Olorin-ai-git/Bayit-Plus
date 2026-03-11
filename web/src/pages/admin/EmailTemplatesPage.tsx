@@ -1,8 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
-import { useTranslation } from 'react-i18next'
-import { Mail, Eye, Send, X, Filter } from 'lucide-react'
-import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
+import { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import { Mail, Eye, Send, X, Filter } from "lucide-react";
+import { colors, spacing, borderRadius, fontSize } from "@olorin/design-tokens";
 import {
   GlassPageHeader,
   GlassButton,
@@ -12,80 +18,83 @@ import {
   GlassTextarea,
   GlassLoadingSpinner,
   GlassErrorBanner,
-} from '@bayit/shared/ui'
-import { useDirection } from '@/hooks/useDirection'
-import api from '@/services/api'
-import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
+} from "@bayit/shared/ui";
+import { useDirection } from "@/hooks/useDirection";
+import api from "@/services/api";
+import { ADMIN_PAGE_CONFIG } from "../../../../shared/utils/adminConstants";
 
 interface EmailTemplate {
-  name: string
-  display_name: string
-  description: string
-  category: string
-  required_variables: string[]
-  optional_variables: string[]
+  name: string;
+  display_name: string;
+  description: string;
+  category: string;
+  required_variables: string[];
+  optional_variables: string[];
 }
 
 export default function EmailTemplatesPage() {
-  const { t } = useTranslation()
-  const { isRTL } = useDirection()
+  const { t } = useTranslation();
+  const { isRTL } = useDirection();
 
   // Template library state
-  const [templates, setTemplates] = useState<EmailTemplate[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   // Preview modal state
-  const [previewModalVisible, setPreviewModalVisible] = useState(false)
-  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null)
-  const [previewHtml, setPreviewHtml] = useState('')
-  const [previewVariables, setPreviewVariables] = useState<Record<string, string>>({})
-  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<EmailTemplate | null>(null);
+  const [previewHtml, setPreviewHtml] = useState("");
+  const [previewVariables, setPreviewVariables] = useState<
+    Record<string, string>
+  >({});
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   // Send modal state
-  const [sendModalVisible, setSendModalVisible] = useState(false)
-  const [sendTestEmail, setSendTestEmail] = useState('')
-  const [sendingTest, setSendingTest] = useState(false)
+  const [sendModalVisible, setSendModalVisible] = useState(false);
+  const [sendTestEmail, setSendTestEmail] = useState("");
+  const [sendingTest, setSendingTest] = useState(false);
 
   // Invitation modal state
-  const [invitationModalVisible, setInvitationModalVisible] = useState(false)
+  const [invitationModalVisible, setInvitationModalVisible] = useState(false);
   const [invitationData, setInvitationData] = useState({
-    email: '',
-    inviter_name: '',
-    personal_message: '',
-  })
-  const [sendingInvitation, setSendingInvitation] = useState(false)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    email: "",
+    inviter_name: "",
+    personal_message: "",
+  });
+  const [sendingInvitation, setSendingInvitation] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const categories = ['all', 'marketing', 'onboarding', 'family']
+  const categories = ["all", "marketing", "onboarding", "family"];
 
   // Fetch templates on mount
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        setLoading(true)
-        const response = await api.get('/admin/marketing/email-templates')
-        setTemplates(response.templates)
+        setLoading(true);
+        const response = await api.get("/admin/marketing/email-templates");
+        setTemplates(response.templates);
       } catch (err: any) {
-        setError(err.message || 'Failed to load email templates')
+        setError(err.message || "Failed to load email templates");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchTemplates()
-  }, [])
+    };
+    fetchTemplates();
+  }, []);
 
   // Filter templates by category
   const filteredTemplates =
-    selectedCategory === 'all'
+    selectedCategory === "all"
       ? templates
-      : templates.filter((t) => t.category === selectedCategory)
+      : templates.filter((t) => t.category === selectedCategory);
 
   // Build default variables from environment
   const buildDefaultVariables = useCallback((template: EmailTemplate) => {
-    const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin
-    const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL
+    const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin;
+    const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL;
 
     const defaults: Record<string, string> = {
       current_year: new Date().getFullYear().toString(),
@@ -93,137 +102,180 @@ export default function EmailTemplatesPage() {
       signup_url: `${baseUrl}/signup`,
       verification_url: `${baseUrl}/beta/verify?token=EXAMPLE`,
       accept_url: `${baseUrl}/accept-invitation?code=EXAMPLE`,
-      greeting: 'Welcome to Bayit+!',
-      personal_section: '',
-      inviter_name: 'Admin',
-      household_name: 'Example Household',
-      role_display: 'Child',
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-    }
-    return defaults
-  }, [])
+      greeting: "Welcome to Bayit+!",
+      personal_section: "",
+      inviter_name: "Admin",
+      household_name: "Example Household",
+      role_display: "Child",
+      expires_at: new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000,
+      ).toLocaleDateString(),
+    };
+    return defaults;
+  }, []);
 
   // Email validation helper
   const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   // Handle preview template
   const handlePreview = useCallback(
     async (template: EmailTemplate) => {
-      setSelectedTemplate(template)
-      setPreviewVariables(buildDefaultVariables(template))
-      setPreviewModalVisible(true)
-      setPreviewLoading(true)
+      setSelectedTemplate(template);
+      setPreviewVariables(buildDefaultVariables(template));
+      setPreviewModalVisible(true);
+      setPreviewLoading(true);
 
       try {
-        const variables = buildDefaultVariables(template)
-        const response = await api.post(`/admin/marketing/email-templates/${template.name}/preview`, {
-          variables,
-        })
-        setPreviewHtml(response.html)
+        const variables = buildDefaultVariables(template);
+        const response = await api.post(
+          `/admin/marketing/email-templates/${template.name}/preview`,
+          {
+            variables,
+          },
+        );
+        setPreviewHtml(response.html);
       } catch (err: any) {
-        setError(err.message || 'Failed to preview template')
+        setError(err.message || "Failed to preview template");
       } finally {
-        setPreviewLoading(false)
+        setPreviewLoading(false);
       }
     },
-    [buildDefaultVariables]
-  )
+    [buildDefaultVariables],
+  );
 
   // Update preview with new variables
   const handleUpdatePreview = useCallback(async () => {
-    if (!selectedTemplate) return
+    if (!selectedTemplate) return;
 
-    setPreviewLoading(true)
+    setPreviewLoading(true);
     try {
       const response = await api.post(
         `/admin/marketing/email-templates/${selectedTemplate.name}/preview`,
-        { variables: previewVariables }
-      )
-      setPreviewHtml(response.html)
+        { variables: previewVariables },
+      );
+      setPreviewHtml(response.html);
     } catch (err: any) {
-      setError(err.message || 'Failed to update preview')
+      setError(err.message || "Failed to update preview");
     } finally {
-      setPreviewLoading(false)
+      setPreviewLoading(false);
     }
-  }, [selectedTemplate, previewVariables])
+  }, [selectedTemplate, previewVariables]);
 
   // Handle send test email
   const handleSendTest = useCallback(async () => {
-    if (!selectedTemplate || !sendTestEmail) return
+    if (!selectedTemplate || !sendTestEmail) return;
 
     // Validate email format
     if (!validateEmail(sendTestEmail)) {
-      setError(t('admin.emailTemplates.errors.invalidEmail', 'Please enter a valid email address'))
-      return
+      setError(
+        t(
+          "admin.emailTemplates.errors.invalidEmail",
+          "Please enter a valid email address",
+        ),
+      );
+      return;
     }
 
-    setSendingTest(true)
+    setSendingTest(true);
     try {
-      await api.post(`/admin/marketing/email-templates/${selectedTemplate.name}/send-test`, {
-        test_email: sendTestEmail,
-        variables: previewVariables,
-      })
-      setSuccessMessage(t('admin.emailTemplates.success.testSent', 'Test email sent successfully'))
-      setSendModalVisible(false)
-      setSendTestEmail('')
+      await api.post(
+        `/admin/marketing/email-templates/${selectedTemplate.name}/send-test`,
+        {
+          test_email: sendTestEmail,
+          variables: previewVariables,
+        },
+      );
+      setSuccessMessage(
+        t(
+          "admin.emailTemplates.success.testSent",
+          "Test email sent successfully",
+        ),
+      );
+      setSendModalVisible(false);
+      setSendTestEmail("");
     } catch (err: any) {
-      setError(err.message || 'Failed to send test email')
+      setError(err.message || "Failed to send test email");
     } finally {
-      setSendingTest(false)
+      setSendingTest(false);
     }
-  }, [selectedTemplate, sendTestEmail, previewVariables, t])
+  }, [selectedTemplate, sendTestEmail, previewVariables, t]);
 
   // Handle send invitation
   const handleSendInvitation = useCallback(async () => {
-    if (!invitationData.email) return
+    if (!invitationData.email) return;
 
     // Validate email format
     if (!validateEmail(invitationData.email)) {
-      setError(t('admin.emailTemplates.errors.invalidEmail', 'Please enter a valid email address'))
-      return
+      setError(
+        t(
+          "admin.emailTemplates.errors.invalidEmail",
+          "Please enter a valid email address",
+        ),
+      );
+      return;
     }
 
-    setSendingInvitation(true)
+    setSendingInvitation(true);
     try {
-      await api.post('/admin/marketing/invitations/send', invitationData)
+      await api.post("/admin/marketing/invitations/send", invitationData);
       setSuccessMessage(
-        t('admin.emailTemplates.success.invitationSent', 'Platform invitation sent successfully')
-      )
-      setInvitationModalVisible(false)
-      setInvitationData({ email: '', inviter_name: '', personal_message: '' })
+        t(
+          "admin.emailTemplates.success.invitationSent",
+          "Platform invitation sent successfully",
+        ),
+      );
+      setInvitationModalVisible(false);
+      setInvitationData({ email: "", inviter_name: "", personal_message: "" });
     } catch (err: any) {
-      setError(err.message || 'Failed to send invitation')
+      setError(err.message || "Failed to send invitation");
     } finally {
-      setSendingInvitation(false)
+      setSendingInvitation(false);
     }
-  }, [invitationData, t])
+  }, [invitationData, t]);
 
-  const pageConfig = ADMIN_PAGE_CONFIG.marketing
-  const IconComponent = pageConfig?.icon || Mail
+  const pageConfig = ADMIN_PAGE_CONFIG.marketing;
+  const IconComponent = pageConfig?.icon || Mail;
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <GlassLoadingSpinner size="large" />
       </View>
-    )
+    );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <GlassPageHeader
-        title={t('admin.emailTemplates.title', 'Email Templates')}
-        icon={<IconComponent size={24} color={pageConfig?.iconColor || colors.primary} strokeWidth={2} />}
+        title={t("admin.emailTemplates.title", "Email Templates")}
+        icon={
+          <IconComponent
+            size={24}
+            color={pageConfig?.iconColor || colors.primary}
+            strokeWidth={2}
+          />
+        }
         iconColor={pageConfig?.iconColor || colors.primary}
-        iconBackgroundColor={pageConfig?.iconBackgroundColor || 'rgba(96, 165, 250, 0.1)'}
+        iconBackgroundColor={
+          pageConfig?.iconBackgroundColor || "rgba(96, 165, 250, 0.1)"
+        }
         badge={templates.length}
         isRTL={isRTL}
       />
 
-      {error && <GlassErrorBanner message={error} onDismiss={() => setError(null)} marginBottom={spacing.lg} />}
+      {error && (
+        <GlassErrorBanner
+          message={error}
+          onDismiss={() => setError(null)}
+          marginBottom={spacing.lg}
+        />
+      )}
       {successMessage && (
         <GlassCard style={[styles.successBanner, { marginBottom: spacing.lg }]}>
           <Text style={styles.successText}>{successMessage}</Text>
@@ -237,10 +289,19 @@ export default function EmailTemplatesPage() {
         {categories.map((category) => (
           <GlassButton
             key={category}
-            variant={selectedCategory === category ? 'primary' : 'secondary'}
+            variant={selectedCategory === category ? "primary" : "secondary"}
             size="sm"
             onPress={() => setSelectedCategory(category)}
-            icon={<Filter size={16} color={selectedCategory === category ? colors.text : colors.textSecondary} />}
+            icon={
+              <Filter
+                size={16}
+                color={
+                  selectedCategory === category
+                    ? colors.text
+                    : colors.textSecondary
+                }
+              />
+            }
           >
             {t(`admin.emailTemplates.categories.${category}`, category)}
           </GlassButton>
@@ -254,9 +315,13 @@ export default function EmailTemplatesPage() {
               <Mail size={20} color={colors.primary.DEFAULT} />
               <Text style={styles.templateName}>{template.display_name}</Text>
             </View>
-            <Text style={styles.templateDescription}>{template.description}</Text>
+            <Text style={styles.templateDescription}>
+              {template.description}
+            </Text>
             <View style={styles.templateMeta}>
-              <Text style={styles.metaLabel}>{t('admin.emailTemplates.category', 'Category')}: </Text>
+              <Text style={styles.metaLabel}>
+                {t("admin.emailTemplates.category", "Category")}:{" "}
+              </Text>
               <Text style={styles.metaValue}>{template.category}</Text>
             </View>
             <View style={styles.cardActions}>
@@ -266,18 +331,18 @@ export default function EmailTemplatesPage() {
                 onPress={() => handlePreview(template)}
                 icon={<Eye size={16} color={colors.textSecondary} />}
               >
-                {t('admin.emailTemplates.preview', 'Preview')}
+                {t("admin.emailTemplates.preview", "Preview")}
               </GlassButton>
               <GlassButton
                 variant="primary"
                 size="sm"
                 onPress={() => {
-                  setSelectedTemplate(template)
-                  setInvitationModalVisible(true)
+                  setSelectedTemplate(template);
+                  setInvitationModalVisible(true);
                 }}
                 icon={<Send size={16} color={colors.text} />}
               >
-                {t('admin.emailTemplates.send', 'Send')}
+                {t("admin.emailTemplates.send", "Send")}
               </GlassButton>
             </View>
           </GlassCard>
@@ -288,24 +353,36 @@ export default function EmailTemplatesPage() {
         visible={previewModalVisible}
         onClose={() => setPreviewModalVisible(false)}
         size="large"
-        accessibilityLabel={t('admin.emailTemplates.previewTitle', 'Template Preview')}
+        accessibilityLabel={t(
+          "admin.emailTemplates.previewTitle",
+          "Template Preview",
+        )}
         accessibilityRole="dialog"
       >
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>
-            {t('admin.emailTemplates.previewTitle', 'Template Preview')}: {selectedTemplate?.display_name}
+            {t("admin.emailTemplates.previewTitle", "Template Preview")}:{" "}
+            {selectedTemplate?.display_name}
           </Text>
 
-          <Text style={styles.sectionLabel}>Template Variables</Text>
+          <Text style={styles.sectionLabel}>
+            {t("admin.emailTemplates.templateVariables")}
+          </Text>
           <View style={styles.variablesSection}>
-            <ScrollView style={styles.variablesForm} contentContainerStyle={styles.variablesFormContent}>
+            <ScrollView
+              style={styles.variablesForm}
+              contentContainerStyle={styles.variablesFormContent}
+            >
               {selectedTemplate?.required_variables.map((variable) => (
                 <View key={variable} style={styles.variableField}>
                   <Text style={styles.variableLabel}>{variable}:</Text>
                   <GlassInput
-                    value={previewVariables[variable] || ''}
+                    value={previewVariables[variable] || ""}
                     onChangeText={(value: string) =>
-                      setPreviewVariables((prev) => ({ ...prev, [variable]: value }))
+                      setPreviewVariables((prev) => ({
+                        ...prev,
+                        [variable]: value,
+                      }))
                     }
                     placeholder={`Enter ${variable}`}
                     style={styles.variableInput}
@@ -315,9 +392,11 @@ export default function EmailTemplatesPage() {
             </ScrollView>
             <View style={styles.updateButtonContainer}>
               <GlassButton
-                title={previewLoading
-                  ? t('admin.emailTemplates.updating', 'Updating...')
-                  : t('admin.emailTemplates.updatePreview', 'Update Preview')}
+                title={
+                  previewLoading
+                    ? t("admin.emailTemplates.updating", "Updating...")
+                    : t("admin.emailTemplates.updatePreview", "Update Preview")
+                }
                 variant="info"
                 size="sm"
                 onPress={handleUpdatePreview}
@@ -329,25 +408,29 @@ export default function EmailTemplatesPage() {
 
           <View style={styles.divider} />
 
-          <Text style={styles.sectionLabel}>Email Preview</Text>
+          <Text style={styles.sectionLabel}>
+            {t("admin.emailTemplates.emailPreview")}
+          </Text>
           <View style={styles.previewContainer}>
             {previewLoading ? (
               <View style={styles.previewLoadingContainer}>
                 <GlassLoadingSpinner size="medium" />
-                <Text style={styles.previewLoadingText}>Rendering preview...</Text>
+                <Text style={styles.previewLoadingText}>
+                  {t("admin.emailTemplates.renderingPreview")}
+                </Text>
               </View>
             ) : (
               <View style={styles.previewWrapper}>
                 <iframe
                   srcDoc={previewHtml}
                   sandbox=""
-                  title="Email Template Preview"
+                  title={t("admin.emailTemplates.previewTitle")}
                   style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                    backgroundColor: '#f5f5f5',
-                    borderRadius: '8px'
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: "8px",
                   }}
                 />
               </View>
@@ -356,13 +439,13 @@ export default function EmailTemplatesPage() {
 
           <View style={styles.modalActions}>
             <GlassButton
-              title={t('common.close', 'Close')}
+              title={t("common.close", "Close")}
               variant="ghost"
               onPress={() => setPreviewModalVisible(false)}
               textStyle={styles.buttonText}
             />
             <GlassButton
-              title={t('admin.emailTemplates.sendTest', 'Send Test')}
+              title={t("admin.emailTemplates.sendTest", "Send Test")}
               variant="success"
               onPress={() => setSendModalVisible(true)}
               textStyle={styles.buttonText}
@@ -375,27 +458,39 @@ export default function EmailTemplatesPage() {
         visible={sendModalVisible}
         onClose={() => setSendModalVisible(false)}
         size="small"
-        accessibilityLabel={t('admin.emailTemplates.sendTestTitle', 'Send Test Email')}
+        accessibilityLabel={t(
+          "admin.emailTemplates.sendTestTitle",
+          "Send Test Email",
+        )}
         accessibilityRole="dialog"
       >
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{t('admin.emailTemplates.sendTestTitle', 'Send Test Email')}</Text>
+          <Text style={styles.modalTitle}>
+            {t("admin.emailTemplates.sendTestTitle", "Send Test Email")}
+          </Text>
           <GlassInput
             value={sendTestEmail}
             onChangeText={setSendTestEmail}
-            placeholder={t('admin.emailTemplates.testEmailAddress', 'Test email address')}
+            placeholder={t(
+              "admin.emailTemplates.testEmailAddress",
+              "Test email address",
+            )}
             keyboardType="email-address"
             autoCapitalize="none"
           />
           <View style={styles.modalActions}>
             <GlassButton
-              title={t('common.cancel', 'Cancel')}
+              title={t("common.cancel", "Cancel")}
               variant="ghost"
               onPress={() => setSendModalVisible(false)}
               textStyle={styles.buttonText}
             />
             <GlassButton
-              title={sendingTest ? t('common.sending', 'Sending...') : t('admin.emailTemplates.send', 'Send')}
+              title={
+                sendingTest
+                  ? t("common.sending", "Sending...")
+                  : t("admin.emailTemplates.send", "Send")
+              }
               variant="success"
               onPress={handleSendTest}
               disabled={sendingTest || !sendTestEmail}
@@ -409,41 +504,71 @@ export default function EmailTemplatesPage() {
         visible={invitationModalVisible}
         onClose={() => setInvitationModalVisible(false)}
         size="medium"
-        accessibilityLabel={t('admin.emailTemplates.sendInvitation', 'Send Platform Invitation')}
+        accessibilityLabel={t(
+          "admin.emailTemplates.sendInvitation",
+          "Send Platform Invitation",
+        )}
         accessibilityRole="dialog"
       >
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{t('admin.emailTemplates.sendInvitation', 'Send Platform Invitation')}</Text>
+          <Text style={styles.modalTitle}>
+            {t(
+              "admin.emailTemplates.sendInvitation",
+              "Send Platform Invitation",
+            )}
+          </Text>
           <GlassInput
             value={invitationData.email}
-            onChangeText={(value: string) => setInvitationData((prev) => ({ ...prev, email: value }))}
-            placeholder={t('admin.emailTemplates.recipientEmail', 'Recipient email address')}
+            onChangeText={(value: string) =>
+              setInvitationData((prev) => ({ ...prev, email: value }))
+            }
+            placeholder={t(
+              "admin.emailTemplates.recipientEmail",
+              "Recipient email address",
+            )}
             keyboardType="email-address"
             autoCapitalize="none"
             style={styles.formInput}
           />
           <GlassInput
             value={invitationData.inviter_name}
-            onChangeText={(value: string) => setInvitationData((prev) => ({ ...prev, inviter_name: value }))}
-            placeholder={t('admin.emailTemplates.inviterName', 'Your name (optional)')}
+            onChangeText={(value: string) =>
+              setInvitationData((prev) => ({ ...prev, inviter_name: value }))
+            }
+            placeholder={t(
+              "admin.emailTemplates.inviterName",
+              "Your name (optional)",
+            )}
             style={styles.formInput}
           />
           <GlassTextarea
             value={invitationData.personal_message}
-            onChangeText={(value: string) => setInvitationData((prev) => ({ ...prev, personal_message: value }))}
-            placeholder={t('admin.emailTemplates.personalMessage', 'Personal message (optional)')}
+            onChangeText={(value: string) =>
+              setInvitationData((prev) => ({
+                ...prev,
+                personal_message: value,
+              }))
+            }
+            placeholder={t(
+              "admin.emailTemplates.personalMessage",
+              "Personal message (optional)",
+            )}
             numberOfLines={4}
             style={styles.formTextArea}
           />
           <View style={styles.modalActions}>
             <GlassButton
-              title={t('common.cancel', 'Cancel')}
+              title={t("common.cancel", "Cancel")}
               variant="ghost"
               onPress={() => setInvitationModalVisible(false)}
               textStyle={styles.buttonText}
             />
             <GlassButton
-              title={sendingInvitation ? t('common.sending', 'Sending...') : t('admin.emailTemplates.send', 'Send')}
+              title={
+                sendingInvitation
+                  ? t("common.sending", "Sending...")
+                  : t("admin.emailTemplates.send", "Send")
+              }
               variant="success"
               onPress={handleSendInvitation}
               disabled={sendingInvitation || !invitationData.email}
@@ -453,7 +578,7 @@ export default function EmailTemplatesPage() {
         </View>
       </GlassModal>
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -465,69 +590,69 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   categoryFilters: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginBottom: spacing.lg,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   successBanner: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: spacing.md,
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    backgroundColor: "rgba(34, 197, 94, 0.1)",
   },
   successText: {
     color: colors.success.DEFAULT,
     fontSize: fontSize.md,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   templateGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.lg,
   },
   templateCard: {
     width: 300,
     padding: spacing.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
   templateName: {
     fontSize: fontSize.lg,
-    fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: "bold",
+    color: "rgba(255, 255, 255, 0.9)",
   },
   templateDescription: {
     fontSize: fontSize.sm,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: "rgba(255, 255, 255, 0.6)",
     marginBottom: spacing.md,
     lineHeight: 20,
   },
   templateMeta: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: spacing.md,
   },
   metaLabel: {
     fontSize: fontSize.sm,
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: "rgba(255, 255, 255, 0.5)",
   },
   metaValue: {
     fontSize: fontSize.sm,
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontWeight: '600',
+    color: "rgba(255, 255, 255, 0.7)",
+    fontWeight: "600",
   },
   cardActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
   },
   modalContent: {
@@ -535,23 +660,23 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: fontSize.xl,
-    fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: "bold",
+    color: "rgba(255, 255, 255, 0.9)",
     marginBottom: spacing.lg,
   },
   sectionLabel: {
     fontSize: fontSize.md,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: "600",
+    color: "rgba(255, 255, 255, 0.8)",
     marginBottom: spacing.md,
     marginTop: spacing.sm,
   },
   variablesSection: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
     borderRadius: borderRadius.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: "rgba(255, 255, 255, 0.05)",
   },
   variablesForm: {
     maxHeight: 180,
@@ -564,60 +689,60 @@ const styles = StyleSheet.create({
   },
   variableLabel: {
     fontSize: fontSize.sm,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: "rgba(255, 255, 255, 0.7)",
     marginBottom: spacing.xs,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
   },
   variableInput: {
-    width: '100%',
+    width: "100%",
   },
   updateButtonContainer: {
     marginTop: spacing.md,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     marginVertical: spacing.lg,
   },
   previewContainer: {
-    width: '100%',
+    width: "100%",
     height: 400,
-    backgroundColor: 'rgba(30, 30, 35, 0.6)',
+    backgroundColor: "rgba(30, 30, 35, 0.6)",
     borderRadius: borderRadius.md,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: spacing.lg,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: "rgba(255, 255, 255, 0.15)",
     padding: spacing.md,
   },
   previewWrapper: {
     flex: 1,
     borderRadius: borderRadius.sm,
-    overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+    overflow: "hidden",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
   },
   previewLoadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.md,
   },
   previewLoadingText: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: "rgba(255, 255, 255, 0.7)",
     fontSize: fontSize.sm,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   modalActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     marginTop: spacing.md,
   },
   buttonText: {
-    color: '#ffffff',
-    fontWeight: '700',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    color: "#ffffff",
+    fontWeight: "700",
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
@@ -627,4 +752,4 @@ const styles = StyleSheet.create({
   formTextArea: {
     marginBottom: spacing.md,
   },
-})
+});

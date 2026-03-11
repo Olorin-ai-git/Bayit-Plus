@@ -1843,7 +1843,10 @@
       "errors": {
         "invalidEmail": "נא להזין כתובת אימייל תקינה",
         "sendFailed": "שליחת האימייל נכשלה"
-      }
+      },
+      "templateVariables": "משתני תבנית",
+      "emailPreview": "תצוגה מקדימה של אימייל",
+      "renderingPreview": "מעבד תצוגה מקדימה..."
     },
     "push": {
       "titlePlaceholder": "כותרת הודעה",
@@ -3029,6 +3032,42 @@
       "contextPlaceholder": "הקשר רקע עבור ה-AI",
       "noAvatarTitle": "נדרש אווטר",
       "noAvatarMessage": "עליך ליצור את האווטר שלך תחילה לפני שתוכל להשתמש באולפן הסרטים האווטרי. אנא בקר בעמוד יצירת האווטר כדי להגדיר את האווטר התלת-ממדי שלך."
+    },
+    "wizard": {
+      "readyToImport": "מוכן לייבוא?",
+      "importSummary": "אתה עומד לייבא {{count}} פריט(ים) מ-{{source}}.",
+      "category": "קטגוריה",
+      "noteAddedToLibrary": "הפריטים יתווספו לספריית התוכן שלך",
+      "noteEditAfterImport": "תוכל לערוך אותם לאחר הייבוא",
+      "noteCannotBeUndone": "פעולה זו לא ניתנת לביטול",
+      "importing": "מייבא...",
+      "importNow": "ייבא עכשיו"
+    },
+    "moments": {
+      "title": "עורך רגעים אינטראקטיביים",
+      "videoPreview": "תצוגה מקדימה של וידאו",
+      "interactiveMoments": "רגעים אינטראקטיביים ({{count}})",
+      "seek": "דלג",
+      "addNewMoment": "הוסף רגע חדש",
+      "timestamp": "חותמת זמן",
+      "useCurrentTime": "השתמש בזמן הנוכחי",
+      "current": "נוכחי",
+      "durationSeconds": "משך (שניות)",
+      "characterName": "שם דמות",
+      "characterNamePlaceholder": "לדוגמה, משה רבנו",
+      "sceneContext": "הקשר סצנה",
+      "sceneContextPlaceholder": "תיאור קצר של מה שקורה בסצנה",
+      "interactionPrompt": "הנחיית אינטראקציה",
+      "interactionPromptPlaceholder": "לדוגמה, שאל את משה על עשרת הדיברות",
+      "characterFrame": "מסגרת דמות",
+      "extractFrame": "חלץ מסגרת בחותמת הזמן",
+      "addMoment": "הוסף רגע",
+      "saveAllMoments": "שמור את כל הרגעים ({{count}})",
+      "setTimestampFirst": "אנא הגדר חותמת זמן קודם",
+      "extractFrameFailed": "חילוץ המסגרת נכשל",
+      "fillRequiredFields": "אנא מלא את כל השדות הנדרשים",
+      "savedSuccessfully": "הרגעים האינטראקטיביים נשמרו בהצלחה",
+      "saveFailed": "שמירת הרגעים נכשלה"
     }
   },
   "audiobooks": {
@@ -3741,7 +3780,10 @@
     "tryAgain": "אנא נסה שוב",
     "unknown": "לא ידוע",
     "submit": "שלח",
-    "continue": "המשך"
+    "continue": "המשך",
+    "closeModal": "סגור חלון",
+    "dismissHint": "סגור רמז",
+    "sending": "שולח..."
   },
   "badges": {
     "aiEnhanced": "משופר בינה מלאכותית",
@@ -3831,7 +3873,11 @@
         "nameExists": "ווידג'ט עם שם זה כבר קיים",
         "titleRequired": "כותרת נדרשת"
       },
-      "validating": "מאמת..."
+      "validating": "מאמת...",
+      "x": "X",
+      "y": "Y",
+      "width": "רוחב",
+      "height": "גובה"
     },
     "intro": {
       "title": "ברוכים הבאים לוידג'טים",
@@ -3877,7 +3923,12 @@
     "enterWidgetTitle": "Enter widget title",
     "loadingWidgets": "Loading Widgets...",
     "title": "Widgets",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "שחזר {{title}}",
+    "clickToRestore": "לחץ לשחזור",
+    "minimizedWidgets": "ווידג'טים ממוזערים",
+    "closeDock": "סגור רציף",
+    "customContent": "תוכן מותאם אישית"
   },
   "liveCategories": {
     "educational": "חינוכי"
@@ -4046,7 +4097,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "הוסף/הסר מהמועדפים",
+    "togglePlaylist": "הוסף/הסר מהרשימה"
   },
   "cultureCities": {
     "connectionTo": "חיבור ל{{city}}",
@@ -4423,7 +4476,13 @@
     "live": "שידור חי",
     "scheduleUnavailable": "לוח השידורים לא זמין כרגע. אנא בדוק שוב מאוחר יותר או פנה לתמיכה אם הבעיה נמשכת.",
     "noProgramsAvailable": "אין תוכניות זמינות עבור טווח הזמן שנבחר. נסה להתאים את המסננים או בדוק שוב מאוחר יותר.",
-    "loading": "טוען מדריך טלוויזיה..."
+    "loading": "טוען מדריך טלוויזיה...",
+    "recording": {
+      "scheduled": "מתוזמן",
+      "active": "מקליט",
+      "completed": "הוקלט",
+      "series": "הקלטת סדרה"
+    }
   },
   "errors": {
     "networkError": "שגיאת רשת",
@@ -6858,7 +6917,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "לא נוצר",
     "cuesCount": "({{count}} כתוביות)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "צור כתוביות {{mode}} עבור תוכן זה",
+    "generateMode": "צור {{mode}}"
   },
   "support": {
     "title": "מרכז תמיכה",
@@ -9980,7 +10041,8 @@
       "subscribedLabel": "מנוי Plus",
       "getUnlimited": "קבלו ללא הגבלה עם Plus",
       "upgradeNow": "שדרגו עכשיו",
-      "creditLow": "הקרדיטים עומדים להיגמר"
+      "creditLow": "הקרדיטים עומדים להיגמר",
+      "subscribeAtWeb": "הירשם ל-Plus ב-bayit.tv"
     },
     "toast": {
       "creditUsed": "קרדיט נוצל",

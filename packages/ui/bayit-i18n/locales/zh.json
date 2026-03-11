@@ -1635,7 +1635,10 @@
       "errors": {
         "invalidEmail": "请输入有效的邮箱地址",
         "sendFailed": "邮件发送失败"
-      }
+      },
+      "templateVariables": "模板变量",
+      "emailPreview": "邮件预览",
+      "renderingPreview": "正在渲染预览..."
     },
     "push": {
       "titlePlaceholder": "通知标题",
@@ -2954,6 +2957,42 @@
       "age": "年龄",
       "approve": "批准",
       "reject": "拒绝"
+    },
+    "wizard": {
+      "readyToImport": "准备导入？",
+      "importSummary": "您即将从{{source}}导入{{count}}个项目。",
+      "category": "分类",
+      "noteAddedToLibrary": "项目将添加到您的内容库",
+      "noteEditAfterImport": "导入后可以编辑",
+      "noteCannotBeUndone": "此操作无法撤销",
+      "importing": "导入中...",
+      "importNow": "立即导入"
+    },
+    "moments": {
+      "title": "互动时刻编辑器",
+      "videoPreview": "视频预览",
+      "interactiveMoments": "互动时刻 ({{count}})",
+      "seek": "跳转",
+      "addNewMoment": "添加新时刻",
+      "timestamp": "时间戳",
+      "useCurrentTime": "使用当前时间",
+      "current": "当前",
+      "durationSeconds": "时长（秒）",
+      "characterName": "角色名称",
+      "characterNamePlaceholder": "例如，摩西拉比努",
+      "sceneContext": "场景背景",
+      "sceneContextPlaceholder": "场景中正在发生什么的简要描述",
+      "interactionPrompt": "互动提示",
+      "interactionPromptPlaceholder": "例如，向摩西询问十诫",
+      "characterFrame": "角色帧",
+      "extractFrame": "在时间戳处提取帧",
+      "addMoment": "添加时刻",
+      "saveAllMoments": "保存所有时刻 ({{count}})",
+      "setTimestampFirst": "请先设置时间戳",
+      "extractFrameFailed": "提取帧失败",
+      "fillRequiredFields": "请填写所有必填字段",
+      "savedSuccessfully": "互动时刻保存成功",
+      "saveFailed": "保存时刻失败"
     }
   },
   "breadcrumbs": {
@@ -3295,7 +3334,10 @@
     "tryAgain": "请重试",
     "unknown": "Unknown",
     "submit": "Submit",
-    "continue": "Continue"
+    "continue": "Continue",
+    "closeModal": "关闭窗口",
+    "dismissHint": "关闭提示",
+    "sending": "发送中..."
   },
   "components": {
     "select": {
@@ -3348,7 +3390,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "切换收藏",
+    "togglePlaylist": "切换播放列表"
   },
   "cultureCities": {
     "connectionTo": "{{city}}连接",
@@ -3575,7 +3619,13 @@
     "live": "直播",
     "scheduleUnavailable": "电视节目时间表当前不可用。请稍后再试或联系客服。",
     "noProgramsAvailable": "所选时间范围内没有可用节目。请尝试调整筛选器或稍后再试。",
-    "loading": "加载节目指南..."
+    "loading": "加载节目指南...",
+    "recording": {
+      "scheduled": "已预约",
+      "active": "录制中",
+      "completed": "已录制",
+      "series": "系列录制"
+    }
   },
   "errors": {
     "networkError": "网络错误",
@@ -5922,7 +5972,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "Not generated",
     "cuesCount": "({{count}} cues)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "为此内容生成{{mode}}字幕",
+    "generateMode": "生成{{mode}}"
   },
   "support": {
     "title": "支持中心",
@@ -6503,7 +6555,11 @@
         "nameExists": "已存在同名小部件",
         "titleRequired": "标题为必填项"
       },
-      "validating": "验证中..."
+      "validating": "验证中...",
+      "x": "X",
+      "y": "Y",
+      "width": "宽度",
+      "height": "高度"
     },
     "intro": {
       "title": "欢迎使用小组件",
@@ -6549,7 +6605,12 @@
     "title": "Widgets",
     "urlRequired": "Please enter a URL",
     "urlValid": "URL is valid",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "恢复{{title}}",
+    "clickToRestore": "点击恢复",
+    "minimizedWidgets": "最小化的小部件",
+    "closeDock": "关闭工具栏",
+    "customContent": "自定义内容"
   },
   "beta": {
     "credits": {
@@ -9875,7 +9936,8 @@
       "subscribedLabel": "Plus会员",
       "getUnlimited": "升级Plus获取无限",
       "upgradeNow": "立即升级",
-      "creditLow": "积分即将用完"
+      "creditLow": "积分即将用完",
+      "subscribeAtWeb": "在bayit.tv订阅"
     },
     "toast": {
       "creditUsed": "已使用积分",

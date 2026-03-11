@@ -2963,7 +2963,46 @@
       "errors": {
         "invalidEmail": "Por favor ingrese un correo válido",
         "sendFailed": "Error al enviar correo"
-      }
+      },
+      "templateVariables": "Variables de plantilla",
+      "emailPreview": "Vista previa del email",
+      "renderingPreview": "Renderizando vista previa..."
+    },
+    "wizard": {
+      "readyToImport": "Listo para importar?",
+      "importSummary": "Esta a punto de importar {{count}} elemento(s) de {{source}}.",
+      "category": "Categoria",
+      "noteAddedToLibrary": "Los elementos se agregaran a su biblioteca de contenido",
+      "noteEditAfterImport": "Puede editarlos despues de importar",
+      "noteCannotBeUndone": "Esta accion no se puede deshacer",
+      "importing": "Importando...",
+      "importNow": "Importar ahora"
+    },
+    "moments": {
+      "title": "Editor de momentos interactivos",
+      "videoPreview": "Vista previa del video",
+      "interactiveMoments": "Momentos interactivos ({{count}})",
+      "seek": "Buscar",
+      "addNewMoment": "Agregar nuevo momento",
+      "timestamp": "Marca de tiempo",
+      "useCurrentTime": "Usar tiempo actual",
+      "current": "Actual",
+      "durationSeconds": "Duracion (segundos)",
+      "characterName": "Nombre del personaje",
+      "characterNamePlaceholder": "ej., Moshe Rabbenu",
+      "sceneContext": "Contexto de la escena",
+      "sceneContextPlaceholder": "Breve descripcion de lo que esta sucediendo en la escena",
+      "interactionPrompt": "Indicacion de interaccion",
+      "interactionPromptPlaceholder": "ej., Pregunta a Moshe sobre los Diez Mandamientos",
+      "characterFrame": "Fotograma del personaje",
+      "extractFrame": "Extraer fotograma en marca de tiempo",
+      "addMoment": "Agregar momento",
+      "saveAllMoments": "Guardar todos los momentos ({{count}})",
+      "setTimestampFirst": "Por favor, establezca una marca de tiempo primero",
+      "extractFrameFailed": "Error al extraer el fotograma",
+      "fillRequiredFields": "Por favor, complete todos los campos requeridos",
+      "savedSuccessfully": "Momentos interactivos guardados exitosamente",
+      "saveFailed": "Error al guardar los momentos"
     }
   },
   "breadcrumbs": {
@@ -3551,7 +3590,10 @@
     "tryAgain": "Intenta de nuevo",
     "unknown": "Desconocido",
     "submit": "Enviar",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "closeModal": "Cerrar ventana",
+    "dismissHint": "Descartar sugerencia",
+    "sending": "Enviando..."
   },
   "badges": {
     "aiEnhanced": "Mejorado con IA",
@@ -3641,7 +3683,11 @@
         "nameExists": "Ya existe un widget con este nombre",
         "titleRequired": "El título es obligatorio"
       },
-      "validating": "Validando..."
+      "validating": "Validando...",
+      "x": "X",
+      "y": "Y",
+      "width": "Ancho",
+      "height": "Alto"
     },
     "intro": {
       "title": "Bienvenido a Widgets",
@@ -3689,7 +3735,12 @@
     "enterWidgetTitle": "Enter widget title",
     "loadingWidgets": "Loading Widgets...",
     "title": "Widgets",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "Restaurar {{title}}",
+    "clickToRestore": "Clic para restaurar",
+    "minimizedWidgets": "Widgets minimizados",
+    "closeDock": "Cerrar barra",
+    "customContent": "Contenido personalizado"
   },
   "liveCategories": {
     "educational": "Educativo"
@@ -3860,7 +3911,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "Alternar favorito",
+    "togglePlaylist": "Alternar lista"
   },
   "cultureCities": {
     "connectionTo": "Conexion con {{city}}",
@@ -4237,7 +4290,13 @@
     "live": "EN VIVO",
     "scheduleUnavailable": "La programación de TV no está disponible actualmente. Por favor, vuelve a intentarlo más tarde o contacta a soporte si persiste.",
     "noProgramsAvailable": "No hay programas disponibles para el rango de tiempo seleccionado. Intenta ajustar tus filtros o vuelve más tarde.",
-    "loading": "Cargando guía de TV..."
+    "loading": "Cargando guía de TV...",
+    "recording": {
+      "scheduled": "Programado",
+      "active": "Grabando",
+      "completed": "Grabado",
+      "series": "Grabacion de serie"
+    }
   },
   "errors": {
     "networkError": "Error de Red",
@@ -6689,7 +6748,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "No generado",
     "cuesCount": "({{count}} subtitulos)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "Generar subtitulos {{mode}} para este contenido",
+    "generateMode": "Generar {{mode}}"
   },
   "support": {
     "title": "Centro de Soporte",
@@ -9957,7 +10018,8 @@
       "subscribedLabel": "Miembro Plus",
       "getUnlimited": "Obtén ilimitado con Plus",
       "upgradeNow": "Mejorar ahora",
-      "creditLow": "Créditos agotándose"
+      "creditLow": "Créditos agotándose",
+      "subscribeAtWeb": "Suscríbete en bayit.tv"
     },
     "toast": {
       "creditUsed": "Crédito usado",

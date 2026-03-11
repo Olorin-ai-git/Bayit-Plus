@@ -2075,7 +2075,10 @@
       "errors": {
         "invalidEmail": "অনুগ্রহ করে একটি বৈধ ইমেইল ঠিকানা লিখুন",
         "sendFailed": "ইমেইল পাঠাতে ব্যর্থ"
-      }
+      },
+      "templateVariables": "টেমপ্লেট ভেরিয়েবল",
+      "emailPreview": "ইমেইল পূর্বরূপ",
+      "renderingPreview": "পূর্বরূপ রেন্ডার হচ্ছে..."
     },
     "push": {
       "titlePlaceholder": "নোটিফিকেশন শিরোনাম",
@@ -2948,6 +2951,42 @@
       "age": "বয়স",
       "approve": "অনুমোদন করুন",
       "reject": "প্রত্যাখ্যান করুন"
+    },
+    "wizard": {
+      "readyToImport": "আমদানির জন্য প্রস্তুত?",
+      "importSummary": "আপনি {{source}} থেকে {{count}}টি আইটেম আমদানি করতে চলেছেন।",
+      "category": "বিভাগ",
+      "noteAddedToLibrary": "আইটেমগুলি আপনার কন্টেন্ট লাইব্রেরিতে যোগ করা হবে",
+      "noteEditAfterImport": "আমদানির পরে আপনি সেগুলি সম্পাদনা করতে পারবেন",
+      "noteCannotBeUndone": "এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না",
+      "importing": "আমদানি হচ্ছে...",
+      "importNow": "এখনই আমদানি করুন"
+    },
+    "moments": {
+      "title": "ইন্টারেক্টিভ মোমেন্ট এডিটর",
+      "videoPreview": "ভিডিও পূর্বরূপ",
+      "interactiveMoments": "ইন্টারেক্টিভ মোমেন্টস ({{count}})",
+      "seek": "খুঁজুন",
+      "addNewMoment": "নতুন মোমেন্ট যোগ করুন",
+      "timestamp": "সময় চিহ্ন",
+      "useCurrentTime": "বর্তমান সময় ব্যবহার করুন",
+      "current": "বর্তমান",
+      "durationSeconds": "সময়কাল (সেকেন্ড)",
+      "characterName": "চরিত্রের নাম",
+      "characterNamePlaceholder": "যেমন, মোশে রাব্বেনু",
+      "sceneContext": "দৃশ্যের প্রসঙ্গ",
+      "sceneContextPlaceholder": "দৃশ্যে কী ঘটছে তার সংক্ষিপ্ত বিবরণ",
+      "interactionPrompt": "ইন্টারেকশন প্রম্পট",
+      "interactionPromptPlaceholder": "যেমন, মোশেকে দশ আজ্ঞা সম্পর্কে জিজ্ঞাসা করুন",
+      "characterFrame": "চরিত্রের ফ্রেম",
+      "extractFrame": "সময় চিহ্নে ফ্রেম বের করুন",
+      "addMoment": "মোমেন্ট যোগ করুন",
+      "saveAllMoments": "সমস্ত মোমেন্টস সংরক্ষণ করুন ({{count}})",
+      "setTimestampFirst": "অনুগ্রহ করে প্রথমে সময় চিহ্ন সেট করুন",
+      "extractFrameFailed": "ফ্রেম বের করতে ব্যর্থ",
+      "fillRequiredFields": "অনুগ্রহ করে সমস্ত প্রয়োজনীয় ক্ষেত্র পূরণ করুন",
+      "savedSuccessfully": "ইন্টারেক্টিভ মোমেন্টস সফলভাবে সংরক্ষিত",
+      "saveFailed": "মোমেন্টস সংরক্ষণে ব্যর্থ"
     }
   },
   "chatbot": {
@@ -3154,7 +3193,10 @@
     "tryAgain": "আবার চেষ্টা করুন",
     "unknown": "Unknown",
     "submit": "Submit",
-    "continue": "Continue"
+    "continue": "Continue",
+    "closeModal": "উইন্ডো বন্ধ করুন",
+    "dismissHint": "ইঙ্গিত বাতিল করুন",
+    "sending": "পাঠানো হচ্ছে..."
   },
   "content": {
     "play": "চালান",
@@ -3202,7 +3244,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "পছন্দসই টগল করুন",
+    "togglePlaylist": "প্লেলিস্ট টগল করুন"
   },
   "cultureClock": {
     "timeIn": "{{location}} সময়",
@@ -3351,7 +3395,13 @@
     "live": "লাইভ",
     "scheduleUnavailable": "টিভি অনুষ্ঠান সূচী বর্তমানে অনুপলব্ধ। দয়া করে পরে চেক করুন বা এটি অব্যাহত থাকলে সহায়তার সাথে যোগাযোগ করুন।",
     "noProgramsAvailable": "নির্বাচিত সময়সীমার জন্য কোনো অনুষ্ঠান উপলব্ধ নেই। আপনার ফিল্টার সামঞ্জস্য করার চেষ্টা করুন বা পরে চেক করুন।",
-    "loading": "টিভি গাইড লোড হচ্ছে..."
+    "loading": "টিভি গাইড লোড হচ্ছে...",
+    "recording": {
+      "scheduled": "নির্ধারিত",
+      "active": "রেকর্ডিং",
+      "completed": "রেকর্ড করা হয়েছে",
+      "series": "সিরিজ রেকর্ডিং"
+    }
   },
   "errors": {
     "networkError": "নেটওয়ার্ক ত্রুটি",
@@ -5298,7 +5348,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "Not generated",
     "cuesCount": "({{count}} cues)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "এই বিষয়বস্তুর জন্য {{mode}} সাবটাইটেল তৈরি করুন",
+    "generateMode": "{{mode}} তৈরি করুন"
   },
   "support": {
     "title": "সাপোর্ট সেন্টার",
@@ -6226,7 +6278,11 @@
         "nameExists": "এই নামের একটি উইজেট ইতিমধ্যে বিদ্যমান",
         "titleRequired": "শিরোনাম প্রয়োজন"
       },
-      "validating": "যাচাই করা হচ্ছে..."
+      "validating": "যাচাই করা হচ্ছে...",
+      "x": "X",
+      "y": "Y",
+      "width": "প্রস্থ",
+      "height": "উচ্চতা"
     },
     "intro": {
       "title": "উইজেটে স্বাগতম",
@@ -6274,7 +6330,12 @@
     "title": "Widgets",
     "urlRequired": "Please enter a URL",
     "urlValid": "URL is valid",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "{{title}} পুনরুদ্ধার করুন",
+    "clickToRestore": "পুনরুদ্ধার করতে ক্লিক করুন",
+    "minimizedWidgets": "ছোট করা উইজেট",
+    "closeDock": "ডক বন্ধ করুন",
+    "customContent": "কাস্টম বিষয়বস্তু"
   },
   "trending": {
     "title": "ইসরায়েলে কী ট্রেন্ডিং",
@@ -9857,7 +9918,8 @@
       "subscribedLabel": "Plus সদস্য",
       "getUnlimited": "Plus দিয়ে সীমাহীন পান",
       "upgradeNow": "এখনই আপগ্রেড করুন",
-      "creditLow": "ক্রেডিট কমে যাচ্ছে"
+      "creditLow": "ক্রেডিট কমে যাচ্ছে",
+      "subscribeAtWeb": "bayit.tv-এ সাবস্ক্রাইব করুন"
     },
     "toast": {
       "creditUsed": "ক্রেডিট ব্যবহৃত",

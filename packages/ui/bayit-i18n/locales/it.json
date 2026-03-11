@@ -2274,7 +2274,10 @@
       "errors": {
         "invalidEmail": "Inserisci un indirizzo email valido",
         "sendFailed": "Invio email fallito"
-      }
+      },
+      "templateVariables": "Variabili del modello",
+      "emailPreview": "Anteprima email",
+      "renderingPreview": "Rendering anteprima..."
     },
     "push": {
       "titlePlaceholder": "Titolo notifica",
@@ -3191,6 +3194,42 @@
       "age": "Età",
       "approve": "Approva",
       "reject": "Rifiuta"
+    },
+    "wizard": {
+      "readyToImport": "Pronto per importare?",
+      "importSummary": "Stai per importare {{count}} elemento/i da {{source}}.",
+      "category": "Categoria",
+      "noteAddedToLibrary": "Gli elementi saranno aggiunti alla tua libreria di contenuti",
+      "noteEditAfterImport": "Puoi modificarli dopo l'importazione",
+      "noteCannotBeUndone": "Questa azione non puo essere annullata",
+      "importing": "Importazione in corso...",
+      "importNow": "Importa ora"
+    },
+    "moments": {
+      "title": "Editor momenti interattivi",
+      "videoPreview": "Anteprima video",
+      "interactiveMoments": "Momenti interattivi ({{count}})",
+      "seek": "Cerca",
+      "addNewMoment": "Aggiungi nuovo momento",
+      "timestamp": "Timestamp",
+      "useCurrentTime": "Usa tempo corrente",
+      "current": "Corrente",
+      "durationSeconds": "Durata (secondi)",
+      "characterName": "Nome personaggio",
+      "characterNamePlaceholder": "es., Moshe Rabbenu",
+      "sceneContext": "Contesto scena",
+      "sceneContextPlaceholder": "Breve descrizione di cosa sta accadendo nella scena",
+      "interactionPrompt": "Prompt di interazione",
+      "interactionPromptPlaceholder": "es., Chiedi a Moshe dei Dieci Comandamenti",
+      "characterFrame": "Fotogramma personaggio",
+      "extractFrame": "Estrai fotogramma al timestamp",
+      "addMoment": "Aggiungi momento",
+      "saveAllMoments": "Salva tutti i momenti ({{count}})",
+      "setTimestampFirst": "Imposta prima un timestamp",
+      "extractFrameFailed": "Estrazione fotogramma fallita",
+      "fillRequiredFields": "Compila tutti i campi obbligatori",
+      "savedSuccessfully": "Momenti interattivi salvati con successo",
+      "saveFailed": "Salvataggio momenti fallito"
     }
   },
   "chatbot": {
@@ -3397,7 +3436,10 @@
     "tryAgain": "Riprova per favore",
     "unknown": "Unknown",
     "submit": "Submit",
-    "continue": "Continue"
+    "continue": "Continue",
+    "closeModal": "Chiudi finestra",
+    "dismissHint": "Ignora suggerimento",
+    "sending": "Invio in corso..."
   },
   "content": {
     "play": "Riproduci",
@@ -3445,7 +3487,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "Aggiungi/rimuovi preferito",
+    "togglePlaylist": "Aggiungi/rimuovi playlist"
   },
   "cultureCities": {
     "connectionTo": "Connessione {{city}}",
@@ -3672,7 +3716,13 @@
     "live": "IN DIRETTA",
     "scheduleUnavailable": "Il palinsesto TV non è attualmente disponibile. Riprova più tardi o contatta l'assistenza se il problema persiste.",
     "noProgramsAvailable": "Nessun programma disponibile per l'intervallo di tempo selezionato. Prova a modificare i filtri o riprova più tardi.",
-    "loading": "Caricamento guida TV..."
+    "loading": "Caricamento guida TV...",
+    "recording": {
+      "scheduled": "Programmato",
+      "active": "Registrazione",
+      "completed": "Registrato",
+      "series": "Registrazione serie"
+    }
   },
   "errors": {
     "networkError": "Errore di rete",
@@ -5538,7 +5588,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "Not generated",
     "cuesCount": "({{count}} cues)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "Genera sottotitoli {{mode}} per questo contenuto",
+    "generateMode": "Genera {{mode}}"
   },
   "support": {
     "title": "Centro assistenza",
@@ -6539,7 +6591,11 @@
         "nameExists": "Esiste già un widget con questo nome",
         "titleRequired": "Il titolo è obbligatorio"
       },
-      "validating": "Validazione in corso..."
+      "validating": "Validazione in corso...",
+      "x": "X",
+      "y": "Y",
+      "width": "Larghezza",
+      "height": "Altezza"
     },
     "intro": {
       "title": "Benvenuto nei Widget",
@@ -6585,7 +6641,12 @@
     "title": "Widgets",
     "urlRequired": "Please enter a URL",
     "urlValid": "URL is valid",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "Ripristina {{title}}",
+    "clickToRestore": "Clicca per ripristinare",
+    "minimizedWidgets": "Widget minimizzati",
+    "closeDock": "Chiudi dock",
+    "customContent": "Contenuto personalizzato"
   },
   "trending": {
     "title": "Tendenze in Israele",
@@ -10119,7 +10180,8 @@
       "subscribedLabel": "Membro Plus",
       "getUnlimited": "Ottieni illimitato con Plus",
       "upgradeNow": "Aggiorna ora",
-      "creditLow": "Crediti in esaurimento"
+      "creditLow": "Crediti in esaurimento",
+      "subscribeAtWeb": "Abbonati su bayit.tv"
     },
     "toast": {
       "creditUsed": "Credito utilizzato",

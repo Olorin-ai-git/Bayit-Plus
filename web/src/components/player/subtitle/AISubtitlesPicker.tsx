@@ -4,108 +4,108 @@
  * Uses TailwindCSS for styling and web-native modal implementation
  */
 
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { createPortal } from 'react-dom'
-import { Icon } from '@olorin/shared-icons/web'
-import { Sparkles } from 'lucide-react'
-import { GlassButton } from '@bayit/shared/ui'
-import { HebrewMode } from '@/types/subtitle'
-import { storageHelpers, STORAGE_KEYS } from '@/utils/storage'
-import { subtitlesService as _subtitlesService } from '@/services/api'
-const subtitlesService = _subtitlesService as any
-import { useAuthStore } from '@/stores/authStore'
-import logger from '@/utils/logger'
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { createPortal } from "react-dom";
+import { Icon } from "@olorin/shared-icons/web";
+import { Sparkles } from "lucide-react";
+import { GlassButton } from "@bayit/shared/ui";
+import { HebrewMode } from "@/types/subtitle";
+import { storageHelpers, STORAGE_KEYS } from "@/utils/storage";
+import { subtitlesService as _subtitlesService } from "@/services/api";
+const subtitlesService = _subtitlesService as any;
+import { useAuthStore } from "@/stores/authStore";
+import logger from "@/utils/logger";
 
 interface JobStatus {
-  job_id: string
-  status: 'pending' | 'processing' | 'completed' | 'failed'
-  progress: number
-  error_message?: string
+  job_id: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  progress: number;
+  error_message?: string;
 }
 
 interface ActiveJobsResponse {
-  content_id: string
-  nikud_job: JobStatus | null
-  shoresh_job: JobStatus | null
-  heblish_job: JobStatus | null
-  engrew_job: JobStatus | null
+  content_id: string;
+  nikud_job: JobStatus | null;
+  shoresh_job: JobStatus | null;
+  heblish_job: JobStatus | null;
+  engrew_job: JobStatus | null;
 }
 
 interface AISubtitlesPickerProps {
-  visible: boolean
-  currentMode: HebrewMode
-  isLoading?: boolean  // Whether subtitle track info is being loaded
-  hasHebrew?: boolean  // Whether Hebrew subtitles exist at all
-  hasNikud: boolean
-  hasShoresh: boolean
-  hasEngrew: boolean
-  contentId?: string
-  portalContainer?: HTMLElement | null  // Container for portal (for fullscreen support)
-  onClose: () => void
-  onModeSelect: (mode: HebrewMode) => void
-  onGenerationComplete?: () => void
-  adminTabSwitcher?: React.ReactNode  // Optional tab switcher for admin context
+  visible: boolean;
+  currentMode: HebrewMode;
+  isLoading?: boolean; // Whether subtitle track info is being loaded
+  hasHebrew?: boolean; // Whether Hebrew subtitles exist at all
+  hasNikud: boolean;
+  hasShoresh: boolean;
+  hasEngrew: boolean;
+  contentId?: string;
+  portalContainer?: HTMLElement | null; // Container for portal (for fullscreen support)
+  onClose: () => void;
+  onModeSelect: (mode: HebrewMode) => void;
+  onGenerationComplete?: () => void;
+  adminTabSwitcher?: React.ReactNode; // Optional tab switcher for admin context
 }
 
 interface ModeOption {
-  mode: HebrewMode
-  icon: string
-  titleKey: string
-  descriptionKey: string
-  example: string
-  isAI: boolean  // Whether this mode uses AI
+  mode: HebrewMode;
+  icon: string;
+  titleKey: string;
+  descriptionKey: string;
+  example: string;
+  isAI: boolean; // Whether this mode uses AI
 }
 
 /** Type guard for AI-generatable Hebrew modes */
-type GeneratableMode = 'nikud' | 'shoresh' | 'engrew'
+type GeneratableMode = "nikud" | "shoresh" | "engrew";
 
 function isGeneratableMode(mode: HebrewMode): mode is GeneratableMode {
-  return mode === 'nikud' || mode === 'shoresh' || mode === 'engrew'
+  return mode === "nikud" || mode === "shoresh" || mode === "engrew";
 }
 
 const HEBREW_MODE_OPTIONS: ModeOption[] = [
   {
-    mode: 'regular',
-    icon: 'settings',
-    titleKey: 'subtitles.hebrewMode.regular.title',
-    descriptionKey: 'subtitles.hebrewMode.regular.description',
-    example: 'הילדים הולכים לבית הספר',
+    mode: "regular",
+    icon: "settings",
+    titleKey: "subtitles.hebrewMode.regular.title",
+    descriptionKey: "subtitles.hebrewMode.regular.description",
+    example: "הילדים הולכים לבית הספר",
     isAI: false,
   },
   {
-    mode: 'nikud',
-    icon: 'א׳',
-    titleKey: 'subtitles.hebrewMode.nikud.title',
-    descriptionKey: 'subtitles.hebrewMode.nikud.description',
-    example: 'הַיְלָדִים הוֹלְכִים לְבֵית הַסֵּפֶר',
+    mode: "nikud",
+    icon: "א׳",
+    titleKey: "subtitles.hebrewMode.nikud.title",
+    descriptionKey: "subtitles.hebrewMode.nikud.description",
+    example: "הַיְלָדִים הוֹלְכִים לְבֵית הַסֵּפֶר",
     isAI: true,
   },
   {
-    mode: 'shoresh',
-    icon: 'stories',
-    titleKey: 'subtitles.hebrewMode.shoresh.title',
-    descriptionKey: 'subtitles.hebrewMode.shoresh.description',
-    example: 'הי⟨ל⟩דים הו⟨ל⟩כים לבית הספר',  // Angle brackets indicate bold root letters
+    mode: "shoresh",
+    icon: "stories",
+    titleKey: "subtitles.hebrewMode.shoresh.title",
+    descriptionKey: "subtitles.hebrewMode.shoresh.description",
+    example: "הי⟨ל⟩דים הו⟨ל⟩כים לבית הספר", // Angle brackets indicate bold root letters
     isAI: true,
   },
   {
-    mode: 'engrew',
-    icon: 'translate',
-    titleKey: 'subtitles.hebrewMode.engrew.title',
-    descriptionKey: 'subtitles.hebrewMode.engrew.description',
-    example: 'אני הולך לסרף (Surf) על הווייבס (Waves)',
+    mode: "engrew",
+    icon: "translate",
+    titleKey: "subtitles.hebrewMode.engrew.title",
+    descriptionKey: "subtitles.hebrewMode.engrew.description",
+    example: "אני הולך לסרף (Surf) על הווייבס (Waves)",
     isAI: true,
   },
-]
+];
 
-const HEBREW_MODE_FIRST_TIME_KEY = 'hebrew_mode_first_time_seen'
+const HEBREW_MODE_FIRST_TIME_KEY = "hebrew_mode_first_time_seen";
 
 export default function AISubtitlesPicker({
   visible,
   currentMode,
   isLoading = false,
-  hasHebrew = true,  // Default true for player context where modal only shows if Hebrew exists
+  hasHebrew = true, // Default true for player context where modal only shows if Hebrew exists
   hasNikud,
   hasShoresh,
   hasEngrew,
@@ -116,407 +116,486 @@ export default function AISubtitlesPicker({
   onGenerationComplete,
   adminTabSwitcher,
 }: AISubtitlesPickerProps) {
-  const { t } = useTranslation()
-  const modalRef = useRef<HTMLDivElement>(null)
-  const previousFocusRef = useRef<HTMLElement | null>(null)
-  const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [showFirstTimeHint, setShowFirstTimeHint] = useState(false)
-  const [generatingMode, setGeneratingMode] = useState<'nikud' | 'shoresh' | 'engrew' | null>(null)
-  const [generationError, setGenerationError] = useState<string | null>(null)
-  const [jobProgress, setJobProgress] = useState<number>(0)
-  const [currentJobId, setCurrentJobId] = useState<string | null>(null)
-  const [isCancelling, setIsCancelling] = useState(false)
-  const isAdmin = useAuthStore((s) => s.isAdmin())
+  const { t } = useTranslation();
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showFirstTimeHint, setShowFirstTimeHint] = useState(false);
+  const [generatingMode, setGeneratingMode] = useState<
+    "nikud" | "shoresh" | "engrew" | null
+  >(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [jobProgress, setJobProgress] = useState<number>(0);
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const isAdmin = useAuthStore((s) => s.isAdmin());
 
   // Helper to safely clear polling interval
   const clearPolling = useCallback(() => {
     if (pollingRef.current) {
-      clearInterval(pollingRef.current)
-      pollingRef.current = null
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
     }
-  }, [])
+  }, []);
 
   // Poll job status callback - defined early since it's used by useEffects
-  const pollJobStatus = useCallback(async (jobId: string, mode: 'nikud' | 'shoresh' | 'engrew') => {
-    try {
-      const status = await subtitlesService.getJobStatus(jobId) as JobStatus
-      logger.debug(`Job status: ${status.status}`, 'AISubtitlesPicker', { jobId, progress: status.progress })
+  const pollJobStatus = useCallback(
+    async (jobId: string, mode: "nikud" | "shoresh" | "engrew") => {
+      try {
+        const status = (await subtitlesService.getJobStatus(
+          jobId,
+        )) as JobStatus;
+        logger.debug(`Job status: ${status.status}`, "AISubtitlesPicker", {
+          jobId,
+          progress: status.progress,
+        });
 
-      // CRITICAL: Stop polling immediately for terminal states
-      if (status.status === 'completed' || status.status === 'failed') {
-        clearPolling()
-        setGeneratingMode(null)
-        setJobProgress(0)
-        setCurrentJobId(null)
+        // CRITICAL: Stop polling immediately for terminal states
+        if (status.status === "completed" || status.status === "failed") {
+          clearPolling();
+          setGeneratingMode(null);
+          setJobProgress(0);
+          setCurrentJobId(null);
 
-        if (status.status === 'completed') {
-          logger.info(`${mode} generation completed`, 'AISubtitlesPicker', { contentId })
-          onGenerationComplete?.()
-        } else {
-          setGenerationError(status.error_message || `${mode} generation failed`)
-          logger.error(`${mode} generation failed`, 'AISubtitlesPicker', { contentId, error: status.error_message })
+          if (status.status === "completed") {
+            logger.info(`${mode} generation completed`, "AISubtitlesPicker", {
+              contentId,
+            });
+            onGenerationComplete?.();
+          } else {
+            setGenerationError(
+              status.error_message || `${mode} generation failed`,
+            );
+            logger.error(`${mode} generation failed`, "AISubtitlesPicker", {
+              contentId,
+              error: status.error_message,
+            });
+          }
+          return; // Exit early - don't update progress for terminal states
         }
-        return // Exit early - don't update progress for terminal states
-      }
 
-      setJobProgress(status.progress)
-    } catch (error) {
-      logger.error('Failed to poll job status', 'AISubtitlesPicker', { jobId, error })
-      // On error, stop polling to prevent infinite error loops
-      clearPolling()
-      setGeneratingMode(null)
-      setCurrentJobId(null)
-    }
-  }, [contentId, onGenerationComplete, clearPolling])
+        setJobProgress(status.progress);
+      } catch (error) {
+        logger.error("Failed to poll job status", "AISubtitlesPicker", {
+          jobId,
+          error,
+        });
+        // On error, stop polling to prevent infinite error loops
+        clearPolling();
+        setGeneratingMode(null);
+        setCurrentJobId(null);
+      }
+    },
+    [contentId, onGenerationComplete, clearPolling],
+  );
 
   // Cancel current job
   const handleCancelJob = useCallback(async () => {
-    if (!currentJobId || isCancelling) return
+    if (!currentJobId || isCancelling) return;
 
-    setIsCancelling(true)
+    setIsCancelling(true);
     // Stop polling FIRST before any async operations
-    clearPolling()
+    clearPolling();
 
     try {
-      await subtitlesService.cancelJob(currentJobId)
-      setGeneratingMode(null)
-      setJobProgress(0)
-      setCurrentJobId(null)
-      logger.info('Job cancelled', 'AISubtitlesPicker', { jobId: currentJobId })
+      await subtitlesService.cancelJob(currentJobId);
+      setGeneratingMode(null);
+      setJobProgress(0);
+      setCurrentJobId(null);
+      logger.info("Job cancelled", "AISubtitlesPicker", {
+        jobId: currentJobId,
+      });
     } catch (error) {
-      logger.error('Failed to cancel job', 'AISubtitlesPicker', { jobId: currentJobId, error })
-      setGenerationError('Failed to cancel job')
+      logger.error("Failed to cancel job", "AISubtitlesPicker", {
+        jobId: currentJobId,
+        error,
+      });
+      setGenerationError("Failed to cancel job");
     } finally {
-      setIsCancelling(false)
+      setIsCancelling(false);
     }
-  }, [currentJobId, isCancelling, clearPolling])
+  }, [currentJobId, isCancelling, clearPolling]);
 
   // Restart a stuck job (cancel and regenerate)
-  const handleRestartJob = useCallback(async (mode: 'nikud' | 'shoresh' | 'engrew') => {
-    if (!contentId || isCancelling) return
+  const handleRestartJob = useCallback(
+    async (mode: "nikud" | "shoresh" | "engrew") => {
+      if (!contentId || isCancelling) return;
 
-    // Stop any existing polling FIRST
-    clearPolling()
+      // Stop any existing polling FIRST
+      clearPolling();
 
-    // First cancel the current job if exists
-    if (currentJobId) {
-      setIsCancelling(true)
+      // First cancel the current job if exists
+      if (currentJobId) {
+        setIsCancelling(true);
+        try {
+          await subtitlesService.cancelJob(currentJobId);
+        } catch (error) {
+          logger.error(
+            "Failed to cancel job for restart",
+            "AISubtitlesPicker",
+            { error },
+          );
+        }
+        setIsCancelling(false);
+      }
+
+      // Reset state
+      setGeneratingMode(null);
+      setJobProgress(0);
+      setCurrentJobId(null);
+      setGenerationError(null);
+
+      // Small delay before restarting
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Regenerate with force flag
       try {
-        await subtitlesService.cancelJob(currentJobId)
+        setGeneratingMode(mode);
+        let result;
+        if (mode === "nikud") {
+          result = await subtitlesService.generateNikud(contentId, "he", true);
+        } else if (mode === "shoresh") {
+          result = await subtitlesService.generateShoresh(
+            contentId,
+            "he",
+            true,
+          );
+        } else {
+          result = await subtitlesService.generateEngrew(contentId, "he", true);
+        }
+
+        if (result.status === "completed") {
+          setGeneratingMode(null);
+          onGenerationComplete?.();
+          return;
+        }
+
+        const jobId = result.job_id;
+        if (jobId) {
+          setCurrentJobId(jobId);
+          // Clear any stale interval before creating new one
+          clearPolling();
+          pollingRef.current = setInterval(() => {
+            pollJobStatus(jobId, mode);
+          }, 2000);
+        }
       } catch (error) {
-        logger.error('Failed to cancel job for restart', 'AISubtitlesPicker', { error })
+        const errorMessage =
+          error instanceof Error ? error.message : "Restart failed";
+        logger.error(
+          `Failed to restart ${mode} generation`,
+          "AISubtitlesPicker",
+          { contentId, error: errorMessage },
+        );
+        setGenerationError(`Failed to restart: ${errorMessage}`);
+        setGeneratingMode(null);
       }
-      setIsCancelling(false)
-    }
-
-    // Reset state
-    setGeneratingMode(null)
-    setJobProgress(0)
-    setCurrentJobId(null)
-    setGenerationError(null)
-
-    // Small delay before restarting
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // Regenerate with force flag
-    try {
-      setGeneratingMode(mode)
-      let result
-      if (mode === 'nikud') {
-        result = await subtitlesService.generateNikud(contentId, 'he', true)
-      } else if (mode === 'shoresh') {
-        result = await subtitlesService.generateShoresh(contentId, 'he', true)
-      } else {
-        result = await subtitlesService.generateEngrew(contentId, 'he', true)
-      }
-
-      if (result.status === 'completed') {
-        setGeneratingMode(null)
-        onGenerationComplete?.()
-        return
-      }
-
-      const jobId = result.job_id
-      if (jobId) {
-        setCurrentJobId(jobId)
-        // Clear any stale interval before creating new one
-        clearPolling()
-        pollingRef.current = setInterval(() => {
-          pollJobStatus(jobId, mode)
-        }, 2000)
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Restart failed'
-      logger.error(`Failed to restart ${mode} generation`, 'AISubtitlesPicker', { contentId, error: errorMessage })
-      setGenerationError(`Failed to restart: ${errorMessage}`)
-      setGeneratingMode(null)
-    }
-  }, [contentId, currentJobId, isCancelling, onGenerationComplete, pollJobStatus, clearPolling])
+    },
+    [
+      contentId,
+      currentJobId,
+      isCancelling,
+      onGenerationComplete,
+      pollJobStatus,
+      clearPolling,
+    ],
+  );
 
   // Cleanup polling on unmount
   useEffect(() => {
     return () => {
-      clearPolling()
-    }
-  }, [clearPolling])
+      clearPolling();
+    };
+  }, [clearPolling]);
 
   // Check if this is the user's first time seeing the Hebrew mode picker
   useEffect(() => {
     if (visible) {
       const checkFirstTime = async () => {
-        const hasSeenBefore = await storageHelpers.getBoolean(HEBREW_MODE_FIRST_TIME_KEY, false)
+        const hasSeenBefore = await storageHelpers.getBoolean(
+          HEBREW_MODE_FIRST_TIME_KEY,
+          false,
+        );
         if (!hasSeenBefore) {
-          setShowFirstTimeHint(true)
-          await storageHelpers.setBoolean(HEBREW_MODE_FIRST_TIME_KEY, true)
+          setShowFirstTimeHint(true);
+          await storageHelpers.setBoolean(HEBREW_MODE_FIRST_TIME_KEY, true);
         }
-      }
-      checkFirstTime()
+      };
+      checkFirstTime();
     }
-  }, [visible])
+  }, [visible]);
 
   // Check for active generation jobs when modal opens
   useEffect(() => {
-    if (!visible || !contentId || isLoading) return
+    if (!visible || !contentId || isLoading) return;
 
     const checkActiveJobs = async () => {
       try {
         // Always clear existing polling before checking for new jobs
-        clearPolling()
+        clearPolling();
 
-        const activeJobs = await subtitlesService.getActiveJobs(contentId) as ActiveJobsResponse
-        logger.debug('Checked active jobs', 'AISubtitlesPicker', { contentId, activeJobs })
+        const activeJobs = (await subtitlesService.getActiveJobs(
+          contentId,
+        )) as ActiveJobsResponse;
+        logger.debug("Checked active jobs", "AISubtitlesPicker", {
+          contentId,
+          activeJobs,
+        });
 
         // Check for nikud job
         if (activeJobs.nikud_job) {
-          const job = activeJobs.nikud_job
-          if (job.status === 'failed') {
+          const job = activeJobs.nikud_job;
+          if (job.status === "failed") {
             // Show error from failed job - but DON'T start polling
-            setGenerationError(job.error_message || 'Nikud generation failed')
-            setGeneratingMode(null)
-            setCurrentJobId(null)
-          } else if (job.status === 'completed') {
+            setGenerationError(job.error_message || "Nikud generation failed");
+            setGeneratingMode(null);
+            setCurrentJobId(null);
+          } else if (job.status === "completed") {
             // Job completed - don't poll
-            setGeneratingMode(null)
-            setCurrentJobId(null)
-          } else if (['pending', 'processing'].includes(job.status)) {
+            setGeneratingMode(null);
+            setCurrentJobId(null);
+          } else if (["pending", "processing"].includes(job.status)) {
             // Resume tracking in-progress job
-            setGeneratingMode('nikud')
-            setJobProgress(job.progress || 0)
-            setCurrentJobId(job.job_id)
+            setGeneratingMode("nikud");
+            setJobProgress(job.progress || 0);
+            setCurrentJobId(job.job_id);
             // Clear again to be safe before setting new interval
-            clearPolling()
+            clearPolling();
             pollingRef.current = setInterval(() => {
-              pollJobStatus(job.job_id, 'nikud')
-            }, 2000)
-            return
+              pollJobStatus(job.job_id, "nikud");
+            }, 2000);
+            return;
           }
         }
 
         // Check for shoresh job (only if no nikud job is being tracked)
         if (activeJobs.shoresh_job) {
-          const job = activeJobs.shoresh_job
-          if (job.status === 'failed') {
+          const job = activeJobs.shoresh_job;
+          if (job.status === "failed") {
             // Show error from failed job - but DON'T start polling
-            setGenerationError(job.error_message || 'Shoresh generation failed')
-            setGeneratingMode(null)
-            setCurrentJobId(null)
-          } else if (job.status === 'completed') {
+            setGenerationError(
+              job.error_message || "Shoresh generation failed",
+            );
+            setGeneratingMode(null);
+            setCurrentJobId(null);
+          } else if (job.status === "completed") {
             // Job completed - don't poll
-            setGeneratingMode(null)
-            setCurrentJobId(null)
-          } else if (['pending', 'processing'].includes(job.status)) {
+            setGeneratingMode(null);
+            setCurrentJobId(null);
+          } else if (["pending", "processing"].includes(job.status)) {
             // Resume tracking in-progress job
-            setGeneratingMode('shoresh')
-            setJobProgress(job.progress || 0)
-            setCurrentJobId(job.job_id)
+            setGeneratingMode("shoresh");
+            setJobProgress(job.progress || 0);
+            setCurrentJobId(job.job_id);
             // Clear again to be safe before setting new interval
-            clearPolling()
+            clearPolling();
             pollingRef.current = setInterval(() => {
-              pollJobStatus(job.job_id, 'shoresh')
-            }, 2000)
-            return
+              pollJobStatus(job.job_id, "shoresh");
+            }, 2000);
+            return;
           }
         }
 
         // Check for engrew job (only if no other job is being tracked)
         if (activeJobs.engrew_job) {
-          const job = activeJobs.engrew_job
-          if (job.status === 'failed') {
+          const job = activeJobs.engrew_job;
+          if (job.status === "failed") {
             // Show error from failed job - but DON'T start polling
-            setGenerationError(job.error_message || 'Engrew generation failed')
-            setGeneratingMode(null)
-            setCurrentJobId(null)
-          } else if (job.status === 'completed') {
+            setGenerationError(job.error_message || "Engrew generation failed");
+            setGeneratingMode(null);
+            setCurrentJobId(null);
+          } else if (job.status === "completed") {
             // Job completed - don't poll
-            setGeneratingMode(null)
-            setCurrentJobId(null)
-          } else if (['pending', 'processing'].includes(job.status)) {
+            setGeneratingMode(null);
+            setCurrentJobId(null);
+          } else if (["pending", "processing"].includes(job.status)) {
             // Resume tracking in-progress job
-            setGeneratingMode('engrew')
-            setJobProgress(job.progress || 0)
-            setCurrentJobId(job.job_id)
+            setGeneratingMode("engrew");
+            setJobProgress(job.progress || 0);
+            setCurrentJobId(job.job_id);
             // Clear again to be safe before setting new interval
-            clearPolling()
+            clearPolling();
             pollingRef.current = setInterval(() => {
-              pollJobStatus(job.job_id, 'engrew')
-            }, 2000)
+              pollJobStatus(job.job_id, "engrew");
+            }, 2000);
           }
         }
       } catch (error) {
-        logger.error('Failed to check active jobs', 'AISubtitlesPicker', { contentId, error })
+        logger.error("Failed to check active jobs", "AISubtitlesPicker", {
+          contentId,
+          error,
+        });
       }
-    }
+    };
 
-    checkActiveJobs()
+    checkActiveJobs();
 
     // Cleanup polling when modal closes or dependencies change
     return () => {
-      clearPolling()
-    }
-  }, [visible, contentId, isLoading, pollJobStatus, clearPolling])
+      clearPolling();
+    };
+  }, [visible, contentId, isLoading, pollJobStatus, clearPolling]);
 
   // Close on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && visible) {
-        onClose()
+      if (e.key === "Escape" && visible) {
+        onClose();
       }
-    }
+    };
 
     if (visible) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = ''
-    }
-  }, [visible, onClose])
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [visible, onClose]);
 
   // Focus trap with focus restoration
   useEffect(() => {
     if (visible && modalRef.current) {
       // Store previous focus
-      previousFocusRef.current = document.activeElement as HTMLElement
+      previousFocusRef.current = document.activeElement as HTMLElement;
 
       const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      )
-      const firstElement = focusableElements[0] as HTMLElement
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[
+        focusableElements.length - 1
+      ] as HTMLElement;
 
       const handleTab = (e: KeyboardEvent) => {
-        if (e.key !== 'Tab') return
+        if (e.key !== "Tab") return;
 
         if (e.shiftKey) {
           if (document.activeElement === firstElement) {
-            e.preventDefault()
-            lastElement?.focus()
+            e.preventDefault();
+            lastElement?.focus();
           }
         } else {
           if (document.activeElement === lastElement) {
-            e.preventDefault()
-            firstElement?.focus()
+            e.preventDefault();
+            firstElement?.focus();
           }
         }
-      }
+      };
 
-      document.addEventListener('keydown', handleTab)
-      firstElement?.focus()
+      document.addEventListener("keydown", handleTab);
+      firstElement?.focus();
 
       return () => {
-        document.removeEventListener('keydown', handleTab)
+        document.removeEventListener("keydown", handleTab);
         // Restore previous focus when modal closes
-        previousFocusRef.current?.focus()
-      }
+        previousFocusRef.current?.focus();
+      };
     }
-  }, [visible])
+  }, [visible]);
 
   const handleModePress = (mode: HebrewMode) => {
-    onModeSelect(mode)
-    onClose()
-  }
+    onModeSelect(mode);
+    onClose();
+  };
 
   const isModeAvailable = (mode: HebrewMode): boolean => {
-    if (mode === 'regular') return true
-    if (mode === 'nikud') return hasNikud
-    if (mode === 'shoresh') return hasShoresh
-    if (mode === 'engrew') return hasEngrew
-    return false
-  }
+    if (mode === "regular") return true;
+    if (mode === "nikud") return hasNikud;
+    if (mode === "shoresh") return hasShoresh;
+    if (mode === "engrew") return hasEngrew;
+    return false;
+  };
 
-  const handleGenerateMode = async (mode: 'nikud' | 'shoresh' | 'engrew', e: React.MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
+  const handleGenerateMode = async (
+    mode: "nikud" | "shoresh" | "engrew",
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
 
-    logger.info(`Generate ${mode} clicked`, 'AISubtitlesPicker', { contentId, isAdmin, generatingMode })
+    logger.info(`Generate ${mode} clicked`, "AISubtitlesPicker", {
+      contentId,
+      isAdmin,
+      generatingMode,
+    });
 
     if (!contentId) {
-      logger.error('No contentId provided', 'AISubtitlesPicker')
-      setGenerationError('Content ID is missing')
-      return
+      logger.error("No contentId provided", "AISubtitlesPicker");
+      setGenerationError("Content ID is missing");
+      return;
     }
 
     if (generatingMode) {
-      logger.info('Generation already in progress', 'AISubtitlesPicker')
-      return
+      logger.info("Generation already in progress", "AISubtitlesPicker");
+      return;
     }
 
-    setGeneratingMode(mode)
-    setGenerationError(null)
-    setJobProgress(0)
+    setGeneratingMode(mode);
+    setGenerationError(null);
+    setJobProgress(0);
 
     try {
-      logger.info(`Starting ${mode} generation`, 'AISubtitlesPicker', { contentId })
+      logger.info(`Starting ${mode} generation`, "AISubtitlesPicker", {
+        contentId,
+      });
 
-      let result
-      if (mode === 'nikud') {
-        result = await subtitlesService.generateNikud(contentId, 'he', false)
-      } else if (mode === 'shoresh') {
-        result = await subtitlesService.generateShoresh(contentId, 'he', false)
+      let result;
+      if (mode === "nikud") {
+        result = await subtitlesService.generateNikud(contentId, "he", false);
+      } else if (mode === "shoresh") {
+        result = await subtitlesService.generateShoresh(contentId, "he", false);
       } else {
-        result = await subtitlesService.generateEngrew(contentId, 'he', false)
+        result = await subtitlesService.generateEngrew(contentId, "he", false);
       }
 
-      logger.info(`${mode} job started`, 'AISubtitlesPicker', { contentId, result })
+      logger.info(`${mode} job started`, "AISubtitlesPicker", {
+        contentId,
+        result,
+      });
 
       // Check if already completed (e.g., was already generated)
-      if (result.status === 'completed') {
-        setGeneratingMode(null)
-        onGenerationComplete?.()
-        return
+      if (result.status === "completed") {
+        setGeneratingMode(null);
+        onGenerationComplete?.();
+        return;
       }
 
       // Start polling for job status
-      const jobId = result.job_id
+      const jobId = result.job_id;
       if (jobId) {
-        setCurrentJobId(jobId)
+        setCurrentJobId(jobId);
         // Clear any existing polling before starting new one
-        clearPolling()
+        clearPolling();
         pollingRef.current = setInterval(() => {
-          pollJobStatus(jobId, mode)
-        }, 2000) // Poll every 2 seconds
+          pollJobStatus(jobId, mode);
+        }, 2000); // Poll every 2 seconds
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Generation failed'
-      logger.error(`Failed to start ${mode} generation`, 'AISubtitlesPicker', { contentId, error: errorMessage })
-      setGenerationError(`Failed to start ${mode} generation: ${errorMessage}`)
-      setGeneratingMode(null)
-      setCurrentJobId(null)
+      const errorMessage =
+        error instanceof Error ? error.message : "Generation failed";
+      logger.error(`Failed to start ${mode} generation`, "AISubtitlesPicker", {
+        contentId,
+        error: errorMessage,
+      });
+      setGenerationError(`Failed to start ${mode} generation: ${errorMessage}`);
+      setGeneratingMode(null);
+      setCurrentJobId(null);
     }
-  }
+  };
 
   // Memoize options to avoid re-rendering on every state change
   const memoizedOptions = useMemo(
     () => HEBREW_MODE_OPTIONS,
-    [] // Static options, never change
-  )
+    [], // Static options, never change
+  );
 
   // Determine portal target - use provided container (for fullscreen) or document.body
-  const portalTarget = portalContainer || document.body
+  const portalTarget = portalContainer || document.body;
 
-  if (!visible) return null
+  if (!visible) return null;
 
   const modalContent = (
     <div
@@ -532,11 +611,7 @@ export default function AISubtitlesPicker({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Admin Tab Switcher (optional) */}
-        {adminTabSwitcher && (
-          <div className="mb-4">
-            {adminTabSwitcher}
-          </div>
-        )}
+        {adminTabSwitcher && <div className="mb-4">{adminTabSwitcher}</div>}
 
         {/* Header */}
         <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -544,12 +619,12 @@ export default function AISubtitlesPicker({
             id="hebrew-mode-modal-title"
             className="text-xl font-bold text-white"
           >
-            {t('subtitles.hebrewMode.title', 'Hebrew Display Mode')}
+            {t("subtitles.hebrewMode.title", "Hebrew Display Mode")}
           </h2>
           <GlassButton
             onPress={onClose}
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white transition-all border border-white/10"
-            aria-label="Close modal"
+            aria-label={t("common.closeModal")}
           >
             <Icon name="x" size="lg" color="currentColor" />
           </GlassButton>
@@ -559,14 +634,22 @@ export default function AISubtitlesPicker({
         {showFirstTimeHint && (
           <div className="mb-4 bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-3">
             <div className="flex items-start gap-2">
-              <Icon name="info" size="md" color="#818cf8" className="flex-shrink-0" />
+              <Icon
+                name="info"
+                size="md"
+                color="#818cf8"
+                className="flex-shrink-0"
+              />
               <p className="text-sm text-indigo-200">
-                {t('subtitles.hebrewMode.firstTimeHint', 'Choose how you want Hebrew subtitles displayed. Nikud adds vowel marks for easier reading, while Shoresh shows root words for language learning.')}
+                {t(
+                  "subtitles.hebrewMode.firstTimeHint",
+                  "Choose how you want Hebrew subtitles displayed. Nikud adds vowel marks for easier reading, while Shoresh shows root words for language learning.",
+                )}
               </p>
               <GlassButton
                 onPress={() => setShowFirstTimeHint(false)}
                 className="rounded-md p-1 bg-white/5 hover:bg-white/15 text-indigo-300 hover:text-indigo-100 transition-all border border-white/10 flex-shrink-0"
-                aria-label="Dismiss hint"
+                aria-label={t("common.dismissHint")}
               >
                 <Icon name="x" size="md" color="currentColor" />
               </GlassButton>
@@ -578,12 +661,17 @@ export default function AISubtitlesPicker({
         {generationError && (
           <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
             <div className="flex items-start gap-2">
-              <Icon name="error" size="md" color="#ef4444" className="flex-shrink-0" />
+              <Icon
+                name="error"
+                size="md"
+                color="#ef4444"
+                className="flex-shrink-0"
+              />
               <p className="text-sm text-red-200">{generationError}</p>
               <GlassButton
                 onPress={() => setGenerationError(null)}
                 className="rounded-md p-1 bg-white/5 hover:bg-white/15 text-red-300 hover:text-red-100 transition-all border border-white/10 flex-shrink-0"
-                aria-label="Dismiss error"
+                aria-label={t("common.dismissError")}
               >
                 <Icon name="x" size="md" color="currentColor" />
               </GlassButton>
@@ -596,7 +684,7 @@ export default function AISubtitlesPicker({
           <div className="mb-4 flex items-center justify-center gap-3 py-4">
             <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
             <span className="text-sm text-gray-400">
-              {t('common.loading', 'Loading...')}
+              {t("common.loading", "Loading...")}
             </span>
           </div>
         )}
@@ -605,13 +693,24 @@ export default function AISubtitlesPicker({
         {!isLoading && !hasHebrew && (
           <div className="mb-4 bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <Icon name="warning" size="md" color="#f59e0b" className="flex-shrink-0 mt-0.5" />
+              <Icon
+                name="warning"
+                size="md"
+                color="#f59e0b"
+                className="flex-shrink-0 mt-0.5"
+              />
               <div>
                 <p className="text-sm font-medium text-amber-200">
-                  {t('subtitles.hebrewMode.noHebrewSubtitles', 'No Hebrew Subtitles')}
+                  {t(
+                    "subtitles.hebrewMode.noHebrewSubtitles",
+                    "No Hebrew Subtitles",
+                  )}
                 </p>
                 <p className="text-sm text-amber-200/70 mt-1">
-                  {t('subtitles.hebrewMode.uploadHebrewFirst', 'Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.')}
+                  {t(
+                    "subtitles.hebrewMode.uploadHebrewFirst",
+                    "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+                  )}
                 </p>
               </div>
             </div>
@@ -621,18 +720,23 @@ export default function AISubtitlesPicker({
         {/* Options */}
         <div className="space-y-2 sm:space-y-3">
           {memoizedOptions.map((option) => {
-            const isAvailable = isModeAvailable(option.mode)
-            const isSelected = option.mode === currentMode
-            const canShowGenerateButton = !isAvailable && option.mode !== 'regular' && isAdmin && contentId && hasHebrew
+            const isAvailable = isModeAvailable(option.mode);
+            const isSelected = option.mode === currentMode;
+            const canShowGenerateButton =
+              !isAvailable &&
+              option.mode !== "regular" &&
+              isAdmin &&
+              contentId &&
+              hasHebrew;
 
             return (
               <div
                 key={option.mode}
                 onClick={() => isAvailable && handleModePress(option.mode)}
                 onKeyDown={(e) => {
-                  if (isAvailable && (e.key === 'Enter' || e.key === ' ')) {
-                    e.preventDefault()
-                    handleModePress(option.mode)
+                  if (isAvailable && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    handleModePress(option.mode);
                   }
                 }}
                 role="button"
@@ -641,13 +745,13 @@ export default function AISubtitlesPicker({
                   w-full rounded-lg p-3 sm:p-4 border-2 transition-all
                   ${
                     isSelected
-                      ? 'bg-indigo-500/20 border-indigo-500'
-                      : 'bg-white/5 border-transparent hover:bg-white/10'
+                      ? "bg-indigo-500/20 border-indigo-500"
+                      : "bg-white/5 border-transparent hover:bg-white/10"
                   }
-                  ${!isAvailable && !canShowGenerateButton ? 'opacity-50 cursor-not-allowed' : ''}
-                  ${isAvailable ? 'cursor-pointer' : ''}
+                  ${!isAvailable && !canShowGenerateButton ? "opacity-50 cursor-not-allowed" : ""}
+                  ${isAvailable ? "cursor-pointer" : ""}
                 `}
-                aria-label={`${t(option.titleKey)} mode${!isAvailable ? ', currently unavailable - requires AI generation' : ''}${isSelected ? ', currently selected' : ''}`}
+                aria-label={`${t(option.titleKey)} mode${!isAvailable ? ", currently unavailable - requires AI generation" : ""}${isSelected ? ", currently selected" : ""}`}
                 aria-pressed={isSelected}
                 aria-disabled={!isAvailable && !canShowGenerateButton}
               >
@@ -656,8 +760,10 @@ export default function AISubtitlesPicker({
                   <div className="flex items-center gap-3 sm:contents">
                     {/* Icon */}
                     <div className="w-10 sm:w-12 flex-shrink-0 flex items-center justify-center">
-                      {option.mode === 'nikud' ? (
-                        <span className="text-3xl sm:text-4xl">{option.icon}</span>
+                      {option.mode === "nikud" ? (
+                        <span className="text-3xl sm:text-4xl">
+                          {option.icon}
+                        </span>
                       ) : (
                         <Icon name={option.icon} size="xl" color="#FFFFFF" />
                       )}
@@ -667,7 +773,7 @@ export default function AISubtitlesPicker({
                     <div className="flex-1 sm:w-24 sm:flex-shrink-0 sm:flex-grow-0">
                       <h3
                         className={`text-sm sm:text-base font-semibold ${
-                          isAvailable ? 'text-white' : 'text-gray-500'
+                          isAvailable ? "text-white" : "text-gray-500"
                         }`}
                       >
                         {t(option.titleKey, option.mode)}
@@ -678,7 +784,7 @@ export default function AISubtitlesPicker({
                     {isSelected && (
                       <div
                         className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 sm:order-last ${
-                          option.isAI ? 'bg-purple-500' : 'bg-indigo-500'
+                          option.isAI ? "bg-purple-500" : "bg-indigo-500"
                         }`}
                         aria-hidden="true"
                       >
@@ -695,26 +801,36 @@ export default function AISubtitlesPicker({
                   <div className="flex-1 min-w-0">
                     <p
                       className={`text-xs sm:text-sm ${
-                        isAvailable ? 'text-gray-400' : 'text-gray-500'
+                        isAvailable ? "text-gray-400" : "text-gray-500"
                       }`}
                     >
-                      {t(option.descriptionKey, 'Description')}
+                      {t(option.descriptionKey, "Description")}
                     </p>
                   </div>
 
                   {/* Warning - only show when not available AND not currently generating */}
-                  {!isAvailable && generatingMode !== option.mode && option.mode !== 'regular' && (
-                    <div className="sm:w-32 sm:flex-shrink-0">
-                      <p className="text-xs text-amber-500/90 italic">
-                        {option.mode === 'nikud'
-                          ? t('subtitles.hebrewMode.nikud.unavailableReason', 'AI processing not available for this content')
-                          : option.mode === 'shoresh'
-                            ? t('subtitles.hebrewMode.shoresh.unavailableReason', 'Root word analysis not available for this content')
-                            : t('subtitles.hebrewMode.engrew.unavailableReason', 'Engrew not available for this content')
-                        }
-                      </p>
-                    </div>
-                  )}
+                  {!isAvailable &&
+                    generatingMode !== option.mode &&
+                    option.mode !== "regular" && (
+                      <div className="sm:w-32 sm:flex-shrink-0">
+                        <p className="text-xs text-amber-500/90 italic">
+                          {option.mode === "nikud"
+                            ? t(
+                                "subtitles.hebrewMode.nikud.unavailableReason",
+                                "AI processing not available for this content",
+                              )
+                            : option.mode === "shoresh"
+                              ? t(
+                                  "subtitles.hebrewMode.shoresh.unavailableReason",
+                                  "Root word analysis not available for this content",
+                                )
+                              : t(
+                                  "subtitles.hebrewMode.engrew.unavailableReason",
+                                  "Engrew not available for this content",
+                                )}
+                        </p>
+                      </div>
+                    )}
 
                   {/* Example - hidden on mobile */}
                   <div className="hidden sm:block w-36 flex-shrink-0">
@@ -726,7 +842,7 @@ export default function AISubtitlesPicker({
                       {option.example}
                     </p>
                   </div>
-                  {!isAvailable && option.mode !== 'regular' && (
+                  {!isAvailable && option.mode !== "regular" && (
                     <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
                       {isAdmin && contentId ? (
                         <div className="flex items-center gap-2">
@@ -735,44 +851,57 @@ export default function AISubtitlesPicker({
                               {/* Progress display */}
                               <span className="flex items-center gap-1.5 px-3 py-2 bg-purple-500/70 rounded-xl text-sm font-semibold text-white">
                                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                {jobProgress > 0 ? `${jobProgress}%` : t('common.generating', 'Generating...')}
+                                {jobProgress > 0
+                                  ? `${jobProgress}%`
+                                  : t("common.generating", "Generating...")}
                               </span>
                               {/* Cancel button */}
                               <GlassButton
                                 variant="ghost"
-                                onPress={(e: any) => { e.stopPropagation(); handleCancelJob(); }}
+                                onPress={(e: any) => {
+                                  e.stopPropagation();
+                                  handleCancelJob();
+                                }}
                                 disabled={isCancelling}
                                 className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-red-500/80 hover:bg-red-500 backdrop-blur-lg border border-red-400/30 disabled:opacity-50"
-                                aria-label={t('common.cancel', 'Cancel')}
+                                aria-label={t("common.cancel", "Cancel")}
                               >
                                 {isCancelling ? (
                                   <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
                                 ) : (
-                                  t('common.cancel', 'Cancel')
+                                  t("common.cancel", "Cancel")
                                 )}
                               </GlassButton>
                               {/* Restart button (shown when job seems stuck - progress > 50% and job has been running) */}
-                              {jobProgress > 50 && isGeneratableMode(option.mode) && (
-                                <GlassButton
-                                  variant="ghost"
-                                  onPress={(e: any) => { e.stopPropagation(); handleRestartJob(option.mode as any); }}
-                                  disabled={isCancelling}
-                                  className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500/80 hover:bg-amber-500 backdrop-blur-lg border border-amber-400/30 disabled:opacity-50"
-                                  aria-label={t('common.restart', 'Restart')}
-                                >
-                                  {t('common.restart', 'Restart')}
-                                </GlassButton>
-                              )}
+                              {jobProgress > 50 &&
+                                isGeneratableMode(option.mode) && (
+                                  <GlassButton
+                                    variant="ghost"
+                                    onPress={(e: any) => {
+                                      e.stopPropagation();
+                                      handleRestartJob(option.mode as any);
+                                    }}
+                                    disabled={isCancelling}
+                                    className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500/80 hover:bg-amber-500 backdrop-blur-lg border border-amber-400/30 disabled:opacity-50"
+                                    aria-label={t("common.restart", "Restart")}
+                                  >
+                                    {t("common.restart", "Restart")}
+                                  </GlassButton>
+                                )}
                             </>
                           ) : isGeneratableMode(option.mode) ? (
                             <GlassButton
                               variant="primary"
-                              onPress={(e: any) => handleGenerateMode(option.mode as any, e)}
+                              onPress={(e: any) =>
+                                handleGenerateMode(option.mode as any, e)
+                              }
                               disabled={generatingMode !== null}
                               className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-purple-500/80 hover:bg-purple-500 backdrop-blur-lg border border-purple-400/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                              aria-label={`Generate ${option.mode} subtitles for this content`}
+                              aria-label={t("subtitles.generateForContent", {
+                                mode: option.mode,
+                              })}
                             >
-                              {t('subtitles.hebrewMode.generate', 'Generate')}
+                              {t("subtitles.hebrewMode.generate", "Generate")}
                             </GlassButton>
                           ) : null}
                         </div>
@@ -782,7 +911,10 @@ export default function AISubtitlesPicker({
                           aria-hidden="true"
                         >
                           <span className="text-xs text-red-400 font-semibold">
-                            {t('subtitles.hebrewMode.unavailable', 'Unavailable')}
+                            {t(
+                              "subtitles.hebrewMode.unavailable",
+                              "Unavailable",
+                            )}
                           </span>
                         </div>
                       )}
@@ -790,13 +922,13 @@ export default function AISubtitlesPicker({
                   )}
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       </div>
     </div>
-  )
+  );
 
   // Render modal in portal (to container for fullscreen support)
-  return createPortal(modalContent, portalTarget)
+  return createPortal(modalContent, portalTarget);
 }

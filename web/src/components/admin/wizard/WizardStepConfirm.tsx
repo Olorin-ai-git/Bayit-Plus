@@ -3,23 +3,23 @@
  * Displays import summary and confirmation before executing
  */
 
-import React from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { useTranslation } from 'react-i18next'
-import { ChevronLeft, AlertCircle } from 'lucide-react'
-import { z } from 'zod'
-import { GlassButton } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
+import React from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
+import { ChevronLeft, AlertCircle } from "lucide-react";
+import { z } from "zod";
+import { GlassButton } from "@bayit/shared/ui";
+import { colors, spacing, borderRadius, fontSize } from "@olorin/design-tokens";
 
 // Zod schema for prop validation
 const CategorySchema = z.object({
   id: z.string(),
   name: z.string(),
-})
+});
 
 const SourceSchema = z.object({
   name: z.string(),
-})
+});
 
 const WizardStepConfirmPropsSchema = z.object({
   sourceType: z.string(),
@@ -33,9 +33,9 @@ const WizardStepConfirmPropsSchema = z.object({
   error: z.string().nullable(),
   onImport: z.function().args().returns(z.void()),
   onBack: z.function().args().returns(z.void()),
-})
+});
 
-type WizardStepConfirmProps = z.infer<typeof WizardStepConfirmPropsSchema>
+type WizardStepConfirmProps = z.infer<typeof WizardStepConfirmPropsSchema>;
 
 export function WizardStepConfirm({
   sourceType,
@@ -50,42 +50,51 @@ export function WizardStepConfirm({
   onImport,
   onBack,
 }: WizardStepConfirmProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   if (!currentSource) {
-    return null
+    return null;
   }
 
-  const selectedCategory = categories.find((c) => c.id === categoryId)
+  const selectedCategory = categories.find((c) => c.id === categoryId);
 
   return (
     <View style={styles.container}>
       {/* Back button */}
       <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text style={styles.backText}>{t('common.back')}</Text>
+        <Text style={styles.backText}>{t("common.back")}</Text>
       </Pressable>
 
-      <Text style={styles.title}>Ready to import?</Text>
+      <Text style={styles.title}>{t("admin.wizard.readyToImport")}</Text>
 
       {/* Confirmation box */}
       <View style={styles.confirmBox}>
         <Text style={styles.confirmText}>
-          You are about to import {importAll ? 'all' : selectedItemsCount} item(s) from{' '}
-          <Text style={styles.sourceName}>{currentSource.name}</Text>.
+          {t("admin.wizard.importSummary", {
+            count: importAll ? t("common.all") : selectedItemsCount,
+            source: currentSource.name,
+          })}
         </Text>
 
-        {sourceType === 'vod' && selectedCategory && (
+        {sourceType === "vod" && selectedCategory && (
           <Text style={styles.categoryText}>
-            Category: <Text style={styles.categoryName}>{selectedCategory.name}</Text>
+            {t("admin.wizard.category")}:{" "}
+            <Text style={styles.categoryName}>{selectedCategory.name}</Text>
           </Text>
         )}
 
         {/* Notes */}
         <View style={styles.notesContainer}>
-          <Text style={styles.noteText}>• Items will be added to your content library</Text>
-          <Text style={styles.noteText}>• You can edit them after import</Text>
-          <Text style={styles.noteText}>• This action cannot be undone</Text>
+          <Text style={styles.noteText}>
+            {t("admin.wizard.noteAddedToLibrary")}
+          </Text>
+          <Text style={styles.noteText}>
+            {t("admin.wizard.noteEditAfterImport")}
+          </Text>
+          <Text style={styles.noteText}>
+            {t("admin.wizard.noteCannotBeUndone")}
+          </Text>
         </View>
       </View>
 
@@ -100,14 +109,18 @@ export function WizardStepConfirm({
       {/* Actions */}
       <View style={styles.actionsContainer}>
         <GlassButton
-          title="Cancel"
+          title={t("common.cancel")}
           variant="secondary"
           onPress={onBack}
           disabled={isLoading}
           style={styles.actionButton}
         />
         <GlassButton
-          title={isLoading ? 'Importing...' : 'Import Now'}
+          title={
+            isLoading
+              ? t("admin.wizard.importing")
+              : t("admin.wizard.importNow")
+          }
           variant="primary"
           onPress={onImport}
           disabled={isLoading}
@@ -115,36 +128,36 @@ export function WizardStepConfirm({
         />
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: spacing.md,
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     marginBottom: spacing.md,
   },
   backText: {
     fontSize: fontSize.sm,
-    color: '#9333ea',
+    color: "#9333ea",
   },
   title: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.sm,
   },
   confirmBox: {
     padding: spacing.lg,
     borderRadius: borderRadius.xl,
-    backgroundColor: 'rgba(147, 51, 234, 0.2)',
+    backgroundColor: "rgba(147, 51, 234, 0.2)",
     borderWidth: 1,
-    borderColor: 'rgba(147, 51, 234, 0.3)',
+    borderColor: "rgba(147, 51, 234, 0.3)",
   },
   confirmText: {
     fontSize: fontSize.sm,
@@ -152,8 +165,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   sourceName: {
-    fontWeight: '600',
-    color: '#9333ea',
+    fontWeight: "600",
+    color: "#9333ea",
   },
   categoryText: {
     fontSize: fontSize.sm,
@@ -161,39 +174,39 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   categoryName: {
-    fontWeight: '600',
-    color: '#9333ea',
+    fontWeight: "600",
+    color: "#9333ea",
   },
   notesContainer: {
     marginTop: spacing.md,
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: spacing.xs,
   },
   noteText: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: "rgba(255, 255, 255, 0.6)",
   },
   errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+    borderColor: "rgba(239, 68, 68, 0.2)",
   },
   errorText: {
     flex: 1,
     fontSize: fontSize.sm,
-    color: '#ef4444',
+    color: "#ef4444",
   },
   actionsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginTop: spacing.lg,
   },
   actionButton: {
     flex: 1,
   },
-})
+});

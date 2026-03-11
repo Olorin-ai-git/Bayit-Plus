@@ -2233,7 +2233,10 @@
       "errors": {
         "invalidEmail": "有効なメールアドレスを入力してください",
         "sendFailed": "メール送信に失敗しました"
-      }
+      },
+      "templateVariables": "テンプレート変数",
+      "emailPreview": "メールプレビュー",
+      "renderingPreview": "プレビューを描画中..."
     },
     "push": {
       "titlePlaceholder": "通知タイトル",
@@ -3118,6 +3121,42 @@
       "age": "年齢",
       "approve": "承認",
       "reject": "却下"
+    },
+    "wizard": {
+      "readyToImport": "インポートの準備ができました",
+      "importSummary": "{{source}}から{{count}}件のアイテムをインポートしようとしています。",
+      "category": "カテゴリ",
+      "noteAddedToLibrary": "アイテムはコンテンツライブラリに追加されます",
+      "noteEditAfterImport": "インポート後に編集できます",
+      "noteCannotBeUndone": "この操作は元に戻せません",
+      "importing": "インポート中...",
+      "importNow": "今すぐインポート"
+    },
+    "moments": {
+      "title": "インタラクティブモーメントエディター",
+      "videoPreview": "ビデオプレビュー",
+      "interactiveMoments": "インタラクティブモーメント ({{count}})",
+      "seek": "シーク",
+      "addNewMoment": "新しいモーメントを追加",
+      "timestamp": "タイムスタンプ",
+      "useCurrentTime": "現在の時間を使用",
+      "current": "現在",
+      "durationSeconds": "長さ（秒）",
+      "characterName": "キャラクター名",
+      "characterNamePlaceholder": "例: モシェ・ラベヌ",
+      "sceneContext": "シーンコンテキスト",
+      "sceneContextPlaceholder": "シーンで何が起きているかの簡単な説明",
+      "interactionPrompt": "インタラクションプロンプト",
+      "interactionPromptPlaceholder": "例: モシェに十戒について聞く",
+      "characterFrame": "キャラクターフレーム",
+      "extractFrame": "タイムスタンプでフレームを抽出",
+      "addMoment": "モーメントを追加",
+      "saveAllMoments": "すべてのモーメントを保存 ({{count}})",
+      "setTimestampFirst": "最初にタイムスタンプを設定してください",
+      "extractFrameFailed": "フレームの抽出に失敗しました",
+      "fillRequiredFields": "すべての必須フィールドを入力してください",
+      "savedSuccessfully": "インタラクティブモーメントが正常に保存されました",
+      "saveFailed": "モーメントの保存に失敗しました"
     }
   },
   "chatbot": {
@@ -3792,7 +3831,10 @@
     "minutesShort": "分",
     "notAvailable": "N/A",
     "load": "Load",
-    "showAll": "Show All"
+    "showAll": "Show All",
+    "closeModal": "ウィンドウを閉じる",
+    "dismissHint": "ヒントを閉じる",
+    "sending": "送信中..."
   },
   "content": {
     "title": "タイトル",
@@ -3902,7 +3944,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "お気に入り切替",
+    "togglePlaylist": "プレイリスト切替"
   },
   "cultureClock": {
     "timeIn": "{{location}}の時間",
@@ -4118,7 +4162,13 @@
     "live": "ライブ",
     "scheduleUnavailable": "テレビ番組スケジュールは現在利用できません。後でもう一度お試しいただくか、問題が続く場合はサポートにお問い合わせください。",
     "noProgramsAvailable": "選択した時間範囲に利用可能な番組がありません。フィルターを調整するか、後でもう一度お試しください。",
-    "loading": "番組ガイドを読み込み中..."
+    "loading": "番組ガイドを読み込み中...",
+    "recording": {
+      "scheduled": "予約済み",
+      "active": "録画中",
+      "completed": "録画済み",
+      "series": "シリーズ録画"
+    }
   },
   "errors": {
     "generic": "問題が発生しました",
@@ -6572,7 +6622,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "Not generated",
     "cuesCount": "({{count}} cues)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "このコンテンツの{{mode}}字幕を生成",
+    "generateMode": "{{mode}}を生成"
   },
   "support": {
     "title": "サポート",
@@ -7634,7 +7686,11 @@
         "nameExists": "この名前のウィジェットは既に存在します",
         "titleRequired": "タイトルは必須です"
       },
-      "validating": "検証中..."
+      "validating": "検証中...",
+      "x": "X",
+      "y": "Y",
+      "width": "幅",
+      "height": "高さ"
     },
     "intro": {
       "title": "ウィジェットへようこそ",
@@ -7680,7 +7736,12 @@
     "title": "Widgets",
     "urlRequired": "Please enter a URL",
     "urlValid": "URL is valid",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "{{title}}を復元",
+    "clickToRestore": "クリックして復元",
+    "minimizedWidgets": "最小化ウィジェット",
+    "closeDock": "ドックを閉じる",
+    "customContent": "カスタムコンテンツ"
   },
   "trending": {
     "title": "イスラエルのトレンド",
@@ -11271,7 +11332,8 @@
       "subscribedLabel": "Plusメンバー",
       "getUnlimited": "Plusで無制限に",
       "upgradeNow": "今すぐアップグレード",
-      "creditLow": "クレジット残りわずか"
+      "creditLow": "クレジット残りわずか",
+      "subscribeAtWeb": "bayit.tvで登録"
     },
     "toast": {
       "creditUsed": "クレジット使用",

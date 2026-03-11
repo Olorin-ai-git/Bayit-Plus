@@ -2102,7 +2102,10 @@
       "errors": {
         "invalidEmail": "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்",
         "sendFailed": "மின்னஞ்சல் அனுப்புவதில் தோல்வி"
-      }
+      },
+      "templateVariables": "வார்ப்புரு மாறிகள்",
+      "emailPreview": "மின்னஞ்சல் முன்னோட்டம்",
+      "renderingPreview": "முன்னோட்டம் தயாராகிறது..."
     },
     "auditLogs": {
       "subtitle": "அனைத்து அமைப்பு செயல்களையும் கண்காணிக்கவும்",
@@ -3030,6 +3033,42 @@
       "age": "வயது",
       "approve": "அனுமதி",
       "reject": "நிராகரி"
+    },
+    "wizard": {
+      "readyToImport": "இறக்குமதிக்கு தயாரா?",
+      "importSummary": "{{source}} இலிருந்து {{count}} உருப்படி(களை) இறக்குமதி செய்ய உள்ளீர்கள்.",
+      "category": "வகை",
+      "noteAddedToLibrary": "உருப்படிகள் உங்கள் உள்ளடக்க நூலகத்தில் சேர்க்கப்படும்",
+      "noteEditAfterImport": "இறக்குமதிக்குப் பிறகு அவற்றைத் திருத்தலாம்",
+      "noteCannotBeUndone": "இந்தச் செயலை மீட்டெடுக்க முடியாது",
+      "importing": "இறக்குமதி செய்கிறது...",
+      "importNow": "இப்போது இறக்குமதி செய்"
+    },
+    "moments": {
+      "title": "ஊடாடும் தருணங்கள் திருத்தி",
+      "videoPreview": "வீடியோ முன்னோட்டம்",
+      "interactiveMoments": "ஊடாடும் தருணங்கள் ({{count}})",
+      "seek": "தேடு",
+      "addNewMoment": "புதிய தருணத்தைச் சேர்",
+      "timestamp": "நேர முத்திரை",
+      "useCurrentTime": "தற்போதைய நேரத்தைப் பயன்படுத்து",
+      "current": "தற்போதைய",
+      "durationSeconds": "கால அளவு (வினாடிகள்)",
+      "characterName": "கதாபாத்திரம் பெயர்",
+      "characterNamePlaceholder": "எ.கா., மோஷே ரப்பேனு",
+      "sceneContext": "காட்சி சூழல்",
+      "sceneContextPlaceholder": "காட்சியில் நடப்பது பற்றிய சுருக்கமான விவரம்",
+      "interactionPrompt": "ஊடாடல் தூண்டல்",
+      "interactionPromptPlaceholder": "எ.கா., மோஷேயிடம் பத்து கட்டளைகளைப் பற்றிக் கேள்",
+      "characterFrame": "கதாபாத்திர பிரேம்",
+      "extractFrame": "நேர முத்திரையில் பிரேமை எடு",
+      "addMoment": "தருணத்தைச் சேர்",
+      "saveAllMoments": "அனைத்து தருணங்களையும் சேமி ({{count}})",
+      "setTimestampFirst": "முதலில் நேர முத்திரையை அமைக்கவும்",
+      "extractFrameFailed": "பிரேம் எடுப்பது தோல்வியடைந்தது",
+      "fillRequiredFields": "தேவையான அனைத்து புலங்களையும் நிரப்பவும்",
+      "savedSuccessfully": "ஊடாடும் தருணங்கள் வெற்றிகரமாக சேமிக்கப்பட்டன",
+      "saveFailed": "தருணங்களைச் சேமிப்பது தோல்வியடைந்தது"
     }
   },
   "chatbot": {
@@ -3237,7 +3276,10 @@
     "tryAgain": "மீண்டும் முயற்சிக்கவும்",
     "unknown": "Unknown",
     "submit": "Submit",
-    "continue": "Continue"
+    "continue": "Continue",
+    "closeModal": "சாளரத்தை மூடு",
+    "dismissHint": "குறிப்பை நிராகரி",
+    "sending": "அனுப்புகிறது..."
   },
   "content": {
     "play": "இயக்கு",
@@ -3285,7 +3327,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "விருப்பத்தை மாற்று",
+    "togglePlaylist": "பிளேலிஸ்ட்டை மாற்று"
   },
   "cultureClock": {
     "timeIn": "{{location}} நேரம்",
@@ -3434,7 +3478,13 @@
     "live": "நேரடி",
     "scheduleUnavailable": "தொலைக்காட்சி நிகழ்ச்சி அட்டவணை தற்போது கிடைக்கவில்லை. தயவுசெய்து பின்னர் சரிபார்க்கவும் அல்லது இது தொடர்ந்தால் ஆதரவை தொடர்பு கொள்ளவும்.",
     "noProgramsAvailable": "தேர்ந்தெடுக்கப்பட்ட நேர வரம்புக்கு நிகழ்ச்சிகள் ஏதும் இல்லை. உங்கள் வடிகட்டிகளை சரிசெய்யவும் அல்லது பின்னர் சரிபார்க்கவும்.",
-    "loading": "தொலைக்காட்சி வழிகாட்டி ஏற்றப்படுகிறது..."
+    "loading": "தொலைக்காட்சி வழிகாட்டி ஏற்றப்படுகிறது...",
+    "recording": {
+      "scheduled": "திட்டமிடப்பட்டது",
+      "active": "பதிவு செய்கிறது",
+      "completed": "பதிவு செய்யப்பட்டது",
+      "series": "தொடர் பதிவு"
+    }
   },
   "errors": {
     "networkError": "நெட்வொர்க் பிழை",
@@ -5386,7 +5436,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "Not generated",
     "cuesCount": "({{count}} cues)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "இந்த உள்ளடக்கத்திற்கு {{mode}} வசனங்களை உருவாக்கு",
+    "generateMode": "{{mode}} உருவாக்கு"
   },
   "support": {
     "title": "ஆதரவு மையம்",
@@ -6314,7 +6366,11 @@
         "nameExists": "இந்த பெயரில் ஒரு விட்ஜெட் ஏற்கனவே உள்ளது",
         "titleRequired": "தலைப்பு தேவை"
       },
-      "validating": "சரிபார்க்கிறது..."
+      "validating": "சரிபார்க்கிறது...",
+      "x": "X",
+      "y": "Y",
+      "width": "அகலம்",
+      "height": "உயரம்"
     },
     "intro": {
       "title": "விட்ஜெட்களுக்கு வரவேற்கிறோம்",
@@ -6368,7 +6424,12 @@
     "title": "Widgets",
     "urlRequired": "Please enter a URL",
     "urlValid": "URL is valid",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "{{title}} மீட்டமை",
+    "clickToRestore": "மீட்டமைக்க கிளிக் செய்யவும்",
+    "minimizedWidgets": "சிறிதாக்கப்பட்ட விட்ஜெட்கள்",
+    "closeDock": "டாக்கை மூடு",
+    "customContent": "தனிப்பயன் உள்ளடக்கம்"
   },
   "trending": {
     "title": "இஸ்ரேலில் டிரெண்டிங்",
@@ -9949,7 +10010,8 @@
       "subscribedLabel": "Plus உறுப்பினர்",
       "getUnlimited": "Plus உடன் வரம்பற்றதைப் பெறுங்கள்",
       "upgradeNow": "இப்போது மேம்படுத்தவும்",
-      "creditLow": "கிரெடிட்கள் குறைகின்றன"
+      "creditLow": "கிரெடிட்கள் குறைகின்றன",
+      "subscribeAtWeb": "bayit.tv இல் சந்தா செலுத்தவும்"
     },
     "toast": {
       "creditUsed": "கிரெடிட் பயன்படுத்தப்பட்டது",

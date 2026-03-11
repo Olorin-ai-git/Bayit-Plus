@@ -2075,7 +2075,10 @@
       "errors": {
         "invalidEmail": "कृपया एक वैध ईमेल पता दर्ज करें",
         "sendFailed": "ईमेल भेजने में विफल"
-      }
+      },
+      "templateVariables": "टेम्पलेट चर",
+      "emailPreview": "ईमेल पूर्वावलोकन",
+      "renderingPreview": "पूर्वावलोकन प्रस्तुत हो रहा है..."
     },
     "push": {
       "titlePlaceholder": "सूचना शीर्षक",
@@ -2948,6 +2951,42 @@
       "age": "आयु",
       "approve": "स्वीकृत करें",
       "reject": "अस्वीकार करें"
+    },
+    "wizard": {
+      "readyToImport": "आयात के लिए तैयार?",
+      "importSummary": "आप {{source}} से {{count}} आइटम आयात करने वाले हैं।",
+      "category": "श्रेणी",
+      "noteAddedToLibrary": "आइटम आपकी सामग्री लाइब्रेरी में जोड़े जाएंगे",
+      "noteEditAfterImport": "आप आयात के बाद उन्हें संपादित कर सकते हैं",
+      "noteCannotBeUndone": "यह क्रिया पूर्ववत नहीं की जा सकती",
+      "importing": "आयात हो रहा है...",
+      "importNow": "अभी आयात करें"
+    },
+    "moments": {
+      "title": "इंटरैक्टिव मोमेंट एडिटर",
+      "videoPreview": "वीडियो पूर्वावलोकन",
+      "interactiveMoments": "इंटरैक्टिव मोमेंट्स ({{count}})",
+      "seek": "खोजें",
+      "addNewMoment": "नया मोमेंट जोड़ें",
+      "timestamp": "समय चिह्न",
+      "useCurrentTime": "वर्तमान समय का उपयोग करें",
+      "current": "वर्तमान",
+      "durationSeconds": "अवधि (सेकंड)",
+      "characterName": "पात्र का नाम",
+      "characterNamePlaceholder": "उदा., मोशे रब्बेनु",
+      "sceneContext": "दृश्य संदर्भ",
+      "sceneContextPlaceholder": "दृश्य में क्या हो रहा है इसका संक्षिप्त विवरण",
+      "interactionPrompt": "इंटरैक्शन प्रॉम्प्ट",
+      "interactionPromptPlaceholder": "उदा., मोशे से दस आज्ञाओं के बारे में पूछें",
+      "characterFrame": "पात्र फ्रेम",
+      "extractFrame": "समय चिह्न पर फ्रेम निकालें",
+      "addMoment": "मोमेंट जोड़ें",
+      "saveAllMoments": "सभी मोमेंट्स सहेजें ({{count}})",
+      "setTimestampFirst": "कृपया पहले समय चिह्न सेट करें",
+      "extractFrameFailed": "फ्रेम निकालने में विफल",
+      "fillRequiredFields": "कृपया सभी आवश्यक फ़ील्ड भरें",
+      "savedSuccessfully": "इंटरैक्टिव मोमेंट्स सफलतापूर्वक सहेजे गए",
+      "saveFailed": "मोमेंट्स सहेजने में विफल"
     }
   },
   "chatbot": {
@@ -3154,7 +3193,10 @@
     "tryAgain": "कृपया पुनः प्रयास करें",
     "unknown": "Unknown",
     "submit": "Submit",
-    "continue": "Continue"
+    "continue": "Continue",
+    "closeModal": "विंडो बंद करें",
+    "dismissHint": "संकेत खारिज करें",
+    "sending": "भेज रहा है..."
   },
   "content": {
     "play": "चलाएं",
@@ -3202,7 +3244,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "पसंदीदा टॉगल करें",
+    "togglePlaylist": "प्लेलिस्ट टॉगल करें"
   },
   "cultureClock": {
     "timeIn": "{{location}} में समय",
@@ -3351,7 +3395,13 @@
     "live": "लाइव",
     "scheduleUnavailable": "टीवी कार्यक्रम अनुसूची वर्तमान में अनुपलब्ध है। कृपया बाद में जाँच करें या यदि यह जारी रहता है तो सहायता से संपर्क करें।",
     "noProgramsAvailable": "चयनित समय सीमा के लिए कोई कार्यक्रम उपलब्ध नहीं हैं। अपने फ़िल्टर समायोजित करने का प्रयास करें या बाद में जाँच करें।",
-    "loading": "TV गाइड लोड हो रहा है..."
+    "loading": "TV गाइड लोड हो रहा है...",
+    "recording": {
+      "scheduled": "निर्धारित",
+      "active": "रिकॉर्डिंग",
+      "completed": "रिकॉर्ड किया गया",
+      "series": "श्रृंखला रिकॉर्डिंग"
+    }
   },
   "errors": {
     "networkError": "नेटवर्क त्रुटि",
@@ -5449,7 +5499,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "Not generated",
     "cuesCount": "({{count}} cues)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "इस सामग्री के लिए {{mode}} उपशीर्षक उत्पन्न करें",
+    "generateMode": "{{mode}} उत्पन्न करें"
   },
   "support": {
     "title": "सहायता केंद्र",
@@ -6239,7 +6291,11 @@
         "nameExists": "इस नाम का एक विजेट पहले से मौजूद है",
         "titleRequired": "शीर्षक आवश्यक है"
       },
-      "validating": "मान्य कर रहे हैं..."
+      "validating": "मान्य कर रहे हैं...",
+      "x": "X",
+      "y": "Y",
+      "width": "चौड़ाई",
+      "height": "ऊँचाई"
     },
     "intro": {
       "title": "विजेट में आपका स्वागत है",
@@ -6285,7 +6341,12 @@
     "title": "Widgets",
     "urlRequired": "Please enter a URL",
     "urlValid": "URL is valid",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "{{title}} पुनर्स्थापित करें",
+    "clickToRestore": "पुनर्स्थापित करने के लिए क्लिक करें",
+    "minimizedWidgets": "न्यूनतम विजेट",
+    "closeDock": "डॉक बंद करें",
+    "customContent": "कस्टम सामग्री"
   },
   "trending": {
     "title": "इज़राइल में क्या ट्रेंड कर रहा है",
@@ -9877,7 +9938,8 @@
       "subscribedLabel": "Plus सदस्य",
       "getUnlimited": "Plus के साथ असीमित पाएं",
       "upgradeNow": "अभी अपग्रेड करें",
-      "creditLow": "क्रेडिट कम हो रहे हैं"
+      "creditLow": "क्रेडिट कम हो रहे हैं",
+      "subscribeAtWeb": "bayit.tv पर सदस्यता लें"
     },
     "toast": {
       "creditUsed": "क्रेडिट उपयोग किया",

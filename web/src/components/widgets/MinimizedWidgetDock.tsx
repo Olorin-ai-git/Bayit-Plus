@@ -1,22 +1,33 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { X } from 'lucide-react';
-import { useWidgetStore } from '@/stores/widgetStore';
-import { useResponsive } from '@/hooks/useResponsive';
-import { glass, colors, spacing, borderRadius } from '@olorin/design-tokens';
-import type { Widget } from '@/types/widget';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useWidgetStore } from "@/stores/widgetStore";
+import { useResponsive } from "@/hooks/useResponsive";
+import { glass, colors, spacing, borderRadius } from "@olorin/design-tokens";
+import type { Widget } from "@/types/widget";
 
 interface IconButtonProps {
   widget: Widget;
   isHovered: boolean;
   isHighlighted: boolean;
   isMobile: boolean;
+  restoreLabel: string;
   onHover: () => void;
   onLeave: () => void;
   onClick: () => void;
 }
 
-function IconButton({ widget, isHovered, isHighlighted, isMobile, onHover, onLeave, onClick }: IconButtonProps) {
+function IconButton({
+  widget,
+  isHovered,
+  isHighlighted,
+  isMobile,
+  restoreLabel,
+  onHover,
+  onLeave,
+  onClick,
+}: IconButtonProps) {
   return (
     <Pressable
       onPress={onClick}
@@ -27,11 +38,13 @@ function IconButton({ widget, isHovered, isHighlighted, isMobile, onHover, onLea
         !isMobile && isHovered && styles.iconButtonHovered,
         isHighlighted && styles.iconButtonHighlighted,
       ]}
-      aria-label={`Restore ${widget.title}`}
+      aria-label={restoreLabel}
       role="button"
       accessible={true}
     >
-      <Text style={isMobile ? styles.iconEmojiMobile : styles.iconEmoji}>{widget.icon || '📻'}</Text>
+      <Text style={isMobile ? styles.iconEmojiMobile : styles.iconEmoji}>
+        {widget.icon || "📻"}
+      </Text>
     </Pressable>
   );
 }
@@ -44,23 +57,33 @@ interface PreviewPopupProps {
   containerPadding: number;
 }
 
-function PreviewPopup({ widget, iconIndex, iconSize, iconSpacing, containerPadding }: PreviewPopupProps) {
+function PreviewPopup({
+  widget,
+  iconIndex,
+  iconSize,
+  iconSpacing,
+  containerPadding,
+}: PreviewPopupProps) {
+  const { t } = useTranslation();
   const popupWidth = 220;
   const popupHeight = 110;
 
-  const iconCenterX = containerPadding + iconIndex * (iconSize + iconSpacing) + iconSize / 2;
+  const iconCenterX =
+    containerPadding + iconIndex * (iconSize + iconSpacing) + iconSize / 2;
   const popupLeft = Math.max(
     0,
     Math.min(
       iconCenterX - popupWidth / 2,
-      typeof window !== 'undefined' ? window.innerWidth - popupWidth : iconCenterX - popupWidth / 2
-    )
+      typeof window !== "undefined"
+        ? window.innerWidth - popupWidth
+        : iconCenterX - popupWidth / 2,
+    ),
   );
 
   return (
     <div
       style={{
-        position: 'absolute',
+        position: "absolute",
         bottom: iconSize + 16,
         left: popupLeft,
         width: popupWidth,
@@ -70,7 +93,7 @@ function PreviewPopup({ widget, iconIndex, iconSize, iconSpacing, containerPaddi
     >
       <View style={styles.popupContent}>
         <View style={styles.popupIcon}>
-          <Text style={styles.popupIconEmoji}>{widget.icon || '📻'}</Text>
+          <Text style={styles.popupIconEmoji}>{widget.icon || "📻"}</Text>
         </View>
 
         <View style={styles.popupInfo}>
@@ -78,7 +101,7 @@ function PreviewPopup({ widget, iconIndex, iconSize, iconSpacing, containerPaddi
             {widget.title}
           </Text>
           <Text style={styles.popupDescription} numberOfLines={2}>
-            {widget.description || 'Click to restore'}
+            {widget.description || t("widgets.clickToRestore")}
           </Text>
         </View>
       </View>
@@ -89,9 +112,12 @@ function PreviewPopup({ widget, iconIndex, iconSize, iconSpacing, containerPaddi
 }
 
 // Inject keyframes for pulse animation
-if (typeof document !== 'undefined' && !document.getElementById('minimized-dock-animations')) {
-  const style = document.createElement('style');
-  style.id = 'minimized-dock-animations';
+if (
+  typeof document !== "undefined" &&
+  !document.getElementById("minimized-dock-animations")
+) {
+  const style = document.createElement("style");
+  style.id = "minimized-dock-animations";
   style.textContent = `
     @keyframes pulse {
       0%, 100% {
@@ -110,10 +136,19 @@ if (typeof document !== 'undefined' && !document.getElementById('minimized-dock-
 const ANIMATION_DURATION_MS = 300;
 
 export default function MinimizedWidgetDock() {
+  const { t } = useTranslation();
   const [hoveredWidgetId, setHoveredWidgetId] = useState<string | null>(null);
-  const [highlightedWidgetId, setHighlightedWidgetId] = useState<string | null>(null);
+  const [highlightedWidgetId, setHighlightedWidgetId] = useState<string | null>(
+    null,
+  );
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
-  const { widgets, getWidgetState, toggleMinimize, isDockVisible, setDockVisible } = useWidgetStore();
+  const {
+    widgets,
+    getWidgetState,
+    toggleMinimize,
+    isDockVisible,
+    setDockVisible,
+  } = useWidgetStore();
   const { isMobile } = useResponsive();
   const previousMinimizedIdsRef = useRef<Set<string>>(new Set());
   const isInitialMountRef = useRef(true);
@@ -133,7 +168,7 @@ export default function MinimizedWidgetDock() {
 
   // Detect newly minimized widget and highlight it
   useEffect(() => {
-    const currentMinimizedIds = new Set(minimizedWidgets.map(w => w.id));
+    const currentMinimizedIds = new Set(minimizedWidgets.map((w) => w.id));
 
     // Skip highlighting on initial mount
     if (isInitialMountRef.current) {
@@ -144,7 +179,7 @@ export default function MinimizedWidgetDock() {
 
     // Find widget that was just minimized (exists in current but not in previous)
     const newlyMinimized = Array.from(currentMinimizedIds).find(
-      id => !previousMinimizedIdsRef.current.has(id)
+      (id) => !previousMinimizedIdsRef.current.has(id),
     );
 
     if (newlyMinimized) {
@@ -168,8 +203,12 @@ export default function MinimizedWidgetDock() {
   const animationStyle = {
     transition: `transform ${ANIMATION_DURATION_MS}ms ease, opacity ${ANIMATION_DURATION_MS}ms ease`,
     transform: isAnimatingOut
-      ? isMobile ? 'translateX(-100%) translateY(-50%)' : 'translateY(100%)'
-      : isMobile ? 'translateY(-50%)' : 'translateY(0)',
+      ? isMobile
+        ? "translateX(-100%) translateY(-50%)"
+        : "translateY(100%)"
+      : isMobile
+        ? "translateY(-50%)"
+        : "translateY(0)",
     opacity: isAnimatingOut ? 0 : 1,
   };
 
@@ -182,15 +221,15 @@ export default function MinimizedWidgetDock() {
     return (
       <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           left: 0,
-          top: '50%',
+          top: "50%",
           zIndex: 50,
           ...(styles.containerMobile as any),
           ...animationStyle,
         }}
         role="toolbar"
-        aria-label="Minimized widgets"
+        aria-label={t("widgets.minimizedWidgets")}
       >
         <View style={styles.iconsColumn}>
           {minimizedWidgets.map((widget) => (
@@ -200,6 +239,7 @@ export default function MinimizedWidgetDock() {
               isHovered={false}
               isHighlighted={highlightedWidgetId === widget.id}
               isMobile={true}
+              restoreLabel={t("widgets.restoreWidget", { title: widget.title })}
               onHover={() => {}}
               onLeave={() => {}}
               onClick={() => toggleMinimize(widget.id)}
@@ -208,7 +248,7 @@ export default function MinimizedWidgetDock() {
           <Pressable
             onPress={handleCloseDock}
             style={styles.closeButtonMobile}
-            aria-label="Close dock"
+            aria-label={t("widgets.closeDock")}
             role="button"
             accessible={true}
           >
@@ -229,12 +269,13 @@ export default function MinimizedWidgetDock() {
     containerPadding * 2 +
     minimizedWidgets.length * iconSize +
     (minimizedWidgets.length - 1) * iconSpacing +
-    closeButtonSpacing + closeButtonSize;
+    closeButtonSpacing +
+    closeButtonSize;
 
   return (
     <div
       style={{
-        position: 'fixed',
+        position: "fixed",
         bottom: 20,
         left: `calc(50% - ${containerWidth / 2}px)`,
         zIndex: 50,
@@ -243,7 +284,7 @@ export default function MinimizedWidgetDock() {
         ...animationStyle,
       }}
       role="toolbar"
-      aria-label="Minimized widgets"
+      aria-label={t("widgets.minimizedWidgets")}
     >
       <View style={styles.iconsRow}>
         {minimizedWidgets.map((widget) => (
@@ -253,6 +294,7 @@ export default function MinimizedWidgetDock() {
             isHovered={hoveredWidgetId === widget.id}
             isHighlighted={highlightedWidgetId === widget.id}
             isMobile={false}
+            restoreLabel={t("widgets.restoreWidget", { title: widget.title })}
             onHover={() => setHoveredWidgetId(widget.id)}
             onLeave={() => setHoveredWidgetId(null)}
             onClick={() => toggleMinimize(widget.id)}
@@ -261,7 +303,7 @@ export default function MinimizedWidgetDock() {
         <Pressable
           onPress={handleCloseDock}
           style={styles.closeButton}
-          aria-label="Close dock"
+          aria-label={t("widgets.closeDock")}
           role="button"
           accessible={true}
         >
@@ -269,29 +311,41 @@ export default function MinimizedWidgetDock() {
         </Pressable>
       </View>
 
-      {hoveredWidgetId && (() => {
-        const hoveredWidget = minimizedWidgets.find((w) => w.id === hoveredWidgetId);
-        const iconIndex = minimizedWidgets.findIndex((w) => w.id === hoveredWidgetId);
+      {hoveredWidgetId &&
+        (() => {
+          const hoveredWidget = minimizedWidgets.find(
+            (w) => w.id === hoveredWidgetId,
+          );
+          const iconIndex = minimizedWidgets.findIndex(
+            (w) => w.id === hoveredWidgetId,
+          );
 
-        if (!hoveredWidget || iconIndex === -1) return null;
+          if (!hoveredWidget || iconIndex === -1) return null;
 
-        return (
-          <PreviewPopup
-            widget={hoveredWidget}
-            iconIndex={iconIndex}
-            iconSize={iconSize}
-            iconSpacing={iconSpacing}
-            containerPadding={containerPadding}
-          />
-        );
-      })()}
+          return (
+            <PreviewPopup
+              widget={hoveredWidget}
+              iconIndex={iconIndex}
+              iconSize={iconSize}
+              iconSpacing={iconSpacing}
+              containerPadding={containerPadding}
+            />
+          );
+        })()}
 
       <div
         aria-live="polite"
         aria-atomic="true"
-        style={{ position: 'absolute', left: -9999, width: 1, height: 1, overflow: 'hidden' }}
+        style={{
+          position: "absolute",
+          left: -9999,
+          width: 1,
+          height: 1,
+          overflow: "hidden",
+        }}
       >
-        {hoveredWidgetId && `Preview: ${minimizedWidgets.find((w) => w.id === hoveredWidgetId)?.title}`}
+        {hoveredWidgetId &&
+          `Preview: ${minimizedWidgets.find((w) => w.id === hoveredWidgetId)?.title}`}
       </div>
     </div>
   );
@@ -306,9 +360,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
     // @ts-ignore - Web CSS
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
   } as any,
 
   containerMobile: {
@@ -322,20 +376,20 @@ const styles = StyleSheet.create({
     borderColor: glass.border,
     padding: 8,
     // @ts-ignore - Web CSS
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    boxShadow: '4px 0 16px rgba(0, 0, 0, 0.3)',
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    boxShadow: "4px 0 16px rgba(0, 0, 0, 0.3)",
   } as any,
 
   iconsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
   },
 
   iconsColumn: {
-    flexDirection: 'column',
-    alignItems: 'center',
+    flexDirection: "column",
+    alignItems: "center",
     gap: 8,
   },
 
@@ -343,68 +397,69 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
     borderColor: glass.borderLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     // @ts-ignore - Web CSS
-    transition: 'all 0.2s ease',
-    cursor: 'pointer',
+    transition: "all 0.2s ease",
+    cursor: "pointer",
   } as any,
 
   iconButtonMobile: {
     width: 40,
     height: 40,
     borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
     borderColor: glass.borderLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   iconButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     borderColor: glass.borderFocus,
     // @ts-ignore - Web CSS
     transform: [{ scale: 1.1 }],
-    boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)',
+    boxShadow: "0 4px 16px rgba(139, 92, 246, 0.4)",
   } as any,
 
   iconButtonHighlighted: {
-    backgroundColor: 'rgba(139, 92, 246, 0.3)',
-    borderColor: '#8b5cf6',
+    backgroundColor: "rgba(139, 92, 246, 0.3)",
+    borderColor: "#8b5cf6",
     borderWidth: 2,
     // @ts-ignore - Web CSS (React Native Web compatibility)
     transform: [{ scale: 1.15 }],
-    boxShadow: '0 0 24px rgba(139, 92, 246, 0.8), 0 0 48px rgba(139, 92, 246, 0.4)',
-    animationKeyframes: 'pulse',
-    animationDuration: '1s',
-    animationTimingFunction: 'ease-in-out',
-    animationIterationCount: 'infinite',
+    boxShadow:
+      "0 0 24px rgba(139, 92, 246, 0.8), 0 0 48px rgba(139, 92, 246, 0.4)",
+    animationKeyframes: "pulse",
+    animationDuration: "1s",
+    animationTimingFunction: "ease-in-out",
+    animationIterationCount: "infinite",
   } as any,
 
   closeButton: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: 4,
     // @ts-ignore - Web CSS
-    cursor: 'pointer',
-    transition: 'background-color 0.15s ease',
+    cursor: "pointer",
+    transition: "background-color 0.15s ease",
   } as any,
 
   closeButtonMobile: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 4,
   },
 
@@ -423,15 +478,15 @@ const styles = StyleSheet.create({
     borderColor: glass.border,
     padding: spacing[4],
     // @ts-ignore - Web CSS
-    backdropFilter: 'blur(24px)',
-    WebkitBackdropFilter: 'blur(24px)',
-    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
-    pointerEvents: 'none',
+    backdropFilter: "blur(24px)",
+    WebkitBackdropFilter: "blur(24px)",
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
+    pointerEvents: "none",
   } as any,
 
   popupContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: spacing[3],
   },
 
@@ -439,9 +494,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   popupIconEmoji: {
@@ -455,7 +510,7 @@ const styles = StyleSheet.create({
 
   popupTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
 
@@ -466,18 +521,18 @@ const styles = StyleSheet.create({
   },
 
   popupArrow: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -6,
-    left: '50%',
+    left: "50%",
     marginLeft: -6,
     width: 0,
     height: 0,
     borderLeftWidth: 6,
-    borderLeftColor: 'transparent',
+    borderLeftColor: "transparent",
     borderRightWidth: 6,
-    borderRightColor: 'transparent',
+    borderRightColor: "transparent",
     borderTopWidth: 6,
     borderTopColor: glass.border,
-    borderStyle: 'solid',
+    borderStyle: "solid",
   } as any,
 });

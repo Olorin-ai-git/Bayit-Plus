@@ -1842,7 +1842,10 @@
       "errors": {
         "invalidEmail": "Please enter a valid email address",
         "sendFailed": "Failed to send email"
-      }
+      },
+      "templateVariables": "Template Variables",
+      "emailPreview": "Email Preview",
+      "renderingPreview": "Rendering preview..."
     },
     "push": {
       "titlePlaceholder": "Notification Title",
@@ -3025,6 +3028,42 @@
       "contextPlaceholder": "Background context for the AI",
       "noAvatarTitle": "Avatar Required",
       "noAvatarMessage": "You need to create your avatar first before using the Avatar Movie Studio. Please visit the Avatar Creation page to set up your 3D avatar."
+    },
+    "wizard": {
+      "readyToImport": "Ready to import?",
+      "importSummary": "You are about to import {{count}} item(s) from {{source}}.",
+      "category": "Category",
+      "noteAddedToLibrary": "Items will be added to your content library",
+      "noteEditAfterImport": "You can edit them after import",
+      "noteCannotBeUndone": "This action cannot be undone",
+      "importing": "Importing...",
+      "importNow": "Import Now"
+    },
+    "moments": {
+      "title": "Interactive Moment Editor",
+      "videoPreview": "Video Preview",
+      "interactiveMoments": "Interactive Moments ({{count}})",
+      "seek": "Seek",
+      "addNewMoment": "Add New Moment",
+      "timestamp": "Timestamp",
+      "useCurrentTime": "Use Current Time",
+      "current": "Current",
+      "durationSeconds": "Duration (seconds)",
+      "characterName": "Character Name",
+      "characterNamePlaceholder": "e.g., Moshe Rabbenu",
+      "sceneContext": "Scene Context",
+      "sceneContextPlaceholder": "Brief description of what's happening in the scene",
+      "interactionPrompt": "Interaction Prompt",
+      "interactionPromptPlaceholder": "e.g., Ask Moshe about the Ten Commandments",
+      "characterFrame": "Character Frame",
+      "extractFrame": "Extract Frame at Timestamp",
+      "addMoment": "Add Moment",
+      "saveAllMoments": "Save All Moments ({{count}})",
+      "setTimestampFirst": "Please set a timestamp first",
+      "extractFrameFailed": "Failed to extract frame",
+      "fillRequiredFields": "Please fill in all required fields",
+      "savedSuccessfully": "Interactive moments saved successfully",
+      "saveFailed": "Failed to save moments"
     }
   },
   "audiobooks": {
@@ -3744,7 +3783,10 @@
     "tryAgain": "Please try again",
     "unknown": "Unknown",
     "submit": "Submit",
-    "continue": "Continue"
+    "continue": "Continue",
+    "closeModal": "Close modal",
+    "dismissHint": "Dismiss hint",
+    "sending": "Sending..."
   },
   "badges": {
     "aiEnhanced": "AI Enhanced",
@@ -3834,7 +3876,11 @@
         "nameExists": "A widget with this name already exists",
         "titleRequired": "Title is required"
       },
-      "validating": "Validating..."
+      "validating": "Validating...",
+      "x": "X",
+      "y": "Y",
+      "width": "Width",
+      "height": "Height"
     },
     "intro": {
       "title": "Welcome to Widgets",
@@ -3880,7 +3926,12 @@
     "contentType": "Content Type",
     "enterWidgetTitle": "Enter widget title",
     "descriptionOptional": "Description (optional)",
-    "loadingWidgets": "Loading Widgets..."
+    "loadingWidgets": "Loading Widgets...",
+    "restoreWidget": "Restore {{title}}",
+    "clickToRestore": "Click to restore",
+    "minimizedWidgets": "Minimized widgets",
+    "closeDock": "Close dock",
+    "customContent": "Custom content"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -4049,7 +4100,9 @@
       "episode": "Episode {{number}}",
       "seasons": "{{count}} Seasons",
       "episodes": "{{count}} Episodes"
-    }
+    },
+    "toggleFavorite": "Toggle favorite",
+    "togglePlaylist": "Toggle playlist"
   },
   "cultureCities": {
     "connectionTo": "{{city}} Connection",
@@ -4426,7 +4479,13 @@
     "live": "LIVE",
     "scheduleUnavailable": "The TV programming schedule is currently unavailable. Please check back later or contact support if this persists.",
     "noProgramsAvailable": "No programs are available for the selected time range. Try adjusting your filters or check back later.",
-    "loading": "Loading TV guide..."
+    "loading": "Loading TV guide...",
+    "recording": {
+      "scheduled": "Scheduled",
+      "active": "Recording",
+      "completed": "Recorded",
+      "series": "Series Recording"
+    }
   },
   "errors": {
     "networkError": "Network Error",
@@ -6980,7 +7039,9 @@
     "englishLearningModes": "English Learning Modes",
     "notGenerated": "Not generated",
     "cuesCount": "({{count}} cues)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "Generate {{mode}} subtitles for this content",
+    "generateMode": "Generate {{mode}}"
   },
   "support": {
     "title": "Support Center",
@@ -9618,7 +9679,8 @@
       "subscribedLabel": "Plus Member",
       "getUnlimited": "Get unlimited with Plus",
       "upgradeNow": "Upgrade Now",
-      "creditLow": "Credits running low"
+      "creditLow": "Credits running low",
+      "subscribeAtWeb": "Subscribe at bayit.tv"
     },
     "toast": {
       "creditUsed": "Credit used",

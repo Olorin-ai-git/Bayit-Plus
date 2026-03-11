@@ -2075,7 +2075,10 @@
       "errors": {
         "invalidEmail": "Veuillez entrer une adresse e-mail valide",
         "sendFailed": "Échec de l'envoi de l'e-mail"
-      }
+      },
+      "templateVariables": "Variables du modele",
+      "emailPreview": "Apercu de l'email",
+      "renderingPreview": "Rendu de l'apercu..."
     },
     "push": {
       "titlePlaceholder": "Titre de la notification",
@@ -2948,6 +2951,42 @@
       "age": "Âge",
       "approve": "Approuver",
       "reject": "Rejeter"
+    },
+    "wizard": {
+      "readyToImport": "Pret a importer ?",
+      "importSummary": "Vous etes sur le point d'importer {{count}} element(s) de {{source}}.",
+      "category": "Categorie",
+      "noteAddedToLibrary": "Les elements seront ajoutes a votre bibliotheque de contenu",
+      "noteEditAfterImport": "Vous pourrez les modifier apres l'importation",
+      "noteCannotBeUndone": "Cette action est irreversible",
+      "importing": "Importation en cours...",
+      "importNow": "Importer maintenant"
+    },
+    "moments": {
+      "title": "Editeur de moments interactifs",
+      "videoPreview": "Apercu video",
+      "interactiveMoments": "Moments interactifs ({{count}})",
+      "seek": "Rechercher",
+      "addNewMoment": "Ajouter un nouveau moment",
+      "timestamp": "Horodatage",
+      "useCurrentTime": "Utiliser le temps actuel",
+      "current": "Actuel",
+      "durationSeconds": "Duree (secondes)",
+      "characterName": "Nom du personnage",
+      "characterNamePlaceholder": "ex., Moshe Rabbenu",
+      "sceneContext": "Contexte de la scene",
+      "sceneContextPlaceholder": "Breve description de ce qui se passe dans la scene",
+      "interactionPrompt": "Invite d'interaction",
+      "interactionPromptPlaceholder": "ex., Demander a Moshe a propos des Dix Commandements",
+      "characterFrame": "Image du personnage",
+      "extractFrame": "Extraire l'image a l'horodatage",
+      "addMoment": "Ajouter un moment",
+      "saveAllMoments": "Sauvegarder tous les moments ({{count}})",
+      "setTimestampFirst": "Veuillez d'abord definir un horodatage",
+      "extractFrameFailed": "Echec de l'extraction de l'image",
+      "fillRequiredFields": "Veuillez remplir tous les champs requis",
+      "savedSuccessfully": "Moments interactifs sauvegardes avec succes",
+      "saveFailed": "Echec de la sauvegarde des moments"
     }
   },
   "chatbot": {
@@ -3182,7 +3221,10 @@
     "tryAgain": "Veuillez reessayer",
     "unknown": "Inconnu",
     "submit": "Soumettre",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "closeModal": "Fermer la fenetre",
+    "dismissHint": "Ignorer l'indice",
+    "sending": "Envoi en cours..."
   },
   "content": {
     "play": "Lire",
@@ -3230,7 +3272,9 @@
       "episodes": "{{count}} Episodes",
       "related": "Related",
       "seasons": "{{count}} Seasons"
-    }
+    },
+    "toggleFavorite": "Basculer favori",
+    "togglePlaylist": "Basculer playlist"
   },
   "cultureCities": {
     "connectionTo": "Connexion {{city}}",
@@ -3474,7 +3518,13 @@
     "noDataAvailable": "Aucune donnée du guide TV disponible",
     "scheduleUnavailable": "Le guide des programmes TV n'est actuellement pas disponible. Veuillez réessayer plus tard ou contacter le support si le problème persiste.",
     "noProgramsAvailable": "Aucun programme disponible pour la plage horaire sélectionnée. Essayez d'ajuster vos filtres ou revenez plus tard.",
-    "loading": "Chargement du guide TV..."
+    "loading": "Chargement du guide TV...",
+    "recording": {
+      "scheduled": "Programme",
+      "active": "Enregistrement",
+      "completed": "Enregistre",
+      "series": "Enregistrement de serie"
+    }
   },
   "errors": {
     "networkError": "Erreur réseau",
@@ -5484,7 +5534,9 @@
     "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
     "notGenerated": "Non genere",
     "cuesCount": "({{count}} sous-titres)",
-    "failedReason": "- {{language}}: {{reason}}"
+    "failedReason": "- {{language}}: {{reason}}",
+    "generateForContent": "Generer des sous-titres {{mode}} pour ce contenu",
+    "generateMode": "Generer {{mode}}"
   },
   "support": {
     "title": "Centre d'aide",
@@ -7817,7 +7869,11 @@
         "nameExists": "Un widget avec ce nom existe déjà",
         "titleRequired": "Le titre est obligatoire"
       },
-      "validating": "Validation..."
+      "validating": "Validation...",
+      "x": "X",
+      "y": "Y",
+      "width": "Largeur",
+      "height": "Hauteur"
     },
     "contentPicker": {
       "noContent": "Aucun contenu disponible",
@@ -7852,7 +7908,12 @@
     "pinToWidget": "Pin to Widget",
     "urlRequired": "Please enter a URL",
     "urlValid": "URL is valid",
-    "widgetTitle": "Widget Title"
+    "widgetTitle": "Widget Title",
+    "restoreWidget": "Restaurer {{title}}",
+    "clickToRestore": "Cliquer pour restaurer",
+    "minimizedWidgets": "Widgets minimises",
+    "closeDock": "Fermer le dock",
+    "customContent": "Contenu personnalise"
   },
   "youngsters": {
     "title": "Jeunes",
@@ -10785,7 +10846,8 @@
       "subscribedLabel": "Membre Plus",
       "getUnlimited": "Passez à l'illimité avec Plus",
       "upgradeNow": "Mettre à niveau",
-      "creditLow": "Crédits bientôt épuisés"
+      "creditLow": "Crédits bientôt épuisés",
+      "subscribeAtWeb": "Abonnez-vous sur bayit.tv"
     },
     "toast": {
       "creditUsed": "Crédit utilisé",
