@@ -5,11 +5,11 @@ import tv.bayit.plus.feature.discover.model.DiscoverCategory.WATCHING_MOVIES
 import tv.bayit.plus.feature.discover.model.DiscoverPlatform.ANDROID
 import tv.bayit.plus.feature.discover.model.DiscoverPlatform.IOS
 import tv.bayit.plus.feature.discover.model.DiscoverPlatform.TVOS
-import tv.bayit.plus.feature.discover.model.PrerequisiteType.AVATAR
-import tv.bayit.plus.feature.discover.model.PrerequisiteType.CONTENT_TYPE
-import tv.bayit.plus.feature.discover.model.PrerequisiteType.MICROPHONE
-import tv.bayit.plus.feature.discover.model.PrerequisiteType.SUBSCRIPTION
-import tv.bayit.plus.feature.discover.model.PrerequisiteType.VOICE_CLONE
+import tv.bayit.plus.feature.discover.model.FeaturePrerequisite.PrerequisiteType.AVATAR
+import tv.bayit.plus.feature.discover.model.FeaturePrerequisite.PrerequisiteType.CONTENT_TYPE
+import tv.bayit.plus.feature.discover.model.FeaturePrerequisite.PrerequisiteType.MICROPHONE
+import tv.bayit.plus.feature.discover.model.FeaturePrerequisite.PrerequisiteType.SUBSCRIPTION
+import tv.bayit.plus.feature.discover.model.FeaturePrerequisite.PrerequisiteType.VOICE_CLONE
 
 private val allPlatforms = setOf(IOS, TVOS, ANDROID)
 private val mobileOnly = setOf(IOS, ANDROID)

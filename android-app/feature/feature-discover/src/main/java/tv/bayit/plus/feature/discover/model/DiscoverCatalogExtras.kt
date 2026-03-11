@@ -6,8 +6,8 @@ import tv.bayit.plus.feature.discover.model.DiscoverCategory.SEARCH_DISCOVERY
 import tv.bayit.plus.feature.discover.model.DiscoverPlatform.ANDROID
 import tv.bayit.plus.feature.discover.model.DiscoverPlatform.IOS
 import tv.bayit.plus.feature.discover.model.DiscoverPlatform.TVOS
-import tv.bayit.plus.feature.discover.model.PrerequisiteType.AVATAR
-import tv.bayit.plus.feature.discover.model.PrerequisiteType.MICROPHONE
+import tv.bayit.plus.feature.discover.model.FeaturePrerequisite.PrerequisiteType.AVATAR
+import tv.bayit.plus.feature.discover.model.FeaturePrerequisite.PrerequisiteType.MICROPHONE
 
 private val allPlatforms = setOf(IOS, TVOS, ANDROID)
 private val mobileOnly = setOf(IOS, ANDROID)

@@ -80,14 +80,14 @@ fun PlusFeatureCard(
             Text(
                 text = bayitString("common.learnMore"),
                 style = MaterialTheme.typography.labelLarge,
-                color = DesignTokens.Colors.Primary.default,
+                color = DesignTokens.Colors.Primary.base,
                 fontWeight = FontWeight.SemiBold,
             )
 
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = DesignTokens.Colors.Primary.default,
+                tint = DesignTokens.Colors.Primary.base,
                 modifier = Modifier.size(20.dp),
             )
         }

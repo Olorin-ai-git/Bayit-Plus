@@ -56,7 +56,6 @@ internal fun HomeSuccessContent(
     ownerMode: Boolean = false,
     sourceManager: BYOCSourceManager? = null,
     onRefresh: () -> Unit,
-    onNavigateToSubscribe: () -> Unit = {},
     onDismissShabbatBanner: () -> Unit = {},
     isPlusSubscriber: Boolean = false,
     onNavigateToSubscribe: () -> Unit = {},

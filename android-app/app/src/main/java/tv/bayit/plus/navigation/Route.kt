@@ -195,7 +195,6 @@ sealed class Route {
     // Activity
     @Serializable data object ActivityFeed : Route()
 
-    @Serializable data object Discover : Route()
     @Serializable data object Culture : Route()
     @Serializable data object Glossary : Route()
     @Serializable data class GlossaryDetail(val termId: String) : Route()
