@@ -9604,6 +9604,16 @@
       "dubbing": "Watch in English with AI Dubbing",
       "subtitles": "Smart Subtitles with grammar & slang",
       "search": "Find scenes with AI Search"
+    },
+    "intro": {
+      "title": "Welcome to Bayit+",
+      "subtitle": "Unlock the full power of Israeli streaming with AI-powered features",
+      "bullet1": "AI Dubbing in your language",
+      "bullet2": "Smart subtitles with grammar tips",
+      "bullet3": "AI-powered scene search",
+      "bullet4": "500 Beta AI credits included",
+      "seePlans": "See Plans",
+      "maybeLater": "Maybe Later"
     }
   }
 }
