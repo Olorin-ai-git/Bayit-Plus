@@ -49,15 +49,14 @@ extension TVPlayerView {
             isSubtitlesEnabled: state.liveSubtitlesVM?.isEnabled ?? false,
             isDubbingEnabled: state.liveDubbingVM?.isEnabled ?? false,
             isTriviaEnabled: state.triviaVM?.isEnabled ?? false,
-            isSplitEnabled: state.splitModeEnabled,
             isCatchUpAvailable: state.catchUpVM?.isAvailable ?? false,
+            isSceneSearchActive: state.showSceneSearch,
             currentLanguage: state.selectedAILanguage,
             onSubtitlesTap: { toggleLiveTranslation() },
             onDubbingTap: { toggleLiveDubbing() },
             onTriviaTap: { toggleLiveTrivia() },
             onCatchUpTap: { state.showCatchUp = true },
-            onCompanionTap: { state.showCompanion = true },
-            onSplitTap: { state.showSplitLanguagePicker = true },
+            onSceneSearchTap: { state.showSceneSearch = true },
             onLanguageTap: { state.showAILanguagePicker = true }
         )
         .walkthroughTarget(id: "discover_live_subtitles_step2")

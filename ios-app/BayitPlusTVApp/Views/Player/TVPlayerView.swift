@@ -138,11 +138,8 @@ struct TVPlayerView: View {
         .fullScreenCover(isPresented: $state.showCatchUp) {
             catchUpSheet
         }
-        .fullScreenCover(isPresented: $state.showCompanion) {
-            TVAICompanionView(
-                contentId: contentId,
-                onDismiss: { state.showCompanion = false }
-            )
+        .fullScreenCover(isPresented: $state.showSceneSearch) {
+            sceneSearchSheet
         }
         .fullScreenCover(isPresented: $state.showCharacterSelection) {
             characterDialogueFlowSheet

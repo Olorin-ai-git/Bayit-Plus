@@ -9,45 +9,42 @@ struct TVAIFeaturesPanel: View {
     let isSubtitlesEnabled: Bool
     let isDubbingEnabled: Bool
     let isTriviaEnabled: Bool
-    let isSplitEnabled: Bool
     let isCatchUpAvailable: Bool
+    let isSceneSearchActive: Bool
     let currentLanguage: String
 
     let onSubtitlesTap: () -> Void
     let onDubbingTap: () -> Void
     let onTriviaTap: () -> Void
     let onCatchUpTap: (() -> Void)?
-    let onCompanionTap: (() -> Void)?
-    let onSplitTap: () -> Void
+    let onSceneSearchTap: () -> Void
     let onLanguageTap: () -> Void
 
     init(
         isSubtitlesEnabled: Bool,
         isDubbingEnabled: Bool,
         isTriviaEnabled: Bool,
-        isSplitEnabled: Bool,
         isCatchUpAvailable: Bool = false,
+        isSceneSearchActive: Bool = false,
         currentLanguage: String,
         onSubtitlesTap: @escaping () -> Void,
         onDubbingTap: @escaping () -> Void,
         onTriviaTap: @escaping () -> Void,
         onCatchUpTap: (() -> Void)? = nil,
-        onCompanionTap: (() -> Void)? = nil,
-        onSplitTap: @escaping () -> Void,
+        onSceneSearchTap: @escaping () -> Void,
         onLanguageTap: @escaping () -> Void
     ) {
         self.isSubtitlesEnabled = isSubtitlesEnabled
         self.isDubbingEnabled = isDubbingEnabled
         self.isTriviaEnabled = isTriviaEnabled
-        self.isSplitEnabled = isSplitEnabled
         self.isCatchUpAvailable = isCatchUpAvailable
+        self.isSceneSearchActive = isSceneSearchActive
         self.currentLanguage = currentLanguage
         self.onSubtitlesTap = onSubtitlesTap
         self.onDubbingTap = onDubbingTap
         self.onTriviaTap = onTriviaTap
         self.onCatchUpTap = onCatchUpTap
-        self.onCompanionTap = onCompanionTap
-        self.onSplitTap = onSplitTap
+        self.onSceneSearchTap = onSceneSearchTap
         self.onLanguageTap = onLanguageTap
     }
 
@@ -87,20 +84,11 @@ struct TVAIFeaturesPanel: View {
                     )
                 }
 
-                if let onCompanionTap {
-                    featureButton(
-                        icon: "brain.head.profile",
-                        label: "Companion",
-                        isActive: false,
-                        action: onCompanionTap
-                    )
-                }
-
                 featureButton(
-                    icon: "square.split.2x1",
-                    label: "Split",
-                    isActive: isSplitEnabled,
-                    action: onSplitTap
+                    icon: "magnifyingglass",
+                    label: "Scene Search",
+                    isActive: isSceneSearchActive,
+                    action: onSceneSearchTap
                 )
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)

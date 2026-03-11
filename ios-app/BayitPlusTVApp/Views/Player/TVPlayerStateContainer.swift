@@ -62,6 +62,7 @@ final class TVPlayerStateContainer {
     var showSplitLanguagePicker = false
     var showAILanguagePicker = false
     var showCatchUp = false
+    var showSceneSearch = false
     var showCompanion = false
     var showQuiz = false
     var volumeBeforeDuck: Float?

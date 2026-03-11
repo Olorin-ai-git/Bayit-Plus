@@ -152,6 +152,21 @@ extension TVPlayerView {
         }
     }
 
+    // MARK: - Scene Search
+
+    var sceneSearchSheet: some View {
+        TVSceneSearchView(
+            repository: repos.liveTV,
+            channelId: channelId ?? contentId,
+            localization: localization,
+            onSeek: { time in
+                state.showSceneSearch = false
+                Task { await mediaPlayer.seek(to: time) }
+            },
+            onDismiss: { state.showSceneSearch = false }
+        )
+    }
+
     // MARK: - Pause & Ask Overlay (fullScreenCover)
 
     @ViewBuilder
