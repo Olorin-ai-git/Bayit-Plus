@@ -5355,10 +5355,10 @@
   "gate": {
     "contentLocked": "Contenido bloqueado",
     "recommended": "Recomendado",
-    "startTrial": "Iniciar prueba gratuita",
-    "subscribe": "Suscribirse",
-    "trialSubtitle": "Prueba todas las funciones Plus gratis por 7 días",
-    "trialTitle": "Prueba gratuita disponible",
+    "startTrial": "Suscribirse a Plus",
+    "subscribe": "Suscribirse a Plus",
+    "trialSubtitle": "Desbloquea funciones de IA ilimitadas y mas",
+    "trialTitle": "Actualizar a Plus",
     "upgradeRequired": "Se requiere actualización para este contenido"
   },
   "googleLogin": {
@@ -6310,7 +6310,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6382,7 +6386,7 @@
     "recordingError": "Error de grabacion",
     "startRecording": "Iniciar grabacion",
     "stopRecording": "Detener grabacion",
-    "premiumRequired": "Plus Required",
+    "premiumRequired": "Funcion Plus",
     "recordingLiveOnly": "La grabacion solo esta disponible para canales en vivo",
     "subscription": {
       "requiredMessage": "requiere una suscripción paga",
@@ -6487,8 +6491,8 @@
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Plus",
-    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
+    "upgradeToPremium": "Actualizar a Plus",
+    "upgradeToPremiumDubbing": "Actualiza a Plus para doblaje IA ilimitado",
     "videoQuality": "Video Quality",
     "audio": "Audio",
     "catchUp": "Ponerse al dia",
@@ -6502,7 +6506,9 @@
         "voices": "Professional voice selection",
         "lowLatency": "Low-latency audio streaming",
         "highQuality": "High-quality audio"
-      }
+      },
+      "premiumTitle": "Funcion Plus",
+      "premiumMessage": "Actualiza a Plus para doblaje IA ilimitado"
     },
     "dialogue": {
       "talkToCharacter": "Hablar con personaje",
@@ -8139,13 +8145,13 @@
     "perMonth": "/mes",
     "perYear": "/ano",
     "feature": {
-      "allChannels": "Todos los canales de TV en vivo",
-      "aiAssistant": "Asistente AI",
-      "liveDubbing": "Doblaje AI en tiempo real",
-      "fourDevices": "Ver en 4 dispositivos",
-      "4kQuality": "Calidad 4K",
-      "500Credits": "500 creditos AI/mes",
-      "offlineDownload": "Descargar para ver sin conexion"
+      "unlimitedAI": "19 Funciones IA - Ilimitadas",
+      "unlimitedWidgets": "Widgets Ilimitados",
+      "unlimitedProfiles": "Perfiles Familiares Ilimitados",
+      "prioritySupport": "Soporte Prioritario",
+      "freeAI": "50 Creditos IA (unico)",
+      "oneWidget": "1 Widget",
+      "oneProfile": "1 Perfil Familiar"
     }
   },
   "subtitles": {
@@ -11182,7 +11188,7 @@
       "bullet1": "Doblaje IA en múltiples idiomas",
       "bullet2": "Subtítulos inteligentes con herramientas de gramática",
       "bullet3": "Búsqueda de escenas con IA",
-      "bullet4": "50 créditos de IA gratis cada mes",
+      "bullet4": "50 creditos de IA gratis para empezar",
       "seePlans": "Ver planes",
       "maybeLater": "Quizás después"
     }

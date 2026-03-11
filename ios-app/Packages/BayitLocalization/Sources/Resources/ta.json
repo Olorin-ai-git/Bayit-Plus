@@ -4093,7 +4093,7 @@
     "clear": "அழி",
     "expand": "விரிவாக்கு",
     "collapse": "சுருக்கு",
-    "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
+    "upgrade": "Plus-க்கு மேம்படுத்து",
     "skip": "தவிர்",
     "disconnect": "துண்டி",
     "confirmDelete": "நீக்குதலை உறுதிப்படுத்து",
@@ -5360,10 +5360,10 @@
   "gate": {
     "contentLocked": "உள்ளடக்கம் பூட்டப்பட்டது",
     "recommended": "பரிந்துரைக்கப்பட்டது",
-    "startTrial": "இலவச சோதனை தொடங்கு",
-    "subscribe": "சந்தா செலுத்து",
-    "trialSubtitle": "7 நாட்களுக்கு பிளஸ் அம்சங்கள் இலவசம்",
-    "trialTitle": "இலவச சோதனை கிடைக்கிறது",
+    "startTrial": "Plus-க்கு சந்தா செலுத்து",
+    "subscribe": "Plus-க்கு சந்தா செலுத்து",
+    "trialSubtitle": "வரம்பற்ற AI அம்சங்களை திறக்கவும்",
+    "trialTitle": "Plus-க்கு மேம்படுத்து",
     "upgradeRequired": "இந்த உள்ளடக்கத்திற்கு மேம்படுத்தல் தேவை"
   },
   "googleLogin": {
@@ -6310,7 +6310,11 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
     },
     "premium": {
       "name": "பிளஸ்",
@@ -6475,12 +6479,12 @@
     "loadingStream": "Loading stream...",
     "loadingMedia": "மீடியா ஏற்றப்படுகிறது",
     "preparingStream": "ஸ்ட்ரீம் தயாராகிறது...",
-    "premiumRequired": "Plus Required",
+    "premiumRequired": "Plus அம்சம்",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Plus",
-    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
+    "upgradeToPremium": "Plus-க்கு மேம்படுத்து",
+    "upgradeToPremiumDubbing": "வரம்பற்ற AI டப்பிங்கிற்கு Plus-க்கு மேம்படுத்தவும்",
     "videoQuality": "Video Quality",
     "audio": "Audio",
     "catchUp": "Catch Up",
@@ -6494,7 +6498,9 @@
         "voices": "Professional voice selection",
         "lowLatency": "Low-latency audio streaming",
         "highQuality": "High-quality audio"
-      }
+      },
+      "premiumTitle": "Plus அம்சம்",
+      "premiumMessage": "வரம்பற்ற AI டப்பிங்கிற்கு Plus-க்கு மேம்படுத்தவும்"
     },
     "interaction": {
       "previous": "முந்தைய தொடர்பு",
@@ -8098,7 +8104,7 @@
     "continueToWebsite": "இணையதளத்தில் தொடரவும்",
     "loading": "திட்டங்கள் ஏற்றப்படுகின்றன...",
     "noPlans": "சந்தா திட்டங்கள் எதுவும் இல்லை",
-    "premiumContent": "பிளஸ் உள்ளடக்கம்",
+    "premiumContent": "Plus உள்ளடக்கம்",
     "recommended": "பரிந்துரைக்கப்பட்டது",
     "restorePurchase": "கொள்முதலை மீட்டெடுக்கவும்",
     "upgradeRequired": "இந்த உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்",
@@ -8113,13 +8119,13 @@
     "perMonth": "/மாதம்",
     "perYear": "/வருடம்",
     "feature": {
-      "allChannels": "அனைத்து நேரடி TV சேனல்கள்",
-      "aiAssistant": "AI உதவியாளர்",
-      "liveDubbing": "நிகழ்நேர AI டப்பிங்",
-      "fourDevices": "4 சாதனங்களில் பாருங்கள்",
-      "4kQuality": "4K தரம்",
-      "500Credits": "500 AI கிரெடிட்கள்/மாதம்",
-      "offlineDownload": "ஆஃப்லைனில் பார்க்க பதிவிறக்கவும்"
+      "unlimitedAI": "19 AI அம்சங்கள் - வரம்பற்ற",
+      "unlimitedWidgets": "வரம்பற்ற விட்ஜெட்கள்",
+      "unlimitedProfiles": "வரம்பற்ற குடும்ப சுயவிவரங்கள்",
+      "prioritySupport": "முன்னுரிமை ஆதரவு",
+      "freeAI": "50 AI கிரெடிட்கள் (ஒரு முறை)",
+      "oneWidget": "1 விட்ஜெட்",
+      "oneProfile": "1 குடும்ப சுயவிவரம்"
     }
   },
   "subtitles": {
@@ -11167,7 +11173,7 @@
       "bullet1": "பல மொழிகளில் AI டப்பிங்",
       "bullet2": "இலக்கணக் கருவிகளுடன் ஸ்மார்ட் வசனங்கள்",
       "bullet3": "AI-இயக்கப்படும் காட்சி தேடல்",
-      "bullet4": "மாதம் 50 இலவச AI கிரெடிட்கள்",
+      "bullet4": "தொடங்க 50 இலவச AI கிரெடிட்கள்",
       "seePlans": "திட்டங்களைக் காணுங்கள்",
       "maybeLater": "பின்னர் இருக்கலாம்"
     }

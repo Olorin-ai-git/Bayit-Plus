@@ -4120,7 +4120,7 @@
     "feature": "機能",
     "improvement": "改善",
     "enhancement": "強化",
-    "upgrade": "アップグレード",
+    "upgrade": "Plusにアップグレード",
     "downgrade": "ダウングレード",
     "install": "インストール",
     "uninstall": "アンインストール",
@@ -5702,10 +5702,10 @@
   "gate": {
     "contentLocked": "コンテンツがロック",
     "recommended": "おすすめ",
-    "startTrial": "無料トライアル開始",
-    "subscribe": "登録する",
-    "trialSubtitle": "7日間プラス機能を無料でお試し",
-    "trialTitle": "無料トライアル利用可能",
+    "startTrial": "Plusに登録",
+    "subscribe": "Plusに登録",
+    "trialSubtitle": "無制限のAI機能などをアンロック",
+    "trialTitle": "Plusにアップグレード",
     "upgradeRequired": "アップグレードが必要です"
   },
   "googleLogin": {
@@ -6988,11 +6988,11 @@
     "loadingStream": "Loading stream...",
     "loadingMedia": "メディアを読み込み中",
     "preparingStream": "ストリームを準備中...",
-    "premiumRequired": "Plus Required",
+    "premiumRequired": "Plus機能",
     "season": "Season",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Plus",
-    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
+    "upgradeToPremium": "Plusにアップグレード",
+    "upgradeToPremiumDubbing": "無制限AIダビングのためにPlusにアップグレード",
     "videoQuality": "Video Quality",
     "catchUp": "Catch Up",
     "scenes": "Scenes",
@@ -7005,7 +7005,9 @@
         "voices": "Professional voice selection",
         "lowLatency": "Low-latency audio streaming",
         "highQuality": "High-quality audio"
-      }
+      },
+      "premiumTitle": "Plus機能",
+      "premiumMessage": "無制限AIダビングのためにPlusにアップグレード"
     },
     "interaction": {
       "previous": "前のインタラクション",
@@ -8838,7 +8840,7 @@
     "continueToWebsite": "ウェブサイトに進む",
     "loading": "プランを読み込み中...",
     "noPlans": "利用可能なサブスクリプションプランはありません",
-    "premiumContent": "プラスコンテンツ",
+    "premiumContent": "Plusコンテンツ",
     "recommended": "おすすめ",
     "restorePurchase": "購入を復元",
     "upgradeRequired": "このコンテンツにアクセスするにはサブスクリプションをアップグレードしてください",
@@ -8853,13 +8855,13 @@
     "perMonth": "/月",
     "perYear": "/年",
     "feature": {
-      "allChannels": "全てのライブTVチャンネル",
-      "aiAssistant": "AI アシスタント",
-      "liveDubbing": "リアルタイムAI吹き替え",
-      "fourDevices": "4台のデバイスで視聴",
-      "4kQuality": "4K画質",
-      "500Credits": "500 AIクレジット/月",
-      "offlineDownload": "オフライン用にダウンロード"
+      "unlimitedAI": "19のAI機能 - 無制限",
+      "unlimitedWidgets": "無制限のウィジェット",
+      "unlimitedProfiles": "無制限のファミリープロフィール",
+      "prioritySupport": "優先サポート",
+      "freeAI": "50 AIクレジット（1回限り）",
+      "oneWidget": "ウィジェット1つ",
+      "oneProfile": "ファミリープロフィール1つ"
     }
   },
   "subtitles": {
@@ -12015,7 +12017,7 @@
       "bullet1": "多言語AIダビング",
       "bullet2": "文法ツール付きスマート字幕",
       "bullet3": "AIシーン検索",
-      "bullet4": "毎月50AIクレジット無料",
+      "bullet4": "開始時に50の無料AIクレジット",
       "seePlans": "プランを見る",
       "maybeLater": "後で"
     }

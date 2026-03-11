@@ -2,8 +2,8 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Lightweight inline premium gate for live dubbing feature.
-/// Displays premium requirement and upgrade button.
+/// Lightweight inline gate for live dubbing Plus feature.
+/// Displays Plus requirement and upgrade button.
 struct DubbingPremiumGateView: View {
     let onDismiss: () -> Void
     var onUpgrade: (() -> Void)?
@@ -35,11 +35,11 @@ struct DubbingPremiumGateView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(DesignTokens.Warning.default)
 
-            Text(localization.t("player.premiumRequired"))
+            Text(localization.t("player.dubbing.premiumTitle"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text(localization.t("player.upgradeToPremiumDubbing"))
+            Text(localization.t("player.dubbing.premiumMessage"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .multilineTextAlignment(.center)
@@ -77,7 +77,7 @@ struct DubbingPremiumGateView: View {
 
     private var upgradeButton: some View {
         GlassButton(
-            localization.t("player.upgradeToPremium"),
+            localization.t("common.upgrade"),
             variant: .primary,
             size: .large,
             icon: Image(systemName: "crown.fill")
@@ -85,7 +85,7 @@ struct DubbingPremiumGateView: View {
             onUpgrade?()
             onDismiss()
         }
-        .accessibilityLabel("Upgrade to Premium subscription")
+        .accessibilityLabel("Upgrade to Plus subscription")
     }
 
     private var dismissButton: some View {
@@ -96,6 +96,6 @@ struct DubbingPremiumGateView: View {
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
-        .accessibilityLabel("Dismiss premium gate")
+        .accessibilityLabel("Dismiss upgrade gate")
     }
 }

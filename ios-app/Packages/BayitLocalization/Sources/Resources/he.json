@@ -4043,7 +4043,7 @@
     "clearSelection": "נקה",
     "expand": "הרחב",
     "collapse": "כווץ",
-    "upgrade": "שדרג לפלוס",
+    "upgrade": "שדרג ל-Plus",
     "skip": "דלג",
     "dismiss": "סגור",
     "refresh": "רענן",
@@ -5329,10 +5329,10 @@
   "gate": {
     "contentLocked": "תוכן נעול",
     "recommended": "מומלץ",
-    "startTrial": "התחל תקופת ניסיון",
-    "subscribe": "הירשם למנוי",
-    "trialSubtitle": "נסה את כל תכונות הפלוס בחינם ל-7 ימים",
-    "trialTitle": "תקופת ניסיון זמינה",
+    "startTrial": "הרשם ל-Plus",
+    "subscribe": "הרשם ל-Plus",
+    "trialSubtitle": "פתח תכונות AI ללא הגבלה ועוד",
+    "trialTitle": "שדרג ל-Plus",
     "upgradeRequired": "נדרש שדרוג כדי לגשת לתוכן זה"
   },
   "googleLogin": {
@@ -6289,7 +6289,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פלוס",
@@ -6367,7 +6371,7 @@
     "recordingError": "שגיאת הקלטה",
     "startRecording": "התחל הקלטה",
     "stopRecording": "עצור הקלטה",
-    "premiumRequired": "Plus Required",
+    "premiumRequired": "תכונת Plus",
     "recordingLiveOnly": "הקלטה זמינה רק עבור ערוצים חיים",
     "selectQuality": "בחר איכות וידאו",
     "quality4k": "4K Ultra HD",
@@ -6464,8 +6468,8 @@
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Plus",
-    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
+    "upgradeToPremium": "שדרג ל-Plus",
+    "upgradeToPremiumDubbing": "שדרג ל-Plus לדיבוב AI ללא הגבלה",
     "videoQuality": "Video Quality",
     "audio": "שמע",
     "catchUp": "צפייה חוזרת",
@@ -6479,7 +6483,9 @@
         "voices": "Professional voice selection",
         "lowLatency": "Low-latency audio streaming",
         "highQuality": "High-quality audio"
-      }
+      },
+      "premiumTitle": "תכונת Plus",
+      "premiumMessage": "שדרג ל-Plus לדיבוב AI ללא הגבלה"
     },
     "interactive": {
       "skip": "דלג",
@@ -8092,7 +8098,7 @@
     "continueToWebsite": "המשך לאתר",
     "loading": "טוען תוכניות...",
     "noPlans": "אין תוכניות מנוי זמינות",
-    "premiumContent": "תוכן פלוס",
+    "premiumContent": "תוכן Plus",
     "recommended": "מומלץ",
     "restorePurchase": "שחזור רכישה",
     "upgradeRequired": "שדרג את המנוי שלך כדי לגשת לתוכן זה",
@@ -8107,13 +8113,13 @@
     "perMonth": "/חודש",
     "perYear": "/שנה",
     "feature": {
-      "allChannels": "כל ערוצי השידור החי",
-      "aiAssistant": "עוזר AI חכם",
-      "liveDubbing": "דיבוב AI בזמן אמת",
-      "fourDevices": "צפייה על 4 מכשירים",
-      "4kQuality": "איכות 4K",
-      "500Credits": "500 קרדיטי AI בחודש",
-      "offlineDownload": "הורדה לצפייה אופליין"
+      "unlimitedAI": "19 תכונות AI - ללא הגבלה",
+      "unlimitedWidgets": "וידג'טים ללא הגבלה",
+      "unlimitedProfiles": "פרופילים משפחתיים ללא הגבלה",
+      "prioritySupport": "תמיכה עדיפותית",
+      "freeAI": "50 קרדיטים של AI (חד-פעמי)",
+      "oneWidget": "וידג'ט 1",
+      "oneProfile": "פרופיל משפחתי 1"
     }
   },
   "subtitles": {
@@ -11149,7 +11155,7 @@
       "bullet1": "דיבוב AI במגוון שפות",
       "bullet2": "כתוביות חכמות עם כלי דקדוק",
       "bullet3": "חיפוש סצנות מונע AI",
-      "bullet4": "50 קרדיטי AI חינם כל חודש",
+      "bullet4": "50 קרדיטים של AI חינם להתחלה",
       "seePlans": "ראו מסלולים",
       "maybeLater": "אולי מאוחר יותר"
     }

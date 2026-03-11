@@ -5138,10 +5138,10 @@
   "gate": {
     "contentLocked": "Content Locked",
     "recommended": "Recommended",
-    "startTrial": "Start Free Trial",
-    "subscribe": "Subscribe",
-    "trialSubtitle": "Try all Plus features free for 7 days",
-    "trialTitle": "Free Trial Available",
+    "startTrial": "Subscribe to Plus",
+    "subscribe": "Subscribe to Plus",
+    "trialSubtitle": "Unlock unlimited AI features and more",
+    "trialTitle": "Upgrade to Plus",
     "upgradeRequired": "Upgrade required to access this content"
   },
   "googleLogin": {
@@ -6090,7 +6090,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6158,7 +6162,9 @@
         "voices": "Professional voice selection",
         "lowLatency": "Low-latency audio streaming",
         "highQuality": "High-quality audio"
-      }
+      },
+      "premiumTitle": "Plus Feature",
+      "premiumMessage": "Upgrade to Plus for unlimited AI dubbing"
     },
     "interaction": {
       "next": "Next",
@@ -6242,7 +6248,10 @@
     "hideAIFeatures": "Hide AI Features",
     "showAIFeatures": "Show AI Features",
     "selectOutputLanguage": "Select Output Language",
-    "currentLanguage": "Current Language"
+    "currentLanguage": "Current Language",
+    "premiumRequired": "Plus Feature",
+    "upgradeToPremiumDubbing": "Upgrade to Plus for unlimited AI dubbing",
+    "upgradeToPremium": "Upgrade to Plus"
   },
   "playlist": {
     "title": "My Playlist",
@@ -7825,7 +7834,7 @@
     "continueToWebsite": "Continue to Website",
     "loading": "Loading Plans...",
     "noPlans": "No subscription plans available",
-    "premiumContent": "Premium Content",
+    "premiumContent": "Plus Content",
     "recommended": "Recommended",
     "restorePurchase": "Restore Purchase",
     "upgradeRequired": "Upgrade your subscription to access this content",
@@ -7840,13 +7849,13 @@
     "perMonth": "/month",
     "perYear": "/year",
     "feature": {
-      "allChannels": "All live TV channels",
-      "aiAssistant": "AI assistant",
-      "liveDubbing": "Real-time AI dubbing",
-      "fourDevices": "Watch on 4 devices",
-      "4kQuality": "4K quality",
-      "500Credits": "500 AI credits/month",
-      "offlineDownload": "Download for offline"
+      "unlimitedAI": "19 AI Features - Unlimited",
+      "unlimitedWidgets": "Unlimited Widgets",
+      "unlimitedProfiles": "Unlimited Family Profiles",
+      "prioritySupport": "Priority Support",
+      "freeAI": "50 AI Credits (one-time)",
+      "oneWidget": "1 Widget",
+      "oneProfile": "1 Family Profile"
     }
   },
   "subtitles": {
@@ -10401,7 +10410,7 @@
       "bullet1": "AI dubbing in multiple languages",
       "bullet2": "Smart subtitles with grammar tools",
       "bullet3": "AI-powered scene search",
-      "bullet4": "50 free AI credits every month",
+      "bullet4": "50 free AI credits to start",
       "seePlans": "See Plans",
       "maybeLater": "Maybe Later"
     }

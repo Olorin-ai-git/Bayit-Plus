@@ -8,7 +8,7 @@ public enum SubscriptionTier: String, Codable, Sendable, CaseIterable {
     case free
     case plus
 
-    /// Whether this tier grants Plus-level features (AI, downloads, 4K).
+    /// Whether this tier grants Plus-level features (unlimited AI, widgets, profiles).
     public var isPremium: Bool {
         switch self {
         case .plus:

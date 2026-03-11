@@ -13,12 +13,11 @@ struct SubscriptionPlan: Decodable, Sendable, Identifiable {
     let name: String
     let price: Double
     let priceYearly: Double?
-    let features: [String]
-    let maxStreams: Int?
-    let quality: String?
-    let includesLive: Bool?
     let includesAi: Bool?
-    let includesDownloads: Bool?
+    let aiCredits: Int?
+    let maxWidgets: Int?
+    let maxProfiles: Int?
+    let prioritySupport: Bool?
 }
 
 /// Response from GET /api/v1/subscriptions/current

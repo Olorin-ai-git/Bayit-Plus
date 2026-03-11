@@ -26,7 +26,7 @@ struct SubscriptionGateView: View {
                         }
                     } else {
                         lockHeader
-                        trialBanner
+                        featuresList
                         billingPicker(vm)
                         purchaseCard(vm)
                     }
@@ -70,46 +70,43 @@ struct SubscriptionGateView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Trial Banner
+    // MARK: - Features List
 
-    private var trialBanner: some View {
+    private var featuresList: some View {
         GlassCard {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                Image(systemName: "gift.fill")
-                    .font(.system(size: DesignTokens.FontSize.xl))
-                    .foregroundStyle(DesignTokens.Primary.p300)
-
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
-                    Text(localization.t("gate.trialTitle"))
-                        .font(.system(
-                            size: DesignTokens.FontSize.md,
-                            weight: .bold
-                        ))
-                        .foregroundStyle(DesignTokens.Text.primary)
-
-                    Text(localization.t("gate.trialSubtitle"))
-                        .font(.system(size: DesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                }
-
-                Spacer()
-            }
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .stroke(
-                    LinearGradient(
-                        colors: [
-                            DesignTokens.Primary.p500,
-                            DesignTokens.Secondary.s500,
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 2
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+                featureRow(
+                    icon: "sparkles",
+                    text: localization.t("subscription.feature.unlimitedAI")
                 )
-        )
+                featureRow(
+                    icon: "square.grid.2x2",
+                    text: localization.t("subscription.feature.unlimitedWidgets")
+                )
+                featureRow(
+                    icon: "person.2",
+                    text: localization.t("subscription.feature.unlimitedProfiles")
+                )
+                featureRow(
+                    icon: "headphones",
+                    text: localization.t("subscription.feature.prioritySupport")
+                )
+            }
+            .padding(DesignTokens.Spacing.md)
+        }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private func featureRow(icon: String, text: String) -> some View {
+        HStack(spacing: DesignTokens.Spacing.sm) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(DesignTokens.Success.default)
+                .frame(width: 20)
+            Text(text)
+                .font(.system(size: DesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.secondary)
+        }
     }
 
     // MARK: - Billing Picker
@@ -175,7 +172,7 @@ struct SubscriptionGateView: View {
                 }
 
                 GlassButton(
-                    localization.t("gate.startTrial"),
+                    localization.t("gate.subscribe"),
                     variant: .primary,
                     isLoading: vm.isProcessing
                 ) {

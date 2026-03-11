@@ -62,13 +62,10 @@ extension SubscriptionView {
     func plusProductCard(_ vm: SubscriptionViewModel) -> some View {
         let product = vm.selectedProduct
         let features = [
-            localization.t("subscription.feature.allChannels"),
-            localization.t("subscription.feature.aiAssistant"),
-            localization.t("subscription.feature.liveDubbing"),
-            localization.t("subscription.feature.fourDevices"),
-            localization.t("subscription.feature.4kQuality"),
-            localization.t("subscription.feature.500Credits"),
-            localization.t("subscription.feature.offlineDownload"),
+            localization.t("subscription.feature.unlimitedAI"),
+            localization.t("subscription.feature.unlimitedWidgets"),
+            localization.t("subscription.feature.unlimitedProfiles"),
+            localization.t("subscription.feature.prioritySupport"),
         ]
 
         return GlassCard {

@@ -4017,7 +4017,7 @@
     "clearSelection": "साफ़ करें",
     "expand": "विस्तार करें",
     "collapse": "संक्षिप्त करें",
-    "upgrade": "प्लस में अपग्रेड करें",
+    "upgrade": "Plus में अपग्रेड करें",
     "skip": "छोड़ें",
     "disconnect": "डिस्कनेक्ट करें",
     "confirmDelete": "हटाने की पुष्टि करें",
@@ -5283,10 +5283,10 @@
   "gate": {
     "contentLocked": "सामग्री लॉक है",
     "recommended": "अनुशंसित",
-    "startTrial": "मुफ्त परीक्षण शुरू",
-    "subscribe": "सदस्यता लें",
-    "trialSubtitle": "7 दिनों के लिए सभी प्लस सुविधाएं मुफ्त",
-    "trialTitle": "मुफ्त परीक्षण उपलब्ध",
+    "startTrial": "Plus की सदस्यता लें",
+    "subscribe": "Plus की सदस्यता लें",
+    "trialSubtitle": "असीमित AI सुविधाएं और अधिक अनलॉक करें",
+    "trialTitle": "Plus में अपग्रेड करें",
     "upgradeRequired": "इस सामग्री के लिए अपग्रेड आवश्यक"
   },
   "googleLogin": {
@@ -6233,7 +6233,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्लस",
@@ -6399,12 +6403,12 @@
     "loadingStream": "Loading stream...",
     "loadingMedia": "मीडिया लोड हो रही है",
     "preparingStream": "स्ट्रीम तैयार हो रही है...",
-    "premiumRequired": "Plus Required",
+    "premiumRequired": "Plus सुविधा",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Plus",
-    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
+    "upgradeToPremium": "Plus में अपग्रेड करें",
+    "upgradeToPremiumDubbing": "असीमित AI डबिंग के लिए Plus में अपग्रेड करें",
     "videoQuality": "Video Quality",
     "audio": "Audio",
     "catchUp": "Catch Up",
@@ -6418,7 +6422,9 @@
         "voices": "Professional voice selection",
         "lowLatency": "Low-latency audio streaming",
         "highQuality": "High-quality audio"
-      }
+      },
+      "premiumTitle": "Plus सुविधा",
+      "premiumMessage": "असीमित AI डबिंग के लिए Plus में अपग्रेड करें"
     },
     "interaction": {
       "previous": "पिछला इंटरैक्शन",
@@ -8025,7 +8031,7 @@
     "continueToWebsite": "वेबसाइट पर जारी रखें",
     "loading": "योजनाएं लोड हो रही हैं...",
     "noPlans": "कोई सदस्यता योजना उपलब्ध नहीं है",
-    "premiumContent": "प्लस सामग्री",
+    "premiumContent": "Plus सामग्री",
     "recommended": "अनुशंसित",
     "restorePurchase": "खरीदारी पुनर्स्थापित करें",
     "upgradeRequired": "इस सामग्री तक पहुंचने के लिए अपनी सदस्यता अपग्रेड करें",
@@ -8040,13 +8046,13 @@
     "perMonth": "/माह",
     "perYear": "/वर्ष",
     "feature": {
-      "allChannels": "सभी लाइव TV चैनल",
-      "aiAssistant": "AI सहायक",
-      "liveDubbing": "रियल-टाइम AI डबिंग",
-      "fourDevices": "4 डिवाइस पर देखें",
-      "4kQuality": "4K गुणवत्ता",
-      "500Credits": "500 AI क्रेडिट/माह",
-      "offlineDownload": "ऑफ़लाइन के लिए डाउनलोड करें"
+      "unlimitedAI": "19 AI सुविधाएं - असीमित",
+      "unlimitedWidgets": "असीमित विजेट",
+      "unlimitedProfiles": "असीमित पारिवारिक प्रोफ़ाइल",
+      "prioritySupport": "प्राथमिकता सहायता",
+      "freeAI": "50 AI क्रेडिट (एक बार)",
+      "oneWidget": "1 विजेट",
+      "oneProfile": "1 पारिवारिक प्रोफ़ाइल"
     }
   },
   "subtitles": {
@@ -11090,7 +11096,7 @@
       "bullet1": "कई भाषाओं में AI डबिंग",
       "bullet2": "व्याकरण उपकरणों के साथ स्मार्ट उपशीर्षक",
       "bullet3": "AI-संचालित दृश्य खोज",
-      "bullet4": "हर महीने 50 मुफ्त AI क्रेडिट",
+      "bullet4": "शुरू करने के लिए 50 मुफ्त AI क्रेडिट",
       "seePlans": "योजनाएं देखें",
       "maybeLater": "शायद बाद में"
     }

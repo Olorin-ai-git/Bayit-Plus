@@ -5282,10 +5282,10 @@
   "gate": {
     "contentLocked": "内容已锁定",
     "recommended": "推荐",
-    "startTrial": "开始免费试用",
-    "subscribe": "订阅",
-    "trialSubtitle": "免费试用所有Plus功能7天",
-    "trialTitle": "可免费试用",
+    "startTrial": "订阅Plus",
+    "subscribe": "订阅Plus",
+    "trialSubtitle": "解锁无限AI功能等",
+    "trialTitle": "升级到Plus",
     "upgradeRequired": "需要升级才能访问此内容"
   },
   "googleLogin": {
@@ -6226,8 +6226,17 @@
   "plans": {
     "basic": {
       "name": "免费",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6392,12 +6401,12 @@
     "loadingStream": "Loading stream...",
     "loadingMedia": "正在加载媒体",
     "preparingStream": "正在准备流媒体...",
-    "premiumRequired": "Plus Required",
+    "premiumRequired": "Plus功能",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Plus",
-    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
+    "upgradeToPremium": "升级到Plus",
+    "upgradeToPremiumDubbing": "升级到Plus享受无限AI配音",
     "videoQuality": "Video Quality",
     "audio": "Audio",
     "catchUp": "Catch Up",
@@ -6411,7 +6420,9 @@
         "voices": "Professional voice selection",
         "lowLatency": "Low-latency audio streaming",
         "highQuality": "High-quality audio"
-      }
+      },
+      "premiumTitle": "Plus功能",
+      "premiumMessage": "升级到Plus享受无限AI配音"
     },
     "interaction": {
       "previous": "上一个互动",
@@ -8025,13 +8036,13 @@
     "perMonth": "/月",
     "perYear": "/年",
     "feature": {
-      "allChannels": "所有直播电视频道",
-      "aiAssistant": "AI 助手",
-      "liveDubbing": "实时AI配音",
-      "fourDevices": "在4台设备上观看",
-      "4kQuality": "4K画质",
-      "500Credits": "每月500 AI积分",
-      "offlineDownload": "下载离线观看"
+      "unlimitedAI": "19项AI功能 - 无限制",
+      "unlimitedWidgets": "无限小组件",
+      "unlimitedProfiles": "无限家庭配置文件",
+      "prioritySupport": "优先支持",
+      "freeAI": "50 AI积分（一次性）",
+      "oneWidget": "1个小组件",
+      "oneProfile": "1个家庭配置文件"
     }
   },
   "subtitles": {
@@ -11076,7 +11087,7 @@
       "bullet1": "多语言AI配音",
       "bullet2": "带语法工具的智能字幕",
       "bullet3": "AI场景搜索",
-      "bullet4": "每月50个免费AI积分",
+      "bullet4": "开始时赠送50个免费AI积分",
       "seePlans": "查看方案",
       "maybeLater": "以后再说"
     }

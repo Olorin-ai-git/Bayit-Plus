@@ -186,14 +186,14 @@ public struct GlassLiveControlButton: View {
         case .idle: return "Off"
         case .enabled: return "On"
         case .connecting: return "Connecting"
-        case .premiumLocked: return "Premium required"
+        case .premiumLocked: return "Plus required"
         case .disabled: return "Unavailable"
         }
     }
 
     private var accessibilityHint: String {
         switch state {
-        case .premiumLocked: return "Upgrade to Premium to use this feature"
+        case .premiumLocked: return "Upgrade to Plus to use this feature"
         case .disabled: return "This feature is currently unavailable"
         default: return "Double tap to toggle"
         }

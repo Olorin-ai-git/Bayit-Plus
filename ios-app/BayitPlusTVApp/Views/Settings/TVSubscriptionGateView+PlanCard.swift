@@ -36,19 +36,25 @@
                         .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                         .foregroundStyle(DesignTokens.Glass.purpleLight)
 
-                    if !plan.features.isEmpty {
-                        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                            ForEach(plan.features, id: \.self) { feature in
-                                HStack(alignment: .top, spacing: TVDesignTokens.Spacing.sm) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                                        .foregroundStyle(DesignTokens.Glass.purpleLight)
+                    VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+                        let featureKeys = plan.name.lowercased() == "plus"
+                            ? ["subscription.feature.unlimitedAI",
+                               "subscription.feature.unlimitedWidgets",
+                               "subscription.feature.unlimitedProfiles",
+                               "subscription.feature.prioritySupport"]
+                            : ["subscription.feature.freeAI",
+                               "subscription.feature.oneWidget",
+                               "subscription.feature.oneProfile"]
+                        ForEach(featureKeys, id: \.self) { key in
+                            HStack(alignment: .top, spacing: TVDesignTokens.Spacing.sm) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                                    .foregroundStyle(DesignTokens.Glass.purpleLight)
 
-                                    Text(feature)
-                                        .font(.system(size: TVDesignTokens.FontSize.md))
-                                        .foregroundStyle(DesignTokens.Text.secondary)
-                                        .multilineTextAlignment(.leading)
-                                }
+                                Text(localization.t(key))
+                                    .font(.system(size: TVDesignTokens.FontSize.md))
+                                    .foregroundStyle(DesignTokens.Text.secondary)
+                                    .multilineTextAlignment(.leading)
                             }
                         }
                     }
