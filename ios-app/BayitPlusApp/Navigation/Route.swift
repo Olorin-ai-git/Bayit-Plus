@@ -150,4 +150,7 @@ public enum Route: Hashable {
     case zehAniMovieInteractions(profileId: String)
     case zehAniMovieCharacters(profileId: String, contentId: String)
     case zehAniCharacterDialogue(profileId: String, contentId: String, characterName: String)
+
+    /// Interactive Mission
+    case interactiveMission(missionId: String, profileId: String)
 }

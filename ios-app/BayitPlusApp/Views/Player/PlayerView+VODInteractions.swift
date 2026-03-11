@@ -124,6 +124,21 @@
             }
         }
 
+        // MARK: - TalkBack Overlay
+
+        @ViewBuilder
+        var talkBackOverlay: some View {
+            if let vm = talkBackVM, vm.state != .idle {
+                TalkBackOverlayView(
+                    viewModel: vm,
+                    sessionId: contentId,
+                    contentId: contentId,
+                    profileId: authManager.user?.id ?? "",
+                    onPromptAudioPlay: nil
+                )
+            }
+        }
+
         // Action methods defined in PlayerView+VODInteractions+Init.swift
     }
 #endif

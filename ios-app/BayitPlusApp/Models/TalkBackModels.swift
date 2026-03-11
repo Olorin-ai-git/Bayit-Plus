@@ -61,7 +61,10 @@ struct TalkBackStats: Codable, Sendable {
 
 /// Individual attempt record for dashboard history display.
 struct TalkBackAttemptRecord: Codable, Sendable, Identifiable {
-    var id: String { pointId + createdAt }
+    var id: String {
+        pointId + createdAt
+    }
+
     let pointId: String
     let quality: String
     let accuracyScore: Double
@@ -85,4 +88,20 @@ struct TalkBackSubmitRequest: Encodable, Sendable {
     let profileId: String
     let responseTranscript: String
     let languageDetected: String
+}
+
+// MARK: - Vocabulary Item
+
+/// Vocabulary word progress from GET /api/v1/talk-back/dashboard/vocabulary
+struct TalkBackVocabularyItem: Decodable, Sendable, Identifiable {
+    var id: String {
+        word
+    }
+
+    let word: String
+    let transliteration: String
+    let translation: String
+    let mastery: Double
+    let timesTested: Int
+    let timesCorrect: Int
 }

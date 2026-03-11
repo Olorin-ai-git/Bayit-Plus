@@ -151,6 +151,7 @@ extension PlayerView {
             // Full-screen interaction overlays (above controls)
             interactiveMomentOverlay
             dialogueOverlay
+            talkBackOverlay
             pauseAskOverlay
             sharedInteractionOverlay
 
@@ -197,6 +198,8 @@ extension PlayerView {
         liveSubtitlesVM?.cleanup()
         catchUpVM?.reset()
         catchUpVM = nil
+        talkBackVM?.resetAll()
+        talkBackVM = nil
         interactionVM = nil
         if dialogueVM?.isActive == true {
             Task { await dialogueVM?.endSession() }
@@ -211,6 +214,7 @@ extension PlayerView {
             guard !Task.isCancelled else { return }
             updateNowPlaying()
             triviaVM?.updateActiveFact(currentTime: newTime)
+            talkBackVM?.checkTrigger(currentTime: newTime, tolerance: 1.0)
             if interactionVM?.checkForMoment(currentTime: newTime) == true {
                 // Overlay appears via interactiveMomentOverlay ViewBuilder
             }

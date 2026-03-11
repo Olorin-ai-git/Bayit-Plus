@@ -20,4 +20,10 @@ abstract class RepositoryModule {
     abstract fun bindSubscriptionRepository(
         impl: ApiSubscriptionRepository
     ): SubscriptionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSceneSearchRepository(
+        impl: ApiSceneSearchRepository
+    ): SceneSearchRepository
 }

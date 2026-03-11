@@ -139,6 +139,7 @@ const ChessInvitePage = lazy(() => import("./pages/ChessInvitePage"));
 const FriendsPage = lazy(() => import("./pages/FriendsPage"));
 const PlayerProfilePage = lazy(() => import("./pages/PlayerProfilePage"));
 const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
+const PhoneticMirrorPage = lazy(() => import("./pages/PhoneticMirrorPage"));
 const MissionsPage = lazy(() => import("./pages/MissionsPage"));
 const DiscoverPage = lazy(() => import("./pages/DiscoverPage"));
 const DiscoverFeatureDetailPage = lazy(
@@ -464,6 +465,7 @@ const AppContent = () => {
         <Route path="/help" element={<HelpPage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="/glossary" element={<GlossaryPage />} />
+        <Route path="/phonetic-mirror" element={<PhoneticMirrorPage />} />
         <Route path="/missions" element={<MissionsPage />} />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route

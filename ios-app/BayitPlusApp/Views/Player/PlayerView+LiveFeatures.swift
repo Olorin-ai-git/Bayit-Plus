@@ -117,7 +117,9 @@
                     Spacer()
                     AICompanionSidebarView(
                         repository: repositories.chat,
+                        talkBackRepository: repositories.talkBack,
                         contentId: contentId,
+                        profileId: authManager.user?.id ?? "",
                         onDismiss: {
                             withAnimation(.spring(duration: 0.3)) {
                                 showAICompanion = false

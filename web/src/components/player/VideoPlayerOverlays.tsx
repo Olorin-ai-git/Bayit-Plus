@@ -1,88 +1,113 @@
-import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import { GlassLoadingSpinner } from '@bayit/shared/ui'
-import { useTranslation } from 'react-i18next'
-import { useResponsive } from '@/hooks/useResponsive'
-import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassView } from '@bayit/shared/ui'
-import { RecordingStatusIndicator } from './RecordingStatusIndicator'
-import SubtitleOverlay from './SubtitleOverlay'
-import LiveSubtitleOverlay from './LiveSubtitleOverlay'
-import LiveSplitSubtitleOverlay from './subtitle/LiveSplitSubtitleOverlay'
-import { DubbingOverlay } from './dubbing'
-import TriviaOverlay from './TriviaOverlay'
-import LiveFeatureUsageIndicator from './LiveFeatureUsageIndicator'
-import OmriOverlay from './OmriOverlay'
-import liveSubtitleService from '@/services/liveSubtitleService'
-import liveSplitSubtitleService from '@/services/liveSplitSubtitleService'
-import { SubtitleCue } from './types'
-import { SubtitleSettings, SplitLanguages, LiveSubtitleCue } from '@/types/subtitle'
-import { UsageStat } from '@/types/quota'
-import { TriviaFact } from '../../../../shared/types/trivia'
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import { useTranslation } from "react-i18next";
+import { useResponsive } from "@/hooks/useResponsive";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
+import { GlassView } from "@bayit/shared/ui";
+import { RecordingStatusIndicator } from "./RecordingStatusIndicator";
+import SubtitleOverlay from "./SubtitleOverlay";
+import LiveSubtitleOverlay from "./LiveSubtitleOverlay";
+import LiveSplitSubtitleOverlay from "./subtitle/LiveSplitSubtitleOverlay";
+import { DubbingOverlay } from "./dubbing";
+import TriviaOverlay from "./TriviaOverlay";
+import LiveFeatureUsageIndicator from "./LiveFeatureUsageIndicator";
+import OmriOverlay from "./OmriOverlay";
+import CulturalContextOverlay from "./cultural/CulturalContextOverlay";
+import BilingualDubbingControls from "./BilingualDubbingControls";
+import { TalkBackOverlay } from "./talk-back";
+import { InteractiveMissionPlayer } from "@/components/interactive-mission/InteractiveMissionPlayer";
+import liveSubtitleService from "@/services/liveSubtitleService";
+import liveSplitSubtitleService from "@/services/liveSplitSubtitleService";
+import { SubtitleCue } from "./types";
+import {
+  SubtitleSettings,
+  SplitLanguages,
+  LiveSubtitleCue,
+} from "@/types/subtitle";
+import { UsageStat } from "@/types/quota";
+import { TriviaFact } from "../../../../shared/types/trivia";
 
 interface VideoPlayerOverlaysProps {
   // Recording
-  isRecording: boolean
-  recordingDuration: number
+  isRecording: boolean;
+  recordingDuration: number;
 
   // VOD Subtitles
-  isLive: boolean
-  contentId?: string
-  currentTime: number
-  subtitlesEnabled: boolean
-  currentSubtitleLang: string | null
-  currentCues: SubtitleCue[]
-  subtitleSettings: SubtitleSettings
+  isLive: boolean;
+  contentId?: string;
+  currentTime: number;
+  subtitlesEnabled: boolean;
+  currentSubtitleLang: string | null;
+  currentCues: SubtitleCue[];
+  subtitleSettings: SubtitleSettings;
 
   // Split Mode Subtitles
-  splitMode?: boolean
-  splitLanguages?: SplitLanguages | null
+  splitMode?: boolean;
+  splitLanguages?: SplitLanguages | null;
   splitCues?: {
-    primary: SubtitleCue[]
-    secondary: SubtitleCue[]
-  }
+    primary: SubtitleCue[];
+    secondary: SubtitleCue[];
+  };
 
   // Live Subtitles
-  visibleLiveSubtitles: SubtitleCue[]
+  visibleLiveSubtitles: SubtitleCue[];
 
   // Live Split Subtitles
-  liveSplitMode?: boolean
-  liveSplitLanguages?: SplitLanguages | null
-  liveSplitPrimaryCues?: LiveSubtitleCue[]
-  liveSplitSecondaryCues?: LiveSubtitleCue[]
+  liveSplitMode?: boolean;
+  liveSplitLanguages?: SplitLanguages | null;
+  liveSplitPrimaryCues?: LiveSubtitleCue[];
+  liveSplitSecondaryCues?: LiveSubtitleCue[];
 
   // Dubbing
-  dubbingIsConnected: boolean
-  dubbingLastTranscript: string | null
-  dubbingLastTranslation: string | null
-  dubbingLatencyMs: number | null
+  dubbingIsConnected: boolean;
+  dubbingLastTranscript: string | null;
+  dubbingLastTranslation: string | null;
+  dubbingLatencyMs: number | null;
 
   // Trivia
-  triviaEnabled: boolean
-  currentFact: TriviaFact | null
-  onDismissFact: () => void
-  onTriviaHoverStart?: () => void
-  onTriviaHoverEnd?: () => void
-  isTTSPlaying: boolean
+  triviaEnabled: boolean;
+  currentFact: TriviaFact | null;
+  onDismissFact: () => void;
+  onTriviaHoverStart?: () => void;
+  onTriviaHoverEnd?: () => void;
+  isTTSPlaying: boolean;
 
   // Usage stats
-  usageStats: UsageStat | null
+  usageStats: UsageStat | null;
 
   // Loading
-  loading: boolean
+  loading: boolean;
 
   // Error state
-  error?: string | null
+  error?: string | null;
 
   // Widget mode
-  isWidget?: boolean
+  isWidget?: boolean;
 
   // Cast state - hide HTML overlays when casting (they don't mirror to AirPlay/Chromecast)
-  isCasting?: boolean
+  isCasting?: boolean;
 
   // User info for special overlays
-  userEmail?: string | null
-  isPlaying?: boolean
+  userEmail?: string | null;
+  isPlaying?: boolean;
+
+  // Cultural Context (VOD)
+  culturalContextEnabled?: boolean;
+  onCulturalReferenceSelect?: (referenceId: string) => void;
+
+  // Bilingual Bridge (VOD)
+  bilingualBridgeEnabled?: boolean;
+  profileId?: string;
+  onHoveredButtonChange?: (button: string | null) => void;
+
+  // Talk Back (VOD)
+  talkBackEnabled?: boolean;
+  talkBackSessionId?: string;
+
+  // Interactive Mission (VOD)
+  activeMissionId?: string | null;
+  onMissionComplete?: () => void;
 }
 
 export default function VideoPlayerOverlays({
@@ -120,16 +145,25 @@ export default function VideoPlayerOverlays({
   isCasting = false,
   userEmail = null,
   isPlaying = false,
+  culturalContextEnabled = false,
+  onCulturalReferenceSelect,
+  bilingualBridgeEnabled = false,
+  profileId,
+  onHoveredButtonChange,
+  talkBackEnabled = false,
+  talkBackSessionId,
+  activeMissionId = null,
+  onMissionComplete,
 }: VideoPlayerOverlaysProps) {
-  const { t, i18n } = useTranslation()
-  const { isMobile } = useResponsive()
+  const { t, i18n } = useTranslation();
+  const { isMobile } = useResponsive();
 
   // Omri overlay state - only for specific user and VOD content
-  const [showOmriOverlay, setShowOmriOverlay] = useState(false)
-  const [hasTriggeredOmriOverlay, setHasTriggeredOmriOverlay] = useState(false)
+  const [showOmriOverlay, setShowOmriOverlay] = useState(false);
+  const [hasTriggeredOmriOverlay, setHasTriggeredOmriOverlay] = useState(false);
 
   // Check if user should see the special overlay
-  const isSpecialUser = userEmail === 'oklainert@gmail.com'
+  const isSpecialUser = userEmail === "oklainert@gmail.com";
 
   // Trigger Omri overlay when playback starts for the first time
   useEffect(() => {
@@ -140,15 +174,15 @@ export default function VideoPlayerOverlays({
       !hasTriggeredOmriOverlay &&
       !loading
     ) {
-      setShowOmriOverlay(true)
-      setHasTriggeredOmriOverlay(true)
+      setShowOmriOverlay(true);
+      setHasTriggeredOmriOverlay(true);
     }
-  }, [isLive, isSpecialUser, isPlaying, hasTriggeredOmriOverlay, loading])
+  }, [isLive, isSpecialUser, isPlaying, hasTriggeredOmriOverlay, loading]);
 
   // Reset trigger when content changes
   useEffect(() => {
-    setHasTriggeredOmriOverlay(false)
-  }, [contentId])
+    setHasTriggeredOmriOverlay(false);
+  }, [contentId]);
 
   return (
     <>
@@ -163,7 +197,7 @@ export default function VideoPlayerOverlays({
         <SubtitleOverlay
           currentTime={currentTime}
           subtitles={currentCues as any}
-          language={currentSubtitleLang || 'he'}
+          language={currentSubtitleLang || "he"}
           enabled={subtitlesEnabled}
           settings={subtitleSettings}
           splitMode={splitMode}
@@ -178,22 +212,26 @@ export default function VideoPlayerOverlays({
       )}
 
       {/* Live Split Subtitle Overlay (Premium) - Hidden in widget mode and when casting */}
-      {isLive && !isWidget && !isCasting && liveSplitMode && liveSplitLanguages && (
-        <LiveSplitSubtitleOverlay
-          primaryCues={liveSplitPrimaryCues}
-          secondaryCues={liveSplitSecondaryCues}
-          primaryLanguage={liveSplitLanguages[0]}
-          secondaryLanguage={liveSplitLanguages[1]}
-          enabled={liveSplitMode}
-        />
-      )}
+      {isLive &&
+        !isWidget &&
+        !isCasting &&
+        liveSplitMode &&
+        liveSplitLanguages && (
+          <LiveSplitSubtitleOverlay
+            primaryCues={liveSplitPrimaryCues}
+            secondaryCues={liveSplitSecondaryCues}
+            primaryLanguage={liveSplitLanguages[0]}
+            secondaryLanguage={liveSplitLanguages[1]}
+            enabled={liveSplitMode}
+          />
+        )}
 
       {/* Live Dubbing Overlay (Premium) - Hidden in widget mode */}
       {isLive && !isWidget && (
         <DubbingOverlay
           isActive={dubbingIsConnected}
-          originalText={dubbingLastTranscript || ''}
-          translatedText={dubbingLastTranslation || ''}
+          originalText={dubbingLastTranscript || ""}
+          translatedText={dubbingLastTranslation || ""}
           latencyMs={dubbingLatencyMs || 0}
         />
       )}
@@ -205,20 +243,24 @@ export default function VideoPlayerOverlays({
           onDismiss={onDismissFact}
           onHoverStart={onTriviaHoverStart}
           onHoverEnd={onTriviaHoverEnd}
-          isRTL={i18n.language === 'he'}
+          isRTL={i18n.language === "he"}
           isTTSPlaying={isTTSPlaying}
           currentSubtitleLang={currentSubtitleLang}
         />
       )}
 
       {/* Live Subtitle Usage Indicator (Premium) - Hidden in widget mode */}
-      {isLive && !isWidget && usageStats && (liveSubtitleService.isServiceConnected() || liveSplitSubtitleService.isPartiallyConnected()) && (
-        <LiveFeatureUsageIndicator
-          featureType="subtitle"
-          usageStats={usageStats as any}
-          isVisible={true}
-        />
-      )}
+      {isLive &&
+        !isWidget &&
+        usageStats &&
+        (liveSubtitleService.isServiceConnected() ||
+          liveSplitSubtitleService.isPartiallyConnected()) && (
+          <LiveFeatureUsageIndicator
+            featureType="subtitle"
+            usageStats={usageStats as any}
+            isVisible={true}
+          />
+        )}
 
       {/* Live Dubbing Usage Indicator (Premium) - Hidden in widget mode */}
       {isLive && !isWidget && usageStats && dubbingIsConnected && (
@@ -236,7 +278,9 @@ export default function VideoPlayerOverlays({
             <View style={styles.spinnerContainer}>
               <GlassLoadingSpinner size="large" />
             </View>
-            <Text style={styles.loadingText}>{t('player.loading', 'Loading...')}</Text>
+            <Text style={styles.loadingText}>
+              {t("player.loading", "Loading...")}
+            </Text>
           </GlassView>
         </View>
       )}
@@ -246,10 +290,66 @@ export default function VideoPlayerOverlays({
         <View style={styles.loadingOverlay}>
           <GlassView style={styles.errorCard} intensity="high">
             <Text style={styles.errorIcon}>!</Text>
-            <Text style={styles.errorTitle}>{t('player.error.title', 'Stream Unavailable')}</Text>
+            <Text style={styles.errorTitle}>
+              {t("player.error.title", "Stream Unavailable")}
+            </Text>
             <Text style={styles.errorText}>{error}</Text>
           </GlassView>
         </View>
+      )}
+
+      {/* Cultural Context Overlay (VOD) - detects Hebrew cultural references in subtitles */}
+      {!isLive &&
+        contentId &&
+        culturalContextEnabled &&
+        onCulturalReferenceSelect && (
+          <CulturalContextOverlay
+            currentTime={currentTime}
+            subtitleText={currentCues
+              .map((c) => (c as any).text || "")
+              .join(" ")}
+            language={currentSubtitleLang || i18n.language}
+            enabled={culturalContextEnabled}
+            onReferenceSelect={onCulturalReferenceSelect}
+          />
+        )}
+
+      {/* Bilingual Bridge Controls (VOD) - hidden in widget mode */}
+      {!isLive &&
+        contentId &&
+        bilingualBridgeEnabled &&
+        profileId &&
+        !isWidget && (
+          <BilingualDubbingControls
+            contentId={contentId}
+            profileId={profileId}
+            onHoveredButtonChange={onHoveredButtonChange}
+          />
+        )}
+
+      {/* Talk Back Overlay (VOD) - interactive oral response prompts */}
+      {!isLive &&
+        contentId &&
+        talkBackEnabled &&
+        talkBackSessionId &&
+        profileId && (
+          <TalkBackOverlay
+            contentId={contentId}
+            sessionId={talkBackSessionId}
+            profileId={profileId}
+            currentTime={currentTime}
+            isRTL={i18n.language === "he"}
+          />
+        )}
+
+      {/* Interactive Mission Player (VOD) - full-screen mission flow */}
+      {!isLive && activeMissionId && profileId && (
+        <InteractiveMissionPlayer
+          missionId={activeMissionId}
+          profileId={profileId}
+          isRTL={i18n.language === "he"}
+          onComplete={onMissionComplete}
+        />
       )}
 
       {/* Omri Overlay - Special easter egg for special users */}
@@ -257,20 +357,20 @@ export default function VideoPlayerOverlays({
         <OmriOverlay onHide={() => setShowOmriOverlay(false)} />
       )}
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 500,
   },
   loadingCard: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: spacing.xl,
     paddingHorizontal: spacing.xxl,
     borderRadius: borderRadius.xl,
@@ -284,12 +384,12 @@ const styles = StyleSheet.create({
   loadingText: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
   },
   errorCard: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: spacing.xl,
     paddingHorizontal: spacing.xxl,
     borderRadius: borderRadius.xl,
@@ -303,22 +403,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.error.DEFAULT,
     color: colors.text,
     fontSize: 28,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
     lineHeight: 48,
     marginBottom: spacing.md,
   },
   errorTitle: {
     color: colors.text,
     fontSize: 18,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
     marginBottom: spacing.sm,
   },
   errorText: {
     color: colors.textMuted,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
   },
-})
+});

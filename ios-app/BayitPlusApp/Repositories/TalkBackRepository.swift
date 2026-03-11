@@ -7,11 +7,11 @@ protocol TalkBackRepository: Sendable {
     func submitResponse(_ request: TalkBackSubmitRequest) async throws -> TalkBackEvaluation
     func fetchStats(profileId: String) async throws -> TalkBackStats
     func fetchHistory(profileId: String, limit: Int) async throws -> TalkBackHistoryResponse
+    func fetchVocabulary(profileId: String) async throws -> [TalkBackVocabularyItem]
 }
 
 /// Production implementation of `TalkBackRepository` using `APIClient`.
 final class APITalkBackRepository: TalkBackRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -35,7 +35,7 @@ final class APITalkBackRepository: TalkBackRepository, @unchecked Sendable {
 
     func fetchStats(profileId: String) async throws -> TalkBackStats {
         let queryItems = [
-            URLQueryItem(name: "profile_id", value: profileId)
+            URLQueryItem(name: "profile_id", value: profileId),
         ]
         return try await client.get(
             "/api/v1/talk-back/stats",
@@ -53,6 +53,17 @@ final class APITalkBackRepository: TalkBackRepository, @unchecked Sendable {
             "/api/v1/talk-back/dashboard/history",
             queryItems: queryItems,
             as: TalkBackHistoryResponse.self
+        )
+    }
+
+    func fetchVocabulary(profileId: String) async throws -> [TalkBackVocabularyItem] {
+        let queryItems = [
+            URLQueryItem(name: "profile_id", value: profileId),
+        ]
+        return try await client.get(
+            "/api/v1/talk-back/dashboard/vocabulary",
+            queryItems: queryItems,
+            as: [TalkBackVocabularyItem].self
         )
     }
 }

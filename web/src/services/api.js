@@ -495,6 +495,11 @@ const apiChaptersService = {
   getCategories: () => api.get("/chapters/categories/list"),
 };
 
+// LLM Search Service - typed wrapper around POST /search/llm
+const apiLLMSearchService = {
+  search: (query, filters) => api.post("/search/llm", { query, ...filters }),
+};
+
 // Scene Search Service (API)
 const apiSceneSearchService = {
   search: (
@@ -991,6 +996,7 @@ export const zmanService = apiZmanService;
 export const trendingService = apiTrendingService;
 export const chaptersService = apiChaptersService;
 export const sceneSearchService = apiSceneSearchService;
+export const llmSearchService = apiLLMSearchService;
 export const subtitlesService = apiSubtitlesService;
 export const subtitlePreferencesService = apiSubtitlePreferencesService;
 export const ritualService = apiRitualService;

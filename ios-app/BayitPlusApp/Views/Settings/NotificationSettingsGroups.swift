@@ -91,6 +91,7 @@ struct NotificationTopicToggles: View {
 
 /// Error banner with dismiss action for notification settings.
 struct NotificationErrorBanner: View {
+    @Environment(LocalizationManager.self) private var localization
     let message: String
     let onDismiss: () -> Void
 

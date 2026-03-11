@@ -50,6 +50,10 @@ interface PlayerControlsProps {
   renderInteractButton?: () => React.ReactNode;
   renderPreviousInteractionButton?: () => React.ReactNode;
   renderNextInteractionButton?: () => React.ReactNode;
+  renderCulturalContextButton?: () => React.ReactNode;
+  renderBilingualBridgeButton?: () => React.ReactNode;
+  renderTalkBackButton?: () => React.ReactNode;
+  renderInteractiveMissionButton?: () => React.ReactNode;
   liveFeatureError?: string | null;
   onDismissLiveFeatureError?: () => void;
 }
@@ -87,6 +91,10 @@ export default function PlayerControls({
   renderInteractButton,
   renderPreviousInteractionButton,
   renderNextInteractionButton,
+  renderCulturalContextButton,
+  renderBilingualBridgeButton,
+  renderTalkBackButton,
+  renderInteractiveMissionButton,
   liveFeatureError,
   onDismissLiveFeatureError,
 }: PlayerControlsProps) {
@@ -138,6 +146,10 @@ export default function PlayerControls({
         renderInteractButton={renderInteractButton}
         renderPreviousInteractionButton={renderPreviousInteractionButton}
         renderNextInteractionButton={renderNextInteractionButton}
+        renderCulturalContextButton={renderCulturalContextButton}
+        renderBilingualBridgeButton={renderBilingualBridgeButton}
+        renderTalkBackButton={renderTalkBackButton}
+        renderInteractiveMissionButton={renderInteractiveMissionButton}
         liveFeatureError={liveFeatureError}
         onDismissLiveFeatureError={onDismissLiveFeatureError}
       />

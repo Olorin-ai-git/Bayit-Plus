@@ -8,7 +8,7 @@ struct SubscriptionView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) var localization
     @State var viewModel: SubscriptionViewModel?
-    @State private var creditBalance: CreditBalance?
+    @State var creditBalance: CreditBalance?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {

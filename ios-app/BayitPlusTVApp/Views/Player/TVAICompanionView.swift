@@ -1,4 +1,5 @@
 #if os(tvOS)
+    import BayitAuth
     import BayitCore
     import BayitDesignSystem
     import BayitLocalization
@@ -6,6 +7,7 @@
 
     struct TVAICompanionView: View {
         @Environment(TVRepositoryProvider.self) private var repos
+        @Environment(AuthManager.self) private var authManager
         @Environment(LocalizationManager.self) private var localization
         @Environment(\.dismiss) private var dismiss
 
@@ -34,7 +36,7 @@
             }
             .task {
                 if viewModel == nil {
-                    viewModel = AICompanionViewModel(repository: repos.chat)
+                    viewModel = AICompanionViewModel(repository: repos.chat, talkBackRepository: repos.talkBack)
                 }
                 await viewModel?.loadContent(contentId: contentId)
             }
@@ -107,7 +109,7 @@
                 case .quiz:
                     TVCompanionQuizTab(viewModel: vm, contentId: contentId)
                 case .vocabulary:
-                    TVCompanionVocabularyTab(viewModel: vm, contentId: contentId)
+                    TVCompanionVocabularyTab(viewModel: vm, contentId: contentId, profileId: authManager.user?.uid ?? "")
                 }
             }
         }

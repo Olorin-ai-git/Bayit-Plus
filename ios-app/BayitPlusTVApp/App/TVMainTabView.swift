@@ -2,11 +2,13 @@
     import BayitAuth
     import BayitDesignSystem
     import BayitLocalization
+    import BayitMedia
     import SwiftUI
 
     /// Main tab navigation for the tvOS app.
     /// Uses TabView with tvOS-native top shelf styling.
     /// Overlays the widget dock at the bottom, language picker at the top-right.
+    /// Also overlays the proactive suggestion banner at the top (text-only, no TTS).
     struct TVMainTabView: View {
         @Environment(TVNavigationCoordinator.self) var coordinator
         @Environment(TVRepositoryProvider.self) var repos
@@ -14,6 +16,7 @@
         @Environment(TVOnboardingPreferences.self) var prefs
         @Environment(\.appConfiguration) private var appConfiguration
         @State var dockViewModel: WidgetDockViewModel?
+        @State var proactiveSuggestionViewModel: TVProactiveSuggestionViewModel?
         @State var showLanguagePicker = false
         @State var widgetAutoHideTask: Task<Void, Never>?
         @State var isWidgetAreaFocused = false
@@ -114,6 +117,17 @@
                     .padding(.bottom, TVDesignTokens.Spacing.xs)
                 }
             }
+            // Proactive suggestion banner at the top, above all chrome.
+            .overlay(alignment: .top) {
+                if let vm = proactiveSuggestionViewModel {
+                    TVProactiveSuggestionBannerView(
+                        viewModel: vm,
+                        onExecute: { suggestion in
+                            handleProactiveSuggestion(suggestion)
+                        }
+                    )
+                }
+            }
             // NavigationStack handles Menu/Back button navigation automatically.
             // No .onExitCommand override needed - it would trap users in sub-pages.
             .task {
@@ -124,6 +138,15 @@
                     )
                 }
                 await dockViewModel?.loadWidgets()
+            }
+            .task(id: coordinator.selectedProfileId) {
+                if proactiveSuggestionViewModel == nil {
+                    proactiveSuggestionViewModel = TVProactiveSuggestionViewModel(
+                        repository: repos.proactiveSuggestion
+                    )
+                }
+                proactiveSuggestionViewModel?.stop()
+                proactiveSuggestionViewModel?.start(profileId: coordinator.selectedProfileId)
             }
             .onChange(of: dockViewModel?.isDockVisible) { _, isVisible in
                 coordinator.dockIsVisible = isVisible ?? false

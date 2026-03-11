@@ -5,13 +5,13 @@
  * loading states, and Glass design system
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { useResponsive } from '@/hooks/useResponsive';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Search, X, TrendingUp, Sparkles } from 'lucide-react';
-import { NativeIcon } from '@olorin/shared-icons/native';
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { useResponsive } from "@/hooks/useResponsive";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Search, X, TrendingUp, Sparkles } from "lucide-react";
+import { NativeIcon } from "@olorin/shared-icons/native";
 import {
   GlassInput,
   GlassButton,
@@ -20,33 +20,34 @@ import {
   GlassPageHeader,
   GlassLoadingSpinner,
   GlassToggle,
-} from '@bayit/shared/ui';
-import { useDirection } from '@/hooks/useDirection';
-import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
-import { useAuthStore } from '@bayit/shared-stores';
-import { contentService } from '@/services/api';
-import ContentCard from '@/components/content/ContentCard';
-import PageLoading from '@/components/common/PageLoading';
-import logger from '@/utils/logger';
+} from "@bayit/shared/ui";
+import { useDirection } from "@/hooks/useDirection";
+import { colors, spacing, fontSize, borderRadius } from "@olorin/design-tokens";
+import { useAuthStore } from "@bayit/shared-stores";
+import { contentService, llmSearchService } from "@/services/api";
+import { LLMSearchInterpretationView } from "@/components/search/LLMSearchInterpretationView";
+import ContentCard from "@/components/content/ContentCard";
+import PageLoading from "@/components/common/PageLoading";
+import logger from "@/utils/logger";
 
 interface SearchResult {
   id: string;
   title: string;
   thumbnail?: string;
-  type: 'movie' | 'series' | 'live' | 'radio' | 'podcast';
+  type: "movie" | "series" | "live" | "radio" | "podcast";
   year?: string;
   duration?: string;
   description?: string;
 }
 
-type ContentTypeFilter = 'all' | 'vod' | 'live' | 'radio' | 'podcasts';
+type ContentTypeFilter = "all" | "vod" | "live" | "radio" | "podcasts";
 
 const TRENDING_SEARCHES = [
-  'Fauda',
-  'Shtisel',
-  'Tehran',
-  'Valley of Tears',
-  'The Beauty Queen of Jerusalem',
+  "Fauda",
+  "Shtisel",
+  "Tehran",
+  "Valley of Tears",
+  "The Beauty Queen of Jerusalem",
 ];
 
 export default function SearchPage() {
@@ -61,92 +62,127 @@ export default function SearchPage() {
   const isMobile = width < 768;
 
   // State
-  const [query, setQuery] = useState(searchParams.get('q') || '');
-  const [contentType, setContentType] = useState<ContentTypeFilter>('all');
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [contentType, setContentType] = useState<ContentTypeFilter>("all");
   const [semanticMode, setSemanticMode] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [llmInterpretation, setLlmInterpretation] = useState<{
+    text: string;
+    suggestions?: string[];
+  } | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Responsive grid
-  const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : 3;
-
+  const numColumns =
+    width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : 3;
 
   // Load recent searches from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('recentSearches');
+      const stored = localStorage.getItem("recentSearches");
       if (stored) {
         setRecentSearches(JSON.parse(stored).slice(0, 5));
       }
     } catch (error) {
-      logger.error('Failed to load recent searches', 'SearchPage', error);
+      logger.error("Failed to load recent searches", "SearchPage", error);
     }
     setIsInitialLoad(false);
   }, []);
 
   // Perform search (empty query returns all content)
-  const performSearch = useCallback(async (searchQuery: string) => {
+  const performSearch = useCallback(
+    async (searchQuery: string) => {
+      setLoading(true);
+
+      try {
+        // Build filters based on content type
+        const filters: any = {};
+        if (contentType === "all") {
+          filters.content_types = ["vod", "live", "radio", "podcast"];
+        } else if (contentType === "vod") {
+          filters.content_types = ["vod"];
+        } else if (contentType === "live") {
+          filters.content_types = ["live"];
+        } else if (contentType === "radio") {
+          filters.content_types = ["radio"];
+        } else if (contentType === "podcasts") {
+          filters.content_types = ["podcast"];
+        }
+
+        // Call appropriate search API based on semantic mode
+        let response;
+        if (semanticMode && isPremium && searchQuery.trim()) {
+          response = await (contentService as any).searchLLM({
+            query: searchQuery,
+            filters,
+            limit: 50,
+          });
+        } else {
+          response = await (contentService as any).search({
+            query: searchQuery,
+            ...filters,
+            page: 1,
+            limit: 50,
+          });
+        }
+
+        setResults(response.results || []);
+        setLlmInterpretation(null);
+
+        // Save to recent searches only for actual queries
+        if (searchQuery.trim()) {
+          setRecentSearches((prevRecent) => {
+            const updatedRecent = [
+              searchQuery,
+              ...prevRecent.filter((s) => s !== searchQuery),
+            ].slice(0, 5);
+            localStorage.setItem(
+              "recentSearches",
+              JSON.stringify(updatedRecent),
+            );
+            return updatedRecent;
+          });
+        }
+
+        logger.info("Search completed", "SearchPage", {
+          query: searchQuery,
+          resultsCount: response.results?.length || 0,
+        });
+      } catch (error) {
+        logger.error("Search failed", "SearchPage", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [contentType, semanticMode, isPremium],
+  );
+
+  // T019: LLM search triggered by the star button in SearchActionButtons
+  const handleLLMSearch = useCallback(async () => {
+    if (!query.trim() || !isPremium) return;
     setLoading(true);
-
     try {
-      // Build filters based on content type
-      const filters: any = {};
-      if (contentType === 'all') {
-        filters.content_types = ['vod', 'live', 'radio', 'podcast'];
-      } else if (contentType === 'vod') {
-        filters.content_types = ['vod'];
-      } else if (contentType === 'live') {
-        filters.content_types = ['live'];
-      } else if (contentType === 'radio') {
-        filters.content_types = ['radio'];
-      } else if (contentType === 'podcasts') {
-        filters.content_types = ['podcast'];
-      }
-
-      // Call appropriate search API based on semantic mode
-      let response;
-      if (semanticMode && isPremium && searchQuery.trim()) {
-        response = await (contentService as any).searchLLM({
-          query: searchQuery,
-          filters,
-          limit: 50,
-        });
-      } else {
-        response = await (contentService as any).search({
-          query: searchQuery,
-          ...filters,
-          page: 1,
-          limit: 50,
+      const response = await llmSearchService.search(query);
+      setResults((response.results as unknown as SearchResult[]) || []);
+      if (response.interpretation) {
+        setLlmInterpretation({
+          text: response.interpretation,
+          suggestions: response.suggestions,
         });
       }
-
-      setResults(response.results || []);
-
-      // Save to recent searches only for actual queries
-      if (searchQuery.trim()) {
-        setRecentSearches(prevRecent => {
-          const updatedRecent = [
-            searchQuery,
-            ...prevRecent.filter(s => s !== searchQuery)
-          ].slice(0, 5);
-          localStorage.setItem('recentSearches', JSON.stringify(updatedRecent));
-          return updatedRecent;
-        });
-      }
-
-      logger.info('Search completed', 'SearchPage', {
-        query: searchQuery,
-        resultsCount: response.results?.length || 0,
+      logger.info("LLM search completed", "SearchPage", {
+        query,
+        resultsCount: response.results?.length ?? 0,
       });
     } catch (error) {
-      logger.error('Search failed', 'SearchPage', error);
-      setResults([]);
+      logger.error("LLM search failed", "SearchPage", error);
     } finally {
       setLoading(false);
     }
-  }, [contentType, semanticMode, isPremium]);
+  }, [query, isPremium]);
 
   // Debounced search - triggers on query, semantic mode, or content type change
   useEffect(() => {
@@ -155,9 +191,9 @@ export default function SearchPage() {
     const timer = setTimeout(() => {
       performSearch(query);
       if (query.trim()) {
-        searchParams.set('q', query);
+        searchParams.set("q", query);
       } else {
-        searchParams.delete('q');
+        searchParams.delete("q");
       }
       setSearchParams(searchParams, { replace: true });
     }, 300);
@@ -173,18 +209,19 @@ export default function SearchPage() {
   // Clear recent searches
   const clearRecentSearches = () => {
     setRecentSearches([]);
-    localStorage.removeItem('recentSearches');
+    localStorage.removeItem("recentSearches");
   };
 
   // Handle result click
   const handleResultClick = (result: SearchResult) => {
-    const route = result.type === 'live'
-      ? `/live/${result.id}`
-      : result.type === 'radio'
-      ? `/radio/${result.id}`
-      : result.type === 'podcast'
-      ? `/podcasts/${result.id}`
-      : `/vod/${result.id}`;
+    const route =
+      result.type === "live"
+        ? `/live/${result.id}`
+        : result.type === "radio"
+          ? `/radio/${result.id}`
+          : result.type === "podcast"
+            ? `/podcasts/${result.id}`
+            : `/vod/${result.id}`;
 
     navigate(route);
   };
@@ -193,8 +230,8 @@ export default function SearchPage() {
   if (isInitialLoad) {
     return (
       <PageLoading
-        title={t('search.title', 'Search')}
-        message={t('common.loading', 'Loading...')}
+        title={t("search.title", "Search")}
+        message={t("common.loading", "Loading...")}
         isRTL={isRTL}
         icon={<Search size={24} color={colors.primary.DEFAULT} />}
       />
@@ -202,12 +239,15 @@ export default function SearchPage() {
   }
 
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollContent}
+    >
       <View style={[styles.container, isMobile && styles.containerMobile]}>
         {/* Header - Smaller on mobile */}
         {!isMobile && (
           <GlassPageHeader
-            title={t('search.title', 'Search')}
+            title={t("search.title", "Search")}
             pageType="search"
             isRTL={isRTL}
             icon={<Search size={24} color={colors.primary.DEFAULT} />}
@@ -220,7 +260,7 @@ export default function SearchPage() {
             <View style={styles.aiToggleRow}>
               <Sparkles size={18} color={colors.primary.DEFAULT} />
               <Text style={styles.aiToggleLabel}>
-                {t('search.aiSearch', 'AI Search')}
+                {t("search.aiSearch", "AI Search")}
               </Text>
               <GlassToggle
                 value={semanticMode}
@@ -229,24 +269,45 @@ export default function SearchPage() {
             </View>
             <Text style={styles.aiExplanation}>
               {semanticMode
-                ? t('search.aiSearchActive', 'AI-powered semantic search is active - finding results based on meaning and context')
-                : t('search.aiSearchInactive', 'Enable AI search for smarter results based on meaning, not just keywords')
-              }
+                ? t(
+                    "search.aiSearchActive",
+                    "AI-powered semantic search is active - finding results based on meaning and context",
+                  )
+                : t(
+                    "search.aiSearchInactive",
+                    "Enable AI search for smarter results based on meaning, not just keywords",
+                  )}
             </Text>
           </View>
         )}
 
         {/* Search Input */}
-        <View style={[styles.searchContainer, isMobile && styles.searchContainerMobile]}>
+        <View
+          style={[
+            styles.searchContainer,
+            isMobile && styles.searchContainerMobile,
+          ]}
+        >
           <GlassInput
             value={query}
             onChangeText={setQuery}
-            placeholder={isMobile ? t('search.placeholderShort', 'Search...') : t('search.placeholder', 'Search for content...')}
+            placeholder={
+              isMobile
+                ? t("search.placeholderShort", "Search...")
+                : t("search.placeholder", "Search for content...")
+            }
             placeholderTextColor={colors.textMuted}
             containerStyle={styles.searchInputContainer}
-            inputStyle={[styles.searchInput, isMobile && styles.searchInputMobile]}
-            rightIcon={query.length > 0 ? <X size={isMobile ? 18 : 20} color={colors.textSecondary} /> : undefined}
-            onRightIconPress={() => setQuery('')}
+            inputStyle={[
+              styles.searchInput,
+              isMobile && styles.searchInputMobile,
+            ]}
+            rightIcon={
+              query.length > 0 ? (
+                <X size={isMobile ? 18 : 20} color={colors.textSecondary} />
+              ) : undefined
+            }
+            onRightIconPress={() => setQuery("")}
             disableFocusBorder={true}
             noBorder={true}
             autoFocus={!isMobile}
@@ -259,6 +320,23 @@ export default function SearchPage() {
           >
             <Search size={isMobile ? 20 : 24} color={colors.primary.DEFAULT} />
           </Pressable>
+
+          {/* LLM Search Button (Premium only) */}
+          {isPremium && (
+            <Pressable
+              onPress={handleLLMSearch}
+              style={[
+                styles.searchButton,
+                isMobile && styles.searchButtonMobile,
+              ]}
+              accessibilityLabel={t("search.controls.llmSearch", "AI Search")}
+            >
+              <Sparkles
+                size={isMobile ? 18 : 22}
+                color={colors.warning?.DEFAULT ?? "#F59E0B"}
+              />
+            </Pressable>
+          )}
         </View>
 
         {/* Content Type Filters */}
@@ -266,35 +344,42 @@ export default function SearchPage() {
           horizontal
           showsHorizontalScrollIndicator={false}
           style={[styles.filtersScroll, isMobile && styles.filtersScrollMobile]}
-          contentContainerStyle={[styles.filtersContent, isMobile && styles.filtersContentMobile]}
+          contentContainerStyle={[
+            styles.filtersContent,
+            isMobile && styles.filtersContentMobile,
+          ]}
         >
           <GlassCategoryPill
-            label={t('search.filters.all', 'All')}
-            isActive={contentType === 'all'}
-            onPress={() => setContentType('all')}
+            label={t("search.filters.all", "All")}
+            isActive={contentType === "all"}
+            onPress={() => setContentType("all")}
           />
           <GlassCategoryPill
-            label={isMobile ? t('search.filters.vodShort', 'Movies') : t('search.filters.vod', 'Movies & Series')}
-            isActive={contentType === 'vod'}
-            onPress={() => setContentType('vod')}
+            label={
+              isMobile
+                ? t("search.filters.vodShort", "Movies")
+                : t("search.filters.vod", "Movies & Series")
+            }
+            isActive={contentType === "vod"}
+            onPress={() => setContentType("vod")}
           />
           <GlassCategoryPill
-            label={t('search.filters.live', 'Channels')}
-            isActive={contentType === 'live'}
-            onPress={() => setContentType('live')}
+            label={t("search.filters.live", "Channels")}
+            isActive={contentType === "live"}
+            onPress={() => setContentType("live")}
           />
           {/* Radio filter - hidden on mobile */}
           {!isMobile && (
             <GlassCategoryPill
-              label={t('search.filters.radio', 'Radio')}
-              isActive={contentType === 'radio'}
-              onPress={() => setContentType('radio')}
+              label={t("search.filters.radio", "Radio")}
+              isActive={contentType === "radio"}
+              onPress={() => setContentType("radio")}
             />
           )}
           <GlassCategoryPill
-            label={t('search.filters.podcast', 'Podcasts')}
-            isActive={contentType === 'podcasts'}
-            onPress={() => setContentType('podcasts')}
+            label={t("search.filters.podcast", "Podcasts")}
+            isActive={contentType === "podcasts"}
+            onPress={() => setContentType("podcasts")}
           />
         </ScrollView>
 
@@ -304,7 +389,7 @@ export default function SearchPage() {
             <View style={styles.trendingHeader}>
               <TrendingUp size={16} color={colors.primary.DEFAULT} />
               <Text style={styles.trendingTitle}>
-                {t('search.trending', 'Trending')}
+                {t("search.trending", "Trending")}
               </Text>
             </View>
             <View style={styles.trendingPills}>
@@ -328,16 +413,16 @@ export default function SearchPage() {
             <Search size={20} color={colors.primary.DEFAULT} />
             <Text style={styles.resultsTitle}>
               {query.trim()
-                ? t('search.resultsTitle', 'Search Results')
-                : t('search.browseAll', 'Browse All')}
+                ? t("search.resultsTitle", "Search Results")
+                : t("search.browseAll", "Browse All")}
             </Text>
           </View>
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <GlassLoadingSpinner size={'large' as any} />
+              <GlassLoadingSpinner size={"large" as any} />
               <Text style={styles.loadingText}>
-                {t('search.searching', 'Searching...')}
+                {t("search.searching", "Searching...")}
               </Text>
             </View>
           ) : results.length === 0 ? (
@@ -345,24 +430,34 @@ export default function SearchPage() {
               <NativeIcon name="search" size="xl" color={colors.textMuted} />
               <Text style={styles.emptyTitle}>
                 {query.trim()
-                  ? t('search.noResults', 'No results found')
-                  : t('search.noContent', 'No content available')}
+                  ? t("search.noResults", "No results found")
+                  : t("search.noContent", "No content available")}
               </Text>
               {query.trim() && (
                 <Text style={styles.emptyText}>
-                  {t('search.tryDifferent', 'Try different search terms')}
+                  {t("search.tryDifferent", "Try different search terms")}
                 </Text>
               )}
             </GlassCard>
           ) : (
             <>
+              {llmInterpretation && (
+                <LLMSearchInterpretationView
+                  interpretation={llmInterpretation.text}
+                  suggestions={llmInterpretation.suggestions}
+                />
+              )}
               <Text style={styles.resultsCount}>
                 {query.trim()
-                  ? t('search.resultsFound', '{{count}} results found for "{{query}}"', {
-                      count: results.length,
-                      query: query,
-                    })
-                  : t('search.totalContent', '{{count}} items', {
+                  ? t(
+                      "search.resultsFound",
+                      '{{count}} results found for "{{query}}"',
+                      {
+                        count: results.length,
+                        query: query,
+                      },
+                    )
+                  : t("search.totalContent", "{{count}} items", {
                       count: results.length,
                     })}
               </Text>
@@ -371,7 +466,10 @@ export default function SearchPage() {
                 {results.map((result, index) => (
                   <View
                     key={result.id}
-                    style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}
+                    style={{
+                      width: `${100 / numColumns}%`,
+                      padding: spacing.xs,
+                    }}
                   >
                     <Pressable onPress={() => handleResultClick(result)}>
                       <ContentCard content={result} />
@@ -400,8 +498,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     paddingBottom: spacing.lg,
     maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
+    marginHorizontal: "auto",
+    width: "100%",
   },
   containerMobile: {
     paddingHorizontal: spacing.sm,
@@ -409,7 +507,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80, // Space for bottom nav
   },
   searchContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     marginBottom: spacing.md,
   },
@@ -436,13 +534,13 @@ const styles = StyleSheet.create({
   searchButton: {
     width: 56,
     height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(139,92,246,0.15)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(139,92,246,0.15)",
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.3)',
-    backdropFilter: 'blur(12px)',
+    borderColor: "rgba(139,92,246,0.3)",
+    backdropFilter: "blur(12px)",
   },
   searchButtonMobile: {
     width: 48,
@@ -450,11 +548,11 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
   },
   filtersScroll: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
     marginBottom: spacing.sm,
     flex: 0,
-    height: 'auto' as any,
-    maxHeight: 'max-content' as any,
+    height: "auto" as any,
+    maxHeight: "max-content" as any,
   },
   filtersScrollMobile: {
     marginBottom: spacing.xs,
@@ -463,30 +561,30 @@ const styles = StyleSheet.create({
   filtersContent: {
     gap: spacing.sm,
     paddingVertical: 0,
-    maxHeight: 'max-content' as any,
+    maxHeight: "max-content" as any,
   },
   filtersContentMobile: {
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
   },
   aiToggleContainer: {
-    backgroundColor: 'rgba(139,92,246,0.08)',
+    backgroundColor: "rgba(139,92,246,0.08)",
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.25)',
+    borderColor: "rgba(139,92,246,0.25)",
     padding: spacing.md,
     marginBottom: spacing.md,
-    backdropFilter: 'blur(12px)',
+    backdropFilter: "blur(12px)",
   },
   aiToggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     marginBottom: spacing.xs,
   },
   aiToggleLabel: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.primary.DEFAULT,
     flex: 1,
   },
@@ -501,12 +599,12 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.xs,
-    textAlign: 'center',
+    textAlign: "center",
   },
   loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing['4xl'],
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing["4xl"],
     minHeight: 500,
     flex: 1,
   },
@@ -520,52 +618,52 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   trendingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     marginBottom: spacing.sm,
   },
   trendingTitle: {
     fontSize: fontSize.sm,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.textSecondary,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   trendingPills: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.sm,
   },
   trendingPill: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(139,92,246,0.12)',
+    backgroundColor: "rgba(139,92,246,0.12)",
     borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.25)',
+    borderColor: "rgba(139,92,246,0.25)",
   },
   trendingText: {
     fontSize: fontSize.sm,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.primary.DEFAULT,
   },
   emptyCard: {
-    alignItems: 'center',
-    padding: spacing['4xl'],
+    alignItems: "center",
+    padding: spacing["4xl"],
     minHeight: 400,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   emptyTitle: {
-    fontSize: fontSize['2xl'],
-    fontWeight: '600',
+    fontSize: fontSize["2xl"],
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.sm,
   },
   emptyText: {
     fontSize: fontSize.base,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   resultsSection: {
     marginTop: spacing.sm,
@@ -577,14 +675,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   resultsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
   resultsTitle: {
     fontSize: fontSize.xl,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   resultsCount: {
@@ -593,7 +691,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   resultsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
 });

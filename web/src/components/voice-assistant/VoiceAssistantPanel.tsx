@@ -8,7 +8,6 @@ import { useDirection } from "@/hooks/useDirection";
 import { VoiceWaveform } from "./VoiceWaveform";
 import {
   ProactiveSuggestions,
-  DEFAULT_VOICE_SUGGESTIONS,
   type ProactiveSuggestion,
 } from "./ProactiveSuggestions";
 import {
@@ -95,7 +94,7 @@ export const VoiceAssistantPanel: React.FC<VoiceAssistantPanelProps> = ({
   };
 
   const handleSuggestion = (suggestion: ProactiveSuggestion) => {
-    processText(suggestion.command);
+    processText(suggestion.title ?? suggestion.content_type);
   };
 
   useEffect(() => {
@@ -139,10 +138,7 @@ export const VoiceAssistantPanel: React.FC<VoiceAssistantPanelProps> = ({
           />
         </View>
 
-        <ProactiveSuggestions
-          suggestions={DEFAULT_VOICE_SUGGESTIONS}
-          onSelect={handleSuggestion}
-        />
+        <ProactiveSuggestions onSelect={handleSuggestion} />
 
         <View style={styles.textFallback}>
           <GlassInput
