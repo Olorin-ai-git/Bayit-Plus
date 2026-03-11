@@ -360,17 +360,19 @@ class RecapAgentService:
 
         prompt = f"""You are summarizing the last {window_minutes} minutes of a live broadcast for someone who just joined.
 
+IMPORTANT: Your entire response MUST be in {target_name}. All summary text and key points must be written in {target_name} only.
+
 Transcript:
 {transcript_text}
 
-Please provide:
-1. A concise summary (2-3 sentences) of what has been discussed/shown
-2. 3-5 key points that a late-joiner needs to know
+Provide a JSON object with:
+1. "summary": A concise summary (2-3 sentences) of what has been discussed/shown, written in {target_name}
+2. "key_points": 3-5 key points a late-joiner needs to know, each written in {target_name}
 
-Respond in {target_name} with this JSON format:
+Respond ONLY with this JSON (no other text):
 {{
-  "summary": "Your summary here",
-  "key_points": ["Point 1", "Point 2", "Point 3"]
+  "summary": "summary in {target_name}",
+  "key_points": ["point in {target_name}", "point in {target_name}", "point in {target_name}"]
 }}
 
 Focus on:
