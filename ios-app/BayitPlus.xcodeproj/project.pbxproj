@@ -146,6 +146,8 @@
 		113CD9F266D6ABA47C934E4A /* IPadMissionsDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 590793A39A0143428D4DEE94 /* IPadMissionsDashboardView.swift */; };
 		114D050F7631F48611327599 /* TalkBackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06B86B7C235FAF7E290F118 /* TalkBackRepository.swift */; };
 		S5KZ2IFVKLJFYIERDGBJQ6M7 /* ProactiveSuggestionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6GKVRIPXKIYTVPXIZFS53D4I /* ProactiveSuggestionRepository.swift */; };
+		A3B4C5D6E7F8A9B0C1D2E3F4 /* ProactiveSuggestionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6GKVRIPXKIYTVPXIZFS53D4I /* ProactiveSuggestionRepository.swift */; };
+		C5D6E7F8A9B0C1D2E3F4A5B6 /* TVProactiveSuggestionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5D6E7F8A9B0C1D2E3F4A5 /* TVProactiveSuggestionViewModel.swift */; };
 		117F2D325B94567FDA1D8B8F /* AudiobookCollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B083828CBA4031865331D /* AudiobookCollectionsView.swift */; };
 		11878FE9B6D29544798F1054 /* VODViewModel+Filtering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6051F60F7DD3E1595F20F9BE /* VODViewModel+Filtering.swift */; };
 		11B8051AA9A01A51B0E53DAD /* StarStoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6E5B5103259F2D9C21BFF42 /* StarStoryModels.swift */; };
@@ -2886,6 +2888,7 @@
 		A1F97817298D352F5A87579F /* AudioPlaybackManager+Chapters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioPlaybackManager+Chapters.swift"; sourceTree = "<group>"; };
 		A2263A8159D04C8E0918ED6F /* WebSocketDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketDecoder.swift; sourceTree = "<group>"; };
 		A2645F8F954327EEF7258FDC /* TVProactiveSuggestionBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVProactiveSuggestionBannerView.swift; sourceTree = "<group>"; };
+		B4C5D6E7F8A9B0C1D2E3F4A5 /* TVProactiveSuggestionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVProactiveSuggestionViewModel.swift; sourceTree = "<group>"; };
 		A2719158ECDD69EC4831A3DC /* TVSplitSubtitleOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSplitSubtitleOverlay.swift; sourceTree = "<group>"; };
 		A2F00C5D18A9095B2A972902 /* SplitSubtitleOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitSubtitleOverlay.swift; sourceTree = "<group>"; };
 		A306362FD8EA929E9E32F23D /* NowPlayingSmallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingSmallView.swift; sourceTree = "<group>"; };
@@ -5185,6 +5188,7 @@
 			isa = PBXGroup;
 			children = (
 				A2645F8F954327EEF7258FDC /* TVProactiveSuggestionBannerView.swift */,
+				B4C5D6E7F8A9B0C1D2E3F4A5 /* TVProactiveSuggestionViewModel.swift */,
 				7F04853ADB364C2B4F6CE3D7 /* TVVoiceAssistantSheet.swift */,
 				419E586D7DF5F4759654EDB3 /* TVVoiceAssistantSheet+Actions.swift */,
 				31B34168D72DAE97820B9AAD /* TVVoiceAssistantSheet+OrbAndInput.swift */,
@@ -6825,6 +6829,8 @@
 				3734AC0BC5860D0190552F7F /* PodcastsViewModel.swift in Sources */,
 				659695E6EB608B8C93AF9772 /* PrivacySettingsViewModel.swift in Sources */,
 				82D9DCEEA64157DBBDA6B5AC /* ProactiveSuggestionEngine.swift in Sources */,
+				A3B4C5D6E7F8A9B0C1D2E3F4 /* ProactiveSuggestionRepository.swift in Sources */,
+				C5D6E7F8A9B0C1D2E3F4A5B6 /* TVProactiveSuggestionViewModel.swift in Sources */,
 				5555F8E7ABA55BDAD63EEC12 /* ProactiveVoiceModels.swift in Sources */,
 				1873DF93B2F24C18E84CFF7F /* ProactiveVoiceViewModel.swift in Sources */,
 				C729E23815E91866DC8D42F2 /* ProfileViewModel.swift in Sources */,
