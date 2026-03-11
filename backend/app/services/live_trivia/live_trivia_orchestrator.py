@@ -22,7 +22,7 @@ from app.services.live_trivia.fact_cache import FactCache, InMemoryFactCache
 from app.services.live_trivia.fact_extractor import FactExtractionService
 from app.services.live_trivia.fact_generation_pipeline import FactGenerationPipeline
 from app.services.live_trivia.mention_tracker import InMemoryMentionTracker, MentionTracker
-from app.services.live_trivia.session_manager import SessionManager
+from app.services.live_trivia.session_manager import SessionManager, TriviaSession
 from app.services.live_trivia.session_validator import SessionValidator
 from app.services.live_trivia.topic_detector import TopicDetectionService
 from app.services.live_trivia.topic_tracker import TopicTracker
@@ -279,8 +279,10 @@ class LiveTriviaOrchestrator:
                             extra={
                                 "channel_id": channel_id,
                                 "user_id": user_id,
-                                "error": str(e),
+                                "error": str(e) or type(e).__name__,
+                                "error_type": type(e).__name__,
                             },
+                            exc_info=True,
                         )
                         continue
 
@@ -369,7 +371,7 @@ class LiveTriviaOrchestrator:
         ready_topics: List[Dict],
         user_id: str,
         channel_id: str,
-        session: LiveTriviaSession
+        session: TriviaSession
     ) -> List[TriviaFactModel]:
         """Process ready topics and generate facts for first valid one."""
         for topic in ready_topics:
@@ -397,14 +399,30 @@ class LiveTriviaOrchestrator:
             await self.session_validator.deduct_quota_and_set_cooldown(
                 user_id, topic_hash, len(facts)
             )
-            await LiveTriviaSession.get_pymongo_collection().update_one(
-                {"_id": session.id},
-                {
-                    "$addToSet": {"shown_topics": topic_hash},
-                    "$push": {"shown_fact_ids": {"$each": [f.fact_id for f in facts], "$slice": -100}},
-                    "$set": {"last_fact_shown_at": datetime.utcnow()}
-                }
-            )
+
+            # Update in-memory session state (works even without MongoDB)
+            session.add_shown_topic(topic_hash)
+            for f in facts:
+                session.add_shown_fact(f.fact_id)
+            session.last_fact_shown_at = datetime.utcnow()
+
+            # Persist to MongoDB if available
+            try:
+                if session.id is not None:
+                    await LiveTriviaSession.get_pymongo_collection().update_one(
+                        {"_id": session.id},
+                        {
+                            "$addToSet": {"shown_topics": topic_hash},
+                            "$push": {"shown_fact_ids": {"$each": [f.fact_id for f in facts], "$slice": -100}},
+                            "$set": {"last_fact_shown_at": session.last_fact_shown_at}
+                        }
+                    )
+            except Exception as db_err:
+                logger.warning(
+                    "Failed to persist trivia session to MongoDB",
+                    extra={"error": str(db_err) or type(db_err).__name__},
+                )
+
             return facts
 
         return []

@@ -7,10 +7,9 @@ Validates user session constraints for live trivia (frequency, cooldown, quotas)
 import logging
 from typing import Optional, Tuple
 
-from app.models.live_trivia import LiveTriviaSession
 from app.services.live_feature_quota_service import live_feature_quota_service
 from app.services.live_trivia.mention_tracker import MentionTracker
-from app.services.live_trivia.session_manager import SessionManager
+from app.services.live_trivia.session_manager import SessionManager, TriviaSession
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ class SessionValidator:
         topic_hash: str,
         topic_text: str,
         user_id: str,
-        session: LiveTriviaSession
+        session: TriviaSession
     ) -> Tuple[bool, Optional[str]]:
         """
         Validate if topic can be shown to user.
@@ -81,11 +80,8 @@ class SessionValidator:
         """
         Check if user has remaining trivia quota.
 
-        Args:
-            user_id: User ID
-
-        Returns:
-            (has_quota, error_message) tuple
+        Trivia is a lightweight feature that does not consume metered
+        minutes, so quota errors are non-blocking — allow on failure.
         """
         try:
             has_quota = await live_feature_quota_service.check_trivia_quota(user_id)
@@ -93,8 +89,11 @@ class SessionValidator:
                 return False, "User has exceeded trivia quota"
             return True, None
         except Exception as e:
-            logger.error(f"Error checking trivia quota for user {user_id}: {e}")
-            return False, "Error checking quota"
+            logger.warning(
+                "Trivia quota check failed, allowing by default",
+                extra={"user_id": user_id, "error": str(e) or type(e).__name__},
+            )
+            return True, None
 
     async def deduct_quota_and_set_cooldown(
         self,
