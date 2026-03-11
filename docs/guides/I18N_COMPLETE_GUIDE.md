@@ -10,18 +10,18 @@ Bayit+ supports 10 languages with full internationalization across all platforms
 
 ### Supported Languages
 
-| Language | Code | Direction | Status |
-|----------|------|-----------|--------|
-| **Hebrew** | `he` | RTL | Primary |
-| **English** | `en` | LTR | Primary |
-| **Spanish** | `es` | LTR | Complete |
-| **Chinese (Simplified)** | `zh` | LTR | Complete |
-| **French** | `fr` | LTR | Complete |
-| **Italian** | `it` | LTR | Complete |
-| **Hindi** | `hi` | LTR | Complete |
-| **Tamil** | `ta` | LTR | Complete |
-| **Bengali** | `bn` | LTR | Complete |
-| **Japanese** | `ja` | LTR | Complete |
+| Language                 | Code | Direction | Status   |
+| ------------------------ | ---- | --------- | -------- |
+| **Hebrew**               | `he` | RTL       | Primary  |
+| **English**              | `en` | LTR       | Primary  |
+| **Spanish**              | `es` | LTR       | Complete |
+| **Chinese (Simplified)** | `zh` | LTR       | Complete |
+| **French**               | `fr` | LTR       | Complete |
+| **Italian**              | `it` | LTR       | Complete |
+| **Hindi**                | `hi` | LTR       | Complete |
+| **Tamil**                | `ta` | LTR       | Complete |
+| **Bengali**              | `bn` | LTR       | Complete |
+| **Japanese**             | `ja` | LTR       | Complete |
 
 ---
 
@@ -50,16 +50,19 @@ olorin-core/packages/shared-i18n/
 ### Platform Variants
 
 **Web (React):**
+
 - Uses `localStorage` for persistence
 - Browser language detection
 - `react-i18next` integration
 
 **Mobile (React Native iOS/Android):**
+
 - Uses `AsyncStorage` for persistence
 - Device language detection
 - Platform-specific date/time formatting
 
 **tvOS (React Native for TV):**
+
 - Same as Mobile
 - TV-optimized language selection UI
 
@@ -70,6 +73,7 @@ olorin-core/packages/shared-i18n/
 ### Web Platform
 
 ::: v-pre
+
 ```typescript
 // app/main.tsx
 import i18n from '@olorin/shared-i18n';
@@ -85,11 +89,13 @@ import { I18nextProvider } from 'react-i18next';
   <App />
 </I18nextProvider>
 ```
+
 :::
 
 ### Mobile Platform (iOS/Android)
 
 ::: v-pre
+
 ```typescript
 // app/index.tsx
 import i18n from '@olorin/shared-i18n';
@@ -101,13 +107,14 @@ await initNativeI18n();
 // Use with React Native
 <App />
 ```
+
 :::
 
 ### tvOS Platform
 
 ```typescript
 // Same as Mobile
-import { initNativeI18n } from '@olorin/shared-i18n/native';
+import { initNativeI18n } from "@olorin/shared-i18n/native";
 
 await initNativeI18n();
 ```
@@ -135,6 +142,7 @@ ios-app/Packages/BayitLocalization/
 ```
 
 **Usage in SwiftUI:**
+
 ```swift
 import BayitLocalization
 
@@ -147,7 +155,7 @@ struct MyView: View {
 ```
 
 **Adding New Keys:**
-When adding new features, update ALL 10 locale JSON files in `ios-app/Packages/BayitLocalization/Sources/Resources/`. The JSON structure mirrors the web/mobile translation files with the same namespace organization.
+When adding new features, update ALL 10 locale JSON files in `packages/ui/bayit-i18n/locales/` (the single source of truth). iOS and Android locale directories are symlinks to this canonical location.
 
 ---
 
@@ -156,6 +164,7 @@ When adding new features, update ALL 10 locale JSON files in `ios-app/Packages/B
 ### Basic Translation
 
 ::: v-pre
+
 ```typescript
 import { useTranslation } from 'react-i18next';
 
@@ -170,11 +179,13 @@ function MyComponent() {
   );
 }
 ```
+
 :::
 
 ### Translation with Variables
 
 ::: v-pre
+
 ```typescript
 const { t } = useTranslation();
 
@@ -182,11 +193,13 @@ const { t } = useTranslation();
 <Text>{t('common.greeting', { name: 'John' })}</Text>
 // Output: "Hello, John!"
 ```
+
 :::
 
 ### Pluralization
 
 ::: v-pre
+
 ```typescript
 const { t } = useTranslation();
 
@@ -200,14 +213,15 @@ const { t } = useTranslation();
 <Text>{t('common.items', { count: 5 })}</Text>
 // Output: "5 items"
 ```
+
 :::
 
 ### Date/Time Formatting
 
 ```typescript
-import { formatDate, formatTime } from '@olorin/shared-i18n';
+import { formatDate, formatTime } from "@olorin/shared-i18n";
 
-const date = new Date('2026-01-30T12:30:00Z');
+const date = new Date("2026-01-30T12:30:00Z");
 
 // Format date according to current language
 const formattedDate = formatDate(date);
@@ -225,7 +239,7 @@ const formattedTime = formatTime(date);
 ### Number Formatting
 
 ```typescript
-import { formatNumber, formatCurrency } from '@olorin/shared-i18n';
+import { formatNumber, formatCurrency } from "@olorin/shared-i18n";
 
 // Format number with locale
 formatNumber(1234567.89);
@@ -233,7 +247,7 @@ formatNumber(1234567.89);
 // fr: "1 234 567,89"
 
 // Format currency
-formatCurrency(99.99, 'USD');
+formatCurrency(99.99, "USD");
 // en: "$99.99"
 // es: "99,99 US$"
 ```
@@ -245,10 +259,10 @@ formatCurrency(99.99, 'USD');
 ### Programmatic Language Change
 
 ```typescript
-import i18n from '@olorin/shared-i18n';
+import i18n from "@olorin/shared-i18n";
 
 // Change language
-await i18n.changeLanguage('es');
+await i18n.changeLanguage("es");
 
 // Get current language
 const currentLang = i18n.language; // 'es'
@@ -257,6 +271,7 @@ const currentLang = i18n.language; // 'es'
 ### Language Selector Component
 
 ::: v-pre
+
 ```typescript
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '@bayit/glass';
@@ -286,6 +301,7 @@ function LanguageSelector() {
   );
 }
 ```
+
 :::
 
 ---
@@ -327,40 +343,40 @@ function LanguageSelector() {
 
 As of 2026-02-12, the following namespaces are active across all platforms:
 
-| Namespace | Description | Platforms |
-|-----------|-------------|-----------|
-| `common` | Shared UI strings (buttons, labels, errors) | All |
-| `account` | Login, registration, profile | All |
-| `navigation` | Menu items, tab labels | All |
-| `content` | VOD library, series, movies | All |
-| `player` | Playback controls, overlays | All |
-| `live` | Live TV, EPG, recordings | All |
-| `radio` | Radio stations and streaming | All |
-| `audiobooks` | Audiobook library and playback | All |
-| `podcasts` | Podcast directory and playback | All |
-| `search` | Search, LLM search, suggestions | All |
-| `social` | Friends, DMs, watch party | Web, iOS, Mobile |
-| `missions` | Daily missions, gamification, leaderboard | All |
-| `chess` | Chess gameplay | All |
-| `trivia` | Live trivia during streaming | All |
-| `phonetic-mirror` | Pronunciation practice | Web, iOS, Mobile |
-| `talkback` | Voice-response learning | Web, iOS, Mobile |
-| `comprehension` | Comprehension quizzes | All |
-| `star-story` | AI-generated stories | Web, iOS, tvOS |
-| `grandparent-bridge` | News clips, family sharing | Web, iOS, tvOS, Mobile |
-| `chameleon-avatar` | Avatar style transfer | Web, iOS, tvOS |
-| `zeh-ani` | Zeh Ani full feature suite | All |
-| `family-controls` | Parental controls, PIN, ratings | All |
-| `household` | Household management | Web, iOS, Mobile |
-| `settings` | App settings, preferences | All |
-| `subscription` | Plans, billing, payments | Web, iOS, Mobile |
-| `cultures` | Cultural content (Jerusalem, Tel Aviv) | All |
-| `calendar` | Jewish calendar, holidays | All |
-| `beta` | Beta 500 credits program | All |
-| `onboarding` | User onboarding flows | Web, iOS, Mobile |
-| `help` | Help and support | All |
-| `errors` | Error messages | All |
-| `admin` | Admin dashboard | Web |
+| Namespace            | Description                                 | Platforms              |
+| -------------------- | ------------------------------------------- | ---------------------- |
+| `common`             | Shared UI strings (buttons, labels, errors) | All                    |
+| `account`            | Login, registration, profile                | All                    |
+| `navigation`         | Menu items, tab labels                      | All                    |
+| `content`            | VOD library, series, movies                 | All                    |
+| `player`             | Playback controls, overlays                 | All                    |
+| `live`               | Live TV, EPG, recordings                    | All                    |
+| `radio`              | Radio stations and streaming                | All                    |
+| `audiobooks`         | Audiobook library and playback              | All                    |
+| `podcasts`           | Podcast directory and playback              | All                    |
+| `search`             | Search, LLM search, suggestions             | All                    |
+| `social`             | Friends, DMs, watch party                   | Web, iOS, Mobile       |
+| `missions`           | Daily missions, gamification, leaderboard   | All                    |
+| `chess`              | Chess gameplay                              | All                    |
+| `trivia`             | Live trivia during streaming                | All                    |
+| `phonetic-mirror`    | Pronunciation practice                      | Web, iOS, Mobile       |
+| `talkback`           | Voice-response learning                     | Web, iOS, Mobile       |
+| `comprehension`      | Comprehension quizzes                       | All                    |
+| `star-story`         | AI-generated stories                        | Web, iOS, tvOS         |
+| `grandparent-bridge` | News clips, family sharing                  | Web, iOS, tvOS, Mobile |
+| `chameleon-avatar`   | Avatar style transfer                       | Web, iOS, tvOS         |
+| `zeh-ani`            | Zeh Ani full feature suite                  | All                    |
+| `family-controls`    | Parental controls, PIN, ratings             | All                    |
+| `household`          | Household management                        | Web, iOS, Mobile       |
+| `settings`           | App settings, preferences                   | All                    |
+| `subscription`       | Plans, billing, payments                    | Web, iOS, Mobile       |
+| `cultures`           | Cultural content (Jerusalem, Tel Aviv)      | All                    |
+| `calendar`           | Jewish calendar, holidays                   | All                    |
+| `beta`               | Beta 500 credits program                    | All                    |
+| `onboarding`         | User onboarding flows                       | Web, iOS, Mobile       |
+| `help`               | Help and support                            | All                    |
+| `errors`             | Error messages                              | All                    |
+| `admin`              | Admin dashboard                             | Web                    |
 
 ### Nested Keys
 
@@ -383,9 +399,10 @@ As of 2026-02-12, the following namespaces are active across all platforms:
 ```
 
 **Usage:**
+
 ```typescript
-t('settings.profile.title') // "Profile Settings"
-t('settings.notifications.email') // "Email Notifications"
+t("settings.profile.title"); // "Profile Settings"
+t("settings.notifications.email"); // "Email Notifications"
 ```
 
 ---
@@ -395,7 +412,7 @@ t('settings.notifications.email') // "Email Notifications"
 ### Detecting RTL
 
 ```typescript
-import { isRTL } from '@olorin/shared-i18n';
+import { isRTL } from "@olorin/shared-i18n";
 
 const rtl = isRTL(i18n.language);
 // true for Hebrew ('he'), Arabic ('ar')
@@ -406,6 +423,7 @@ const rtl = isRTL(i18n.language);
 
 **Web:**
 ::: v-pre
+
 ```typescript
 import { useTranslation } from 'react-i18next';
 
@@ -420,11 +438,13 @@ function MyComponent() {
   );
 }
 ```
+
 :::
 
 **React Native:**
+
 ```typescript
-import { I18nManager } from 'react-native';
+import { I18nManager } from "react-native";
 
 // Enable RTL
 I18nManager.allowRTL(true);
@@ -436,6 +456,7 @@ I18nManager.forceRTL(true);
 ### RTL-Aware Styling
 
 ::: v-pre
+
 ```typescript
 // Tailwind CSS (Web)
 <div className="ml-4 rtl:mr-4 rtl:ml-0">
@@ -450,6 +471,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
 :::
 
 ---
@@ -459,12 +481,14 @@ const styles = StyleSheet.create({
 ### Step 1: Add Translation Files
 
 Create translation file:
+
 ```bash
 mkdir -p locales/new-lang
 touch locales/new-lang/translation.json
 ```
 
 **Example: `locales/ar/translation.json` (Arabic)**
+
 ```json
 {
   "common": {
@@ -479,12 +503,20 @@ touch locales/new-lang/translation.json
 ```typescript
 // shared-i18n/src/config.ts
 export const SUPPORTED_LANGUAGES = [
-  'he', 'en', 'es', 'zh', 'fr', 'it',
-  'hi', 'ta', 'bn', 'ja',
-  'ar'  // Add new language
+  "he",
+  "en",
+  "es",
+  "zh",
+  "fr",
+  "it",
+  "hi",
+  "ta",
+  "bn",
+  "ja",
+  "ar", // Add new language
 ];
 
-export const RTL_LANGUAGES = ['he', 'ar'];
+export const RTL_LANGUAGES = ["he", "ar"];
 ```
 
 ### Step 3: Add Language Metadata
@@ -493,7 +525,7 @@ export const RTL_LANGUAGES = ['he', 'ar'];
 // Add to language selector
 const languages = [
   // ...existing
-  { code: 'ar', name: 'العربية', direction: 'rtl' }
+  { code: "ar", name: "العربية", direction: "rtl" },
 ];
 ```
 
@@ -516,6 +548,7 @@ i18n.changeLanguage('ar');
 **Format:** `namespace.category.key`
 
 **Examples:**
+
 ```
 common.button.save
 common.button.cancel
@@ -526,6 +559,7 @@ content.series.addToWatchlist
 ```
 
 **Guidelines:**
+
 - Use camelCase for keys
 - Keep keys descriptive but concise
 - Group related keys under common namespace
@@ -541,7 +575,7 @@ content.series.addToWatchlist
 
 ```typescript
 // With fallback
-t('missing.key') // Falls back to English
+t("missing.key"); // Falls back to English
 
 // Development warning:
 // "Translation key 'missing.key' not found for language 'es'"
@@ -551,7 +585,7 @@ t('missing.key') // Falls back to English
 
 ```typescript
 // Enable missing key handler (development only)
-i18n.on('missingKey', (lngs, namespace, key) => {
+i18n.on("missingKey", (lngs, namespace, key) => {
   console.warn(`Missing translation: ${namespace}:${key} for ${lngs}`);
 });
 ```
@@ -588,24 +622,26 @@ i18n.on('missingKey', (lngs, namespace, key) => {
 ### Issue: Translations Not Loading
 
 **Solution:**
+
 ```typescript
 // Check i18n initialization
-console.log('i18n initialized:', i18n.isInitialized);
-console.log('Current language:', i18n.language);
-console.log('Available languages:', i18n.languages);
+console.log("i18n initialized:", i18n.isInitialized);
+console.log("Current language:", i18n.language);
+console.log("Available languages:", i18n.languages);
 
 // Manually load translations
-import translation from './locales/en/translation.json';
-i18n.addResourceBundle('en', 'translation', translation);
+import translation from "./locales/en/translation.json";
+i18n.addResourceBundle("en", "translation", translation);
 ```
 
 ### Issue: RTL Not Working
 
 **Solution:**
+
 ```typescript
 // Verify RTL detection
-console.log('Direction:', i18n.dir());
-console.log('Is RTL:', I18nManager.isRTL); // React Native
+console.log("Direction:", i18n.dir());
+console.log("Is RTL:", I18nManager.isRTL); // React Native
 
 // Force RTL (React Native)
 I18nManager.forceRTL(true);
@@ -615,14 +651,15 @@ RNRestart.Restart(); // Requires app restart
 ### Issue: Date Formatting Incorrect
 
 **Solution:**
+
 ```typescript
 // Use locale-aware date formatting
-import { format } from 'date-fns';
-import { he, enUS, es } from 'date-fns/locale';
+import { format } from "date-fns";
+import { he, enUS, es } from "date-fns/locale";
 
 const locales = { he, en: enUS, es };
 
-format(date, 'PPP', { locale: locales[i18n.language] });
+format(date, "PPP", { locale: locales[i18n.language] });
 ```
 
 ---
@@ -632,28 +669,28 @@ format(date, 'PPP', { locale: locales[i18n.language] });
 ### Unit Testing Translations
 
 ```typescript
-import i18n from '@olorin/shared-i18n';
+import i18n from "@olorin/shared-i18n";
 
-describe('i18n', () => {
+describe("i18n", () => {
   beforeAll(async () => {
     await i18n.init();
   });
 
-  it('translates common keys', () => {
-    expect(i18n.t('common.welcome')).toBe('Welcome');
+  it("translates common keys", () => {
+    expect(i18n.t("common.welcome")).toBe("Welcome");
   });
 
-  it('handles pluralization', () => {
-    expect(i18n.t('common.items', { count: 1 })).toBe('1 item');
-    expect(i18n.t('common.items', { count: 5 })).toBe('5 items');
+  it("handles pluralization", () => {
+    expect(i18n.t("common.items", { count: 1 })).toBe("1 item");
+    expect(i18n.t("common.items", { count: 5 })).toBe("5 items");
   });
 
-  it('supports RTL languages', () => {
-    i18n.changeLanguage('he');
-    expect(i18n.dir()).toBe('rtl');
+  it("supports RTL languages", () => {
+    i18n.changeLanguage("he");
+    expect(i18n.dir()).toBe("rtl");
 
-    i18n.changeLanguage('en');
-    expect(i18n.dir()).toBe('ltr');
+    i18n.changeLanguage("en");
+    expect(i18n.dir()).toBe("ltr");
   });
 });
 ```
@@ -662,8 +699,8 @@ describe('i18n', () => {
 
 ```typescript
 // Playwright (Web)
-test('switches language to Spanish', async ({ page }) => {
-  await page.goto('/');
+test("switches language to Spanish", async ({ page }) => {
+  await page.goto("/");
 
   // Open language selector
   await page.click('[data-testid="language-button"]');
@@ -672,20 +709,20 @@ test('switches language to Spanish', async ({ page }) => {
   await page.click('[data-testid="lang-es"]');
 
   // Verify translation
-  await expect(page.locator('h1')).toHaveText('Bienvenido');
+  await expect(page.locator("h1")).toHaveText("Bienvenido");
 });
 
 // Detox (Mobile)
-it('should switch language to Hebrew', async () => {
+it("should switch language to Hebrew", async () => {
   // Open settings
-  await element(by.id('settings-button')).tap();
+  await element(by.id("settings-button")).tap();
 
   // Select language
-  await element(by.id('language-selector')).tap();
-  await element(by.id('lang-he')).tap();
+  await element(by.id("language-selector")).tap();
+  await element(by.id("lang-he")).tap();
 
   // Verify RTL
-  await expect(element(by.id('home-screen'))).toHaveValue('rtl');
+  await expect(element(by.id("home-screen"))).toHaveValue("rtl");
 });
 ```
 

@@ -2,7 +2,7 @@
 
 # Script to add account deletion strings to all locale files
 
-LOCALE_DIR="/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/Packages/BayitLocalization/Sources/Resources"
+LOCALE_DIR="/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/ui/bayit-i18n/locales"
 
 # French (fr.json)
 sed -i '' 's/"profile": "Profil"/"profile": "Profil",\

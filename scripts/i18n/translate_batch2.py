@@ -5,7 +5,7 @@ import os
 
 DIRS = [
     "/Users/olorin/Documents/Projects/olorin/olorin-core/packages/shared-i18n/locales",
-    "/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/app/src/main/assets/locales",
+    "/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/ui/bayit-i18n/locales",
 ]
 
 TRANSLATIONS = {
