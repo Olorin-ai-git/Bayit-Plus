@@ -6,6 +6,7 @@ import SwiftUI
 /// Authentication flow: Login -> Register -> Forgot Password -> Reset Password -> Profile Selection
 struct AuthFlowView: View {
     @State private var authStep: AuthStep = .login
+    @State private var showPlusIntro = false
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AuthManager.self) private var authManager
     @Environment(LocalizationManager.self) private var localization
@@ -54,7 +55,11 @@ struct AuthFlowView: View {
                         withAnimation { authStep = .login }
                     },
                     onRegisterSuccess: {
-                        withAnimation { authStep = .profileSelection }
+                        if !PlusIntroSheetView.hasBeenSeen {
+                            showPlusIntro = true
+                        } else {
+                            withAnimation { authStep = .profileSelection }
+                        }
                     }
                 )
                 .transition(.asymmetric(
@@ -95,6 +100,22 @@ struct AuthFlowView: View {
             }
 
             languagePicker
+        }
+        .sheet(isPresented: $showPlusIntro) {
+            PlusIntroSheetView(
+                onSeePlans: {
+                    PlusIntroSheetView.markAsSeen()
+                    showPlusIntro = false
+                    coordinator.navigate(to: .subscription)
+                },
+                onDismiss: {
+                    PlusIntroSheetView.markAsSeen()
+                    showPlusIntro = false
+                    withAnimation { authStep = .profileSelection }
+                }
+            )
+            .presentationDetents([.medium, .large])
+            .presentationBackground(.ultraThinMaterial)
         }
     }
 
