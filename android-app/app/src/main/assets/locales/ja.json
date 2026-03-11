@@ -6208,6 +6208,16 @@
       "dubbing": "AIダビングで英語で視聴",
       "subtitles": "文法とスラング付きスマート字幕",
       "search": "AI Searchでシーンを検索"
+    },
+    "intro": {
+      "title": "Bayit+へようこそ",
+      "subtitle": "AI搭載機能でイスラエルのストリーミングの全機能を解放しましょう",
+      "bullet1": "あなたの言語でのAIダビング",
+      "bullet2": "文法ヒント付きスマート字幕",
+      "bullet3": "AIによるシーン検索",
+      "bullet4": "500ベータAIクレジット付き",
+      "seePlans": "プランを見る",
+      "maybeLater": "後で"
     }
   }
 }

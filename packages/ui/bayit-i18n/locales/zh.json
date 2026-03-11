@@ -9868,6 +9868,16 @@
       "dubbing": "使用AI配音观看英语",
       "subtitles": "带语法和俚语的智能字幕",
       "search": "使用AI搜索查找场景"
+    },
+    "intro": {
+      "title": "欢迎使用 Bayit+",
+      "subtitle": "借助 AI 功能，解锁以色列流媒体的全部力量",
+      "bullet1": "用您的语言进行 AI 配音",
+      "bullet2": "带语法提示的智能字幕",
+      "bullet3": "AI 驱动的场景搜索",
+      "bullet4": "包含 500 个 Beta AI 积分",
+      "seePlans": "查看计划",
+      "maybeLater": "也许稍后"
     }
   },
   "navigation": {

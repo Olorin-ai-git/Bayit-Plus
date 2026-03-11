@@ -1,9 +1,15 @@
 package tv.bayit.plus.navigation
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
@@ -17,25 +23,22 @@ import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.core.common.result.BayitError
 import tv.bayit.plus.core.common.result.BayitResult
+import tv.bayit.plus.designsystem.i18n.bayitString
+import tv.bayit.plus.feature.auth.forgot.ForgotPasswordRoute
 import tv.bayit.plus.feature.auth.login.LoginRoute
-import tv.bayit.plus.feature.auth.tvlogin.TVLoginRoute
 import tv.bayit.plus.feature.auth.payment.PaymentCancelledRoute
 import tv.bayit.plus.feature.auth.payment.PaymentPendingRoute
 import tv.bayit.plus.feature.auth.payment.PaymentSuccessRoute
-import tv.bayit.plus.feature.auth.forgot.ForgotPasswordRoute
 import tv.bayit.plus.feature.auth.register.RegisterRoute
 import tv.bayit.plus.feature.auth.splash.SplashRoute
+import tv.bayit.plus.feature.auth.subscription.PlusIntroSheet
 import tv.bayit.plus.feature.auth.subscription.SubscribeRoute
 import tv.bayit.plus.feature.auth.subscription.SubscriptionGateRoute
+import tv.bayit.plus.feature.auth.tvlogin.TVLoginRoute
 import tv.bayit.plus.feature.profile.add.AddProfileRoute
 import tv.bayit.plus.feature.profile.edit.EditProfileRoute
 import tv.bayit.plus.feature.profile.selection.ProfileSelectionRoute
 import tv.bayit.plus.feature.rewards.beta.BetaCreditsRoute
-import android.content.Intent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import tv.bayit.plus.designsystem.i18n.bayitString
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavController,
@@ -122,14 +125,39 @@ fun NavGraphBuilder.authNavGraph(
         )
     }
     composable<Route.ProfileSelection> {
+        val context = LocalContext.current
+        var showPlusIntro by remember { mutableStateOf(false) }
+        val prefs = remember(context) {
+            context.getSharedPreferences("bayit_plus_prefs", Context.MODE_PRIVATE)
+        }
         ProfileSelectionRoute(
             onNavigateToHome = {
-                navController.navigate(Route.Home) {
-                    popUpTo(Route.ProfileSelection) { inclusive = true }
+                if (!prefs.getBoolean("bayit_plus_intro_seen", false)) {
+                    showPlusIntro = true
+                } else {
+                    navController.navigate(Route.Home) {
+                        popUpTo(Route.ProfileSelection) { inclusive = true }
+                    }
                 }
             },
             onNavigateToAddProfile = { navController.navigate(Route.AddProfile) },
         )
+        if (showPlusIntro) {
+            PlusIntroSheet(
+                onSeePlans = {
+                    prefs.edit().putBoolean("bayit_plus_intro_seen", true).apply()
+                    showPlusIntro = false
+                    navController.navigate(Route.Subscribe)
+                },
+                onDismiss = {
+                    prefs.edit().putBoolean("bayit_plus_intro_seen", true).apply()
+                    showPlusIntro = false
+                    navController.navigate(Route.Home) {
+                        popUpTo(Route.ProfileSelection) { inclusive = true }
+                    }
+                },
+            )
+        }
     }
     composable<Route.AddProfile> {
         AddProfileRoute(
