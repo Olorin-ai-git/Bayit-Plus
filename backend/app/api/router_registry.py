@@ -100,7 +100,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.v1.endpoints import subtitles as subtitles_vtt
     # VOD Audio Tracks routes (AI-generated audio dubbing)
     from app.api.routes import vod_audio_tracks
-    from app.api.routes.beta import credits
+    from app.api.routes.beta import credits, credits_client
     # Feature validation routes
     from app.api.routes.features import validation as features_validation
     # Mission and gamification routes (Hebrew engagement)
@@ -589,6 +589,7 @@ def register_all_routers(app: FastAPI) -> None:
     # AI Credit Routes
     # ============================================
     app.include_router(credits.router, prefix=prefix, tags=["beta-credits"])
+    app.include_router(credits_client.router, prefix=prefix, tags=["beta-credits"])
     logger.debug("Registered AI credit routes")
 
     # ============================================

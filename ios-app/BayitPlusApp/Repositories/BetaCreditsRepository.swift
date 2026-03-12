@@ -33,7 +33,7 @@ final class APIBetaCreditsRepository: BetaCreditsRepository, @unchecked Sendable
 
     func deductWithDedup(_ request: CreditDeductRequest) async throws -> CreditDeductResponse {
         return try await client.post(
-            "/api/v1/beta/credits/deduct",
+            "/api/v1/beta/credits/use",
             body: request,
             as: CreditDeductResponse.self
         )

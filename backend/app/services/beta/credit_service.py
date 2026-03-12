@@ -89,6 +89,7 @@ class BetaCreditService:
             "magic_mirror": self.settings.CREDIT_RATE_MAGIC_MIRROR,
             "highlight_reel": self.settings.CREDIT_RATE_HIGHLIGHT_REEL,
             "character_generation": self.settings.CREDIT_RATE_CHARACTER_GENERATION,
+            "vod_feature_unlock": self.settings.CREDIT_RATE_VOD_FEATURE_UNLOCK,
         }
 
     async def get_credit_rate(self, feature: str) -> float:

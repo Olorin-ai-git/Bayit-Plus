@@ -3081,6 +3081,11 @@ class Settings(BaseSettings):
         env="CREDIT_RATE_VOD_PAUSE_ASK",
         description="Credits per Pause & Ask exchange (2 animations + polish)",
     )
+    CREDIT_RATE_VOD_FEATURE_UNLOCK: int = Field(
+        default=1, ge=0,
+        env="CREDIT_RATE_VOD_FEATURE_UNLOCK",
+        description="Credits per VOD AI feature unlock (per user per content)",
+    )
 
     # ============================================
     # MOVIE INTERACTIONS HUB (Zeh Ani Phase 4 - Browse & Talk to Characters)
