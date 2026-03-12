@@ -8,6 +8,13 @@ public enum BYOCSourceType: String, Codable, Sendable {
     case youtube
 }
 
+/// Status of a BYOC source.
+public enum BYOCSourceStatus: String, Codable, Sendable {
+    case active
+    case error
+    case authExpired
+}
+
 /// Configuration for a single BYOC content source.
 public struct BYOCSourceConfig: Codable, Identifiable, Sendable {
     public let id: String
@@ -17,6 +24,7 @@ public struct BYOCSourceConfig: Codable, Identifiable, Sendable {
     public let addedAt: Date
     public var lastRefreshedAt: Date?
     public var accountExpiry: Date?
+    public var status: BYOCSourceStatus
 
     public init(
         id: String = UUID().uuidString,
@@ -25,7 +33,8 @@ public struct BYOCSourceConfig: Codable, Identifiable, Sendable {
         url: URL? = nil,
         addedAt: Date = Date(),
         lastRefreshedAt: Date? = nil,
-        accountExpiry: Date? = nil
+        accountExpiry: Date? = nil,
+        status: BYOCSourceStatus = .active
     ) {
         self.id = id
         self.type = type
@@ -34,5 +43,6 @@ public struct BYOCSourceConfig: Codable, Identifiable, Sendable {
         self.addedAt = addedAt
         self.lastRefreshedAt = lastRefreshedAt
         self.accountExpiry = accountExpiry
+        self.status = status
     }
 }

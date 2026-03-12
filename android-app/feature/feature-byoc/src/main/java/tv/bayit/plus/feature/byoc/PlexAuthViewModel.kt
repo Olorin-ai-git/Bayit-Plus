@@ -14,7 +14,6 @@ import tv.bayit.plus.core.byoc.clients.PlexClient
 import tv.bayit.plus.core.byoc.models.PlexDeviceCode
 import tv.bayit.plus.core.byoc.models.PlexServer
 import tv.bayit.plus.core.common.logging.BayitLogger
-import java.util.UUID
 import javax.inject.Inject
 
 sealed class PlexAuthUiState {
@@ -36,7 +35,7 @@ class PlexAuthViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PlexAuthUiState>(PlexAuthUiState.Idle)
     val uiState: StateFlow<PlexAuthUiState> = _uiState.asStateFlow()
 
-    private val clientId = UUID.randomUUID().toString()
+    private val clientId = plexClient.getOrCreateClientId()
     private var pollJob: Job? = null
     private var authToken: String? = null
 

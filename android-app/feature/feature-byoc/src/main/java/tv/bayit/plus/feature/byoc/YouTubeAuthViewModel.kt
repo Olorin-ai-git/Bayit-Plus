@@ -77,7 +77,7 @@ class YouTubeAuthViewModel @Inject constructor(
         pollJob?.cancel()
         pollJob = viewModelScope.launch {
             try {
-                val accessToken = youtubeClient.pollForToken(
+                val tokenResponse = youtubeClient.pollForToken(
                     deviceCode = deviceCode,
                     clientId = googleClientId,
                     clientSecret = googleClientSecret,
@@ -85,7 +85,8 @@ class YouTubeAuthViewModel @Inject constructor(
                 _uiState.value = YouTubeAuthUiState.Connecting
                 sourceManager.addYouTubeSource(
                     name = "YouTube",
-                    accessToken = accessToken,
+                    accessToken = tokenResponse.accessToken ?: "",
+                    refreshToken = tokenResponse.refreshToken,
                 )
                 _uiState.value = YouTubeAuthUiState.Success
             } catch (e: CancellationException) {

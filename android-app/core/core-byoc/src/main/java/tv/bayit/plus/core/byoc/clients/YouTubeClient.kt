@@ -48,15 +48,39 @@ class YouTubeClient @Inject constructor(
         deviceCode: GoogleDeviceCode,
         clientId: String,
         clientSecret: String,
-    ): String {
+    ): GoogleTokenResponse {
         val intervalMs = (deviceCode.interval * MILLIS_PER_SECOND).toLong()
         val maxAttempts = deviceCode.expiresIn * MILLIS_PER_SECOND / intervalMs
         repeat(maxAttempts.toInt()) {
             delay(intervalMs)
-            val token = tryExchangeCode(deviceCode.deviceCode, clientId, clientSecret)
-            if (token != null) return token
+            val response = tryExchangeCode(deviceCode.deviceCode, clientId, clientSecret)
+            if (response != null) return response
         }
         throw IllegalStateException("Authorization code expired")
+    }
+
+    suspend fun refreshAccessToken(
+        refreshToken: String,
+        clientId: String,
+        clientSecret: String,
+    ): GoogleTokenResponse = withContext(Dispatchers.IO) {
+        val body = FormBody.Builder()
+            .add("client_id", clientId)
+            .add("client_secret", clientSecret)
+            .add("refresh_token", refreshToken)
+            .add("grant_type", "refresh_token")
+            .build()
+        val request = Request.Builder()
+            .url(TOKEN_URL)
+            .post(body)
+            .build()
+        val response = okHttpClient.newCall(request).execute()
+        val responseBody = response.body?.string()
+            ?: throw YouTubeAuthExpiredException()
+        if (!response.isSuccessful) {
+            throw YouTubeAuthExpiredException()
+        }
+        json.decodeFromString<GoogleTokenResponse>(responseBody)
     }
 
     suspend fun fetchSubscriptions(accessToken: String): List<YouTubeVideo> = withContext(Dispatchers.IO) {
@@ -68,6 +92,7 @@ class YouTubeClient @Inject constructor(
         val response = okHttpClient.newCall(request).execute()
         val body = response.body?.string() ?: return@withContext emptyList()
         if (!response.isSuccessful) {
+            if (response.code == 401) throw YouTubeAuthExpiredException()
             throw IllegalStateException("YouTube subscriptions fetch failed (${response.code}): $body")
         }
         val parsed = json.decodeFromString<YouTubeSubscriptionListResponse>(body)
@@ -100,6 +125,7 @@ class YouTubeClient @Inject constructor(
         val response = okHttpClient.newCall(request).execute()
         val body = response.body?.string() ?: return@withContext emptyList()
         if (!response.isSuccessful) {
+            if (response.code == 401) throw YouTubeAuthExpiredException()
             throw IllegalStateException("YouTube channel videos fetch failed (${response.code}): $body")
         }
         val parsed = json.decodeFromString<YouTubeVideoListResponse>(body)
@@ -123,7 +149,7 @@ class YouTubeClient @Inject constructor(
         deviceCode: String,
         clientId: String,
         clientSecret: String,
-    ): String? = withContext(Dispatchers.IO) {
+    ): GoogleTokenResponse? = withContext(Dispatchers.IO) {
         val body = FormBody.Builder()
             .add("client_id", clientId)
             .add("client_secret", clientSecret)
@@ -140,7 +166,7 @@ class YouTubeClient @Inject constructor(
         if (parsed.error != null && parsed.error != "authorization_pending" && parsed.error != "slow_down") {
             throw IllegalStateException("Token exchange failed: ${parsed.error}")
         }
-        parsed.accessToken
+        if (parsed.accessToken != null) parsed else null
     }
 
     companion object {

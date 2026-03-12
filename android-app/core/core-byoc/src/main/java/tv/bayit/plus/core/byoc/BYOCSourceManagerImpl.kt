@@ -9,6 +9,7 @@ import tv.bayit.plus.core.byoc.adapters.IPTVChannelAdapter
 import tv.bayit.plus.core.byoc.adapters.PlexContentAdapter
 import tv.bayit.plus.core.byoc.adapters.XtreamContentAdapter
 import tv.bayit.plus.core.byoc.adapters.YouTubeContentAdapter
+import tv.bayit.plus.core.byoc.clients.YouTubeAuthExpiredException
 import tv.bayit.plus.core.byoc.models.BYOCCapabilities
 import tv.bayit.plus.core.byoc.models.BYOCContentItem
 import tv.bayit.plus.core.byoc.models.BYOCSourceConfig
@@ -96,11 +97,14 @@ class BYOCSourceManagerImpl @Inject constructor(
         return toConfig(sourceId, name, BYOCSourceType.XTREAM, now)
     }
 
-    override suspend fun addYouTubeSource(name: String, accessToken: String): BYOCSourceConfig {
+    override suspend fun addYouTubeSource(name: String, accessToken: String, refreshToken: String?): BYOCSourceConfig {
         val sourceId = UUID.randomUUID().toString()
         val now = System.currentTimeMillis()
         sourceDao.upsert(createEntity(sourceId, name, BYOCSourceType.YOUTUBE, ""))
         keychainStore.storeToken(sourceId, accessToken)
+        if (refreshToken != null) {
+            keychainStore.storeRefreshToken(sourceId, refreshToken)
+        }
         loadSources()
         refreshSource(sourceId)
         return toConfig(sourceId, name, BYOCSourceType.YOUTUBE, now)
@@ -117,6 +121,18 @@ class BYOCSourceManagerImpl @Inject constructor(
         for (source in sourceDao.getAll()) {
             try {
                 refreshAndUpdate(source)
+                sourceDao.updateSyncStatus(source.id, System.currentTimeMillis(), BYOCSourceStatus.ACTIVE.name)
+            } catch (e: YouTubeAuthExpiredException) {
+                logger.warning("YouTube token expired for source", metadata = mapOf("sourceId" to source.id))
+                sourceDao.updateSyncStatus(source.id, System.currentTimeMillis(), BYOCSourceStatus.EXPIRED.name)
+            } catch (e: retrofit2.HttpException) {
+                val status = if (e.code() == 401) BYOCSourceStatus.EXPIRED else BYOCSourceStatus.ERROR
+                logger.error(
+                    "BYOC refresh failed for source",
+                    error = e,
+                    metadata = mapOf("sourceId" to source.id, "type" to source.type, "httpCode" to e.code().toString()),
+                )
+                sourceDao.updateSyncStatus(source.id, System.currentTimeMillis(), status.name)
             } catch (e: Exception) {
                 logger.error(
                     "BYOC refresh failed for source",
@@ -135,11 +151,35 @@ class BYOCSourceManagerImpl @Inject constructor(
             sourceDao.updateSyncStatus(entity.id, System.currentTimeMillis(), BYOCSourceStatus.SYNCING.name)
             refreshAndUpdate(entity)
             sourceDao.updateSyncStatus(entity.id, System.currentTimeMillis(), BYOCSourceStatus.ACTIVE.name)
+        } catch (e: YouTubeAuthExpiredException) {
+            logger.warning("YouTube token expired", metadata = mapOf("sourceId" to sourceId))
+            sourceDao.updateSyncStatus(entity.id, System.currentTimeMillis(), BYOCSourceStatus.EXPIRED.name)
+        } catch (e: retrofit2.HttpException) {
+            val status = if (e.code() == 401) BYOCSourceStatus.EXPIRED else BYOCSourceStatus.ERROR
+            logger.error("BYOC source refresh failed", error = e, metadata = mapOf("sourceId" to sourceId, "httpCode" to e.code().toString()))
+            sourceDao.updateSyncStatus(entity.id, System.currentTimeMillis(), status.name)
         } catch (e: Exception) {
             logger.error("BYOC source refresh failed", error = e, metadata = mapOf("sourceId" to sourceId))
             sourceDao.updateSyncStatus(entity.id, System.currentTimeMillis(), BYOCSourceStatus.ERROR.name)
         }
         loadSources()
+    }
+
+    override suspend fun reauthenticatePlexSource(sourceId: String, authToken: String) {
+        keychainStore.storeToken(sourceId, authToken)
+        sourceDao.updateSyncStatus(sourceId, System.currentTimeMillis(), BYOCSourceStatus.ACTIVE.name)
+        refreshSource(sourceId)
+        logger.info("Re-authenticated Plex source", metadata = mapOf("sourceId" to sourceId))
+    }
+
+    override suspend fun reauthenticateYouTubeSource(sourceId: String, accessToken: String, refreshToken: String?) {
+        keychainStore.storeToken(sourceId, accessToken)
+        if (refreshToken != null) {
+            keychainStore.storeRefreshToken(sourceId, refreshToken)
+        }
+        sourceDao.updateSyncStatus(sourceId, System.currentTimeMillis(), BYOCSourceStatus.ACTIVE.name)
+        refreshSource(sourceId)
+        logger.info("Re-authenticated YouTube source", metadata = mapOf("sourceId" to sourceId))
     }
 
     override fun isBYOCStream(streamUrl: String): Boolean {

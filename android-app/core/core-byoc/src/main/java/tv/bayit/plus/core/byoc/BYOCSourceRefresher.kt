@@ -7,12 +7,15 @@ import tv.bayit.plus.core.byoc.adapters.YouTubeContentAdapter
 import tv.bayit.plus.core.byoc.clients.M3UPlaylistFetcher
 import tv.bayit.plus.core.byoc.clients.PlexClient
 import tv.bayit.plus.core.byoc.clients.XtreamClient
+import tv.bayit.plus.core.byoc.clients.YouTubeAuthExpiredException
 import tv.bayit.plus.core.byoc.clients.YouTubeClient
 import tv.bayit.plus.core.byoc.models.BYOCContentItem
 import tv.bayit.plus.core.byoc.models.BYOCContentType
 import tv.bayit.plus.core.byoc.models.BYOCSourceType
 import tv.bayit.plus.core.byoc.persistence.BYOCKeychainStore
 import tv.bayit.plus.core.byoc.persistence.BYOCSourceEntity
+import tv.bayit.plus.core.common.GoogleClientId
+import tv.bayit.plus.core.common.GoogleClientSecret
 import tv.bayit.plus.core.common.logging.BayitLogger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,6 +31,8 @@ class BYOCSourceRefresher @Inject constructor(
     private val xtreamAdapter: XtreamContentAdapter,
     private val youtubeClient: YouTubeClient,
     private val youtubeAdapter: YouTubeContentAdapter,
+    @GoogleClientId private val googleClientId: String,
+    @GoogleClientSecret private val googleClientSecret: String,
     private val logger: BayitLogger,
 ) {
 
@@ -50,7 +55,8 @@ class BYOCSourceRefresher @Inject constructor(
             logger.warning("Plex refresh: no token found", metadata = mapOf("sourceId" to entity.id))
             return emptyList()
         }
-        val servers = plexClient.discoverServers(token, entity.id)
+        val clientId = plexClient.getOrCreateClientId()
+        val servers = plexClient.discoverServers(token, clientId)
         logger.info("Plex refresh: discovered servers", metadata = mapOf("count" to servers.size.toString()))
         val server = servers.firstOrNull()
         if (server == null) {
@@ -111,6 +117,22 @@ class BYOCSourceRefresher @Inject constructor(
 
     private suspend fun refreshYouTube(entity: BYOCSourceEntity): List<BYOCContentItem> {
         val accessToken = keychainStore.getToken(entity.id) ?: return emptyList()
+        return try {
+            fetchYouTubeContent(entity, accessToken)
+        } catch (e: YouTubeAuthExpiredException) {
+            val refreshed = tryYouTubeTokenRefresh(entity.id)
+            if (refreshed != null) {
+                fetchYouTubeContent(entity, refreshed)
+            } else {
+                throw e
+            }
+        }
+    }
+
+    private suspend fun fetchYouTubeContent(
+        entity: BYOCSourceEntity,
+        accessToken: String,
+    ): List<BYOCContentItem> {
         val subscriptions = youtubeClient.fetchSubscriptions(accessToken)
         val allItems = mutableListOf<BYOCContentItem>()
         allItems.addAll(youtubeAdapter.toContentItems(subscriptions, entity.id))
@@ -119,5 +141,24 @@ class BYOCSourceRefresher @Inject constructor(
             allItems.addAll(youtubeAdapter.toContentItems(videos, entity.id))
         }
         return allItems
+    }
+
+    private suspend fun tryYouTubeTokenRefresh(sourceId: String): String? {
+        val refreshToken = keychainStore.getRefreshToken(sourceId) ?: return null
+        return try {
+            val response = youtubeClient.refreshAccessToken(
+                refreshToken, googleClientId, googleClientSecret,
+            )
+            val newToken = response.accessToken ?: return null
+            keychainStore.storeToken(sourceId, newToken)
+            if (response.refreshToken != null) {
+                keychainStore.storeRefreshToken(sourceId, response.refreshToken)
+            }
+            logger.info("YouTube token refreshed", metadata = mapOf("sourceId" to sourceId))
+            newToken
+        } catch (e: Exception) {
+            logger.warning("YouTube token refresh failed", metadata = mapOf("sourceId" to sourceId))
+            null
+        }
     }
 }

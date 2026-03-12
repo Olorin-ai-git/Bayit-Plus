@@ -46,6 +46,22 @@ public enum BYOCKeychainStore {
         return token
     }
 
+    /// Store a refresh token for a source (YouTube OAuth).
+    @discardableResult
+    public static func storeRefreshToken(
+        _ token: String,
+        forSourceId sourceId: String
+    ) -> Bool {
+        storeToken(token, forSourceId: "refresh_\(sourceId)")
+    }
+
+    /// Retrieve a refresh token for a source.
+    public static func retrieveRefreshToken(
+        forSourceId sourceId: String
+    ) -> String? {
+        retrieveToken(forSourceId: "refresh_\(sourceId)")
+    }
+
     /// Delete a token for a source.
     @discardableResult
     public static func deleteToken(

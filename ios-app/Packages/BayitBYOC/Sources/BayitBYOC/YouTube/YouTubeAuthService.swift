@@ -86,6 +86,43 @@ public actor YouTubeAuthService {
         throw YouTubeError.authorizationExpired
     }
 
+    /// Refresh an expired access token using a stored refresh token.
+    public func refreshAccessToken(
+        refreshToken: String
+    ) async throws -> YouTubeTokens {
+        guard let url = URL(string: Self.tokenURL) else {
+            throw YouTubeError.invalidResponse
+        }
+        let body = [
+            "client_id=\(clientId)",
+            "client_secret=\(clientSecret)",
+            "refresh_token=\(refreshToken)",
+            "grant_type=refresh_token",
+        ].joined(separator: "&")
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(
+            "application/x-www-form-urlencoded",
+            forHTTPHeaderField: "Content-Type"
+        )
+        request.httpBody = body.data(using: .utf8)
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        guard let json = try? JSONSerialization.jsonObject(
+            with: data
+        ) as? [String: Any],
+            let accessToken = json["access_token"] as? String
+        else {
+            throw YouTubeError.authorizationExpired
+        }
+        let newRefresh = json["refresh_token"] as? String
+        return YouTubeTokens(
+            accessToken: accessToken,
+            refreshToken: newRefresh ?? refreshToken
+        )
+    }
+
     private func exchangeDeviceCode(_ code: String) async throws -> TokenExchangeResult {
         guard let url = URL(string: Self.tokenURL) else {
             throw YouTubeError.invalidResponse

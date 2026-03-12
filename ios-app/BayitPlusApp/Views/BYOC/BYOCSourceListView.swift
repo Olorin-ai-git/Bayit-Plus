@@ -14,6 +14,7 @@ struct BYOCSourceListView: View {
     @State private var showPlexAuth = false
     @State private var showYouTubeAuth = false
     @State private var sourceToRemove: BYOCSourceConfig?
+    @State private var sourceToReauth: BYOCSourceConfig?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -125,12 +126,30 @@ struct BYOCSourceListView: View {
                     .textCase(.uppercase)
 
                 ForEach(byocManager.sources) { source in
-                    BYOCSourceRow(source: source) {
-                        sourceToRemove = source
-                    }
+                    BYOCSourceRow(
+                        source: source,
+                        onRemove: { sourceToRemove = source },
+                        onReauth: source.status == .authExpired
+                            ? { triggerReauth(source: source) }
+                            : nil
+                    )
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
+        }
+    }
+
+    // MARK: - Re-auth Routing
+
+    private func triggerReauth(source: BYOCSourceConfig) {
+        sourceToReauth = source
+        switch source.type {
+        case .plex:
+            showPlexAuth = true
+        case .youtube:
+            showYouTubeAuth = true
+        case .iptv, .xtream:
+            break
         }
     }
 

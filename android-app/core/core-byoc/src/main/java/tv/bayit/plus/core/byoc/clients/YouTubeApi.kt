@@ -87,3 +87,5 @@ data class YouTubeThumbnails(
 data class YouTubeThumbnail(
     val url: String? = null,
 )
+
+class YouTubeAuthExpiredException : Exception("YouTube authentication expired")

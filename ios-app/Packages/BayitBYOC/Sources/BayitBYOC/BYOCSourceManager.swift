@@ -18,10 +18,15 @@ public final class BYOCSourceManager: @unchecked Sendable {
     public internal(set) var youtubeItems: [BYOCContentItem] = []
     public internal(set) var isRefreshing = false
     public internal(set) var lastError: String?
+    public internal(set) var sourceErrors: [String: BYOCSourceStatus] = [:]
     public private(set) var enrichmentQueue: BYOCEnrichmentQueue?
 
     public var hasAnySources: Bool {
         !sources.isEmpty
+    }
+
+    public var sourcesNeedingReauth: [BYOCSourceConfig] {
+        sources.filter { $0.status == .authExpired }
     }
 
     public var hasIPTV: Bool {
@@ -192,10 +197,15 @@ public final class BYOCSourceManager: @unchecked Sendable {
     public func addYouTubeSource(
         name: String,
         accessToken: String,
-        refreshToken _: String?
+        refreshToken: String?
     ) async throws {
         let config = BYOCSourceConfig(type: .youtube, name: name)
         _ = BYOCKeychainStore.storeToken(accessToken, forSourceId: config.id)
+        if let refreshToken {
+            _ = BYOCKeychainStore.storeRefreshToken(
+                refreshToken, forSourceId: config.id
+            )
+        }
 
         let client = YouTubeAPIClient(accessToken: accessToken)
         let subs = try await client.fetchSubscriptions()
@@ -211,6 +221,66 @@ public final class BYOCSourceManager: @unchecked Sendable {
         BYOCSourceStore.saveSources(sources)
         logger.info("Added YouTube source", context: ["name": name, "items": "\(items.count)"])
         Task { await triggerInitialEnrichment(items: items) }
+    }
+
+    // MARK: - Re-authentication
+
+    public func reauthenticatePlexSource(
+        sourceId: String,
+        server: PlexServer,
+        authToken: String
+    ) async throws {
+        let client = PlexAPIClient(
+            authToken: authToken,
+            clientId: plexClientId
+        )
+        let resolvedURL = try await client.resolveBaseURL(server: server)
+
+        _ = BYOCKeychainStore.storeToken(authToken, forSourceId: sourceId)
+
+        if let index = sources.firstIndex(where: { $0.id == sourceId }) {
+            sources[index] = BYOCSourceConfig(
+                id: sources[index].id,
+                type: sources[index].type,
+                name: sources[index].name,
+                url: URL(string: resolvedURL),
+                addedAt: sources[index].addedAt,
+                lastRefreshedAt: nil,
+                accountExpiry: sources[index].accountExpiry,
+                status: .active
+            )
+            sourceErrors.removeValue(forKey: sourceId)
+            BYOCSourceStore.saveSources(sources)
+        }
+
+        await refreshPlexSource(
+            sources.first { $0.id == sourceId }!
+        )
+        logger.info(
+            "Re-authenticated Plex source",
+            context: ["sourceId": sourceId]
+        )
+    }
+
+    public func reauthenticateYouTubeSource(
+        sourceId: String,
+        accessToken: String,
+        refreshToken: String?
+    ) async throws {
+        _ = BYOCKeychainStore.storeToken(accessToken, forSourceId: sourceId)
+        if let refreshToken {
+            _ = BYOCKeychainStore.storeRefreshToken(
+                refreshToken, forSourceId: sourceId
+            )
+        }
+        markSourceActive(sourceId: sourceId)
+        if let source = sources.first(where: { $0.id == sourceId }) {
+            await refreshYouTubeSource(source)
+        }
+        logger.info(
+            "Re-authenticated YouTube source",
+            context: ["sourceId": sourceId]
+        )
     }
 
     // MARK: - Source Removal

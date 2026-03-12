@@ -26,7 +26,10 @@ import javax.inject.Singleton
 class PlexClient @Inject constructor(
     private val json: Json,
     private val logger: BayitLogger,
+    private val keychainStore: tv.bayit.plus.core.byoc.persistence.BYOCKeychainStore,
 ) {
+
+    fun getOrCreateClientId(): String = keychainStore.getOrCreatePlexClientId()
     private val okHttpClient = OkHttpClient.Builder().build()
 
     private val localProbeClient = OkHttpClient.Builder()
