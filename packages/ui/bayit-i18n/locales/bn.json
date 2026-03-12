@@ -5442,7 +5442,6 @@
     "menu": "মেনু",
     "more": "আরও",
     "playlist": "প্লেলিস্ট",
-    "byoc": "আপনার কন্টেন্ট",
     "zehAniHub": "জে অনী",
     "zehAni": "Zeh Ani",
     "listen": "শুনুন",
@@ -5482,10 +5481,9 @@
       "trivia": "লাইভ ট্রিভিয়া"
     },
     "neverMiss": {
-      "title": "আপনার কন্টেন্ট, আপনার মতো",
-      "subtitle": "AI-চালিত ক্যাচ-আপ সারাংশ এবং Plex, IPTV ও YouTube থেকে নিজের কন্টেন্ট আনুন",
-      "catchup": "AI ক্যাচআপ",
-      "byoc": "নিজের কন্টেন্ট আনুন"
+      "title": "AI আপনার কনটেন্টেও",
+      "subtitle": "আপনি এইমাত্র যে AI ফিচারগুলো দেখলেন সেগুলো আপনার YouTube ভিডিও, Plex লাইব্রেরি এবং আরও অনেক কিছুতে কাজ করে। এক্সপ্লোর করার পর আমরা দেখাব।",
+      "yourContent": "আপনার কনটেন্ট"
     },
     "zehAni": {
       "title": "স্বাভাবিকভাবে হিব্রু শিখুন",
@@ -11157,6 +11155,7 @@
     "sourceAdded": "উৎস যোগ করা হয়েছে",
     "sourceRemoved": "উৎস সরানো হয়েছে",
     "connectedSources": "সংযুক্ত উৎস",
+    "yourContentSources": "আপনার কনটেন্ট উৎস",
     "aiAvailable": "AI উপলব্ধ",
     "audioAIOnly": "শুধুমাত্র অডিও AI",
     "aiDubbing": "AI ডাবিং",
@@ -11759,7 +11758,26 @@
   },
   "ai": {
     "languageDescription": "লাইভ অনুবাদ, ডাবিং এবং ট্রিভিয়ার জন্য লক্ষ্য ভাষা নির্বাচন করুন",
-    "languageTitle": "AI ভাষা"
+    "languageTitle": "AI ভাষা",
+    "gateway": {
+      "title": "আপনার কনটেন্টে AI সুপারপাওয়ার",
+      "subtitle": "লাইভ টিভিতে আপনি যে AI ডাবিং এবং সাবটাইটেল দেখেন তা আপনার YouTube ভিডিওতেও কাজ করে",
+      "connectYouTube": "YouTube সংযুক্ত করুন",
+      "learnMore": "আরও জানুন",
+      "dontShowAgain": "আর দেখাবেন না",
+      "firstPlay": {
+        "hint": "এটি Bayit+ AI সহ আপনার YouTube ভিডিও। আরও বৈশিষ্ট্য অন্বেষণ করতে ঝলমলে বোতামটি ট্যাপ করুন।"
+      },
+      "moreContent": {
+        "title": "আরও কনটেন্ট আছে?",
+        "subtitle": "আপনার সমস্ত মিডিয়ায় AI বৈশিষ্ট্যের জন্য Plex, IPTV বা অন্যান্য পরিষেবা সংযুক্ত করুন",
+        "action": "অন্বেষণ করুন"
+      },
+      "loading": {
+        "findingVideos": "আপনার ভিডিও খুঁজছে...",
+        "preparingAI": "AI বৈশিষ্ট্য প্রস্তুত করছে..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "ভাষা অনুপাত",

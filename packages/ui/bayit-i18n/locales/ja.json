@@ -5442,7 +5442,6 @@
     "menu": "メニュー",
     "more": "もっと見る",
     "playlist": "プレイリスト",
-    "byoc": "あなたのコンテンツ",
     "zehAniHub": "ゼ・アニ",
     "zehAni": "Zeh Ani",
     "listen": "聴く",
@@ -5482,10 +5481,9 @@
       "trivia": "ライブトリビア"
     },
     "neverMiss": {
-      "title": "あなたのコンテンツ、あなたのスタイルで",
-      "subtitle": "AI搭載のキャッチアップ要約、Plex、IPTV、YouTubeから自分のコンテンツを持ち込み",
-      "catchup": "AIキャッチアップ",
-      "byoc": "自分のコンテンツを持ち込む"
+      "title": "あなたのコンテンツにもAI",
+      "subtitle": "今見たAI機能は、あなたのYouTube動画、Plexライブラリなどでも使えます。探索した後にやり方をお見せします。",
+      "yourContent": "あなたのコンテンツ"
     },
     "zehAni": {
       "title": "自然にヘブライ語を学ぶ",
@@ -11143,6 +11141,7 @@
     "sourceAdded": "ソース追加済み",
     "sourceRemoved": "ソースが削除されました",
     "connectedSources": "接続済みソース",
+    "yourContentSources": "あなたのコンテンツソース",
     "aiAvailable": "AI利用可能",
     "audioAIOnly": "オーディオAIのみ",
     "aiDubbing": "AI吹き替え",
@@ -11745,7 +11744,26 @@
   },
   "ai": {
     "languageDescription": "ライブ翻訳、吹替、トリビアの対象言語を選択",
-    "languageTitle": "AI言語"
+    "languageTitle": "AI言語",
+    "gateway": {
+      "title": "あなたのコンテンツにAIスーパーパワー",
+      "subtitle": "ライブTVで見るAI吹替と字幕は、あなたのYouTube動画でも使えます",
+      "connectYouTube": "YouTubeを接続",
+      "learnMore": "詳しく見る",
+      "dontShowAgain": "今後表示しない",
+      "firstPlay": {
+        "hint": "これはBayit+ AIを使ったあなたのYouTube動画です。キラキラボタンをタップして、もっと多くの機能を探索しましょう。"
+      },
+      "moreContent": {
+        "title": "もっとコンテンツがありますか？",
+        "subtitle": "Plex、IPTV、その他のサービスを接続して、すべてのメディアにAI機能を",
+        "action": "探索する"
+      },
+      "loading": {
+        "findingVideos": "動画を検索中...",
+        "preparingAI": "AI機能を準備中..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "言語比率",

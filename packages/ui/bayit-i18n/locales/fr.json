@@ -5442,7 +5442,6 @@
     "menu": "Menu",
     "more": "Plus",
     "playlist": "Liste de lecture",
-    "byoc": "Votre Contenu",
     "zehAniHub": "Zeh Ani",
     "zehAni": "Zeh Ani",
     "listen": "Écouter",
@@ -5482,10 +5481,9 @@
       "trivia": "Trivia en direct"
     },
     "neverMiss": {
-      "title": "Votre contenu, à votre façon",
-      "subtitle": "Résumés de rattrapage par IA et importez votre propre contenu depuis Plex, IPTV et YouTube",
-      "catchup": "Rattrapage IA",
-      "byoc": "Importez votre contenu"
+      "title": "IA sur votre contenu aussi",
+      "subtitle": "Les fonctionnalites IA que vous venez de voir fonctionnent sur vos videos YouTube, bibliotheque Plex et plus. Nous vous montrerons comment apres votre exploration.",
+      "yourContent": "Votre Contenu"
     },
     "zehAni": {
       "title": "Apprenez l'hébreu, naturellement",
@@ -11161,6 +11159,7 @@
     "sourceAdded": "Source Ajoutee",
     "sourceRemoved": "Source supprimée",
     "connectedSources": "Sources Connectees",
+    "yourContentSources": "Vos Sources de Contenu",
     "aiAvailable": "IA Disponible",
     "audioAIOnly": "Audio IA Uniquement",
     "aiDubbing": "Doublage IA",
@@ -11763,7 +11762,26 @@
   },
   "ai": {
     "languageDescription": "Sélectionnez la langue cible pour la traduction en direct, le doublage et le trivia",
-    "languageTitle": "Langue IA"
+    "languageTitle": "Langue IA",
+    "gateway": {
+      "title": "Super-pouvoirs IA sur votre contenu",
+      "subtitle": "Le doublage et les sous-titres IA que vous voyez en direct fonctionnent aussi sur vos videos YouTube",
+      "connectYouTube": "Connecter YouTube",
+      "learnMore": "En savoir plus",
+      "dontShowAgain": "Ne plus afficher",
+      "firstPlay": {
+        "hint": "Ceci est votre video YouTube avec Bayit+ AI. Appuyez sur le bouton etincelles pour explorer plus de fonctionnalites."
+      },
+      "moreContent": {
+        "title": "Vous avez plus de contenu ?",
+        "subtitle": "Connectez Plex, IPTV ou d'autres services pour des fonctionnalites IA sur tous vos medias",
+        "action": "Explorer"
+      },
+      "loading": {
+        "findingVideos": "Recherche de vos videos...",
+        "preparingAI": "Preparation des fonctionnalites IA..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "Ratio de langue",

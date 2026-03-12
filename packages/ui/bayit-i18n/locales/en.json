@@ -5442,7 +5442,6 @@
     "menu": "Menu",
     "more": "More",
     "playlist": "Playlist",
-    "byoc": "Your Content",
     "zehAniHub": "Zeh Ani",
     "zehAni": "Zeh Ani",
     "listen": "Listen",
@@ -5482,10 +5481,9 @@
       "trivia": "Live Trivia"
     },
     "neverMiss": {
-      "title": "Your content, your way",
-      "subtitle": "AI-powered catch-up summaries and bring your own content from Plex, IPTV, and YouTube",
-      "catchup": "AI Catchup",
-      "byoc": "Bring Your Own Content"
+      "title": "AI on your content too",
+      "subtitle": "The AI features you just saw work on your YouTube videos, Plex library, and more. We'll show you how after you explore.",
+      "yourContent": "Your Content"
     },
     "zehAni": {
       "title": "Learn Hebrew, naturally",
@@ -11157,6 +11155,7 @@
     "sourceAdded": "Source Added",
     "sourceRemoved": "Source removed",
     "connectedSources": "Connected Sources",
+    "yourContentSources": "Your Content Sources",
     "aiAvailable": "AI Available",
     "audioAIOnly": "Audio AI Only",
     "aiDubbing": "AI Dubbing",
@@ -11759,7 +11758,26 @@
   },
   "ai": {
     "languageDescription": "Select target language for live translation, dubbing, and trivia",
-    "languageTitle": "AI Language"
+    "languageTitle": "AI Language",
+    "gateway": {
+      "title": "AI superpowers on your content",
+      "subtitle": "The AI dubbing and subtitles you see on Live TV work on your YouTube videos too",
+      "connectYouTube": "Connect YouTube",
+      "learnMore": "Learn more",
+      "dontShowAgain": "Don't show again",
+      "firstPlay": {
+        "hint": "This is your YouTube video with Bayit+ AI. Tap the sparkles button to explore more features."
+      },
+      "moreContent": {
+        "title": "Have more content?",
+        "subtitle": "Connect Plex, IPTV, or other services for AI features on all your media",
+        "action": "Explore"
+      },
+      "loading": {
+        "findingVideos": "Finding your videos...",
+        "preparingAI": "Preparing AI features..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "Language Ratio",

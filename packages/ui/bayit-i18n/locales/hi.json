@@ -5442,7 +5442,6 @@
     "menu": "मेनू",
     "more": "और",
     "playlist": "प्लेलिस्ट",
-    "byoc": "आपका कंटेंट",
     "zehAniHub": "ज़ेह अनी",
     "zehAni": "Zeh Ani",
     "listen": "सुनें",
@@ -5482,10 +5481,9 @@
       "trivia": "लाइव ट्रिविया"
     },
     "neverMiss": {
-      "title": "आपकी सामग्री, आपके तरीके से",
-      "subtitle": "AI-संचालित कैच-अप सारांश और Plex, IPTV और YouTube से अपनी सामग्री लाएं",
-      "catchup": "AI कैचअप",
-      "byoc": "अपनी सामग्री लाएं"
+      "title": "AI आपकी सामग्री पर भी",
+      "subtitle": "आपने अभी जो AI फीचर्स देखे वे आपके YouTube वीडियो, Plex लाइब्रेरी और अन्य पर भी काम करते हैं। एक्सप्लोर करने के बाद हम आपको दिखाएंगे।",
+      "yourContent": "आपकी सामग्री"
     },
     "zehAni": {
       "title": "स्वाभाविक रूप से हिब्रू सीखें",
@@ -11157,6 +11155,7 @@
     "sourceAdded": "स्रोत जोड़ा गया",
     "sourceRemoved": "स्रोत हटाया गया",
     "connectedSources": "कनेक्टेड स्रोत",
+    "yourContentSources": "आपकी सामग्री स्रोत",
     "aiAvailable": "AI उपलब्ध",
     "audioAIOnly": "केवल ऑडियो AI",
     "aiDubbing": "AI डबिंग",
@@ -11759,7 +11758,26 @@
   },
   "ai": {
     "languageDescription": "लाइव अनुवाद, डबिंग और ट्रिविया के लिए लक्ष्य भाषा चुनें",
-    "languageTitle": "AI भाषा"
+    "languageTitle": "AI भाषा",
+    "gateway": {
+      "title": "अपनी सामग्री पर AI महाशक्तियाँ",
+      "subtitle": "लाइव टीवी पर दिखने वाली AI डबिंग और सबटाइटल आपके YouTube वीडियो पर भी काम करती हैं",
+      "connectYouTube": "YouTube कनेक्ट करें",
+      "learnMore": "और जानें",
+      "dontShowAgain": "फिर मत दिखाओ",
+      "firstPlay": {
+        "hint": "यह Bayit+ AI के साथ आपका YouTube वीडियो है। अधिक सुविधाओं का पता लगाने के लिए चमक बटन दबाएं।"
+      },
+      "moreContent": {
+        "title": "और सामग्री है?",
+        "subtitle": "अपने सभी मीडिया पर AI सुविधाओं के लिए Plex, IPTV या अन्य सेवाएं कनेक्ट करें",
+        "action": "खोजें"
+      },
+      "loading": {
+        "findingVideos": "आपके वीडियो ढूंढ रहे हैं...",
+        "preparingAI": "AI सुविधाएँ तैयार कर रहे हैं..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "भाषा अनुपात",

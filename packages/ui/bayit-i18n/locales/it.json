@@ -5442,7 +5442,6 @@
     "menu": "Menu",
     "more": "Altro",
     "playlist": "Playlist",
-    "byoc": "I Tuoi Contenuti",
     "zehAniHub": "Zeh Ani",
     "zehAni": "Zeh Ani",
     "listen": "Ascolta",
@@ -5482,10 +5481,9 @@
       "trivia": "Trivia dal vivo"
     },
     "neverMiss": {
-      "title": "I tuoi contenuti, a modo tuo",
-      "subtitle": "Riepiloghi di recupero con IA e porta i tuoi contenuti da Plex, IPTV e YouTube",
-      "catchup": "Recupero IA",
-      "byoc": "Porta i tuoi contenuti"
+      "title": "IA anche sui tuoi contenuti",
+      "subtitle": "Le funzionalita IA che hai appena visto funzionano sui tuoi video YouTube, libreria Plex e altro. Ti mostreremo come dopo che avrai esplorato.",
+      "yourContent": "I Tuoi Contenuti"
     },
     "zehAni": {
       "title": "Impara l'ebraico, naturalmente",
@@ -11157,6 +11155,7 @@
     "sourceAdded": "Fonte Aggiunta",
     "sourceRemoved": "Fonte rimossa",
     "connectedSources": "Fonti Collegate",
+    "yourContentSources": "Le Tue Fonti di Contenuto",
     "aiAvailable": "IA Disponibile",
     "audioAIOnly": "Solo Audio IA",
     "aiDubbing": "Doppiaggio IA",
@@ -11759,7 +11758,26 @@
   },
   "ai": {
     "languageDescription": "Seleziona la lingua di destinazione per traduzione in diretta, doppiaggio e trivia",
-    "languageTitle": "Lingua IA"
+    "languageTitle": "Lingua IA",
+    "gateway": {
+      "title": "Superpoteri IA sui tuoi contenuti",
+      "subtitle": "Il doppiaggio e i sottotitoli IA che vedi in TV dal vivo funzionano anche sui tuoi video YouTube",
+      "connectYouTube": "Connetti YouTube",
+      "learnMore": "Scopri di piu",
+      "dontShowAgain": "Non mostrare piu",
+      "firstPlay": {
+        "hint": "Questo e il tuo video YouTube con Bayit+ AI. Tocca il pulsante scintille per esplorare altre funzionalita."
+      },
+      "moreContent": {
+        "title": "Hai altri contenuti?",
+        "subtitle": "Connetti Plex, IPTV o altri servizi per funzionalita IA su tutti i tuoi media",
+        "action": "Esplora"
+      },
+      "loading": {
+        "findingVideos": "Ricerca dei tuoi video...",
+        "preparingAI": "Preparazione funzionalita IA..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "Rapporto lingua",

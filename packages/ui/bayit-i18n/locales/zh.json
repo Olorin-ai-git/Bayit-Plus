@@ -5442,7 +5442,6 @@
     "menu": "菜单",
     "more": "更多",
     "playlist": "播放列表",
-    "byoc": "你的内容",
     "zehAniHub": "泽·阿尼",
     "zehAni": "Zeh Ani",
     "listen": "收听",
@@ -5482,10 +5481,9 @@
       "trivia": "实时问答"
     },
     "neverMiss": {
-      "title": "你的内容，你做主",
-      "subtitle": "AI驱动的回顾摘要，从Plex、IPTV和YouTube带入你自己的内容",
-      "catchup": "AI回顾",
-      "byoc": "带入你的内容"
+      "title": "AI也能用在你的内容上",
+      "subtitle": "你刚看到的AI功能适用于你的YouTube视频、Plex媒体库等。我们会在你探索后教你怎么用。",
+      "yourContent": "你的内容"
     },
     "zehAni": {
       "title": "自然地学习希伯来语",
@@ -11152,6 +11150,7 @@
     "sourceAdded": "来源已添加",
     "sourceRemoved": "已移除源",
     "connectedSources": "已连接来源",
+    "yourContentSources": "你的内容来源",
     "aiAvailable": "AI可用",
     "audioAIOnly": "仅音频AI",
     "aiDubbing": "AI配音",
@@ -11754,7 +11753,26 @@
   },
   "ai": {
     "languageDescription": "选择实时翻译、配音和问答的目标语言",
-    "languageTitle": "AI 语言"
+    "languageTitle": "AI 语言",
+    "gateway": {
+      "title": "AI超能力赋能你的内容",
+      "subtitle": "你在直播电视上看到的AI配音和字幕也适用于你的YouTube视频",
+      "connectYouTube": "连接YouTube",
+      "learnMore": "了解更多",
+      "dontShowAgain": "不再显示",
+      "firstPlay": {
+        "hint": "这是你的YouTube视频配合Bayit+ AI。点击闪光按钮探索更多功能。"
+      },
+      "moreContent": {
+        "title": "有更多内容吗？",
+        "subtitle": "连接Plex、IPTV或其他服务，为你的所有媒体提供AI功能",
+        "action": "探索"
+      },
+      "loading": {
+        "findingVideos": "正在查找你的视频...",
+        "preparingAI": "正在准备AI功能..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "语言比例",

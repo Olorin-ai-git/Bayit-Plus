@@ -5442,7 +5442,6 @@
     "menu": "תפריט",
     "more": "עוד",
     "playlist": "רשימת השמעה",
-    "byoc": "התוכן שלך",
     "zehAniHub": "זה אני",
     "zehAni": "זה אני",
     "listen": "האזנה",
@@ -5482,10 +5481,9 @@
       "trivia": "טריוויה חיה"
     },
     "neverMiss": {
-      "title": "התוכן שלכם, בדרך שלכם",
-      "subtitle": "סיכומי AI לתפיסת פספוסים והבאת תוכן משלכם מ-Plex, IPTV ו-YouTube",
-      "catchup": "סיכום AI",
-      "byoc": "הביאו תוכן משלכם"
+      "title": "AI גם על התוכן שלך",
+      "subtitle": "תכונות ה-AI שראית עכשיו עובדות על סרטוני היוטיוב שלך, ספריית Plex ועוד. נראה לך איך אחרי שתחקור.",
+      "yourContent": "התוכן שלך"
     },
     "zehAni": {
       "title": "למדו עברית, באופן טבעי",
@@ -11157,6 +11155,7 @@
     "sourceAdded": "מקור נוסף",
     "sourceRemoved": "מקור הוסר",
     "connectedSources": "מקורות מחוברים",
+    "yourContentSources": "מקורות התוכן שלך",
     "aiAvailable": "AI זמין",
     "audioAIOnly": "AI אודיו בלבד",
     "aiDubbing": "דיבוב AI",
@@ -11759,7 +11758,26 @@
   },
   "ai": {
     "languageDescription": "בחר שפת יעד לתרגום חי, דיבוב וטריוויה",
-    "languageTitle": "שפת AI"
+    "languageTitle": "שפת AI",
+    "gateway": {
+      "title": "כוחות-על של AI על התוכן שלך",
+      "subtitle": "הדיבוב והכתוביות של AI שאתה רואה בשידורים חיים עובדים גם על סרטוני היוטיוב שלך",
+      "connectYouTube": "חבר YouTube",
+      "learnMore": "למד עוד",
+      "dontShowAgain": "אל תציג שוב",
+      "firstPlay": {
+        "hint": "זהו סרטון היוטיוב שלך עם Bayit+ AI. לחץ על כפתור הניצוצות כדי לחקור עוד תכונות."
+      },
+      "moreContent": {
+        "title": "יש לך עוד תוכן?",
+        "subtitle": "חבר Plex, IPTV או שירותים אחרים לתכונות AI על כל המדיה שלך",
+        "action": "חקור"
+      },
+      "loading": {
+        "findingVideos": "מחפש את הסרטונים שלך...",
+        "preparingAI": "מכין תכונות AI..."
+      }
+    }
   },
   "bilingualBridge": {
     "languageRatio": "יחס שפה",
