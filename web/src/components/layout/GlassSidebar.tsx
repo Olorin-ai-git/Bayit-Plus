@@ -177,7 +177,7 @@ const baseMenuSections: MenuSection[] = [
   {
     titleKey: "nav.myContent",
     items: [
-      { id: "byoc", icon: "upload", labelKey: "nav.byoc", path: "/byoc" },
+      { id: "byoc", icon: "upload", labelKey: "nav.myContent", path: "/byoc" },
     ],
   },
   {

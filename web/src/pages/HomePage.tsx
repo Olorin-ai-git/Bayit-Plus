@@ -46,6 +46,12 @@ import { useFeaturedAudiobooksCarousel } from "@/hooks/useFeaturedAudiobooksCaro
 import { useUserGeolocation } from "@/hooks/useUserGeolocation";
 import { CreditsBadge } from "@/components/subscription/CreditsBadge";
 import { PlusFeatureCard } from "@/components/subscription/PlusFeatureCard";
+import {
+  AIGatewayCard,
+  MoreContentCard,
+} from "@/components/byoc/AIGatewayCard";
+import { useAIGatewayStore } from "@/stores/aiGatewayStore";
+import { useBYOCStore } from "@/stores/byocStore";
 
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== "undefined" && __TV__;
@@ -168,6 +174,20 @@ export default function HomePage() {
 
   // Location-based content
   const { location, isDetecting: locationDetecting } = useUserGeolocation();
+
+  // AI Gateway store
+  const {
+    shouldShowCard,
+    showDontShowAgain,
+    shouldShowMoreContentCard,
+    dismiss: dismissAIGateway,
+    permanentlyDismiss: permanentlyDismissAIGateway,
+    dismissMoreContent,
+  } = useAIGatewayStore();
+
+  // BYOC sources - check if YouTube is connected
+  const byocSources = useBYOCStore((s) => s.sources);
+  const hasYouTubeSource = byocSources.some((s) => s.type === "youtube");
 
   // Load content on mount - each section loads independently
   useEffect(() => {
@@ -477,6 +497,25 @@ export default function HomePage() {
               style={styles.section}
             />
           )
+        )}
+
+        {/* AI Gateway discovery card - shown when no YouTube source connected */}
+        {shouldShowCard(hasYouTubeSource) && (
+          <AIGatewayCard
+            onConnectYouTube={() => navigate("/byoc")}
+            onLearnMore={() => navigate("/byoc")}
+            onDismiss={dismissAIGateway}
+            showDontShowAgain={showDontShowAgain()}
+            onDontShowAgain={permanentlyDismissAIGateway}
+          />
+        )}
+
+        {/* More content discovery card - shown after first AI feature use with YouTube connected */}
+        {shouldShowMoreContentCard(hasYouTubeSource) && (
+          <MoreContentCard
+            onExplore={() => navigate("/byoc")}
+            onDismiss={dismissMoreContent}
+          />
         )}
 
         {/* Plus feature promotion - dubbing */}
