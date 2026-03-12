@@ -5802,7 +5802,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -11323,6 +11327,51 @@
       "syncFailed": "Failed to sync source",
       "normalizationFailed": "Content processing failed",
       "normalizationPollFailed": "Lost connection during processing"
+    },
+    "ai": {
+      "sparklesButton": "AI Features",
+      "featuresTitle": "AI Features",
+      "creditCost": "1 credit",
+      "included": "Included",
+      "upgradeToUnlock": "Upgrade to unlock AI options",
+      "feature": {
+        "pauseAsk": {
+          "name": "Pause & Ask",
+          "description": "Pause and converse with AI characters"
+        },
+        "interactiveSubtitles": {
+          "name": "Interactive Subtitles",
+          "description": "Tap words for translation and vocabulary"
+        },
+        "vocabulary": {
+          "name": "Vocabulary",
+          "description": "Build your vocabulary while watching"
+        },
+        "vodMoments": {
+          "name": "VOD Moments",
+          "description": "AI-detected interactive moments"
+        },
+        "culturalContext": {
+          "name": "Cultural Context",
+          "description": "Learn about cultural references in the content"
+        },
+        "bilingualBridge": {
+          "name": "Bilingual Bridge",
+          "description": "Side-by-side dual-language subtitles"
+        },
+        "aiCompanion": {
+          "name": "AI Companion",
+          "description": "Your personal viewing assistant"
+        }
+      },
+      "confirm": {
+        "title": "Use AI Feature",
+        "cost": "Cost",
+        "currentBalance": "Current balance",
+        "remainingAfter": "Remaining after",
+        "button": "Confirm",
+        "cancel": "Cancel"
+      }
     }
   },
   "a11y": {

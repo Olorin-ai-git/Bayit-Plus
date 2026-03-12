@@ -5802,7 +5802,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פלוס",
@@ -11323,6 +11327,51 @@
       "syncFailed": "נכשל לסנכרן את המקור",
       "normalizationFailed": "עיבוד התוכן נכשל",
       "normalizationPollFailed": "החיבור אבד במהלך העיבוד"
+    },
+    "ai": {
+      "sparklesButton": "תכונות AI",
+      "featuresTitle": "תכונות AI",
+      "creditCost": "קרדיט 1",
+      "included": "כלול",
+      "upgradeToUnlock": "שדרג כדי לפתוח אפשרויות AI",
+      "feature": {
+        "pauseAsk": {
+          "name": "עצור ושאל",
+          "description": "עצור ושוחח עם דמויות AI"
+        },
+        "interactiveSubtitles": {
+          "name": "כתוביות אינטראקטיביות",
+          "description": "הקש על מילים לתרגום ומילון"
+        },
+        "vocabulary": {
+          "name": "אוצר מילים",
+          "description": "בנה את אוצר המילים שלך תוך כדי צפייה"
+        },
+        "vodMoments": {
+          "name": "רגעי VOD",
+          "description": "רגעים אינטראקטיביים שזוהו על ידי AI"
+        },
+        "culturalContext": {
+          "name": "הקשר תרבותי",
+          "description": "למד על אסמכתאות תרבותיות בתוכן"
+        },
+        "bilingualBridge": {
+          "name": "גשר דו-לשוני",
+          "description": "כתוביות בשתי שפות זו לצד זו"
+        },
+        "aiCompanion": {
+          "name": "עוזר AI",
+          "description": "העוזר האישי שלך לצפייה"
+        }
+      },
+      "confirm": {
+        "title": "השתמש בתכונת AI",
+        "cost": "עלות",
+        "currentBalance": "יתרה נוכחית",
+        "remainingAfter": "נותר לאחר",
+        "button": "אשר",
+        "cancel": "בטל"
+      }
     }
   },
   "a11y": {

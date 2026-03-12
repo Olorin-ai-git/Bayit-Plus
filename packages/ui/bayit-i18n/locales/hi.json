@@ -5802,7 +5802,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्लस",
@@ -11323,6 +11327,51 @@
       "syncFailed": "स्रोत सिंक विफल",
       "normalizationFailed": "कंटेंट प्रोसेसिंग विफल",
       "normalizationPollFailed": "प्रोसेसिंग के दौरान कनेक्शन खो गया"
+    },
+    "ai": {
+      "sparklesButton": "AI सुविधाएं",
+      "featuresTitle": "AI सुविधाएं",
+      "creditCost": "1 क्रेडिट",
+      "included": "शामिल",
+      "upgradeToUnlock": "AI विकल्प अनलॉक करने के लिए अपग्रेड करें",
+      "feature": {
+        "pauseAsk": {
+          "name": "रोकें और पूछें",
+          "description": "AI पात्रों के साथ रोकें और बातचीत करें"
+        },
+        "interactiveSubtitles": {
+          "name": "इंटरैक्टिव उपशीर्षक",
+          "description": "अनुवाद और शब्दावली के लिए शब्दों पर टैप करें"
+        },
+        "vocabulary": {
+          "name": "शब्दावली",
+          "description": "देखते समय अपनी शब्दावली बनाएं"
+        },
+        "vodMoments": {
+          "name": "VOD क्षण",
+          "description": "AI-पहचाने गए इंटरैक्टिव क्षण"
+        },
+        "culturalContext": {
+          "name": "सांस्कृतिक संदर्भ",
+          "description": "सामग्री में सांस्कृतिक संदर्भों के बारे में जानें"
+        },
+        "bilingualBridge": {
+          "name": "द्विभाषी सेतु",
+          "description": "साथ-साथ दोहरी भाषा उपशीर्षक"
+        },
+        "aiCompanion": {
+          "name": "AI साथी",
+          "description": "आपका व्यक्तिगत दर्शन सहायक"
+        }
+      },
+      "confirm": {
+        "title": "AI सुविधा उपयोग करें",
+        "cost": "लागत",
+        "currentBalance": "वर्तमान शेष",
+        "remainingAfter": "बाद में शेष",
+        "button": "पुष्टि करें",
+        "cancel": "रद्द करें"
+      }
     }
   },
   "a11y": {

@@ -37,7 +37,22 @@
                 onDubbingTap: { toggleLiveDubbing() },
                 onTriviaTap: { toggleLiveTrivia() },
                 onCatchUpTap: { toggleCatchUp() },
-                onSceneSearchTap: { toggleSceneSearch() }
+                onSceneSearchTap: { toggleSceneSearch() },
+                isVODMode: !mediaContentType.isLive,
+                isPauseAskActive: showPauseAskOverlay,
+                isVODSubtitlesActive: subtitlesVM != nil,
+                isVODVocabularyActive: subtitlesVM?.showTranslation ?? false,
+                isVODMomentsActive: interactionVM != nil,
+                isVODCulturalContextActive: culturalContextVM != nil,
+                isVODBilingualBridgeActive: splitModeEnabled,
+                isVODAICompanionActive: showAICompanion,
+                onPauseAskTap: { handleVODFeatureTap(.pauseAsk) },
+                onVODSubtitlesTap: { handleVODFeatureTap(.interactiveSubtitles) },
+                onVODVocabularyTap: { handleVODFeatureTap(.vocabulary) },
+                onVODMomentsTap: { handleVODFeatureTap(.vodMoments) },
+                onVODCulturalContextTap: { handleVODFeatureTap(.culturalContext) },
+                onVODBilingualBridgeTap: { handleVODFeatureTap(.bilingualBridge) },
+                onVODAICompanionTap: { handleVODFeatureTap(.aiCompanion) }
             )
         }
 

@@ -5802,7 +5802,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্লাস",
@@ -11323,6 +11327,51 @@
       "syncFailed": "সোর্স সিঙ্ক ব্যর্থ হয়েছে",
       "normalizationFailed": "কন্টেন্ট প্রক্রিয়াকরণ ব্যর্থ হয়েছে",
       "normalizationPollFailed": "প্রক্রিয়াকরণের সময় সংযোগ হারিয়ে গেছে"
+    },
+    "ai": {
+      "sparklesButton": "AI বৈশিষ্ট্য",
+      "featuresTitle": "AI বৈশিষ্ট্য",
+      "creditCost": "১ ক্রেডিট",
+      "included": "অন্তর্ভুক্ত",
+      "upgradeToUnlock": "AI বিকল্পগুলি আনলক করতে আপগ্রেড করুন",
+      "feature": {
+        "pauseAsk": {
+          "name": "বিরতি দিন ও জিজ্ঞেস করুন",
+          "description": "AI চরিত্রদের সাথে বিরতি দিন ও কথা বলুন"
+        },
+        "interactiveSubtitles": {
+          "name": "ইন্টারেক্টিভ সাবটাইটেল",
+          "description": "অনুবাদ ও শব্দভান্ডারের জন্য শব্দ ট্যাপ করুন"
+        },
+        "vocabulary": {
+          "name": "শব্দভান্ডার",
+          "description": "দেখার সময় আপনার শব্দভান্ডার তৈরি করুন"
+        },
+        "vodMoments": {
+          "name": "VOD মুহূর্ত",
+          "description": "AI-সনাক্তকৃত ইন্টারেক্টিভ মুহূর্ত"
+        },
+        "culturalContext": {
+          "name": "সাংস্কৃতিক প্রসঙ্গ",
+          "description": "বিষয়বস্তুতে সাংস্কৃতিক উল্লেখ সম্পর্কে জানুন"
+        },
+        "bilingualBridge": {
+          "name": "দ্বিভাষিক সেতু",
+          "description": "পাশাপাশি দুই ভাষার সাবটাইটেল"
+        },
+        "aiCompanion": {
+          "name": "AI সঙ্গী",
+          "description": "আপনার ব্যক্তিগত দর্শন সহকারী"
+        }
+      },
+      "confirm": {
+        "title": "AI বৈশিষ্ট্য ব্যবহার করুন",
+        "cost": "খরচ",
+        "currentBalance": "বর্তমান ব্যালেন্স",
+        "remainingAfter": "পরে অবশিষ্ট",
+        "button": "নিশ্চিত করুন",
+        "cancel": "বাতিল করুন"
+      }
     }
   },
   "a11y": {

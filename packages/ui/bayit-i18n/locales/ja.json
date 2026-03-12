@@ -11309,6 +11309,51 @@
       "syncFailed": "ソースの同期に失敗しました",
       "normalizationFailed": "コンテンツの処理に失敗しました",
       "normalizationPollFailed": "処理中に接続が失われました"
+    },
+    "ai": {
+      "sparklesButton": "AI機能",
+      "featuresTitle": "AI機能",
+      "creditCost": "1クレジット",
+      "included": "含まれています",
+      "upgradeToUnlock": "アップグレードしてAIオプションを解放",
+      "feature": {
+        "pauseAsk": {
+          "name": "一時停止して質問",
+          "description": "一時停止してAIキャラクターと会話"
+        },
+        "interactiveSubtitles": {
+          "name": "インタラクティブ字幕",
+          "description": "単語をタップして翻訳と語彙を確認"
+        },
+        "vocabulary": {
+          "name": "語彙",
+          "description": "視聴しながら語彙を増やす"
+        },
+        "vodMoments": {
+          "name": "VODモーメント",
+          "description": "AIが検出したインタラクティブな瞬間"
+        },
+        "culturalContext": {
+          "name": "文化的コンテキスト",
+          "description": "コンテンツの文化的参照について学ぶ"
+        },
+        "bilingualBridge": {
+          "name": "バイリンガルブリッジ",
+          "description": "二言語字幕を並べて表示"
+        },
+        "aiCompanion": {
+          "name": "AIコンパニオン",
+          "description": "あなたの個人視聴アシスタント"
+        }
+      },
+      "confirm": {
+        "title": "AI機能を使用",
+        "cost": "コスト",
+        "currentBalance": "現在の残高",
+        "remainingAfter": "使用後の残高",
+        "button": "確認",
+        "cancel": "キャンセル"
+      }
     }
   },
   "a11y": {

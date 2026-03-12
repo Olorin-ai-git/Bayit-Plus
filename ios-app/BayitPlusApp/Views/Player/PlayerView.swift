@@ -97,6 +97,15 @@ struct PlayerView: View {
     @State var selectedAILanguage: String = "en"
     @Environment(TooltipManager.self) var tooltipManager
 
+    // VOD AI credit flow state
+    @State var vodUsageCache = VODAIUsageCache()
+    @State var pendingVODFeature: VODAIFeature?
+    @State var showVODCreditConfirm = false
+    @State var vodCreditBalance: CreditBalance?
+    @State var showVODCreditToast = false
+    @State var vodCreditToastRemaining: Int = 0
+    @State var vodCreditToastIsLow = false
+
     let interactionRewindThreshold: TimeInterval = 3
     let interactionSeekOffset: TimeInterval = 5
     @State var selectedSecondaryLanguage: String?
@@ -207,6 +216,34 @@ struct PlayerView: View {
             .sheet(isPresented: $showDubbingControls) { dubbingControlsSheet }
             .sheet(isPresented: $showAILanguagePicker) { aiLanguagePickerSheet }
             .sheet(isPresented: $showQualitySelector) { qualitySelectorSheet }
+            .sheet(isPresented: $showVODCreditConfirm) {
+                if let feature = pendingVODFeature {
+                    AIFeatureCreditConfirmSheet(
+                        feature: feature,
+                        currentBalance: vodCreditBalance?.remainingCredits ?? 0,
+                        onConfirm: { confirmVODCreditDeduction() },
+                        onCancel: {
+                            showVODCreditConfirm = false
+                            pendingVODFeature = nil
+                        }
+                    )
+                }
+            }
+            .overlay(alignment: .top) {
+                if showVODCreditToast {
+                    CreditToastView(
+                        remainingCredits: vodCreditToastRemaining,
+                        isLow: vodCreditToastIsLow
+                    )
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .onAppear {
+                        Task {
+                            try? await Task.sleep(for: .seconds(3))
+                            withAnimation { showVODCreditToast = false }
+                        }
+                    }
+                }
+            }
             .confirmationDialog(
                 localization.t("player.playbackSpeed"),
                 isPresented: $showPlaybackRateMenu,

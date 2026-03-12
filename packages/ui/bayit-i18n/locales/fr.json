@@ -11327,6 +11327,51 @@
       "syncFailed": "Échec de la synchronisation de la source",
       "normalizationFailed": "Le traitement du contenu a échoué",
       "normalizationPollFailed": "Connexion perdue pendant le traitement"
+    },
+    "ai": {
+      "sparklesButton": "Fonctions IA",
+      "featuresTitle": "Fonctions IA",
+      "creditCost": "1 crédit",
+      "included": "Inclus",
+      "upgradeToUnlock": "Mettez à niveau pour débloquer les options IA",
+      "feature": {
+        "pauseAsk": {
+          "name": "Pause et Question",
+          "description": "Mettez en pause et conversez avec des personnages IA"
+        },
+        "interactiveSubtitles": {
+          "name": "Sous-titres Interactifs",
+          "description": "Appuyez sur les mots pour la traduction et le vocabulaire"
+        },
+        "vocabulary": {
+          "name": "Vocabulaire",
+          "description": "Développez votre vocabulaire en regardant"
+        },
+        "vodMoments": {
+          "name": "Moments VOD",
+          "description": "Moments interactifs détectés par IA"
+        },
+        "culturalContext": {
+          "name": "Contexte Culturel",
+          "description": "Découvrez les références culturelles dans le contenu"
+        },
+        "bilingualBridge": {
+          "name": "Pont Bilingue",
+          "description": "Sous-titres en deux langues côte à côte"
+        },
+        "aiCompanion": {
+          "name": "Compagnon IA",
+          "description": "Votre assistant personnel de visionnage"
+        }
+      },
+      "confirm": {
+        "title": "Utiliser la Fonction IA",
+        "cost": "Coût",
+        "currentBalance": "Solde actuel",
+        "remainingAfter": "Restant après",
+        "button": "Confirmer",
+        "cancel": "Annuler"
+      }
     }
   },
   "a11y": {

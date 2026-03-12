@@ -14,62 +14,42 @@ extension BYOCDetailView {
                 size: .large,
                 icon: Image(systemName: "play.fill")
             ) {
-                if let url = item.streamURL {
-                    UIApplication.shared.open(url)
+                if let route = BYOCPlayerAdapter.playerRoute(
+                    for: item, enrichment: enrichmentResult
+                ) {
+                    coordinator.presentFullscreen(.player(
+                        contentId: route.contentId,
+                        contentType: route.contentType
+                    ))
                 }
             }
+            .disabled(enrichmentResult == nil)
 
-            aiBadges
+            sparklesButton
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    @ViewBuilder
-    var aiBadges: some View {
-        let caps = BYOCCapabilities.capabilities(for: item.sourceType)
-        HStack(spacing: DesignTokens.Spacing.sm) {
-            if caps.dubbing {
-                aiBadgeIcon(
-                    systemName: "waveform.and.person.filled",
-                    label: localization.t("byoc.ai.dubbing")
-                )
-            }
-            if caps.liveSubtitles {
-                aiBadgeIcon(
-                    systemName: "captions.bubble.fill",
-                    label: localization.t("byoc.ai.subtitles")
-                )
-            }
-            if caps.trivia {
-                aiBadgeIcon(
-                    systemName: "lightbulb.fill",
-                    label: localization.t("byoc.ai.trivia")
-                )
-            }
-            if caps.audioOverlayOnly {
-                aiBadgeIcon(
-                    systemName: "speaker.wave.2.fill",
-                    label: localization.t("byoc.ai.audioOverlay")
-                )
-            }
+        .sheet(isPresented: $showAIFeaturesSheet) {
+            BYOCAIFeaturesSheet()
         }
     }
 
-    private func aiBadgeIcon(systemName: String, label: String) -> some View {
-        VStack(spacing: 2) {
-            Image(systemName: systemName)
-                .font(.system(size: 16))
-                .foregroundColor(DesignTokens.Primary.default)
+    private var sparklesButton: some View {
+        Button {
+            showAIFeaturesSheet = true
+        } label: {
+            Image(systemName: "sparkles")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(DesignTokens.Primary.default)
                 .frame(width: 44, height: 44)
                 .background(DesignTokens.Glass.bg)
                 .clipShape(Circle())
-            Text(label)
-                .font(.system(size: DesignTokens.FontSize.xs - 1))
-                .foregroundColor(DesignTokens.Text.muted)
-                .lineLimit(1)
+                .overlay(
+                    Circle()
+                        .stroke(DesignTokens.Primary.p400.opacity(0.4), lineWidth: 1)
+                )
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(label)
+        .buttonStyle(.plain)
+        .accessibilityLabel(localization.t("byoc.ai.sparklesButton"))
     }
 
     func loadEnrichment() async {

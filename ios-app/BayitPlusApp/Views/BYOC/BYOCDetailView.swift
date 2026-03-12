@@ -8,8 +8,10 @@ struct BYOCDetailView: View {
     let item: BYOCContentItem
     @Environment(BYOCSourceManager.self) var byocManager
     @Environment(LocalizationManager.self) var localization
+    @Environment(NavigationCoordinator.self) var coordinator
     @State var enrichmentResult: BYOCEnrichmentResult?
     @State var isEnriching = false
+    @State var showAIFeaturesSheet = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {

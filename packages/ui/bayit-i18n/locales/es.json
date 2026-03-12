@@ -5802,7 +5802,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -11323,6 +11327,51 @@
       "syncFailed": "Error al sincronizar la fuente",
       "normalizationFailed": "El procesamiento del contenido falló",
       "normalizationPollFailed": "Se perdió la conexión durante el procesamiento"
+    },
+    "ai": {
+      "sparklesButton": "Funciones de IA",
+      "featuresTitle": "Funciones de IA",
+      "creditCost": "1 crédito",
+      "included": "Incluido",
+      "upgradeToUnlock": "Actualiza para desbloquear opciones de IA",
+      "feature": {
+        "pauseAsk": {
+          "name": "Pausa y Pregunta",
+          "description": "Pausa y conversa con personajes de IA"
+        },
+        "interactiveSubtitles": {
+          "name": "Subtítulos Interactivos",
+          "description": "Toca palabras para traducción y vocabulario"
+        },
+        "vocabulary": {
+          "name": "Vocabulario",
+          "description": "Amplía tu vocabulario mientras ves"
+        },
+        "vodMoments": {
+          "name": "Momentos VOD",
+          "description": "Momentos interactivos detectados por IA"
+        },
+        "culturalContext": {
+          "name": "Contexto Cultural",
+          "description": "Aprende sobre referencias culturales en el contenido"
+        },
+        "bilingualBridge": {
+          "name": "Puente Bilingüe",
+          "description": "Subtítulos en dos idiomas lado a lado"
+        },
+        "aiCompanion": {
+          "name": "Compañero de IA",
+          "description": "Tu asistente personal de visualización"
+        }
+      },
+      "confirm": {
+        "title": "Usar Función de IA",
+        "cost": "Costo",
+        "currentBalance": "Saldo actual",
+        "remainingAfter": "Restante después",
+        "button": "Confirmar",
+        "cancel": "Cancelar"
+      }
     }
   },
   "a11y": {

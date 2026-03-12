@@ -34,6 +34,24 @@
         let onCatchUpTap: () -> Void
         let onSceneSearchTap: () -> Void
 
+        // MARK: - VOD Mode
+
+        let isVODMode: Bool
+        let isPauseAskActive: Bool
+        let isVODSubtitlesActive: Bool
+        let isVODVocabularyActive: Bool
+        let isVODMomentsActive: Bool
+        let isVODCulturalContextActive: Bool
+        let isVODBilingualBridgeActive: Bool
+        let isVODAICompanionActive: Bool
+        let onPauseAskTap: () -> Void
+        let onVODSubtitlesTap: () -> Void
+        let onVODVocabularyTap: () -> Void
+        let onVODMomentsTap: () -> Void
+        let onVODCulturalContextTap: () -> Void
+        let onVODBilingualBridgeTap: () -> Void
+        let onVODAICompanionTap: () -> Void
+
         private let panelHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 56 : 48
 
         var body: some View {
@@ -142,11 +160,15 @@
         private var scrollableControls: some View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DesignTokens.Spacing.sm) {
-                    liveTranslateButton
-                    liveDubbingButton
-                    liveTriviaButton
-                    catchUpButton
-                    sceneSearchButton
+                    if isVODMode {
+                        vodButtonsContent
+                    } else {
+                        liveTranslateButton
+                        liveDubbingButton
+                        liveTriviaButton
+                        catchUpButton
+                        sceneSearchButton
+                    }
                 }
                 .padding(.horizontal, DesignTokens.Spacing.sm)
             }

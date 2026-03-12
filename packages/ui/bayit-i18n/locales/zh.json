@@ -5796,8 +5796,17 @@
     },
     "basic": {
       "name": "免费",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -11318,6 +11327,51 @@
       "syncFailed": "同步来源失败",
       "normalizationFailed": "内容处理失败",
       "normalizationPollFailed": "处理过程中连接中断"
+    },
+    "ai": {
+      "sparklesButton": "AI功能",
+      "featuresTitle": "AI功能",
+      "creditCost": "1点数",
+      "included": "已包含",
+      "upgradeToUnlock": "升级以解锁AI选项",
+      "feature": {
+        "pauseAsk": {
+          "name": "暂停提问",
+          "description": "暂停并与AI角色对话"
+        },
+        "interactiveSubtitles": {
+          "name": "互动字幕",
+          "description": "点击单词进行翻译和词汇学习"
+        },
+        "vocabulary": {
+          "name": "词汇",
+          "description": "边看边积累词汇"
+        },
+        "vodMoments": {
+          "name": "VOD精彩时刻",
+          "description": "AI检测到的互动时刻"
+        },
+        "culturalContext": {
+          "name": "文化背景",
+          "description": "了解内容中的文化引用"
+        },
+        "bilingualBridge": {
+          "name": "双语桥梁",
+          "description": "并排双语字幕"
+        },
+        "aiCompanion": {
+          "name": "AI伴侣",
+          "description": "您的个人观影助手"
+        }
+      },
+      "confirm": {
+        "title": "使用AI功能",
+        "cost": "费用",
+        "currentBalance": "当前余额",
+        "remainingAfter": "使用后剩余",
+        "button": "确认",
+        "cancel": "取消"
+      }
     }
   },
   "a11y": {

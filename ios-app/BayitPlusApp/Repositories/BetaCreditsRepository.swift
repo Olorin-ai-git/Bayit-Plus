@@ -5,11 +5,11 @@ import Foundation
 protocol BetaCreditsRepository: Sendable {
     func fetchBalance() async throws -> CreditBalance
     func deductCredits(_ request: CreditDeductRequest) async throws -> CreditBalance
+    func deductWithDedup(_ request: CreditDeductRequest) async throws -> CreditDeductResponse
 }
 
 /// Production implementation of `BetaCreditsRepository` using `APIClient`.
 final class APIBetaCreditsRepository: BetaCreditsRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -28,6 +28,14 @@ final class APIBetaCreditsRepository: BetaCreditsRepository, @unchecked Sendable
             "/api/v1/beta/credits/deduct",
             body: request,
             as: CreditBalance.self
+        )
+    }
+
+    func deductWithDedup(_ request: CreditDeductRequest) async throws -> CreditDeductResponse {
+        return try await client.post(
+            "/api/v1/beta/credits/deduct",
+            body: request,
+            as: CreditDeductResponse.self
         )
     }
 }
