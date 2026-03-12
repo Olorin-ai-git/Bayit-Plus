@@ -262,13 +262,21 @@ async def _fetch_subtitles(
     if enrich_req.source_type == "youtube":
         video_id = _extract_youtube_video_id(enrich_req.external_id)
         if video_id:
-            return await _fetch_youtube_transcript(
+            yt_details, yt_fetched, yt_source = await _fetch_youtube_transcript(
                 video_id, enrich_req.subtitle_languages_requested,
             )
-        logger.warning(
-            "Could not extract YouTube video ID from external_id=%s",
-            enrich_req.external_id,
-        )
+            if yt_fetched:
+                return yt_details, yt_fetched, yt_source
+            logger.info(
+                "YouTube captions unavailable, falling back to transcription "
+                "content_id=%s video_id=%s",
+                content_id, video_id,
+            )
+        else:
+            logger.warning(
+                "Could not extract YouTube video ID from external_id=%s",
+                enrich_req.external_id,
+            )
     subtitle_svc = ExternalSubtitleService()
     details: Dict[str, SubtitleDetail] = {}
     fetched: List[str] = []

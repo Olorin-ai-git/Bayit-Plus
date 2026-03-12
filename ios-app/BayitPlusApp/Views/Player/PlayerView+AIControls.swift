@@ -39,6 +39,7 @@
                 onCatchUpTap: { toggleCatchUp() },
                 onSceneSearchTap: { toggleSceneSearch() },
                 isVODMode: !mediaContentType.isLive,
+                isYouTubeSource: mediaContentType.isYouTubeSource,
                 isPauseAskActive: showPauseAskOverlay,
                 isVODSubtitlesActive: subtitlesVM != nil,
                 isVODVocabularyActive: subtitlesVM?.showTranslation ?? false,

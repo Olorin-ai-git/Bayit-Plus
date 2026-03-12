@@ -81,7 +81,9 @@
                 vodPauseAskButton
                 vodSubtitlesButton
                 vodVocabularyButton
-                vodMomentsButton
+                if !isYouTubeSource {
+                    vodMomentsButton
+                }
                 vodCulturalContextButton
                 vodBilingualBridgeButton
                 vodAICompanionButton

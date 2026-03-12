@@ -202,7 +202,7 @@ extension BYOCSourceManager {
         BYOCSourceStore.saveSources(sources)
     }
 
-    private func markSourceActive(sourceId: String) {
+    func markSourceActive(sourceId: String) {
         sourceErrors.removeValue(forKey: sourceId)
         guard let index = sources.firstIndex(where: { $0.id == sourceId }),
               sources[index].status != .active
@@ -225,30 +225,128 @@ extension BYOCSourceManager {
             forSourceId: source.id
         ) else { return }
         do {
-            let client = YouTubeAPIClient(accessToken: token)
-            let subs = try await client.fetchSubscriptions()
-            var allVideos: [YouTubeVideo] = []
-            for sub in subs.items.prefix(5) {
-                let vids = try await client.fetchChannelVideos(
-                    channelId: sub.channelId,
-                    maxResults: 10
-                )
-                allVideos.append(contentsOf: vids.items)
-            }
-            youtubeItems.removeAll { $0.sourceId == source.id }
-            let items = YouTubeContentAdapter.adaptAll(
-                videos: allVideos,
-                sourceId: source.id
+            try await fetchYouTubeContent(
+                source: source, accessToken: token
             )
-            youtubeItems.append(contentsOf: items)
-            updateLastRefreshed(sourceId: source.id)
+            markSourceActive(sourceId: source.id)
+        } catch let error as YouTubeError {
+            await handleYouTubeError(error, source: source)
         } catch {
             lastError = error.localizedDescription
+            sourceErrors[source.id] = .error
             logger.error(
                 "Failed to refresh YouTube source",
                 error: error,
                 context: ["sourceId": source.id]
             )
+        }
+    }
+
+    private func fetchYouTubeContent(
+        source: BYOCSourceConfig,
+        accessToken: String
+    ) async throws {
+        let client = YouTubeAPIClient(accessToken: accessToken)
+        let subs = try await client.fetchSubscriptions()
+        var allVideos: [YouTubeVideo] = []
+        for sub in subs.items.prefix(5) {
+            let vids = try await client.fetchChannelVideos(
+                channelId: sub.channelId,
+                maxResults: 10
+            )
+            allVideos.append(contentsOf: vids.items)
+        }
+        youtubeItems.removeAll { $0.sourceId == source.id }
+        let items = YouTubeContentAdapter.adaptAll(
+            videos: allVideos,
+            sourceId: source.id
+        )
+        youtubeItems.append(contentsOf: items)
+        updateLastRefreshed(sourceId: source.id)
+    }
+
+    private func handleYouTubeError(
+        _ error: YouTubeError,
+        source: BYOCSourceConfig
+    ) async {
+        switch error {
+        case .httpError(statusCode: 401):
+            if let refreshed = await tryYouTubeTokenRefresh(
+                source: source
+            ) {
+                do {
+                    try await fetchYouTubeContent(
+                        source: source, accessToken: refreshed
+                    )
+                    markSourceActive(sourceId: source.id)
+                    return
+                } catch {
+                    logger.warning(
+                        "YouTube retry after refresh failed",
+                        context: ["sourceId": source.id]
+                    )
+                }
+            }
+            markSourceAuthExpired(sourceId: source.id)
+            logger.warning(
+                "YouTube token expired",
+                context: ["sourceId": source.id]
+            )
+        default:
+            lastError = "\(error)"
+            sourceErrors[source.id] = .error
+            logger.error(
+                "YouTube API error",
+                context: [
+                    "sourceId": source.id,
+                    "error": "\(error)",
+                ]
+            )
+        }
+    }
+
+    private func tryYouTubeTokenRefresh(
+        source: BYOCSourceConfig
+    ) async -> String? {
+        guard let refreshToken = BYOCKeychainStore.retrieveRefreshToken(
+            forSourceId: source.id
+        ) else { return nil }
+
+        let clientId = Bundle.main.infoDictionary?[
+            "YOUTUBE_CLIENT_ID"
+        ] as? String ?? ""
+        let clientSecret = Bundle.main.infoDictionary?[
+            "YOUTUBE_CLIENT_SECRET"
+        ] as? String ?? ""
+        guard !clientId.isEmpty, !clientSecret.isEmpty else { return nil }
+
+        let authService = YouTubeAuthService(
+            clientId: clientId,
+            clientSecret: clientSecret
+        )
+        do {
+            let tokens = try await authService.refreshAccessToken(
+                refreshToken: refreshToken
+            )
+            _ = BYOCKeychainStore.storeToken(
+                tokens.accessToken, forSourceId: source.id
+            )
+            if let newRefresh = tokens.refreshToken {
+                _ = BYOCKeychainStore.storeRefreshToken(
+                    newRefresh, forSourceId: source.id
+                )
+            }
+            logger.info(
+                "YouTube token refreshed",
+                context: ["sourceId": source.id]
+            )
+            return tokens.accessToken
+        } catch {
+            logger.warning(
+                "YouTube token refresh failed",
+                context: ["sourceId": source.id]
+            )
+            return nil
         }
     }
 

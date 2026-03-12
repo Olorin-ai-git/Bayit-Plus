@@ -37,6 +37,7 @@
         // MARK: - VOD Mode
 
         let isVODMode: Bool
+        let isYouTubeSource: Bool
         let isPauseAskActive: Bool
         let isVODSubtitlesActive: Bool
         let isVODVocabularyActive: Bool
