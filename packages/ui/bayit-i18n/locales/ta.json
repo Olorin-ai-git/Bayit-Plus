@@ -5102,6 +5102,7 @@
     "newBadge": "புதிது"
   },
   "home": {
+    "title": "முகப்பு",
     "continueWatching": "தொடர்ந்து பாருங்கள்",
     "featuredContent": "சிறப்பு",
     "liveTV": "நேரலை TV",
@@ -11162,7 +11163,7 @@
     "aiSubtitles": "AI வசனங்கள்",
     "aiInteractiveSubtitles": "ஊடாடும் வசனங்கள்",
     "connectContent": "உள்ளடக்கத்தை இணைக்கவும்",
-    "connectContentDesc": "உங்கள் IPTV, Plex அல்லது YouTube மூலங்களை சேர்க்கவும்",
+    "connectContentDesc": "உங்கள் YouTube, IPTV அல்லது Plex மூலங்களை சேர்க்கவும்",
     "removeSource": "மூலத்தை நீக்கு",
     "removeConfirm": "இந்த மூலத்தை நீக்க விரும்புகிறீர்களா?",
     "channelCount": "%d சேனல்கள்",

@@ -5102,6 +5102,7 @@
     "newBadge": "חדש"
   },
   "home": {
+    "title": "בית",
     "continueWatching": "המשך צפייה",
     "featuredContent": "מומלצים",
     "liveTV": "שידור חי",
@@ -11162,7 +11163,7 @@
     "aiSubtitles": "כתוביות AI",
     "aiInteractiveSubtitles": "כתוביות אינטראקטיביות",
     "connectContent": "חבר תוכן",
-    "connectContentDesc": "הוסף את מקורות IPTV, Plex או YouTube שלך",
+    "connectContentDesc": "הוסף את מקורות YouTube, IPTV או Plex שלך",
     "removeSource": "הסר מקור",
     "removeConfirm": "האם אתה בטוח שברצונך להסיר מקור זה?",
     "channelCount": "%d ערוצים",

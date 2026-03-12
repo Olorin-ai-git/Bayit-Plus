@@ -5102,6 +5102,7 @@
     "newBadge": "NUEVO"
   },
   "home": {
+    "title": "Inicio",
     "continueWatching": "Continuar Viendo",
     "featuredContent": "Destacados",
     "liveTV": "TV en Vivo",
@@ -11162,7 +11163,7 @@
     "aiSubtitles": "Subtitulos IA",
     "aiInteractiveSubtitles": "Subtitulos Interactivos",
     "connectContent": "Conectar Contenido",
-    "connectContentDesc": "Agrega tus fuentes de IPTV, Plex o YouTube",
+    "connectContentDesc": "Agrega tus fuentes de YouTube, IPTV o Plex",
     "removeSource": "Eliminar Fuente",
     "removeConfirm": "Estas seguro de que deseas eliminar esta fuente?",
     "channelCount": "%d canales",

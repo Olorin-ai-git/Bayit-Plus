@@ -5102,6 +5102,7 @@
     "newBadge": "नया"
   },
   "home": {
+    "title": "होम",
     "continueWatching": "देखना जारी रखें",
     "featuredContent": "फीचर्ड",
     "liveTV": "लाइव TV",
@@ -11162,7 +11163,7 @@
     "aiSubtitles": "AI उपशीर्षक",
     "aiInteractiveSubtitles": "इंटरैक्टिव उपशीर्षक",
     "connectContent": "सामग्री कनेक्ट करें",
-    "connectContentDesc": "अपने IPTV, Plex या YouTube स्रोत जोड़ें",
+    "connectContentDesc": "अपने YouTube, IPTV या Plex स्रोत जोड़ें",
     "removeSource": "स्रोत हटाएं",
     "removeConfirm": "क्या आप वाकई इस स्रोत को हटाना चाहते हैं?",
     "channelCount": "%d चैनल",

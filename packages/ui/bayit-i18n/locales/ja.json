@@ -5102,6 +5102,7 @@
     "newBadge": "新着"
   },
   "home": {
+    "title": "ホーム",
     "continueWatching": "視聴を続ける",
     "featuredContent": "注目",
     "liveTV": "ライブTV",
@@ -11148,7 +11149,7 @@
     "aiSubtitles": "AI字幕",
     "aiInteractiveSubtitles": "インタラクティブ字幕",
     "connectContent": "コンテンツを接続",
-    "connectContentDesc": "IPTV、Plex、またはYouTubeのソースを追加",
+    "connectContentDesc": "YouTube、IPTV、またはPlexのソースを追加",
     "removeSource": "ソースを削除",
     "removeConfirm": "このソースを削除してもよろしいですか?",
     "channelCount": "%dチャンネル",

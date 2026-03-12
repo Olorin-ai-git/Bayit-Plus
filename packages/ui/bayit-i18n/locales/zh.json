@@ -5102,6 +5102,7 @@
     "newBadge": "新"
   },
   "home": {
+    "title": "首页",
     "continueWatching": "继续观看",
     "featuredContent": "精选",
     "liveTV": "直播电视",
@@ -11157,7 +11158,7 @@
     "aiSubtitles": "AI字幕",
     "aiInteractiveSubtitles": "互动字幕",
     "connectContent": "连接内容",
-    "connectContentDesc": "添加您的IPTV、Plex或YouTube来源",
+    "connectContentDesc": "添加您的YouTube、IPTV或Plex来源",
     "removeSource": "删除来源",
     "removeConfirm": "确定要删除此来源吗？",
     "channelCount": "%d个频道",
