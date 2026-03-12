@@ -44,6 +44,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
+    implementation(libs.datastore.preferences)
+    implementation(libs.browser)
     implementation(libs.timber)
 
     testImplementation(libs.bundles.testing)

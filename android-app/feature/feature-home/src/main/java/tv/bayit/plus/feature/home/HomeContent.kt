@@ -59,6 +59,15 @@ internal fun HomeSuccessContent(
     onDismissShabbatBanner: () -> Unit = {},
     isPlusSubscriber: Boolean = false,
     onNavigateToSubscribe: () -> Unit = {},
+    showAIGatewayCard: Boolean = false,
+    showDontShowAgain: Boolean = false,
+    onConnectYouTube: () -> Unit = {},
+    onLearnMoreAIGateway: () -> Unit = {},
+    onDismissAIGateway: () -> Unit = {},
+    onDontShowAgainAIGateway: () -> Unit = {},
+    showMoreContentCard: Boolean = false,
+    onExploreMoreContent: () -> Unit = {},
+    onDismissMoreContent: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var isBannerDismissed by remember { mutableStateOf(false) }
@@ -182,6 +191,18 @@ internal fun HomeSuccessContent(
                     )
                 }
             }
+
+            aiGatewayItems(
+                showAIGatewayCard = showAIGatewayCard,
+                showDontShowAgain = showDontShowAgain,
+                onConnectYouTube = onConnectYouTube,
+                onLearnMoreAIGateway = onLearnMoreAIGateway,
+                onDismissAIGateway = onDismissAIGateway,
+                onDontShowAgainAIGateway = onDontShowAgainAIGateway,
+                showMoreContentCard = showMoreContentCard,
+                onExploreMoreContent = onExploreMoreContent,
+                onDismissMoreContent = onDismissMoreContent,
+            )
 
             if (!isPlusSubscriber) {
                 item(key = "plus_feature_dubbing") {

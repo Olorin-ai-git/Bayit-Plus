@@ -52,6 +52,15 @@ internal fun HomeScreen(
     onDismissShabbatBanner: () -> Unit = {},
     isPlusSubscriber: Boolean = false,
     onNavigateToSubscribe: () -> Unit = {},
+    showAIGatewayCard: Boolean = false,
+    showDontShowAgain: Boolean = false,
+    onConnectYouTube: () -> Unit = {},
+    onLearnMoreAIGateway: () -> Unit = {},
+    onDismissAIGateway: () -> Unit = {},
+    onDontShowAgainAIGateway: () -> Unit = {},
+    showMoreContentCard: Boolean = false,
+    onExploreMoreContent: () -> Unit = {},
+    onDismissMoreContent: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
@@ -89,6 +98,15 @@ internal fun HomeScreen(
             onDismissShabbatBanner = onDismissShabbatBanner,
             isPlusSubscriber = isPlusSubscriber,
             onNavigateToSubscribe = onNavigateToSubscribe,
+            showAIGatewayCard = showAIGatewayCard,
+            showDontShowAgain = showDontShowAgain,
+            onConnectYouTube = onConnectYouTube,
+            onLearnMoreAIGateway = onLearnMoreAIGateway,
+            onDismissAIGateway = onDismissAIGateway,
+            onDontShowAgainAIGateway = onDontShowAgainAIGateway,
+            showMoreContentCard = showMoreContentCard,
+            onExploreMoreContent = onExploreMoreContent,
+            onDismissMoreContent = onDismissMoreContent,
             modifier = modifier,
         )
         is HomeUiState.Error -> ErrorSection(

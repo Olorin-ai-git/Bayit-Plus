@@ -1,6 +1,7 @@
 package tv.bayit.plus.feature.home
 
 import kotlinx.coroutines.flow.combine
+import tv.bayit.plus.core.byoc.models.BYOCSourceType
 
 internal suspend fun HomeViewModel.loadBYOCState() {
     try {
@@ -14,11 +15,13 @@ internal suspend fun HomeViewModel.loadBYOCState() {
                     "contentCount" to content.size.toString(),
                 ),
             )
+            val hasYouTube = sources.any { it.type == BYOCSourceType.YOUTUBE }
             updateState {
                 copy(
                     byocSources = sources,
                     byocContent = content,
                     hasBYOCSources = sources.isNotEmpty(),
+                    hasYouTubeSource = hasYouTube,
                 )
             }
         }

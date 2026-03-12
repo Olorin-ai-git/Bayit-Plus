@@ -1,8 +1,12 @@
 package tv.bayit.plus.feature.byoc
 
+import android.content.Context
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +41,7 @@ class YouTubeAuthViewModel @Inject constructor(
     @GoogleClientSecret private val googleClientSecret: String,
     private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
+    @ApplicationContext private val appContext: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<YouTubeAuthUiState>(YouTubeAuthUiState.Idle)
@@ -73,6 +78,56 @@ class YouTubeAuthViewModel @Inject constructor(
         startAuth()
     }
 
+    fun startBrowserAuth(activityContext: Context) {
+        viewModelScope.launch {
+            try {
+                val authUrl = buildBrowserAuthUrl()
+                val customTabsIntent = CustomTabsIntent.Builder().build()
+                customTabsIntent.intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                customTabsIntent.launchUrl(activityContext, Uri.parse(authUrl))
+            } catch (e: Exception) {
+                logger.error("Browser auth launch failed, falling back to device auth", error = e)
+                startAuth()
+            }
+        }
+    }
+
+    fun handleBrowserAuthResult(authCode: String) {
+        viewModelScope.launch {
+            _uiState.value = YouTubeAuthUiState.Connecting
+            try {
+                val tokenResponse = youtubeClient.exchangeAuthCode(
+                    authCode = authCode,
+                    clientId = googleClientId,
+                    clientSecret = googleClientSecret,
+                    redirectUri = REDIRECT_URI,
+                )
+                sourceManager.addYouTubeSource(
+                    name = "YouTube",
+                    accessToken = tokenResponse.accessToken ?: "",
+                    refreshToken = tokenResponse.refreshToken,
+                )
+                _uiState.value = YouTubeAuthUiState.Success
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Browser auth code exchange failed", error = e)
+                _uiState.value = YouTubeAuthUiState.Error(
+                    e.message ?: stringProvider.string("error.byoc.youtubeAuthStartFailed"),
+                )
+            }
+        }
+    }
+
+    private fun buildBrowserAuthUrl(): String {
+        return "$AUTH_BASE_URL?client_id=$googleClientId" +
+            "&redirect_uri=$REDIRECT_URI" +
+            "&response_type=code" +
+            "&scope=$YOUTUBE_SCOPE" +
+            "&access_type=offline" +
+            "&prompt=consent"
+    }
+
     private fun pollForAuth(deviceCode: GoogleDeviceCode) {
         pollJob?.cancel()
         pollJob = viewModelScope.launch {
@@ -103,5 +158,11 @@ class YouTubeAuthViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         pollJob?.cancel()
+    }
+
+    companion object {
+        private const val AUTH_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+        private const val REDIRECT_URI = "tv.bayit.plus:/oauth2callback"
+        private const val YOUTUBE_SCOPE = "https://www.googleapis.com/auth/youtube.readonly"
     }
 }

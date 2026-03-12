@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":core:core-location"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))
+    implementation(project(":feature:feature-byoc"))
     implementation(project(":feature:feature-vod"))
     implementation(project(":feature:feature-onboarding"))
 

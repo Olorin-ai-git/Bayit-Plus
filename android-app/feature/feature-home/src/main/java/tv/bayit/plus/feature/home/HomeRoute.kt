@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.model.resolveContentType
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.byoc.AIGatewayViewModel
 import tv.bayit.plus.feature.onboarding.ContinueTourBanner
 
 @Composable
@@ -45,10 +46,13 @@ fun HomeRoute(
     onNavigateToBYOCPlayer: (String, String) -> Unit = { _, _ -> },
     onNavigateToFeatureTour: () -> Unit = {},
     onNavigateToSubscribe: () -> Unit = {},
+    onNavigateToYouTubeAuth: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
+    aiGatewayViewModel: AIGatewayViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val gatewayState by aiGatewayViewModel.state.collectAsStateWithLifecycle()
     val activity = LocalContext.current as? android.app.Activity
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -70,6 +74,8 @@ fun HomeRoute(
     val isPermanentlyDenied = successState?.locationPermissionNeeded == true &&
         successState.locationPermissionPreviouslyDenied &&
         activity?.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) == false
+
+    val hasYouTube = (uiState as? HomeUiState.Success)?.hasYouTubeSource ?: false
 
     val context = LocalContext.current
     Column(modifier = modifier.fillMaxSize()) {
@@ -130,6 +136,15 @@ fun HomeRoute(
             },
             onRefresh = viewModel::refresh,
             onDismissShabbatBanner = viewModel::dismissShabbatBanner,
+            showAIGatewayCard = aiGatewayViewModel.shouldShowCard(gatewayState, hasYouTube),
+            showDontShowAgain = aiGatewayViewModel.showDontShowAgain(gatewayState),
+            onConnectYouTube = onNavigateToYouTubeAuth,
+            onLearnMoreAIGateway = onNavigateToBYOCSettings,
+            onDismissAIGateway = aiGatewayViewModel::dismiss,
+            onDontShowAgainAIGateway = aiGatewayViewModel::permanentlyDismiss,
+            showMoreContentCard = aiGatewayViewModel.shouldShowMoreContentCard(gatewayState, hasYouTube),
+            onExploreMoreContent = onNavigateToBYOCSettings,
+            onDismissMoreContent = aiGatewayViewModel::dismissMoreContent,
             modifier = Modifier.weight(1f),
         )
     }

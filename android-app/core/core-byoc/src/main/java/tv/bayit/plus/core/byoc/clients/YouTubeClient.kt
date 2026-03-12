@@ -59,6 +59,23 @@ class YouTubeClient @Inject constructor(
         throw IllegalStateException("Authorization code expired")
     }
 
+    suspend fun exchangeAuthCode(
+        authCode: String, clientId: String, clientSecret: String, redirectUri: String,
+    ): GoogleTokenResponse = withContext(Dispatchers.IO) {
+        val body = FormBody.Builder()
+            .add("client_id", clientId).add("client_secret", clientSecret)
+            .add("code", authCode).add("grant_type", "authorization_code")
+            .add("redirect_uri", redirectUri).build()
+        val request = Request.Builder().url(TOKEN_URL).post(body).build()
+        val response = okHttpClient.newCall(request).execute()
+        val responseBody = response.body?.string()
+            ?: throw IllegalStateException("Empty response from Google token exchange")
+        if (!response.isSuccessful) {
+            throw IllegalStateException("Token exchange failed (${response.code}): $responseBody")
+        }
+        json.decodeFromString<GoogleTokenResponse>(responseBody)
+    }
+
     suspend fun refreshAccessToken(
         refreshToken: String,
         clientId: String,

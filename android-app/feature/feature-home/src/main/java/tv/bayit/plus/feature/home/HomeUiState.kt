@@ -38,6 +38,7 @@ sealed interface HomeUiState {
         val byocSources: List<BYOCSourceConfig> = emptyList(),
         val byocContent: List<BYOCContentItem> = emptyList(),
         val hasBYOCSources: Boolean = false,
+        val hasYouTubeSource: Boolean = false,
         val isRefreshing: Boolean = false,
         val localTimezone: String = TimeZone.getDefault().id,
         val localLocationLabel: String = timezoneDisplayCity(TimeZone.getDefault().id),
