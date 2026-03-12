@@ -5796,17 +5796,8 @@
     },
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -11165,6 +11156,7 @@
     "audioAIOnly": "仅音频AI",
     "aiDubbing": "AI配音",
     "aiSubtitles": "AI字幕",
+    "aiInteractiveSubtitles": "互动字幕",
     "connectContent": "连接内容",
     "connectContentDesc": "添加您的IPTV、Plex或YouTube来源",
     "removeSource": "删除来源",
@@ -11326,7 +11318,10 @@
       "enrichFailed": "分析来源失败",
       "syncFailed": "同步来源失败",
       "normalizationFailed": "内容处理失败",
-      "normalizationPollFailed": "处理过程中连接中断"
+      "normalizationPollFailed": "处理过程中连接中断",
+      "authExpired": "授权已过期 - 需要重新连接",
+      "connectionError": "连接错误",
+      "reconnect": "重新连接"
     },
     "ai": {
       "sparklesButton": "AI功能",

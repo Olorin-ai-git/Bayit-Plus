@@ -25,6 +25,8 @@ enum BYOCPlayerAdapter {
         case .episode: .episode
         case .video: .movie
         case .liveChannel: .liveTV
+        case .youtubeVOD: .youtubeVOD
+        case .youtubeLive: .youtubeLive
         }
     }
 }

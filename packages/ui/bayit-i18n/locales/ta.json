@@ -5802,11 +5802,7 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": [
-        "நேரலை சேனல்கள்",
-        "AI உதவியாளர்",
-        "ஆஃப்லைன் பார்வை"
-      ]
+      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
     },
     "premium": {
       "name": "பிளஸ்",
@@ -11165,6 +11161,7 @@
     "audioAIOnly": "ஆடியோ AI மட்டும்",
     "aiDubbing": "AI டப்பிங்",
     "aiSubtitles": "AI வசனங்கள்",
+    "aiInteractiveSubtitles": "ஊடாடும் வசனங்கள்",
     "connectContent": "உள்ளடக்கத்தை இணைக்கவும்",
     "connectContentDesc": "உங்கள் IPTV, Plex அல்லது YouTube மூலங்களை சேர்க்கவும்",
     "removeSource": "மூலத்தை நீக்கு",
@@ -11326,7 +11323,10 @@
       "enrichFailed": "மூலத்தை பகுப்பாய்வு செய்ய முடியவில்லை",
       "syncFailed": "மூலத்தை ஒத்திசைக்க முடியவில்லை",
       "normalizationFailed": "உள்ளடக்க செயலாக்கம் தோல்வியடைந்தது",
-      "normalizationPollFailed": "செயலாக்கத்தின் போது இணைப்பு துண்டிக்கப்பட்டது"
+      "normalizationPollFailed": "செயலாக்கத்தின் போது இணைப்பு துண்டிக்கப்பட்டது",
+      "authExpired": "அங்கீகாரம் காலாவதியானது - மீண்டும் இணைக்க வேண்டும்",
+      "connectionError": "இணைப்பு பிழை",
+      "reconnect": "மீண்டும் இணை"
     },
     "ai": {
       "sparklesButton": "AI அம்சங்கள்",

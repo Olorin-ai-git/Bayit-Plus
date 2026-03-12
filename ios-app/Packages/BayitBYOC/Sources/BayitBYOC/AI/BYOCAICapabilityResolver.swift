@@ -57,6 +57,7 @@ public enum BYOCAICapabilityResolver {
         var names: [String] = []
         if capabilities.dubbing { names.append("dubbing") }
         if capabilities.liveSubtitles { names.append("liveSubtitles") }
+        if capabilities.interactiveSubtitles { names.append("interactiveSubtitles") }
         if capabilities.trivia { names.append("trivia") }
         if capabilities.audioOverlayOnly { names.append("audioOverlay") }
         return names

@@ -5802,11 +5802,7 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
-      ]
+      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
     },
     "premium": {
       "name": "प्लस",
@@ -11165,6 +11161,7 @@
     "audioAIOnly": "केवल ऑडियो AI",
     "aiDubbing": "AI डबिंग",
     "aiSubtitles": "AI उपशीर्षक",
+    "aiInteractiveSubtitles": "इंटरैक्टिव उपशीर्षक",
     "connectContent": "सामग्री कनेक्ट करें",
     "connectContentDesc": "अपने IPTV, Plex या YouTube स्रोत जोड़ें",
     "removeSource": "स्रोत हटाएं",
@@ -11326,7 +11323,10 @@
       "enrichFailed": "स्रोत का विश्लेषण विफल",
       "syncFailed": "स्रोत सिंक विफल",
       "normalizationFailed": "कंटेंट प्रोसेसिंग विफल",
-      "normalizationPollFailed": "प्रोसेसिंग के दौरान कनेक्शन खो गया"
+      "normalizationPollFailed": "प्रोसेसिंग के दौरान कनेक्शन खो गया",
+      "authExpired": "प्राधिकरण समाप्त - पुनः कनेक्शन आवश्यक",
+      "connectionError": "कनेक्शन त्रुटि",
+      "reconnect": "पुनः कनेक्ट करें"
     },
     "ai": {
       "sparklesButton": "AI सुविधाएं",

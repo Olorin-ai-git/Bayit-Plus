@@ -1,6 +1,6 @@
+import BayitCore
 import BayitMedia
 import BayitWidgetShared
-import BayitCore
 import Foundation
 import Observation
 
@@ -9,7 +9,6 @@ import Observation
 @Observable
 @MainActor
 final class MediaPlayerWidgetBridge {
-
     private let mediaPlayer: MediaPlayer
     private let widgetSync: WidgetDataSyncService
     private let logger = BayitLogger(category: "MediaPlayerWidgetBridge")
@@ -58,7 +57,7 @@ final class MediaPlayerWidgetBridge {
         lastSyncedState = currentState
         logger.info("Synced media state to widgets", context: [
             "channel": channelName,
-            "isPlaying": String(mediaPlayer.state == .playing)
+            "isPlaying": String(mediaPlayer.state == .playing),
         ])
     }
 
@@ -97,6 +96,8 @@ final class MediaPlayerWidgetBridge {
         case .podcast: return .podcast
         case .audiobook: return .audiobook
         case .movie, .series, .episode: return .vod
+        case .youtubeVOD: return .vod
+        case .youtubeLive: return .liveTV
         }
     }
 }

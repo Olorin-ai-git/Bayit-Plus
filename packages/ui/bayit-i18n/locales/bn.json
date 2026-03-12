@@ -5802,11 +5802,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্লাস",
@@ -11165,6 +11161,7 @@
     "audioAIOnly": "শুধুমাত্র অডিও AI",
     "aiDubbing": "AI ডাবিং",
     "aiSubtitles": "AI সাবটাইটেল",
+    "aiInteractiveSubtitles": "ইন্টারেক্টিভ সাবটাইটেল",
     "connectContent": "কন্টেন্ট সংযুক্ত করুন",
     "connectContentDesc": "আপনার IPTV, Plex বা YouTube উৎস যোগ করুন",
     "removeSource": "উৎস সরান",
@@ -11326,7 +11323,10 @@
       "enrichFailed": "সোর্স বিশ্লেষণ ব্যর্থ হয়েছে",
       "syncFailed": "সোর্স সিঙ্ক ব্যর্থ হয়েছে",
       "normalizationFailed": "কন্টেন্ট প্রক্রিয়াকরণ ব্যর্থ হয়েছে",
-      "normalizationPollFailed": "প্রক্রিয়াকরণের সময় সংযোগ হারিয়ে গেছে"
+      "normalizationPollFailed": "প্রক্রিয়াকরণের সময় সংযোগ হারিয়ে গেছে",
+      "authExpired": "অনুমোদনের মেয়াদ শেষ - পুনরায় সংযোগ প্রয়োজন",
+      "connectionError": "সংযোগ ত্রুটি",
+      "reconnect": "পুনরায় সংযোগ করুন"
     },
     "ai": {
       "sparklesButton": "AI বৈশিষ্ট্য",

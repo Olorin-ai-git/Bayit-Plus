@@ -3,40 +3,76 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Single connected source row with remove action.
+/// Single connected source row with remove action and auth status.
 struct BYOCSourceRow: View {
     @Environment(LocalizationManager.self) private var localization
 
     let source: BYOCSourceConfig
     let onRemove: () -> Void
+    var onReauth: (() -> Void)?
 
     var body: some View {
         GlassCard {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                Image(systemName: iconName)
-                    .font(.system(size: DesignTokens.FontSize.xl))
-                    .foregroundStyle(iconColor)
-                    .frame(width: 32)
+            VStack(spacing: 0) {
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    Image(systemName: iconName)
+                        .font(.system(size: DesignTokens.FontSize.xl))
+                        .foregroundStyle(iconColor)
+                        .frame(width: 32)
 
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
-                    Text(source.name)
-                        .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
-                        .foregroundStyle(DesignTokens.Text.primary)
+                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
+                        Text(source.name)
+                            .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
+                            .foregroundStyle(DesignTokens.Text.primary)
 
-                    Text(sourceTypeLabel)
-                        .font(.system(size: DesignTokens.FontSize.xs))
-                        .foregroundStyle(DesignTokens.Text.muted)
+                        Text(statusLabel)
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundStyle(statusColor)
+                    }
+
+                    Spacer()
+
+                    Button(action: onRemove) {
+                        Image(systemName: "trash")
+                            .font(.system(size: DesignTokens.FontSize.md))
+                            .foregroundStyle(DesignTokens.ErrorColor.default)
+                    }
                 }
+                .padding(DesignTokens.Spacing.md)
 
-                Spacer()
-
-                Button(action: onRemove) {
-                    Image(systemName: "trash")
-                        .font(.system(size: DesignTokens.FontSize.md))
-                        .foregroundStyle(DesignTokens.ErrorColor.default)
+                if source.status == .authExpired, let onReauth {
+                    Divider().overlay(DesignTokens.Glass.border)
+                    Button(action: onReauth) {
+                        HStack(spacing: DesignTokens.Spacing.xs) {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                            Text(localization.t("byoc.reconnect"))
+                        }
+                        .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                        .foregroundStyle(DesignTokens.Primary.default)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DesignTokens.Spacing.sm)
+                    }
                 }
             }
-            .padding(DesignTokens.Spacing.md)
+        }
+    }
+
+    private var statusLabel: String {
+        switch source.status {
+        case .authExpired:
+            return localization.t("byoc.authExpired")
+        case .error:
+            return localization.t("byoc.connectionError")
+        case .active:
+            return sourceTypeLabel
+        }
+    }
+
+    private var statusColor: Color {
+        switch source.status {
+        case .authExpired: return DesignTokens.Warning.default
+        case .error: return DesignTokens.ErrorColor.default
+        case .active: return DesignTokens.Text.muted
         }
     }
 

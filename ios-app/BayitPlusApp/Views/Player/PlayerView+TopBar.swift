@@ -80,7 +80,7 @@ extension PlayerView {
                 }
                 .accessibilityLabel(localization.t("player.qualitySettings"))
 
-                if contentType != .radio {
+                if contentType != .radio && !mediaContentType.isYouTubeSource {
                     playerDownloadButton
                 }
             }
@@ -145,7 +145,7 @@ extension PlayerView {
 
             liveFeatureButtons
 
-            if mediaContentType.isLive {
+            if mediaContentType.isLive && !mediaContentType.isYouTubeSource {
                 recordingButton
             }
 

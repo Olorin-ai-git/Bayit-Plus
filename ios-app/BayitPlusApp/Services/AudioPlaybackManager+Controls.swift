@@ -194,6 +194,10 @@ extension ContentType {
             return .liveTV
         case .movie, .series, .episode:
             return .vod
+        case .youtubeVOD:
+            return .youtubeVOD
+        case .youtubeLive:
+            return .youtubeLive
         }
     }
 }

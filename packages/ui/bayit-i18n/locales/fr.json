@@ -11165,6 +11165,7 @@
     "audioAIOnly": "Audio IA Uniquement",
     "aiDubbing": "Doublage IA",
     "aiSubtitles": "Sous-titres IA",
+    "aiInteractiveSubtitles": "Sous-titres Interactifs",
     "connectContent": "Connecter le Contenu",
     "connectContentDesc": "Ajoutez vos sources IPTV, Plex ou YouTube",
     "removeSource": "Supprimer la Source",
@@ -11326,7 +11327,10 @@
       "enrichFailed": "Échec de l'analyse de la source",
       "syncFailed": "Échec de la synchronisation de la source",
       "normalizationFailed": "Le traitement du contenu a échoué",
-      "normalizationPollFailed": "Connexion perdue pendant le traitement"
+      "normalizationPollFailed": "Connexion perdue pendant le traitement",
+      "authExpired": "Autorisation expirée - reconnexion requise",
+      "connectionError": "Erreur de connexion",
+      "reconnect": "Reconnecter"
     },
     "ai": {
       "sparklesButton": "Fonctions IA",

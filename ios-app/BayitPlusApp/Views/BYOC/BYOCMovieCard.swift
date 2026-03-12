@@ -137,8 +137,12 @@ struct BYOCMovieCard: View {
 
     @ViewBuilder
     private var aiCapabilitiesBadge: some View {
-        let caps = BYOCCapabilities.capabilities(for: item.sourceType)
-        if !caps.audioOverlayOnly, caps.dubbing || caps.liveSubtitles {
+        let caps = item.sourceType == .youtube
+            ? BYOCCapabilities.youtubeCapabilities(for: item.contentType)
+            : BYOCCapabilities.capabilities(for: item.sourceType)
+        if !caps.audioOverlayOnly,
+           caps.dubbing || caps.liveSubtitles || caps.interactiveSubtitles
+        {
             Image(systemName: "sparkles")
                 .font(.system(size: DesignTokens.FontSize.xs - 1, weight: .bold))
                 .foregroundColor(.white)

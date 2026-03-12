@@ -52,13 +52,17 @@ public enum MediaContentType: String, Sendable {
     case podcast
     /// Audiobook chapter (audio, seekable).
     case audiobook
+    /// YouTube video on demand (seekable, no download).
+    case youtubeVOD
+    /// YouTube live stream (not seekable, no recording).
+    case youtubeLive
 
     /// Whether this content type supports seeking.
     public var isSeekable: Bool {
         switch self {
-        case .vod, .podcast, .audiobook:
+        case .vod, .podcast, .audiobook, .youtubeVOD:
             return true
-        case .liveTV, .radio:
+        case .liveTV, .radio, .youtubeLive:
             return false
         }
     }
@@ -68,7 +72,7 @@ public enum MediaContentType: String, Sendable {
         switch self {
         case .radio, .podcast, .audiobook:
             return true
-        case .liveTV, .vod:
+        case .liveTV, .vod, .youtubeVOD, .youtubeLive:
             return false
         }
     }
@@ -76,9 +80,19 @@ public enum MediaContentType: String, Sendable {
     /// Whether this content type is a live stream.
     public var isLive: Bool {
         switch self {
-        case .liveTV, .radio:
+        case .liveTV, .radio, .youtubeLive:
             return true
-        case .vod, .podcast, .audiobook:
+        case .vod, .podcast, .audiobook, .youtubeVOD:
+            return false
+        }
+    }
+
+    /// Whether this content originates from a YouTube source.
+    public var isYouTubeSource: Bool {
+        switch self {
+        case .youtubeVOD, .youtubeLive:
+            return true
+        default:
             return false
         }
     }

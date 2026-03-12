@@ -37,6 +37,7 @@ class BYOCEnrichRequest(BaseModel):
         default_factory=lambda: ["en", "he", "es"]
     )
     generate_interaction_moments: bool = False
+    is_live: bool = False
 
 
 class BYOCBatchEnrichRequest(BaseModel):
@@ -54,6 +55,7 @@ class BYOCEnrichResponse(BaseModel):
     available_subtitle_languages: List[str]
     enrichment_status: str
     subtitle_details: Dict[str, SubtitleDetail]
+    transcript_source: Optional[str] = None
 
 
 class BYOCBatchResponse(BaseModel):
@@ -106,9 +108,10 @@ async def _run_byoc_extraction(content: Content) -> None:
 
 async def enrich_single_item(enrich_req: BYOCEnrichRequest) -> BYOCEnrichResponse:
     """Core enrichment logic for a single BYOC item."""
+    source_provider = "youtube" if enrich_req.source_type == "youtube" else "byoc"
     existing = await Content.find_one(
         Content.source_id == enrich_req.external_id,
-        Content.source_provider == "byoc",
+        Content.source_provider == source_provider,
     )
     if existing and existing.updated_at:
         cache_cutoff = datetime.utcnow() - timedelta(hours=ENRICHMENT_CACHE_HOURS)
@@ -120,27 +123,43 @@ async def enrich_single_item(enrich_req: BYOCEnrichRequest) -> BYOCEnrichRespons
                 enrichment_status="cached",
                 subtitle_details={},
             )
+    if enrich_req.source_type == "youtube" and enrich_req.is_live:
+        duration_str = None
+        if enrich_req.duration_seconds is not None:
+            duration_str = format_duration(enrich_req.duration_seconds)
+        content = await _upsert_content(existing, enrich_req, duration_str)
+        logger.info("Skipping enrichment for YouTube live content_id=%s", str(content.id))
+        return BYOCEnrichResponse(
+            content_id=str(content.id),
+            available_subtitle_languages=[],
+            enrichment_status="live_skip",
+            subtitle_details={},
+            transcript_source=None,
+        )
     duration_str = None
     if enrich_req.duration_seconds is not None:
         duration_str = format_duration(enrich_req.duration_seconds)
     content = await _upsert_content(existing, enrich_req, duration_str)
     content_id = str(content.id)
-    subtitle_details, fetched = await _fetch_subtitles(content_id, enrich_req)
+    subtitle_details, fetched, transcript_source = await _fetch_subtitles(
+        content_id, enrich_req
+    )
     if enrich_req.generate_interaction_moments and not content.supports_avatar_interaction:
         await _run_byoc_extraction(content)
         logger.info("Triggered character extraction for BYOC content_id=%s", content_id)
     found, requested = len(fetched), len(enrich_req.subtitle_languages_requested)
     if found == requested:
-        status = "full"
+        enrich_status = "full"
     elif found > 0:
-        status = "partial"
+        enrich_status = "partial"
     else:
-        status = "none"
+        enrich_status = "none"
     return BYOCEnrichResponse(
         content_id=content_id,
         available_subtitle_languages=content.available_subtitle_languages,
-        enrichment_status=status,
+        enrichment_status=enrich_status,
         subtitle_details=subtitle_details,
+        transcript_source=transcript_source,
     )
 
 
@@ -161,21 +180,95 @@ async def _upsert_content(
         existing.updated_at = datetime.utcnow()
         await existing.save()
         return existing
+    source_provider = "youtube" if req.source_type == "youtube" else "byoc"
+    content_type = "live" if req.is_live else "vod"
     content = Content(
         title=req.title, year=req.year, duration=duration_str,
         thumbnail=req.thumbnail_url, backdrop=req.backdrop_url, genre=req.genre,
         stream_url=req.stream_url or "", source_id=req.external_id,
-        source_provider="byoc", content_type="vod", content_format="movie",
+        source_provider=source_provider, content_type=content_type,
+        content_format="movie",
         imdb_id=req.imdb_id, tmdb_id=req.tmdb_id,
     )
     await content.insert()
     return content
 
 
+def _extract_youtube_video_id(external_id: str) -> Optional[str]:
+    """Extract the YouTube video ID from the BYOC external_id format (yt-{sourceId}-{videoId})."""
+    parts = external_id.split("-", 2)
+    if len(parts) >= 3 and parts[0] == "yt":
+        return parts[2]
+    return None
+
+
+async def _fetch_youtube_transcript(
+    video_id: str, languages: List[str],
+) -> Tuple[Dict[str, SubtitleDetail], List[str], Optional[str]]:
+    """Fetch YouTube captions via youtube-transcript-api (zero API quota cost)."""
+    from youtube_transcript_api import YouTubeTranscriptApi
+    from youtube_transcript_api._errors import (
+        NoTranscriptFound,
+        TranscriptsDisabled,
+        VideoUnavailable,
+    )
+
+    details: Dict[str, SubtitleDetail] = {}
+    fetched: List[str] = []
+    transcript_source: Optional[str] = None
+    try:
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        for lang in languages:
+            try:
+                transcript = transcript_list.find_transcript([lang])
+                transcript_source = (
+                    "youtube_manual" if not transcript.is_generated
+                    else "youtube_auto_captions"
+                )
+                fetched.append(lang)
+                details[lang] = SubtitleDetail(
+                    language=lang, status="found", source=transcript_source,
+                )
+            except NoTranscriptFound:
+                try:
+                    generated = transcript_list.find_generated_transcript([lang])
+                    transcript_source = "youtube_auto_captions"
+                    fetched.append(lang)
+                    details[lang] = SubtitleDetail(
+                        language=lang, status="found",
+                        source="youtube_auto_captions",
+                    )
+                except NoTranscriptFound:
+                    details[lang] = SubtitleDetail(
+                        language=lang, status="not_found",
+                    )
+    except (TranscriptsDisabled, VideoUnavailable):
+        logger.warning("YouTube transcripts unavailable video_id=%s", video_id)
+        for lang in languages:
+            details[lang] = SubtitleDetail(
+                language=lang, status="transcripts_disabled",
+            )
+    except Exception:
+        logger.exception("YouTube transcript fetch failed video_id=%s", video_id)
+        for lang in languages:
+            details[lang] = SubtitleDetail(language=lang, status="error")
+    return details, fetched, transcript_source
+
+
 async def _fetch_subtitles(
     content_id: str, enrich_req: BYOCEnrichRequest,
-) -> Tuple[Dict[str, SubtitleDetail], List[str]]:
-    """Fetch subtitles for requested languages, return details and found list."""
+) -> Tuple[Dict[str, SubtitleDetail], List[str], Optional[str]]:
+    """Fetch subtitles for requested languages, return details, found list, and transcript source."""
+    if enrich_req.source_type == "youtube":
+        video_id = _extract_youtube_video_id(enrich_req.external_id)
+        if video_id:
+            return await _fetch_youtube_transcript(
+                video_id, enrich_req.subtitle_languages_requested,
+            )
+        logger.warning(
+            "Could not extract YouTube video ID from external_id=%s",
+            enrich_req.external_id,
+        )
     subtitle_svc = ExternalSubtitleService()
     details: Dict[str, SubtitleDetail] = {}
     fetched: List[str] = []
@@ -197,4 +290,4 @@ async def _fetch_subtitles(
         except Exception:
             logger.exception("Subtitle fetch failed content_id=%s lang=%s", content_id, lang)
             details[lang] = SubtitleDetail(language=lang, status="error")
-    return details, fetched
+    return details, fetched, None

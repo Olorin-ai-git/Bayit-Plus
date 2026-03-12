@@ -120,6 +120,9 @@ extension TVPlayerView {
                 throw StreamResolutionError.noURL
             }
             return url
+
+        case .youtubeVOD, .youtubeLive:
+            throw StreamResolutionError.noURL
         }
     }
 

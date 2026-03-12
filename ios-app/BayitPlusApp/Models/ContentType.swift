@@ -10,6 +10,8 @@ public enum ContentType: String, Hashable, Codable, Sendable {
     case radio
     case podcast
     case audiobook
+    case youtubeVOD
+    case youtubeLive
 
     /// Whether this content type belongs to the owner's private library.
     /// When `ownerMode` is false, content of these types should be filtered out.
@@ -17,7 +19,7 @@ public enum ContentType: String, Hashable, Codable, Sendable {
         switch self {
         case .movie, .series, .episode:
             return true
-        case .live, .liveTV, .radio, .podcast, .audiobook:
+        case .live, .liveTV, .radio, .podcast, .audiobook, .youtubeVOD, .youtubeLive:
             return false
         }
     }
@@ -39,8 +41,9 @@ public enum ContentType: String, Hashable, Codable, Sendable {
         case .episode: return "vod"
         case .podcast: return "podcast_episode"
         case .audiobook: return "audiobook"
-        case .live, .liveTV: return "live"
+        case .live, .liveTV, .youtubeLive: return "live"
         case .radio: return "radio"
+        case .youtubeVOD: return "vod"
         }
     }
 }

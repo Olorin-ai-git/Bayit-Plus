@@ -5802,11 +5802,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -11165,6 +11161,7 @@
     "audioAIOnly": "Solo Audio IA",
     "aiDubbing": "Doblaje IA",
     "aiSubtitles": "Subtitulos IA",
+    "aiInteractiveSubtitles": "Subtitulos Interactivos",
     "connectContent": "Conectar Contenido",
     "connectContentDesc": "Agrega tus fuentes de IPTV, Plex o YouTube",
     "removeSource": "Eliminar Fuente",
@@ -11326,7 +11323,10 @@
       "enrichFailed": "Error al analizar la fuente",
       "syncFailed": "Error al sincronizar la fuente",
       "normalizationFailed": "El procesamiento del contenido falló",
-      "normalizationPollFailed": "Se perdió la conexión durante el procesamiento"
+      "normalizationPollFailed": "Se perdió la conexión durante el procesamiento",
+      "authExpired": "Autorización expirada - se requiere reconexión",
+      "connectionError": "Error de conexión",
+      "reconnect": "Reconectar"
     },
     "ai": {
       "sparklesButton": "Funciones de IA",

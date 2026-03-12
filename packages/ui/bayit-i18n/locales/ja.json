@@ -11147,6 +11147,7 @@
     "audioAIOnly": "オーディオAIのみ",
     "aiDubbing": "AI吹き替え",
     "aiSubtitles": "AI字幕",
+    "aiInteractiveSubtitles": "インタラクティブ字幕",
     "connectContent": "コンテンツを接続",
     "connectContentDesc": "IPTV、Plex、またはYouTubeのソースを追加",
     "removeSource": "ソースを削除",
@@ -11308,7 +11309,10 @@
       "enrichFailed": "ソースの分析に失敗しました",
       "syncFailed": "ソースの同期に失敗しました",
       "normalizationFailed": "コンテンツの処理に失敗しました",
-      "normalizationPollFailed": "処理中に接続が失われました"
+      "normalizationPollFailed": "処理中に接続が失われました",
+      "authExpired": "認証の有効期限が切れました - 再接続が必要です",
+      "connectionError": "接続エラー",
+      "reconnect": "再接続"
     },
     "ai": {
       "sparklesButton": "AI機能",

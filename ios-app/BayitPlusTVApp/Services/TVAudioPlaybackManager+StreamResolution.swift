@@ -192,6 +192,8 @@
             case .audiobook: return .audiobook
             case .liveTV: return .live
             case .vod: return .movie
+            case .youtubeVOD: return .youtubeVOD
+            case .youtubeLive: return .youtubeLive
             }
         }
     }

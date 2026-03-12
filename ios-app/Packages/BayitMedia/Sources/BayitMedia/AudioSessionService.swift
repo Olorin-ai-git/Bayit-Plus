@@ -7,7 +7,6 @@ import Foundation
 /// Ported from mobile-app/ios/BayitPlus/AudioSessionManager.swift,
 /// removing RCT bridge dependencies and converting to async/await.
 public final class AudioSessionService: Sendable {
-
     private let logger = BayitLogger(category: "AudioSession")
 
     public init() {}
@@ -44,7 +43,7 @@ public final class AudioSessionService: Sendable {
     /// Configure audio session based on media content type.
     public func configure(for contentType: MediaContentType) {
         switch contentType {
-        case .liveTV, .vod:
+        case .liveTV, .vod, .youtubeVOD, .youtubeLive:
             configureForVideo()
         case .radio, .podcast, .audiobook:
             configureForAudio()
@@ -94,7 +93,7 @@ public final class AudioSessionService: Sendable {
                 "Audio session configured",
                 context: [
                     "category": category.rawValue,
-                    "mode": mode.rawValue
+                    "mode": mode.rawValue,
                 ]
             )
         } catch {

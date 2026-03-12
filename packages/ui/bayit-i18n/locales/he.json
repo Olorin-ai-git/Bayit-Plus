@@ -5802,11 +5802,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -11165,6 +11161,7 @@
     "audioAIOnly": "AI אודיו בלבד",
     "aiDubbing": "דיבוב AI",
     "aiSubtitles": "כתוביות AI",
+    "aiInteractiveSubtitles": "כתוביות אינטראקטיביות",
     "connectContent": "חבר תוכן",
     "connectContentDesc": "הוסף את מקורות IPTV, Plex או YouTube שלך",
     "removeSource": "הסר מקור",
@@ -11326,7 +11323,10 @@
       "enrichFailed": "נכשל לנתח את המקור",
       "syncFailed": "נכשל לסנכרן את המקור",
       "normalizationFailed": "עיבוד התוכן נכשל",
-      "normalizationPollFailed": "החיבור אבד במהלך העיבוד"
+      "normalizationPollFailed": "החיבור אבד במהלך העיבוד",
+      "authExpired": "ההרשאה פגה - יש צורך בחיבור מחדש",
+      "connectionError": "שגיאת חיבור",
+      "reconnect": "התחבר מחדש"
     },
     "ai": {
       "sparklesButton": "תכונות AI",

@@ -29,7 +29,7 @@ extension BYOCSourceManager {
         case .plex:
             await refreshPlexSource(source)
         case .youtube:
-            break
+            await refreshYouTubeSource(source)
         }
     }
 
@@ -146,11 +146,106 @@ extension BYOCSourceManager {
                 ))
             }
             plexItems.append(contentsOf: allItems)
+            markSourceActive(sourceId: source.id)
+            updateLastRefreshed(sourceId: source.id)
+        } catch let error as PlexAPIError {
+            handlePlexError(error, source: source)
+        } catch {
+            lastError = error.localizedDescription
+            sourceErrors[source.id] = .error
+            logger.error(
+                "Failed to refresh Plex source",
+                error: error,
+                context: ["sourceId": source.id]
+            )
+        }
+    }
+
+    private func handlePlexError(
+        _ error: PlexAPIError,
+        source: BYOCSourceConfig
+    ) {
+        switch error {
+        case let .httpError(statusCode) where statusCode == 401:
+            markSourceAuthExpired(sourceId: source.id)
+            logger.warning(
+                "Plex token expired",
+                context: ["sourceId": source.id]
+            )
+        default:
+            lastError = "\(error)"
+            sourceErrors[source.id] = .error
+            logger.error(
+                "Plex API error",
+                context: [
+                    "sourceId": source.id,
+                    "error": "\(error)",
+                ]
+            )
+        }
+    }
+
+    private func markSourceAuthExpired(sourceId: String) {
+        sourceErrors[sourceId] = .authExpired
+        guard let index = sources.firstIndex(where: { $0.id == sourceId })
+        else { return }
+        sources[index] = BYOCSourceConfig(
+            id: sources[index].id,
+            type: sources[index].type,
+            name: sources[index].name,
+            url: sources[index].url,
+            addedAt: sources[index].addedAt,
+            lastRefreshedAt: sources[index].lastRefreshedAt,
+            accountExpiry: sources[index].accountExpiry,
+            status: .authExpired
+        )
+        BYOCSourceStore.saveSources(sources)
+    }
+
+    private func markSourceActive(sourceId: String) {
+        sourceErrors.removeValue(forKey: sourceId)
+        guard let index = sources.firstIndex(where: { $0.id == sourceId }),
+              sources[index].status != .active
+        else { return }
+        sources[index] = BYOCSourceConfig(
+            id: sources[index].id,
+            type: sources[index].type,
+            name: sources[index].name,
+            url: sources[index].url,
+            addedAt: sources[index].addedAt,
+            lastRefreshedAt: sources[index].lastRefreshedAt,
+            accountExpiry: sources[index].accountExpiry,
+            status: .active
+        )
+        BYOCSourceStore.saveSources(sources)
+    }
+
+    func refreshYouTubeSource(_ source: BYOCSourceConfig) async {
+        guard let token = BYOCKeychainStore.retrieveToken(
+            forSourceId: source.id
+        ) else { return }
+        do {
+            let client = YouTubeAPIClient(accessToken: token)
+            let subs = try await client.fetchSubscriptions()
+            var allVideos: [YouTubeVideo] = []
+            for sub in subs.items.prefix(5) {
+                let vids = try await client.fetchChannelVideos(
+                    channelId: sub.channelId,
+                    maxResults: 10
+                )
+                allVideos.append(contentsOf: vids.items)
+            }
+            youtubeItems.removeAll { $0.sourceId == source.id }
+            let items = YouTubeContentAdapter.adaptAll(
+                videos: allVideos,
+                sourceId: source.id
+            )
+            youtubeItems.append(contentsOf: items)
             updateLastRefreshed(sourceId: source.id)
         } catch {
             lastError = error.localizedDescription
             logger.error(
-                "Failed to refresh Plex source",
+                "Failed to refresh YouTube source",
                 error: error,
                 context: ["sourceId": source.id]
             )
@@ -168,7 +263,8 @@ extension BYOCSourceManager {
             url: sources[index].url,
             addedAt: sources[index].addedAt,
             lastRefreshedAt: Date(),
-            accountExpiry: sources[index].accountExpiry
+            accountExpiry: sources[index].accountExpiry,
+            status: sources[index].status
         )
         BYOCSourceStore.saveSources(sources)
     }

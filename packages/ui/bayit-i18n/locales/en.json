@@ -5802,11 +5802,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",
@@ -11165,6 +11161,7 @@
     "audioAIOnly": "Audio AI Only",
     "aiDubbing": "AI Dubbing",
     "aiSubtitles": "AI Subtitles",
+    "aiInteractiveSubtitles": "Interactive Subtitles",
     "connectContent": "Connect Content",
     "connectContentDesc": "Add your IPTV, Plex, or YouTube sources",
     "removeSource": "Remove Source",
@@ -11328,6 +11325,9 @@
       "normalizationFailed": "Content processing failed",
       "normalizationPollFailed": "Lost connection during processing"
     },
+    "authExpired": "Authorization expired - reconnect required",
+    "connectionError": "Connection error",
+    "reconnect": "Reconnect",
     "ai": {
       "sparklesButton": "AI Features",
       "featuresTitle": "AI Features",

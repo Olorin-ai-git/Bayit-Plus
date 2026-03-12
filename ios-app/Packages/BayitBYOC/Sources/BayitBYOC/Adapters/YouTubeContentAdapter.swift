@@ -17,7 +17,7 @@ public enum YouTubeContentAdapter {
             sourceType: .youtube,
             sourceId: sourceId,
             streamURL: video.youtubeWebURL,
-            contentType: video.isLive ? .liveChannel : .video
+            contentType: video.isLive ? .youtubeLive : .youtubeVOD
         )
     }
 

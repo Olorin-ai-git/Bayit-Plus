@@ -4,7 +4,6 @@ import Foundation
 /// Handles content-specific stream fetching logic.
 @MainActor
 struct StreamResolver {
-
     private let mediaRepository: any MediaRepository
     private let contentRepository: any ContentRepository
     private let liveTVRepository: any LiveTVRepository
@@ -48,6 +47,9 @@ struct StreamResolver {
 
         case .audiobook:
             return try await resolveAudiobookStream(contentId: contentId)
+
+        case .youtubeVOD, .youtubeLive:
+            throw StreamResolutionError.noURL
         }
     }
 
@@ -57,7 +59,8 @@ struct StreamResolver {
 
         guard let streamURLStr = stream.url ?? channel.streamUrl,
               !streamURLStr.isEmpty,
-              let url = URL(string: streamURLStr) else {
+              let url = URL(string: streamURLStr)
+        else {
             throw StreamResolutionError.invalidURL
         }
 
@@ -78,7 +81,8 @@ struct StreamResolver {
 
         guard let streamURLStr = stream.url,
               !streamURLStr.isEmpty,
-              let url = URL(string: streamURLStr) else {
+              let url = URL(string: streamURLStr)
+        else {
             throw StreamResolutionError.invalidURL
         }
 
@@ -117,14 +121,15 @@ struct StreamResolver {
 
     private func resolveVODStream(
         contentId: String,
-        contentType: ContentType
+        contentType _: ContentType
     ) async throws -> ResolvedStream {
         let detail = try await contentRepository.fetchContentDetail(id: contentId)
         let stream = try await mediaRepository.fetchStream(contentId: contentId, quality: nil)
 
         guard let streamURLStr = stream.url ?? detail.streamUrl,
               !streamURLStr.isEmpty,
-              let url = URL(string: streamURLStr) else {
+              let url = URL(string: streamURLStr)
+        else {
             throw StreamResolutionError.invalidURL
         }
 
@@ -148,7 +153,8 @@ struct StreamResolver {
 
         guard let urlStr = streamURLStr,
               !urlStr.isEmpty,
-              let url = URL(string: urlStr) else {
+              let url = URL(string: urlStr)
+        else {
             throw StreamResolutionError.invalidURL
         }
 

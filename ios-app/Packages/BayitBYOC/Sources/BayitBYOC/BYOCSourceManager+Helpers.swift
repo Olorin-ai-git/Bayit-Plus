@@ -34,8 +34,10 @@ public extension BYOCSourceManager {
         if plexItems.contains(where: { $0.streamURL == url }) {
             return .capabilities(for: .plex)
         }
-        if youtubeItems.contains(where: { $0.streamURL == url }) {
-            return .capabilities(for: .youtube)
+        if let ytItem = youtubeItems.first(where: { $0.streamURL == url }) {
+            return BYOCCapabilities.youtubeCapabilities(
+                for: ytItem.contentType
+            )
         }
         return .none
     }

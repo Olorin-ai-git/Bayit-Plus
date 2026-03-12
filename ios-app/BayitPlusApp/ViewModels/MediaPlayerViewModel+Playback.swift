@@ -60,6 +60,8 @@ extension MediaPlayerViewModel {
         case .radio: return .radio
         case .podcast: return .podcast
         case .audiobook: return .audiobook
+        case .youtubeVOD: return .youtubeVOD
+        case .youtubeLive: return .youtubeLive
         }
     }
 

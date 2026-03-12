@@ -33,6 +33,8 @@ extension PlayerView {
         case .podcast: return .podcast
         case .audiobook: return .audiobook
         case .movie, .series, .episode: return .vod
+        case .youtubeVOD: return .youtubeVOD
+        case .youtubeLive: return .youtubeLive
         }
     }
 

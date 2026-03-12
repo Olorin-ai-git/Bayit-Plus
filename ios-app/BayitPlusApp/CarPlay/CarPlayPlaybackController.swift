@@ -10,7 +10,6 @@ import Foundation
 /// `CPNowPlayingTemplate.shared` which reads from `MPNowPlayingInfoCenter` automatically.
 @MainActor
 final class CarPlayPlaybackController {
-
     private let mediaPlayer: MediaPlayer
     private let streamResolver: StreamResolver
     private let nowPlayingService = NowPlayingService()
@@ -49,7 +48,7 @@ final class CarPlayPlaybackController {
         } catch {
             logger.error("Failed to start playback", error: error, context: [
                 "contentId": contentId,
-                "type": contentType.rawValue
+                "type": contentType.rawValue,
             ])
         }
     }
@@ -108,7 +107,7 @@ final class CarPlayPlaybackController {
         logger.info("Playback started", context: [
             "contentId": contentId,
             "type": contentType.rawValue,
-            "title": title
+            "title": title,
         ])
     }
 
@@ -126,6 +125,8 @@ final class CarPlayPlaybackController {
         case .audiobook: return .audiobook
         case .live, .liveTV: return .liveTV
         case .movie, .series, .episode: return .vod
+        case .youtubeVOD: return .youtubeVOD
+        case .youtubeLive: return .youtubeLive
         }
     }
 }
@@ -133,7 +134,6 @@ final class CarPlayPlaybackController {
 // MARK: - RemoteCommandDelegate
 
 extension CarPlayPlaybackController: RemoteCommandDelegate {
-
     func remoteCommandPlay() {
         mediaPlayer.play()
         nowPlayingService.updatePosition(

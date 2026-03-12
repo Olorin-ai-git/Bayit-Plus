@@ -32,13 +32,41 @@ public struct BYOCCapabilities: Sendable, Equatable {
         audioOverlayOnly: false
     )
 
+    public static let youtubeVOD = BYOCCapabilities(
+        dubbing: false,
+        liveSubtitles: false,
+        interactiveSubtitles: true,
+        trivia: false,
+        audioOverlayOnly: false
+    )
+
+    public static let youtubeLive = BYOCCapabilities(
+        dubbing: true,
+        liveSubtitles: true,
+        interactiveSubtitles: false,
+        trivia: true,
+        audioOverlayOnly: false
+    )
+
     /// Resolve capabilities for a source type.
     public static func capabilities(for sourceType: BYOCSourceType) -> BYOCCapabilities {
         switch sourceType {
         case .iptv, .xtream, .plex:
             return .full
         case .youtube:
-            return .audioOnly
+            return .youtubeVOD
+        }
+    }
+
+    /// Resolve capabilities for a YouTube item based on its content type.
+    public static func youtubeCapabilities(
+        for contentType: BYOCContentType
+    ) -> BYOCCapabilities {
+        switch contentType {
+        case .youtubeLive:
+            return .youtubeLive
+        default:
+            return .youtubeVOD
         }
     }
 }

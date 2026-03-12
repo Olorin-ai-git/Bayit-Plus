@@ -12,7 +12,7 @@
         let capabilities: BYOCCapabilities
 
         var body: some View {
-            if capabilities.dubbing || capabilities.audioOverlayOnly {
+            if hasAICapabilities {
                 HStack(spacing: TVDesignTokens.Spacing.xs) {
                     Image(systemName: badgeIcon)
                         .font(.system(size: TVDesignTokens.FontSize.xs))
@@ -25,6 +25,11 @@
                 .background(badgeColor.opacity(0.9))
                 .clipShape(Capsule())
             }
+        }
+
+        private var hasAICapabilities: Bool {
+            capabilities.dubbing || capabilities.audioOverlayOnly
+                || capabilities.interactiveSubtitles || capabilities.liveSubtitles
         }
 
         private var badgeIcon: String {
@@ -69,6 +74,12 @@
                     featureChip(
                         icon: "questionmark.circle",
                         label: localization.t("byoc.aiTrivia")
+                    )
+                }
+                if capabilities.interactiveSubtitles {
+                    featureChip(
+                        icon: "text.bubble",
+                        label: localization.t("byoc.aiInteractiveSubtitles")
                     )
                 }
                 if capabilities.audioOverlayOnly {

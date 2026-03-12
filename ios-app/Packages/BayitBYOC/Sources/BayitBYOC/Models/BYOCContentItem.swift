@@ -59,4 +59,6 @@ public enum BYOCContentType: String, Codable, Sendable {
     case episode
     case video
     case liveChannel
+    case youtubeVOD
+    case youtubeLive
 }

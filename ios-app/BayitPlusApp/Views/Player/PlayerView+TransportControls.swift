@@ -11,7 +11,7 @@ extension PlayerView {
         VStack {
             topBar
             Spacer()
-            if mediaContentType.isLive {
+            if mediaContentType.isLive || mediaContentType == .youtubeVOD {
                 glassAIFeaturesPanel
                     .padding(.bottom, DesignTokens.Spacing.sm)
             }
