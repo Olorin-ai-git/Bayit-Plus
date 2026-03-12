@@ -3,7 +3,7 @@ import Foundation
 
 /// YouTube Data API v3 client using OAuth access token.
 public actor YouTubeAPIClient {
-    public let accessToken: String
+    private let accessToken: String
     private let logger = BayitLogger(category: "YouTubeAPI")
     private static let baseURL = "https://www.googleapis.com/youtube/v3"
 
@@ -17,7 +17,7 @@ public actor YouTubeAPIClient {
         pageToken: String? = nil
     ) async throws -> YouTubePageResponse<YouTubeSubscription> {
         var params = "part=snippet&mine=true&maxResults=\(maxResults)"
-        if let pageToken { params += "&pageToken=\(pageToken)" }
+        if let pageToken { params += "&pageToken=\(encodeParam(pageToken))" }
 
         let data = try await get(path: "subscriptions", query: params)
         return try parseSubscriptions(data)
@@ -30,7 +30,7 @@ public actor YouTubeAPIClient {
         pageToken: String? = nil
     ) async throws -> YouTubePageResponse<YouTubeVideo> {
         var params = "part=snippet&channelId=\(channelId)&type=video&order=date&maxResults=\(maxResults)"
-        if let pageToken { params += "&pageToken=\(pageToken)" }
+        if let pageToken { params += "&pageToken=\(encodeParam(pageToken))" }
 
         let data = try await get(path: "search", query: params)
         return try parseSearchResults(data)
@@ -44,7 +44,7 @@ public actor YouTubeAPIClient {
     ) async throws -> YouTubePageResponse<YouTubeVideo> {
         let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
         var params = "part=snippet&q=\(encoded)&type=video&maxResults=\(maxResults)"
-        if let pageToken { params += "&pageToken=\(pageToken)" }
+        if let pageToken { params += "&pageToken=\(encodeParam(pageToken))" }
 
         let data = try await get(path: "search", query: params)
         return try parseSearchResults(data)
@@ -66,7 +66,7 @@ public actor YouTubeAPIClient {
         pageToken: String? = nil
     ) async throws -> YouTubePageResponse<YouTubeVideo> {
         var params = "part=snippet&playlistId=\(playlistId)&maxResults=\(maxResults)"
-        if let pageToken { params += "&pageToken=\(pageToken)" }
+        if let pageToken { params += "&pageToken=\(encodeParam(pageToken))" }
 
         let data = try await get(path: "playlistItems", query: params)
         return try parsePlaylistItems(data)
@@ -95,5 +95,11 @@ public actor YouTubeAPIClient {
         }
 
         return data
+    }
+
+    private func encodeParam(_ value: String) -> String {
+        value.addingPercentEncoding(
+            withAllowedCharacters: .urlQueryAllowed
+        ) ?? value
     }
 }

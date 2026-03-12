@@ -7,6 +7,7 @@ import Foundation
 @Observable
 public final class BYOCSourceManager: @unchecked Sendable {
     let logger = BayitLogger(category: "BYOCSourceManager")
+    private var refreshTask: Task<Void, Never>?
 
     public internal(set) var sources: [BYOCSourceConfig] = []
     public internal(set) var iptvChannels: [BYOCChannel] = []
@@ -48,7 +49,9 @@ public final class BYOCSourceManager: @unchecked Sendable {
     public init() {
         sources = BYOCSourceStore.loadSources()
         if !sources.isEmpty {
-            Task { await refreshAll() }
+            refreshTask = Task { [weak self] in
+                await self?.refreshAll()
+            }
         }
     }
 
@@ -65,14 +68,16 @@ public final class BYOCSourceManager: @unchecked Sendable {
             name: name,
             url: url
         )
+        sources.append(config)
+        BYOCSourceStore.saveSources(sources)
+
         let channels = try await M3UPlaylistFetcher.fetch(
             url: url,
             sourceId: config.id
         )
-        sources.append(config)
         iptvChannels.append(contentsOf: channels)
         iptvGroups = M3UParser.groupChannels(iptvChannels)
-        BYOCSourceStore.saveSources(sources)
+        updateLastRefreshed(sourceId: config.id)
         logger.info(
             "Added IPTV source",
             context: ["name": name, "channels": "\(channels.count)"]
@@ -103,6 +108,9 @@ public final class BYOCSourceManager: @unchecked Sendable {
         let credential = "\(serverURL)|\(username)|\(password)"
         _ = BYOCKeychainStore.storeToken(credential, forSourceId: config.id)
 
+        sources.append(config)
+        BYOCSourceStore.saveSources(sources)
+
         async let liveCategories = client.fetchLiveCategories()
         async let liveStreams = client.fetchLiveStreams()
         async let vodCategories = client.fetchVODCategories()
@@ -126,12 +134,11 @@ public final class BYOCSourceManager: @unchecked Sendable {
             sourceId: config.id
         )
 
-        sources.append(config)
         xtreamChannels.append(contentsOf: channels)
         xtreamVODItems.append(contentsOf: vodItems)
         xtreamSeriesItems.append(contentsOf: seriesItems)
         iptvGroups = M3UParser.groupChannels(iptvChannels + xtreamChannels)
-        BYOCSourceStore.saveSources(sources)
+        updateLastRefreshed(sourceId: config.id)
         logger.info(
             "Added Xtream source",
             context: [
@@ -165,6 +172,9 @@ public final class BYOCSourceManager: @unchecked Sendable {
         )
         _ = BYOCKeychainStore.storeToken(authToken, forSourceId: config.id)
 
+        sources.append(config)
+        BYOCSourceStore.saveSources(sources)
+
         let libraries = try await client.fetchLibraries(baseURL: resolvedURL)
 
         var allItems: [BYOCContentItem] = []
@@ -182,9 +192,8 @@ public final class BYOCSourceManager: @unchecked Sendable {
             allItems.append(contentsOf: converted)
         }
 
-        sources.append(config)
         plexItems.append(contentsOf: allItems)
-        BYOCSourceStore.saveSources(sources)
+        updateLastRefreshed(sourceId: config.id)
         logger.info(
             "Added Plex source",
             context: ["name": name, "items": "\(allItems.count)"]
@@ -207,19 +216,25 @@ public final class BYOCSourceManager: @unchecked Sendable {
             )
         }
 
-        let client = YouTubeAPIClient(accessToken: accessToken)
-        let subs = try await client.fetchSubscriptions()
-        var allVideos: [YouTubeVideo] = []
-        for sub in subs.items.prefix(5) {
-            let vids = try await client.fetchChannelVideos(channelId: sub.channelId, maxResults: 10)
-            allVideos.append(contentsOf: vids.items)
-        }
-
-        let items = YouTubeContentAdapter.adaptAll(videos: allVideos, sourceId: config.id)
         sources.append(config)
-        youtubeItems.append(contentsOf: items)
         BYOCSourceStore.saveSources(sources)
-        logger.info("Added YouTube source", context: ["name": name, "items": "\(items.count)"])
+        logger.info(
+            "YouTube source saved, fetching content",
+            context: ["name": name]
+        )
+
+        let client = YouTubeAPIClient(accessToken: accessToken)
+        let allVideos = try await fetchYouTubeVideos(client: client)
+
+        let items = YouTubeContentAdapter.adaptAll(
+            videos: allVideos, sourceId: config.id
+        )
+        youtubeItems.append(contentsOf: items)
+        updateLastRefreshed(sourceId: config.id)
+        logger.info(
+            "Added YouTube source",
+            context: ["name": name, "items": "\(items.count)"]
+        )
         Task { await triggerInitialEnrichment(items: items) }
     }
 
@@ -253,9 +268,9 @@ public final class BYOCSourceManager: @unchecked Sendable {
             BYOCSourceStore.saveSources(sources)
         }
 
-        await refreshPlexSource(
-            sources.first { $0.id == sourceId }!
-        )
+        if let updatedSource = sources.first(where: { $0.id == sourceId }) {
+            await refreshPlexSource(updatedSource)
+        }
         logger.info(
             "Re-authenticated Plex source",
             context: ["sourceId": sourceId]
@@ -339,5 +354,78 @@ public final class BYOCSourceManager: @unchecked Sendable {
             context: ["count": "\(batch.count)"]
         )
         await queue.enrichBatch(batch)
+    }
+
+    // MARK: - YouTube Content Discovery
+
+    /// Fetch YouTube videos using subscriptions first, then playlists
+    /// as fallback, then search as last resort.
+    func fetchYouTubeVideos(
+        client: YouTubeAPIClient
+    ) async throws -> [YouTubeVideo] {
+        var allVideos: [YouTubeVideo] = []
+
+        do {
+            let subs = try await client.fetchSubscriptions()
+            for sub in subs.items.prefix(5) {
+                do {
+                    let vids = try await client.fetchChannelVideos(
+                        channelId: sub.channelId, maxResults: 10
+                    )
+                    allVideos.append(contentsOf: vids.items)
+                } catch {
+                    logger.warning(
+                        "Failed to fetch channel videos",
+                        context: ["channelId": sub.channelId]
+                    )
+                }
+            }
+        } catch {
+            logger.warning(
+                "Subscriptions unavailable, trying playlists",
+                context: ["error": "\(error)"]
+            )
+        }
+
+        if allVideos.isEmpty {
+            do {
+                logger.info("Trying playlists fallback")
+                let playlists = try await client.fetchPlaylists(
+                    maxResults: 10
+                )
+                for playlist in playlists.items.prefix(5) {
+                    do {
+                        let vids = try await client.fetchPlaylistItems(
+                            playlistId: playlist.id, maxResults: 10
+                        )
+                        allVideos.append(contentsOf: vids.items)
+                    } catch {
+                        logger.warning(
+                            "Failed to fetch playlist items",
+                            context: ["playlistId": playlist.id]
+                        )
+                    }
+                }
+            } catch {
+                logger.warning(
+                    "Playlists unavailable, trying search",
+                    context: ["error": "\(error)"]
+                )
+            }
+        }
+
+        if allVideos.isEmpty {
+            logger.info("Trying search fallback")
+            let results = try await client.search(
+                query: "trending", maxResults: 25
+            )
+            allVideos.append(contentsOf: results.items)
+        }
+
+        logger.info(
+            "YouTube video discovery complete",
+            context: ["count": "\(allVideos.count)"]
+        )
+        return allVideos
     }
 }

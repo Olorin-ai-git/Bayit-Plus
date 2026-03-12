@@ -5801,7 +5801,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -11372,7 +11376,8 @@
         "button": "Confirmar",
         "cancel": "Cancelar"
       }
-    }
+    },
+    "youtubeCodeCopied": "Codigo copiado - toca para pegar"
   },
   "a11y": {
     "openProfile": "{{name}}, abrir perfil",

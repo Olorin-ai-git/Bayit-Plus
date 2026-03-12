@@ -11358,7 +11358,8 @@
         "button": "確認",
         "cancel": "キャンセル"
       }
-    }
+    },
+    "youtubeCodeCopied": "コードをコピーしました - タップして貼り付け"
   },
   "a11y": {
     "openProfile": "{{name}}、プロフィールを開く",

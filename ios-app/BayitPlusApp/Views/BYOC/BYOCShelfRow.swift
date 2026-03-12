@@ -70,13 +70,14 @@ struct BYOCShelfRow: View {
     private func byocCard(item: BYOCContentItem) -> some View {
         let enrichment = byocManager.enrichmentResult(for: item)
         let progress = watchProgress(for: item, enrichment: enrichment)
+        let isLandscape = item.sourceType == .youtube
         return BYOCMovieCard(
             item: item,
             enrichmentResult: enrichment,
             watchProgress: progress,
             onTap: { coordinator.navigate(to: .byocDetail(item: item)) }
         )
-        .frame(width: 140)
+        .frame(width: isLandscape ? 260 : 140)
         .task { await byocManager.enrichIfNeeded(item) }
     }
 

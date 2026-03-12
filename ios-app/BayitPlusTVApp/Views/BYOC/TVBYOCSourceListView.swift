@@ -27,10 +27,10 @@
                     headerSection
                     ScrollView {
                         VStack(spacing: TVDesignTokens.Spacing.lg) {
+                            youtubeSection
                             iptvSection
                             xtreamSection
                             plexSection
-                            youtubeSection
                             existingSourcesList
                         }
                         .padding(TVDesignTokens.Spacing.md)

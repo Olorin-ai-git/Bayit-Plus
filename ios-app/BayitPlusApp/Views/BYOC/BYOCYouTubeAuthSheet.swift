@@ -16,6 +16,7 @@ struct BYOCYouTubeAuthSheet: View {
     @State private var error: String?
     @State private var generateInteractionMoments = false
     @State private var pollTask: Task<Void, Never>?
+    @State private var codeCopied = false
 
     private let logger = BayitLogger(category: "BYOCYouTubeAuth")
 
@@ -68,13 +69,32 @@ struct BYOCYouTubeAuthSheet: View {
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            Link(code.verificationUrl, destination: URL(string: code.verificationUrl)!)
-                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+            if let linkURL = verificationURL(for: code) {
+                Link(code.verificationUrl, destination: linkURL)
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+            } else {
+                Text(code.verificationUrl)
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+            }
 
             Text(code.userCode)
                 .font(.system(size: 40, weight: .bold, design: .monospaced))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .tracking(6)
+                .onTapGesture {
+                    UIPasteboard.general.string = code.userCode
+                    codeCopied = true
+                }
+
+            if codeCopied {
+                Label(
+                    localization.t("byoc.youtubeCodeCopied"),
+                    systemImage: "doc.on.clipboard.fill"
+                )
+                .font(.system(size: DesignTokens.FontSize.xs))
+                .foregroundStyle(DesignTokens.Success.default)
+            }
 
             if isPolling {
                 HStack(spacing: DesignTokens.Spacing.sm) {
@@ -132,6 +152,20 @@ struct BYOCYouTubeAuthSheet: View {
         }
     }
 
+    private func verificationURL(
+        for code: GoogleDeviceCode
+    ) -> URL? {
+        guard var components = URLComponents(
+            string: code.verificationUrl
+        ) else {
+            return URL(string: code.verificationUrl)
+        }
+        components.queryItems = [
+            URLQueryItem(name: "user_code", value: code.userCode),
+        ]
+        return components.url
+    }
+
     private func requestCode() async {
         guard deviceCode == nil else { return }
 
@@ -141,6 +175,8 @@ struct BYOCYouTubeAuthSheet: View {
         )
         do {
             let code = try await authService.requestDeviceCode()
+            UIPasteboard.general.string = code.userCode
+            codeCopied = true
             deviceCode = code
             startPolling(authService: authService, code: code)
         } catch is CancellationError {

@@ -11376,7 +11376,8 @@
         "button": "Confirmer",
         "cancel": "Annuler"
       }
-    }
+    },
+    "youtubeCodeCopied": "Code copie - appuyez pour coller"
   },
   "a11y": {
     "openProfile": "{{name}}, ouvrir le profil",

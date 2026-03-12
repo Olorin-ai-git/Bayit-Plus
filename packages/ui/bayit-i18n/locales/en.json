@@ -5801,7 +5801,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -11372,7 +11376,8 @@
         "button": "Confirm",
         "cancel": "Cancel"
       }
-    }
+    },
+    "youtubeCodeCopied": "Code copied to clipboard - tap to paste"
   },
   "a11y": {
     "openProfile": "{{name}}, open profile",

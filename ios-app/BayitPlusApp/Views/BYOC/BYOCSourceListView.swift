@@ -84,6 +84,13 @@ struct BYOCSourceListView: View {
     private var addSourceButtons: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             sourceRow(
+                icon: "play.rectangle.fill",
+                title: localization.t("byoc.addYouTube"),
+                subtitle: localization.t("byoc.youtubeConnectDesc"),
+                color: .red
+            ) { showYouTubeAuth = true }
+
+            sourceRow(
                 icon: "antenna.radiowaves.left.and.right",
                 title: localization.t("byoc.addIPTV"),
                 subtitle: localization.t("byoc.enterURL"),
@@ -103,13 +110,6 @@ struct BYOCSourceListView: View {
                 subtitle: localization.t("byoc.plexConnectDesc"),
                 color: .orange
             ) { showPlexAuth = true }
-
-            sourceRow(
-                icon: "play.rectangle.fill",
-                title: localization.t("byoc.addYouTube"),
-                subtitle: localization.t("byoc.youtubeConnectDesc"),
-                color: .red
-            ) { showYouTubeAuth = true }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

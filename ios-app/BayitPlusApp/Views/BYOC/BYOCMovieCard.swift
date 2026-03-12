@@ -12,12 +12,21 @@ struct BYOCMovieCard: View {
 
     @Environment(LocalizationManager.self) private var localization
 
+    private var isLandscape: Bool {
+        item.sourceType == .youtube
+    }
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 0) {
                 posterImage
-                    .aspectRatio(2 / 3, contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                    .aspectRatio(
+                        isLandscape ? 16.0 / 9.0 : 2.0 / 3.0,
+                        contentMode: .fit
+                    )
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    )
                     .overlay(alignment: .bottomTrailing) { subtitlePill }
                     .overlay(alignment: .topTrailing) { sourceBadge }
                     .overlay(alignment: .topLeading) { aiCapabilitiesBadge }
@@ -28,7 +37,9 @@ struct BYOCMovieCard: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(item.title)
-                        .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                        .font(.system(
+                            size: DesignTokens.FontSize.sm, weight: .semibold
+                        ))
                         .foregroundColor(DesignTokens.Text.primary)
                         .lineLimit(2)
 

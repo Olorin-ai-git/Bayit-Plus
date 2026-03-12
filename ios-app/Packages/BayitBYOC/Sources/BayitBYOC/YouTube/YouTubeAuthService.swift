@@ -108,7 +108,16 @@ public actor YouTubeAuthService {
         )
         request.httpBody = body.data(using: .utf8)
 
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw YouTubeError.invalidResponse
+        }
+        guard http.statusCode == 200 else {
+            if http.statusCode >= 500 {
+                throw YouTubeError.httpError(statusCode: http.statusCode)
+            }
+            throw YouTubeError.authorizationExpired
+        }
         guard let json = try? JSONSerialization.jsonObject(
             with: data
         ) as? [String: Any],
@@ -140,7 +149,13 @@ public actor YouTubeAuthService {
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = body.data(using: .utf8)
 
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw YouTubeError.invalidResponse
+        }
+        if http.statusCode >= 500 {
+            throw YouTubeError.httpError(statusCode: http.statusCode)
+        }
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw YouTubeError.invalidResponse
         }

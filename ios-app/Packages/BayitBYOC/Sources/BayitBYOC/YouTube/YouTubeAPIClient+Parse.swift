@@ -2,9 +2,9 @@ import Foundation
 
 extension YouTubeAPIClient {
     func parseSubscriptions(_ data: Data) throws -> YouTubePageResponse<YouTubeSubscription> {
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let items = json["items"] as? [[String: Any]]
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { throw YouTubeError.invalidResponse }
+        let items = json["items"] as? [[String: Any]] ?? []
 
         let subs = items.compactMap { item -> YouTubeSubscription? in
             guard let snippet = item["snippet"] as? [String: Any],
@@ -28,9 +28,9 @@ extension YouTubeAPIClient {
     }
 
     func parseSearchResults(_ data: Data) throws -> YouTubePageResponse<YouTubeVideo> {
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let items = json["items"] as? [[String: Any]]
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { throw YouTubeError.invalidResponse }
+        let items = json["items"] as? [[String: Any]] ?? []
 
         let videos = items.compactMap { item -> YouTubeVideo? in
             guard let id = item["id"] as? [String: Any],
@@ -58,9 +58,9 @@ extension YouTubeAPIClient {
     }
 
     func parsePlaylistItems(_ data: Data) throws -> YouTubePageResponse<YouTubeVideo> {
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let items = json["items"] as? [[String: Any]]
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { throw YouTubeError.invalidResponse }
+        let items = json["items"] as? [[String: Any]] ?? []
 
         let videos = items.compactMap { item -> YouTubeVideo? in
             guard let snippet = item["snippet"] as? [String: Any],
@@ -87,9 +87,9 @@ extension YouTubeAPIClient {
     }
 
     func parsePlaylists(_ data: Data) throws -> YouTubePageResponse<YouTubePlaylist> {
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let items = json["items"] as? [[String: Any]]
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { throw YouTubeError.invalidResponse }
+        let items = json["items"] as? [[String: Any]] ?? []
 
         let playlists = items.compactMap { item -> YouTubePlaylist? in
             guard let id = item["id"] as? String,
@@ -129,9 +129,10 @@ extension YouTubeAPIClient {
         (json["pageInfo"] as? [String: Any])?["totalResults"] as? Int ?? 0
     }
 
+    private static let iso8601Formatter = ISO8601DateFormatter()
+
     func parseDate(_ str: String?) -> Date? {
         guard let str else { return nil }
-        let formatter = ISO8601DateFormatter()
-        return formatter.date(from: str)
+        return Self.iso8601Formatter.date(from: str)
     }
 }

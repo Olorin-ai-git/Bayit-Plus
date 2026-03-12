@@ -2,6 +2,9 @@ import BayitCore
 import Foundation
 
 extension BYOCSourceManager {
+    /// Tracks in-flight token refresh requests to prevent races.
+    private static var refreshInProgress: Set<String> = []
+
     // MARK: - Refresh
 
     public func refreshAll() async {
@@ -57,9 +60,25 @@ extension BYOCSourceManager {
     func refreshXtreamSource(_ source: BYOCSourceConfig) async {
         guard let credential = BYOCKeychainStore.retrieveToken(
             forSourceId: source.id
-        ) else { return }
+        ) else {
+            sourceErrors[source.id] = .error
+            lastError = "Missing Xtream credentials"
+            logger.warning(
+                "Missing Xtream credential in keychain",
+                context: ["sourceId": source.id]
+            )
+            return
+        }
         let parts = credential.split(separator: "|", maxSplits: 2)
-        guard parts.count == 3 else { return }
+        guard parts.count == 3 else {
+            sourceErrors[source.id] = .error
+            lastError = "Malformed Xtream credentials"
+            logger.warning(
+                "Malformed Xtream credential format",
+                context: ["sourceId": source.id]
+            )
+            return
+        }
         let serverURL = String(parts[0])
         let username = String(parts[1])
         let password = String(parts[2])
@@ -123,9 +142,18 @@ extension BYOCSourceManager {
                 clientId: plexClientId
             )
             let servers = try await client.discoverServers()
-            guard let server = servers.first(where: {
-                $0.baseURL == urlStr
-            }) ?? servers.first else { return }
+            let matchedServer = servers.first { $0.baseURL == urlStr }
+            if matchedServer == nil, let fallback = servers.first {
+                logger.warning(
+                    "Plex server changed, falling back to first available",
+                    context: [
+                        "sourceId": source.id,
+                        "expected": urlStr,
+                        "fallback": fallback.baseURL,
+                    ]
+                )
+            }
+            guard let server = matchedServer ?? servers.first else { return }
 
             let resolvedURL = try await client.resolveBaseURL(server: server)
 
@@ -247,15 +275,9 @@ extension BYOCSourceManager {
         accessToken: String
     ) async throws {
         let client = YouTubeAPIClient(accessToken: accessToken)
-        let subs = try await client.fetchSubscriptions()
-        var allVideos: [YouTubeVideo] = []
-        for sub in subs.items.prefix(5) {
-            let vids = try await client.fetchChannelVideos(
-                channelId: sub.channelId,
-                maxResults: 10
-            )
-            allVideos.append(contentsOf: vids.items)
-        }
+        let allVideos = try await fetchYouTubeVideos(
+            client: client
+        )
         youtubeItems.removeAll { $0.sourceId == source.id }
         let items = YouTubeContentAdapter.adaptAll(
             videos: allVideos,
@@ -270,7 +292,7 @@ extension BYOCSourceManager {
         source: BYOCSourceConfig
     ) async {
         switch error {
-        case .httpError(statusCode: 401):
+        case .httpError(statusCode: 401), .httpError(statusCode: 403):
             if let refreshed = await tryYouTubeTokenRefresh(
                 source: source
             ) {
@@ -289,7 +311,14 @@ extension BYOCSourceManager {
             }
             markSourceAuthExpired(sourceId: source.id)
             logger.warning(
-                "YouTube token expired",
+                "YouTube token expired or revoked",
+                context: ["sourceId": source.id]
+            )
+        case .quotaExceeded:
+            sourceErrors[source.id] = .error
+            lastError = "YouTube API quota exceeded. Try again later"
+            logger.warning(
+                "YouTube API quota exceeded, skipping refresh",
                 context: ["sourceId": source.id]
             )
         default:
@@ -308,6 +337,16 @@ extension BYOCSourceManager {
     private func tryYouTubeTokenRefresh(
         source: BYOCSourceConfig
     ) async -> String? {
+        guard !Self.refreshInProgress.contains(source.id) else {
+            logger.info(
+                "YouTube refresh already in progress, skipping",
+                context: ["sourceId": source.id]
+            )
+            return BYOCKeychainStore.retrieveToken(forSourceId: source.id)
+        }
+        Self.refreshInProgress.insert(source.id)
+        defer { Self.refreshInProgress.remove(source.id) }
+
         guard let refreshToken = BYOCKeychainStore.retrieveRefreshToken(
             forSourceId: source.id
         ) else { return nil }
