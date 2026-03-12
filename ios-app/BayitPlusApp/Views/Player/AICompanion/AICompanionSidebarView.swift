@@ -57,7 +57,7 @@
             HStack(spacing: DesignTokens.Spacing.xs) {
                 ForEach(AICompanionViewModel.Tab.allCases, id: \.self) { tab in
                     GlassButton(
-                        tab.rawValue,
+                        localization.t(tab.localizationKey),
                         variant: viewModel.selectedTab == tab ? .primary : .ghost,
                         size: .small
                     ) {

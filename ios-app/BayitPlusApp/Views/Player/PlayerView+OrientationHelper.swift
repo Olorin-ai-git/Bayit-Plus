@@ -90,6 +90,12 @@ extension PlayerView {
             }
             Task { await initializeInteractiveMoments() }
 
+            if culturalContextVM == nil {
+                culturalContextVM = CulturalContextViewModel(
+                    client: repositories.apiClient
+                )
+            }
+
             if talkBackVM == nil {
                 let vm = TalkBackViewModel(
                     repository: repositories.talkBack

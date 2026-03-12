@@ -5796,17 +5796,8 @@
     },
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -6102,7 +6093,9 @@
       "togglePanel": "切换 AI 面板",
       "translate": "翻译",
       "trivia": "问答",
-      "triviaToggle": "[zh] Trivia"
+      "triviaToggle": "[zh] Trivia",
+      "catchUp": "快速回顾",
+      "sceneSearch": "场景搜索"
     },
     "catchup": {
       "description": "错过了开头？获取 AI 生成的剧情摘要。",
@@ -6119,6 +6112,8 @@
       "quizStart": "开始测验",
       "quizTitle": "准备好测试您的知识了吗？",
       "quizTryAgain": "重试",
+      "quizNext": "下一题",
+      "quizProgress": "第 {{current}} 题，共 {{total}} 题",
       "tabContext": "上下文",
       "tabQuiz": "测验",
       "tabVocabulary": "词汇",
@@ -6132,6 +6127,7 @@
       "goBack": "返回",
       "navigateBack": "返回导航",
       "on": "ON",
+      "off": "关",
       "pause": "暂停",
       "play": "播放",
       "preview": "预览",
@@ -7871,7 +7867,16 @@
       "engrew": "英希混合",
       "heblish": "希伯来英语混合",
       "shoresh": "词根",
-      "standard": "标准"
+      "standard": "标准",
+      "nikud": "尼库德",
+      "grammar_flip": "语法翻转",
+      "slang_synthesis": "俚语合成",
+      "nikud_description": "在字幕文本中添加希伯来元音符号（尼库德），使阅读和发音更加准确。",
+      "shoresh_description": "在字幕中突出显示希伯来词根（shoreshim），帮助理解词语来源和规律。",
+      "heblish_description": "将希伯来字幕音译为拉丁字母，以便用拉丁字母表读取希伯来发音。",
+      "engrew_description": "用希伯来字母书写英语单词，帮助希伯来语读者以语音方式跟随英语对话。",
+      "grammar_flip_description": "将希伯来词汇与英语句子结构融合，打造独特的双语学习体验。",
+      "slang_synthesis_description": "混合以色列和美国俚语表达，打造有趣的文化融合字幕轨道。"
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "搜索外部字幕",
@@ -7882,7 +7887,33 @@
     "primary_language": "主要语言",
     "secondary_language": "次要语言",
     "layout_mode": "布局模式",
-    "interactive_title": "交互式字幕"
+    "interactive_title": "交互式字幕",
+    "layout": {
+      "stacked": "堆叠",
+      "sideBySide": "并排"
+    },
+    "language": {
+      "en": "英语",
+      "he": "希伯来语",
+      "es": "西班牙语",
+      "ar": "阿拉伯语",
+      "ru": "俄语",
+      "fr": "法语",
+      "de": "德语",
+      "pt": "葡萄牙语",
+      "it": "意大利语"
+    },
+    "picker": {
+      "regularTitle": "标准希伯来语",
+      "regularDescription": "不带元音符号的标准希伯来文",
+      "nikudTitle": "尼库德（元音符号）",
+      "nikudDescription": "添加元音符号以便于阅读",
+      "shoreshTitle": "词根（词根词）",
+      "shoreshDescription": "词根字母高亮显示，辅助语言学习",
+      "heblishTitle": "希英混合（英语混合）",
+      "heblishDescription": "希伯来语与英语单词混合"
+    },
+    "shoreshRootAccessibilityLabel": "{{words}} 中的词根字母已高亮显示"
   },
   "support": {
     "title": "支持中心",
@@ -11678,7 +11709,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "语言比例",
-    "wordsLearned": "已学单词"
+    "wordsLearned": "已学单词",
+    "on": "双语桥梁已开启",
+    "off": "双语桥梁已关闭",
+    "active": "活跃",
+    "accessibilityLabel": "双语桥梁",
+    "accessibilityEnabled": "已启用",
+    "accessibilityDisabled": "已禁用",
+    "accessibilityHint": "按选择键切换双语配音"
   },
   "coupons": {
     "noneAvailable": "没有可用的优惠券",
@@ -11734,7 +11772,8 @@
     "emptyHint": "点击字幕中的单词来保存",
     "newWords": "新单词",
     "reviewedWords": "已复习的单词",
-    "close": "关闭"
+    "close": "关闭",
+    "seenTimes": "见过 {{count}} 次"
   },
   "wallet": {
     "earned": "已赚取",

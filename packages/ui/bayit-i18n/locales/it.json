@@ -5802,11 +5802,7 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": [
-        "Canali in diretta",
-        "Assistente AI",
-        "Visione offline"
-      ]
+      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
     },
     "premium": {
       "name": "Plus",
@@ -6102,7 +6098,9 @@
       "togglePanel": "Attiva/Disattiva pannello IA",
       "translate": "Traduci",
       "trivia": "Curiosità",
-      "triviaToggle": "[it] Trivia"
+      "triviaToggle": "[it] Trivia",
+      "catchUp": "Recupera",
+      "sceneSearch": "Cerca scena"
     },
     "catchup": {
       "description": "Hai perso l'inizio? Ottieni un riassunto generato dall'IA di quello che è successo finora.",
@@ -6119,6 +6117,8 @@
       "quizStart": "Inizia il quiz",
       "quizTitle": "Pronto a testare le tue conoscenze?",
       "quizTryAgain": "Riprova",
+      "quizNext": "Domanda successiva",
+      "quizProgress": "Domanda {{current}} di {{total}}",
       "tabContext": "Contesto",
       "tabQuiz": "Quiz",
       "tabVocabulary": "Vocabolario",
@@ -6132,6 +6132,7 @@
       "goBack": "Indietro",
       "navigateBack": "Torna indietro",
       "on": "ON",
+      "off": "Disattivo",
       "pause": "Pausa",
       "play": "Riproduci",
       "preview": "Anteprima",
@@ -7871,7 +7872,16 @@
       "engrew": "Engrew",
       "heblish": "Heblish",
       "shoresh": "Shoresh",
-      "standard": "Standard"
+      "standard": "Standard",
+      "nikud": "Nikud",
+      "grammar_flip": "Capovolgimento Grammaticale",
+      "slang_synthesis": "Sintesi dello Slang",
+      "nikud_description": "Aggiunge segni di vocalizzazione ebraica (nikkud) al testo dei sottotitoli per facilitare la lettura e la pronuncia.",
+      "shoresh_description": "Evidenzia le radici ebraiche (shoreshim) nei sottotitoli per comprendere le origini e i modelli delle parole.",
+      "heblish_description": "Traslittera i sottotitoli ebraici in lettere latine per leggere i suoni ebraici con l'alfabeto latino.",
+      "engrew_description": "Scrive parole inglesi con lettere ebraiche per aiutare i lettori ebraici a seguire foneticamente i dialoghi in inglese.",
+      "grammar_flip_description": "Mescola il vocabolario ebraico con la struttura delle frasi inglesi per un'esperienza di apprendimento bilingue unica.",
+      "slang_synthesis_description": "Mescola espressioni gergali israeliane e americane per una traccia di sottotitoli divertente e culturalmente mista."
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "Cerca sottotitoli esterni",
@@ -7882,7 +7892,33 @@
     "primary_language": "Lingua Principale",
     "secondary_language": "Lingua Secondaria",
     "layout_mode": "Modalità layout",
-    "interactive_title": "Sottotitoli Interattivi"
+    "interactive_title": "Sottotitoli Interattivi",
+    "layout": {
+      "stacked": "Impilato",
+      "sideBySide": "Fianco a fianco"
+    },
+    "language": {
+      "en": "Inglese",
+      "he": "Ebraico",
+      "es": "Spagnolo",
+      "ar": "Arabo",
+      "ru": "Russo",
+      "fr": "Francese",
+      "de": "Tedesco",
+      "pt": "Portoghese",
+      "it": "Italiano"
+    },
+    "picker": {
+      "regularTitle": "Ebraico Regolare",
+      "regularDescription": "Testo ebraico standard senza segni vocalici",
+      "nikudTitle": "Nikud (Segni Vocalici)",
+      "nikudDescription": "Segni vocalici aggiunti per facilitare la lettura",
+      "shoreshTitle": "Shoresh (Parole Radice)",
+      "shoreshDescription": "Lettere radice evidenziate per l'apprendimento",
+      "heblishTitle": "Heblish (Misto Inglese)",
+      "heblishDescription": "Ebraico con parole inglesi mescolate"
+    },
+    "shoreshRootAccessibilityLabel": "Lettere radice evidenziate in {{words}}"
   },
   "support": {
     "title": "Centro assistenza",
@@ -11678,7 +11714,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "Rapporto lingua",
-    "wordsLearned": "parole imparate"
+    "wordsLearned": "parole imparate",
+    "on": "Ponte bilingue attivo",
+    "off": "Ponte bilingue disattivo",
+    "active": "Attivo",
+    "accessibilityLabel": "Ponte bilingue",
+    "accessibilityEnabled": "Abilitato",
+    "accessibilityDisabled": "Disabilitato",
+    "accessibilityHint": "Premi seleziona per attivare il doppiaggio bilingue"
   },
   "coupons": {
     "noneAvailable": "Nessun coupon disponibile",
@@ -11734,7 +11777,8 @@
     "emptyHint": "Tocca le parole nei sottotitoli per salvarle",
     "newWords": "Nuove parole",
     "reviewedWords": "Parole revisionate",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "seenTimes": "visto {{count}} volte"
   },
   "wallet": {
     "earned": "Guadagnati",

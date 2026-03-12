@@ -80,7 +80,7 @@
                 vm.selectTab(tab)
                 focusedTab = tab
             } label: {
-                Text(tab.rawValue)
+                Text(localization.t(tab.localizationKey))
                     .font(.system(size: TVDesignTokens.FontSize.lg, weight: vm.selectedTab == tab ? .semibold : .regular))
                     .foregroundStyle(vm.selectedTab == tab ? DesignTokens.Primary.p400 : DesignTokens.Text.secondary)
                     .padding(.horizontal, TVDesignTokens.Spacing.lg)

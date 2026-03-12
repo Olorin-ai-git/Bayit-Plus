@@ -17,8 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import tv.bayit.plus.designsystem.component.GlassButton
-import tv.bayit.plus.designsystem.component.GlassCard
-import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
@@ -54,10 +52,13 @@ fun CompanionQuizTab(
             is CompanionViewModel.QuizUiState.Loading -> GlassLoadingIndicator()
             is CompanionViewModel.QuizUiState.Active -> QuizActive(
                 question = state.currentQuestion,
+                options = state.options,
+                correctIndex = state.correctIndex,
                 questionIndex = state.questionIndex,
                 totalQuestions = state.totalQuestions,
-                score = state.score,
-                onAnswer = { viewModel.answerQuestion(it) },
+                selectedAnswer = state.selectedAnswer,
+                onSelect = { viewModel.selectAnswer(it) },
+                onAdvance = { viewModel.advanceQuestion() },
             )
             is CompanionViewModel.QuizUiState.Complete -> QuizComplete(
                 score = state.score,
@@ -94,17 +95,6 @@ private fun QuizIntro(onStart: () -> Unit) {
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
         GlassButton(text = bayitString("player.companion.quizStart"), onClick = onStart)
     }
-}
-
-@Composable
-private fun QuizActive(
-    question: String,
-    questionIndex: Int,
-    totalQuestions: Int,
-    score: Int,
-    onAnswer: (Int) -> Unit,
-) {
-    // Question display handled by CompanionViewModel active state
 }
 
 @Composable

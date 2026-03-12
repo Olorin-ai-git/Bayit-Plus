@@ -36,8 +36,8 @@ fun AIGenerationConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val modeDisplayName = AI_MODE_DISPLAY_NAMES[request.modeName] ?: request.modeName
-    val modeDescription = AI_MODE_DESCRIPTIONS[request.modeName].orEmpty()
+    val modeDisplayName = bayitString("subtitles.mode.${request.modeName}")
+    val modeDescription = bayitString("subtitles.mode.${request.modeName}_description")
 
     GlassModal(onDismissRequest = { if (!isGenerating) onDismiss() }) {
         Column(
@@ -134,21 +134,3 @@ fun AIGenerationConfirmDialog(
         }
     }
 }
-
-private val AI_MODE_DISPLAY_NAMES = mapOf(
-    "nikud" to "Nikud",
-    "shoresh" to "Shoresh",
-    "heblish" to "Heblish",
-    "engrew" to "Engrew",
-    "grammar_flip" to "Grammar Flip",
-    "slang_synthesis" to "Slang Synthesis",
-)
-
-private val AI_MODE_DESCRIPTIONS = mapOf(
-    "nikud" to "Add Hebrew vocalization marks (nikkud) to subtitle text, making it easier to read and pronounce correctly.",
-    "shoresh" to "Highlight Hebrew root words (shoreshim) in subtitles, helping you understand word origins and patterns.",
-    "heblish" to "Transliterate Hebrew subtitles into English letters, so you can read Hebrew sounds using the Latin alphabet.",
-    "engrew" to "Write English words using Hebrew letters, helping Hebrew readers follow English dialogue phonetically.",
-    "grammar_flip" to "Blend Hebrew vocabulary with English sentence structure for a unique bilingual learning experience.",
-    "slang_synthesis" to "Mix Israeli and American slang expressions for a fun, culturally blended subtitle track.",
-)

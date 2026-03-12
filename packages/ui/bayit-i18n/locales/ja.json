@@ -6084,7 +6084,9 @@
       "togglePanel": "AIパネルの切り替え",
       "translate": "翻訳",
       "trivia": "トリビア",
-      "triviaToggle": "[ja] Trivia"
+      "triviaToggle": "[ja] Trivia",
+      "catchUp": "キャッチアップ",
+      "sceneSearch": "シーン検索"
     },
     "catchup": {
       "description": "冒頭を見逃しましたか？AIが生成したこれまでのあらすじを取得しましょう。",
@@ -6101,6 +6103,8 @@
       "quizStart": "クイズを開始",
       "quizTitle": "知識を試す準備はできましたか？",
       "quizTryAgain": "再試行",
+      "quizNext": "次の質問",
+      "quizProgress": "質問 {{current}} / {{total}}",
       "tabContext": "コンテキスト",
       "tabQuiz": "クイズ",
       "tabVocabulary": "語彙",
@@ -6114,6 +6118,7 @@
       "goBack": "戻る",
       "navigateBack": "前に戻る",
       "on": "ON",
+      "off": "オフ",
       "pause": "一時停止",
       "play": "再生",
       "preview": "プレビュー",
@@ -7853,7 +7858,16 @@
       "engrew": "エングリュー",
       "heblish": "ヘブリッシュ",
       "shoresh": "ショレシュ",
-      "standard": "スタンダード"
+      "standard": "スタンダード",
+      "nikud": "ニクード",
+      "grammar_flip": "文法フリップ",
+      "slang_synthesis": "スラング合成",
+      "nikud_description": "字幕テキストにヘブライ語の母音記号（ニクード）を追加し、正確な読み方と発音を助けます。",
+      "shoresh_description": "字幕でヘブライ語の語根（ショレシム）を強調し、語源とパターンを理解するのに役立ちます。",
+      "heblish_description": "ヘブライ語の字幕をラテン文字に音訳し、ラテンアルファベットでヘブライ語の音を読めるようにします。",
+      "engrew_description": "ヘブライ文字を使って英語の単語を書き、ヘブライ語の読者が英語の台詞を音声的に追えるようにします。",
+      "grammar_flip_description": "ヘブライ語の語彙と英語の文章構造を融合させ、ユニークなバイリンガル学習体験を提供します。",
+      "slang_synthesis_description": "イスラエルとアメリカのスラング表現を混ぜ合わせ、楽しく文化的に融合した字幕トラックを作ります。"
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "外部字幕を検索",
@@ -7864,7 +7878,33 @@
     "primary_language": "主要言語",
     "secondary_language": "副次言語",
     "layout_mode": "レイアウトモード",
-    "interactive_title": "インタラクティブ字幕"
+    "interactive_title": "インタラクティブ字幕",
+    "layout": {
+      "stacked": "積み重ね",
+      "sideBySide": "横並び"
+    },
+    "language": {
+      "en": "英語",
+      "he": "ヘブライ語",
+      "es": "スペイン語",
+      "ar": "アラビア語",
+      "ru": "ロシア語",
+      "fr": "フランス語",
+      "de": "ドイツ語",
+      "pt": "ポルトガル語",
+      "it": "イタリア語"
+    },
+    "picker": {
+      "regularTitle": "通常ヘブライ語",
+      "regularDescription": "母音記号なしの標準ヘブライ語テキスト",
+      "nikudTitle": "ニクード（母音記号）",
+      "nikudDescription": "読みやすくするための母音記号付き",
+      "shoreshTitle": "ショレシュ（語根）",
+      "shoreshDescription": "言語学習のために語根の文字をハイライト",
+      "heblishTitle": "ヘブリッシュ（英語ミックス）",
+      "heblishDescription": "英語の単語が混在するヘブライ語"
+    },
+    "shoreshRootAccessibilityLabel": "{{words}} の語根の文字をハイライト表示"
   },
   "support": {
     "title": "サポート",
@@ -11660,7 +11700,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "言語比率",
-    "wordsLearned": "学習した単語"
+    "wordsLearned": "学習した単語",
+    "on": "バイリンガルブリッジ オン",
+    "off": "バイリンガルブリッジ オフ",
+    "active": "アクティブ",
+    "accessibilityLabel": "バイリンガルブリッジ",
+    "accessibilityEnabled": "有効",
+    "accessibilityDisabled": "無効",
+    "accessibilityHint": "選択を押してバイリンガル吹き替えを切り替える"
   },
   "coupons": {
     "noneAvailable": "利用可能なクーポンがありません",
@@ -11716,7 +11763,8 @@
     "emptyHint": "字幕の単語をタップして保存",
     "newWords": "新しい単語",
     "reviewedWords": "復習済みの単語",
-    "close": "閉じる"
+    "close": "閉じる",
+    "seenTimes": "{{count}}回見た"
   },
   "wallet": {
     "earned": "獲得済み",

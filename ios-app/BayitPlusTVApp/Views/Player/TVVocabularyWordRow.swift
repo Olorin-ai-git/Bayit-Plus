@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// A single vocabulary word row in the tracker, showing original word,
 /// transliteration, translation, part of speech, and encounter count.
 struct TVVocabularyWordRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let word: SavedVocabularyWord
 
     @FocusState private var isFocused: Bool
@@ -103,7 +105,9 @@ struct TVVocabularyWordRow: View {
     private var accessibilityText: String {
         var parts = [word.originalWord]
         if let t = word.translation { parts.append(t) }
-        parts.append("seen \(word.timesEncountered) times")
+        parts.append(
+            localization.t("vocabulary.seenTimes", ["count": String(word.timesEncountered)])
+        )
         return parts.joined(separator: ", ")
     }
 }

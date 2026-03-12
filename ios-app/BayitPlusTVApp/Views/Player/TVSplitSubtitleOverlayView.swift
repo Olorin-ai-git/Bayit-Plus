@@ -6,10 +6,10 @@ enum SplitSubtitleLayout: String, CaseIterable {
     case stacked // Primary on top, secondary below
     case sideBySide // Left and right columns
 
-    var label: String {
+    var localizationKey: String {
         switch self {
-        case .stacked: return "Stacked"
-        case .sideBySide: return "Side by Side"
+        case .stacked: return "subtitles.layout.stacked"
+        case .sideBySide: return "subtitles.layout.sideBySide"
         }
     }
 

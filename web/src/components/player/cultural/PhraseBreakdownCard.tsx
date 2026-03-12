@@ -1,6 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
-import { colors, spacing, fontSize, borderRadius, glass } from '@olorin/design-tokens';
+import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { View, Text, Pressable, StyleSheet, Animated } from "react-native";
+import {
+  colors,
+  spacing,
+  fontSize,
+  borderRadius,
+  glass,
+} from "@olorin/design-tokens";
 
 interface PhraseBreakdownCardProps {
   phrase: string;
@@ -25,6 +32,7 @@ const PhraseBreakdownCard: React.FC<PhraseBreakdownCardProps> = ({
   tags,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const slideAnim = useRef(new Animated.Value(1000)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -68,13 +76,10 @@ const PhraseBreakdownCard: React.FC<PhraseBreakdownCardProps> = ({
       </Animated.View>
 
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ translateY: slideAnim }] },
-        ]}
+        style={[styles.card, { transform: [{ translateY: slideAnim }] }]}
       >
         <Pressable style={styles.closeButton} onPress={handleClose}>
-          <Text style={styles.closeButtonText}>Close</Text>
+          <Text style={styles.closeButtonText}>{t("common.close")}</Text>
         </Pressable>
 
         <View style={styles.header}>
@@ -83,23 +88,31 @@ const PhraseBreakdownCard: React.FC<PhraseBreakdownCardProps> = ({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Literal</Text>
+          <Text style={styles.sectionTitle}>
+            {t("player.phraseBreakdown.literal")}
+          </Text>
           <Text style={styles.sectionContent}>{literalTranslation}</Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Meaning</Text>
+          <Text style={styles.sectionTitle}>
+            {t("player.phraseBreakdown.meaning")}
+          </Text>
           <Text style={styles.sectionContent}>{meaning}</Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Origin</Text>
+          <Text style={styles.sectionTitle}>
+            {t("player.phraseBreakdown.origin")}
+          </Text>
           <Text style={styles.sectionContent}>{origin}</Text>
         </View>
 
         {funFact && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Fun Fact</Text>
+            <Text style={styles.sectionTitle}>
+              {t("player.phraseBreakdown.funFact")}
+            </Text>
             <Text style={styles.sectionContent}>{funFact}</Text>
           </View>
         )}
@@ -113,7 +126,9 @@ const PhraseBreakdownCard: React.FC<PhraseBreakdownCardProps> = ({
         </View>
 
         <View style={styles.usageLevel}>
-          <Text style={styles.usageLevelText}>Usage: {usageLevel}</Text>
+          <Text style={styles.usageLevelText}>
+            {t("player.phraseBreakdown.usage", { level: usageLevel })}
+          </Text>
         </View>
       </Animated.View>
     </View>
@@ -122,7 +137,7 @@ const PhraseBreakdownCard: React.FC<PhraseBreakdownCardProps> = ({
 
 const styles = StyleSheet.create({
   overlay: {
-    position: 'fixed',
+    position: "fixed",
     top: 0,
     left: 0,
     right: 0,
@@ -130,7 +145,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   backdrop: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -138,15 +153,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.overlay,
   },
   backdropPressable: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   card: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    maxHeight: '90%',
+    maxHeight: "90%",
     backgroundColor: glass.background,
     backdropFilter: glass.backdropFilter,
     borderTopLeftRadius: borderRadius.xl,
@@ -158,7 +173,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.md,
     right: spacing.md,
     padding: spacing.sm,
@@ -167,32 +182,32 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: colors.textSecondary,
     fontSize: fontSize.sm,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   header: {
     marginBottom: spacing.lg,
-    alignItems: 'center',
+    alignItems: "center",
   },
   phrase: {
-    fontSize: fontSize['2xl'],
-    fontWeight: '700',
+    fontSize: fontSize["2xl"],
+    fontWeight: "700",
     color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
   transliteration: {
     fontSize: fontSize.md,
     color: colors.textSecondary,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   section: {
     marginBottom: spacing.lg,
   },
   sectionTitle: {
     fontSize: fontSize.sm,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.primary,
     marginBottom: spacing.xs,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   sectionContent: {
@@ -201,8 +216,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.xs,
     marginBottom: spacing.md,
   },
@@ -215,7 +230,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: fontSize.xs,
     color: colors.textSecondary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   usageLevel: {
     paddingTop: spacing.md,
@@ -225,7 +240,7 @@ const styles = StyleSheet.create({
   usageLevelText: {
     fontSize: fontSize.sm,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

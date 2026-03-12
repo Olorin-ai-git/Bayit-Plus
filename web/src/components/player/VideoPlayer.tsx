@@ -443,8 +443,15 @@ export default function VideoPlayer({
 
   // Cultural Context toggle (VOD)
   const [culturalContextEnabled, setCulturalContextEnabled] = useState(false);
+  const [selectedCulturalReference, setSelectedCulturalReference] = useState<
+    string | null
+  >(null);
   const handleCulturalReferenceSelect = useCallback((referenceId: string) => {
+    setSelectedCulturalReference(referenceId);
     logger.info("Cultural reference selected", "VideoPlayer", { referenceId });
+  }, []);
+  const handleCulturalPopupClose = useCallback(() => {
+    setSelectedCulturalReference(null);
   }, []);
 
   // Bilingual Bridge toggle (VOD)
@@ -726,6 +733,8 @@ export default function VideoPlayer({
         isPlaying={state.isPlaying}
         culturalContextEnabled={culturalContextEnabled}
         onCulturalReferenceSelect={handleCulturalReferenceSelect}
+        selectedCulturalReference={selectedCulturalReference}
+        onCulturalPopupClose={handleCulturalPopupClose}
         bilingualBridgeEnabled={bilingualBridgeEnabled}
         profileId={user?.id}
         onHoveredButtonChange={setHoveredButton}

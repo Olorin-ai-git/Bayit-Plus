@@ -6102,7 +6102,9 @@
       "togglePanel": "Afficher/Masquer le panneau IA",
       "translate": "Traduire",
       "trivia": "Anecdotes",
-      "triviaToggle": "Anecdotes"
+      "triviaToggle": "Anecdotes",
+      "catchUp": "Rattraper",
+      "sceneSearch": "Recherche de scène"
     },
     "catchup": {
       "description": "Vous avez manqué le début ? Obtenez un résumé généré par l'IA de ce qui s'est passé jusqu'ici.",
@@ -6119,6 +6121,8 @@
       "quizStart": "Commencer le quiz",
       "quizTitle": "Prêt à tester vos connaissances ?",
       "quizTryAgain": "Réessayer",
+      "quizNext": "Question suivante",
+      "quizProgress": "Question {{current}} sur {{total}}",
       "tabContext": "Contexte",
       "tabQuiz": "Quiz",
       "tabVocabulary": "Vocabulaire",
@@ -6132,6 +6136,7 @@
       "goBack": "Retour",
       "navigateBack": "Retour",
       "on": "ON",
+      "off": "Désactivé",
       "pause": "Pause",
       "play": "Lecture",
       "preview": "Aperçu",
@@ -7871,7 +7876,16 @@
       "engrew": "Engrew",
       "heblish": "Heblish",
       "shoresh": "Shoresh",
-      "standard": "Standard"
+      "standard": "Standard",
+      "nikud": "Nikud",
+      "grammar_flip": "Inversion Grammaticale",
+      "slang_synthesis": "Synthèse Argotique",
+      "nikud_description": "Ajoute des marques de vocalisation hébraïques (nikkud) au texte des sous-titres pour faciliter la lecture et la prononciation.",
+      "shoresh_description": "Met en évidence les racines hébraïques (shoreshim) dans les sous-titres pour comprendre l'origine et les modèles des mots.",
+      "heblish_description": "Translittère les sous-titres hébraïques en lettres latines pour lire les sons hébraïques avec l'alphabet latin.",
+      "engrew_description": "Écrit des mots anglais avec des lettres hébraïques pour aider les lecteurs hébreux à suivre phonétiquement les dialogues en anglais.",
+      "grammar_flip_description": "Mélange le vocabulaire hébreu avec la structure des phrases anglaises pour une expérience d'apprentissage bilingue unique.",
+      "slang_synthesis_description": "Mélange des expressions argotiques israéliennes et américaines pour une piste de sous-titres amusante et culturellement mixte."
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "Rechercher des sous-titres externes",
@@ -7882,7 +7896,33 @@
     "primary_language": "Langue Principale",
     "secondary_language": "Langue Secondaire",
     "layout_mode": "Mode de disposition",
-    "interactive_title": "Sous-titres Interactifs"
+    "interactive_title": "Sous-titres Interactifs",
+    "layout": {
+      "stacked": "Empilé",
+      "sideBySide": "Côte à côte"
+    },
+    "language": {
+      "en": "Anglais",
+      "he": "Hébreu",
+      "es": "Espagnol",
+      "ar": "Arabe",
+      "ru": "Russe",
+      "fr": "Français",
+      "de": "Allemand",
+      "pt": "Portugais",
+      "it": "Italien"
+    },
+    "picker": {
+      "regularTitle": "Hébreu Régulier",
+      "regularDescription": "Texte hébreu standard sans signes vocaliques",
+      "nikudTitle": "Nikud (Signes Vocaliques)",
+      "nikudDescription": "Signes vocaliques ajoutés pour faciliter la lecture",
+      "shoreshTitle": "Shoresh (Mots Racines)",
+      "shoreshDescription": "Lettres racines surlignées pour l'apprentissage",
+      "heblishTitle": "Heblish (Mélange Anglais)",
+      "heblishDescription": "Hébreu avec des mots anglais mélangés"
+    },
+    "shoreshRootAccessibilityLabel": "Lettres racines surlignées dans {{words}}"
   },
   "support": {
     "title": "Centre d'aide",
@@ -11678,7 +11718,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "Ratio de langue",
-    "wordsLearned": "mots appris"
+    "wordsLearned": "mots appris",
+    "on": "Pont bilingue activé",
+    "off": "Pont bilingue désactivé",
+    "active": "Actif",
+    "accessibilityLabel": "Pont bilingue",
+    "accessibilityEnabled": "Activé",
+    "accessibilityDisabled": "Désactivé",
+    "accessibilityHint": "Appuyez sur sélectionner pour basculer le doublage bilingue"
   },
   "coupons": {
     "noneAvailable": "Aucun coupon disponible",
@@ -11734,7 +11781,8 @@
     "emptyHint": "Appuyez sur les mots dans les sous-titres",
     "newWords": "Nouveaux mots",
     "reviewedWords": "Mots revises",
-    "close": "Fermer"
+    "close": "Fermer",
+    "seenTimes": "vu {{count}} fois"
   },
   "wallet": {
     "earned": "Gagnés",

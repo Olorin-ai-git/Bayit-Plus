@@ -65,6 +65,9 @@ struct PlayerView: View {
     @State var showCharacterSheet = false
     @State var showDialogueOverlay = false
 
+    /// Cultural context state
+    @State var culturalContextVM: CulturalContextViewModel?
+
     // Pause & Ask state
     @State var showPauseAskOverlay = false
     @State var hasVoiceClone = false
@@ -174,6 +177,10 @@ struct PlayerView: View {
             .onChange(of: viewModel.player.currentTime) { _, newTime in
                 handleTimeChange(newTime)
             }
+            .onChange(of: subtitlesVM?.activeText) { _, newText in
+                guard !mediaContentType.isLive, let vm = culturalContextVM else { return }
+                Task { await vm.detectReferences(text: newText ?? "") }
+            }
             .onChange(of: scenePhase) { _, newPhase in
                 // Do NOT force-close PiP when returning to foreground.
                 // The user may tap the PiP window to restore the player,
@@ -185,6 +192,18 @@ struct PlayerView: View {
             }
             .sheet(isPresented: $showSplitLanguagePicker) { splitLanguagePickerSheet }
             .sheet(isPresented: $showCharacterSheet) { characterSelectionSheet }
+            .sheet(
+                isPresented: Binding(
+                    get: { culturalContextVM?.showExplanationSheet ?? false },
+                    set: { if !$0 { culturalContextVM?.dismissExplanation() } }
+                )
+            ) {
+                if let data = culturalContextVM?.selectedReference {
+                    CulturalExplanationSheet(data: data) {
+                        culturalContextVM?.dismissExplanation()
+                    }
+                }
+            }
             .sheet(isPresented: $showDubbingControls) { dubbingControlsSheet }
             .sheet(isPresented: $showAILanguagePicker) { aiLanguagePickerSheet }
             .sheet(isPresented: $showQualitySelector) { qualitySelectorSheet }

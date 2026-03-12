@@ -206,9 +206,9 @@ private fun AIOptionsRow(
     onOptionSelected: (String) -> Unit,
 ) {
     val modes = if (languageCode == "he") {
-        listOf("nikud" to "Nikud", "shoresh" to "Shoresh", "heblish" to "Heblish")
+        listOf("nikud", "shoresh", "heblish")
     } else {
-        listOf("engrew" to "Engrew")
+        listOf("engrew")
     }
 
     Row(
@@ -231,9 +231,9 @@ private fun AIOptionsRow(
             tint = DesignTokens.Colors.Primary.light,
             modifier = Modifier.size(16.dp),
         )
-        modes.forEach { (key, label) ->
+        modes.forEach { key ->
             GlassChip(
-                label = label,
+                label = bayitString("subtitles.mode.$key"),
                 isSelected = false,
                 onClick = { onOptionSelected(key) },
             )

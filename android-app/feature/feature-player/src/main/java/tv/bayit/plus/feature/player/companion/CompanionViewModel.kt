@@ -46,6 +46,7 @@ class CompanionViewModel @Inject constructor(
     private var quizQuestions: List<QuizQuestion> = emptyList()
     private var quizIndex = 0
     private var quizScore = 0
+    private val selectedAnswers = mutableMapOf<Int, Int>()
 
     fun setContentId(contentId: String) {
         currentContentId = contentId
@@ -86,15 +87,11 @@ class CompanionViewModel @Inject constructor(
                     quizQuestions = result.data.questions
                     quizIndex = 0
                     quizScore = 0
+                    selectedAnswers.clear()
                     if (quizQuestions.isEmpty()) {
                         _quizState.value = QuizUiState.Error(stringProvider.string("error.player.noQuizQuestions"))
                     } else {
-                        _quizState.value = QuizUiState.Active(
-                            currentQuestion = quizQuestions[0].question,
-                            questionIndex = 0,
-                            totalQuestions = quizQuestions.size,
-                            score = 0,
-                        )
+                        _quizState.value = quizActiveState()
                     }
                 }
                 is BayitResult.Error -> {
@@ -107,22 +104,31 @@ class CompanionViewModel @Inject constructor(
         }
     }
 
-    fun answerQuestion(selectedIndex: Int) {
+    fun selectAnswer(answerIndex: Int) {
+        if (quizIndex >= quizQuestions.size) return
+        val current = _quizState.value as? QuizUiState.Active ?: return
+        if (current.selectedAnswer != null) return
+        selectedAnswers[quizIndex] = answerIndex
+        _quizState.value = current.copy(selectedAnswer = answerIndex)
+    }
+
+    fun advanceQuestion() {
         if (quizIndex >= quizQuestions.size) return
         val question = quizQuestions[quizIndex]
-        if (selectedIndex == question.correctIndex) quizScore++
+        val selected = selectedAnswers[quizIndex] ?: return
+        if (selected == question.correctIndex) quizScore++
         quizIndex++
         if (quizIndex >= quizQuestions.size) {
             _quizState.value = QuizUiState.Complete(quizScore, quizQuestions.size)
             submitQuizResult()
         } else {
-            _quizState.value = QuizUiState.Active(
-                currentQuestion = quizQuestions[quizIndex].question,
-                questionIndex = quizIndex,
-                totalQuestions = quizQuestions.size,
-                score = quizScore,
-            )
+            _quizState.value = quizActiveState()
         }
+    }
+
+    /** Kept for backward-compatibility with callers that pass an index directly. */
+    fun answerQuestion(selectedIndex: Int) {
+        selectAnswer(selectedIndex)
     }
 
     fun addVocabularyWord(word: String, translation: String) {
@@ -131,10 +137,23 @@ class CompanionViewModel @Inject constructor(
         _vocabularyItems.value = existing + VocabularyItem(word, translation)
     }
 
+    private fun quizActiveState(): QuizUiState.Active {
+        val q = quizQuestions[quizIndex]
+        return QuizUiState.Active(
+            currentQuestion = q.question,
+            options = q.options,
+            correctIndex = q.correctIndex,
+            questionIndex = quizIndex,
+            totalQuestions = quizQuestions.size,
+            score = quizScore,
+            selectedAnswer = null,
+        )
+    }
+
     private fun submitQuizResult() {
         val contentId = currentContentId ?: return
         viewModelScope.launch {
-            val answers = quizQuestions.mapIndexed { i, _ -> i.toString() to 0 }.toMap()
+            val answers = selectedAnswers.mapKeys { it.key.toString() }
             triviaRepository.submitQuiz(contentId, "me", answers)
         }
     }
@@ -144,9 +163,12 @@ class CompanionViewModel @Inject constructor(
         data object Loading : QuizUiState
         data class Active(
             val currentQuestion: String,
+            val options: List<String>,
+            val correctIndex: Int,
             val questionIndex: Int,
             val totalQuestions: Int,
             val score: Int,
+            val selectedAnswer: Int?,
         ) : QuizUiState
         data class Complete(val score: Int, val totalQuestions: Int) : QuizUiState
         data class Error(val message: String) : QuizUiState

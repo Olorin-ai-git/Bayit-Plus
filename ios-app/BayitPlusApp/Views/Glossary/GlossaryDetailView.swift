@@ -71,10 +71,10 @@ struct GlossaryDetailView: View {
             Divider().background(DesignTokens.Glass.border.opacity(0.3))
 
             if !entry.origin.isEmpty {
-                detailRow(label: "Origin", text: entry.origin)
+                detailRow(label: localization.t("glossary.entry.origin"), text: entry.origin)
             }
             if !entry.usageExample.isEmpty {
-                detailRow(label: "Example", text: entry.usageExample)
+                detailRow(label: localization.t("glossary.entry.example"), text: entry.usageExample)
             }
             if !entry.funFact.isEmpty {
                 HStack(spacing: DesignTokens.Spacing.xs) {

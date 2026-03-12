@@ -27,40 +27,42 @@ struct AISubtitlesPickerView: View {
     @State var isCancelling = false
     @State var pollingTask: Task<Void, Never>?
 
-    let hebrewModeOptions: [HebrewModeOption] = [
-        HebrewModeOption(
-            mode: .standard,
-            iconName: "gear",
-            title: "Regular Hebrew",
-            description: "Standard Hebrew text without vowel marks",
-            example: "\u{05D4}\u{05D9}\u{05DC}\u{05D3}\u{05D9}\u{05DD} \u{05D4}\u{05D5}\u{05DC}\u{05DB}\u{05D9}\u{05DD} \u{05DC}\u{05D1}\u{05D9}\u{05EA} \u{05D4}\u{05E1}\u{05E4}\u{05E8}",
-            isAI: false
-        ),
-        HebrewModeOption(
-            mode: .nikud,
-            iconName: "textformat",
-            title: "Nikud (Vowel Marks)",
-            description: "Vowel marks added for easier reading",
-            example: "\u{05D4}\u{05B7}\u{05D9}\u{05B0}\u{05DC}\u{05B8}\u{05D3}\u{05B4}\u{05D9}\u{05DD} \u{05D4}\u{05D5}\u{05B9}\u{05DC}\u{05B0}\u{05DB}\u{05B4}\u{05D9}\u{05DD} \u{05DC}\u{05B0}\u{05D1}\u{05B5}\u{05D9}\u{05EA} \u{05D4}\u{05B7}\u{05E1}\u{05BC}\u{05B5}\u{05E4}\u{05B6}\u{05E8}",
-            isAI: true
-        ),
-        HebrewModeOption(
-            mode: .shoresh,
-            iconName: "book",
-            title: "Shoresh (Root Words)",
-            description: "Root letters highlighted for language learning",
-            example: "\u{05D4}\u{05D9}\u{27E8}\u{05DC}\u{27E9}\u{05D3}\u{05D9}\u{05DD} \u{05D4}\u{05D5}\u{27E8}\u{05DC}\u{27E9}\u{05DB}\u{05D9}\u{05DD} \u{05DC}\u{05D1}\u{05D9}\u{05EA} \u{05D4}\u{05E1}\u{05E4}\u{05E8}",
-            isAI: true
-        ),
-        HebrewModeOption(
-            mode: .heblish,
-            iconName: "globe",
-            title: "Heblish (English Mix)",
-            description: "Hebrew with English words mixed in",
-            example: "\u{05D0}\u{05E0}\u{05D9} going \u{05DC}\u{05E9}\u{05D7}\u{05E7} basketball \u{05E2}\u{05DD} \u{05D7}\u{05D1}\u{05E8}\u{05D9}\u{05DD}",
-            isAI: true
-        ),
-    ]
+    var hebrewModeOptions: [HebrewModeOption] {
+        [
+            HebrewModeOption(
+                mode: .standard,
+                iconName: "gear",
+                title: localization.t("subtitles.picker.regularTitle"),
+                description: localization.t("subtitles.picker.regularDescription"),
+                example: "\u{05D4}\u{05D9}\u{05DC}\u{05D3}\u{05D9}\u{05DD} \u{05D4}\u{05D5}\u{05DC}\u{05DB}\u{05D9}\u{05DD} \u{05DC}\u{05D1}\u{05D9}\u{05EA} \u{05D4}\u{05E1}\u{05E4}\u{05E8}",
+                isAI: false
+            ),
+            HebrewModeOption(
+                mode: .nikud,
+                iconName: "textformat",
+                title: localization.t("subtitles.picker.nikudTitle"),
+                description: localization.t("subtitles.picker.nikudDescription"),
+                example: "\u{05D4}\u{05B7}\u{05D9}\u{05B0}\u{05DC}\u{05B8}\u{05D3}\u{05B4}\u{05D9}\u{05DD} \u{05D4}\u{05D5}\u{05B9}\u{05DC}\u{05B0}\u{05DB}\u{05B4}\u{05D9}\u{05DD} \u{05DC}\u{05B0}\u{05D1}\u{05B5}\u{05D9}\u{05EA} \u{05D4}\u{05B7}\u{05E1}\u{05BC}\u{05B5}\u{05E4}\u{05B6}\u{05E8}",
+                isAI: true
+            ),
+            HebrewModeOption(
+                mode: .shoresh,
+                iconName: "book",
+                title: localization.t("subtitles.picker.shoreshTitle"),
+                description: localization.t("subtitles.picker.shoreshDescription"),
+                example: "\u{05D4}\u{05D9}\u{27E8}\u{05DC}\u{27E9}\u{05D3}\u{05D9}\u{05DD} \u{05D4}\u{05D5}\u{27E8}\u{05DC}\u{27E9}\u{05DB}\u{05D9}\u{05DD} \u{05DC}\u{05D1}\u{05D9}\u{05EA} \u{05D4}\u{05E1}\u{05E4}\u{05E8}",
+                isAI: true
+            ),
+            HebrewModeOption(
+                mode: .heblish,
+                iconName: "globe",
+                title: localization.t("subtitles.picker.heblishTitle"),
+                description: localization.t("subtitles.picker.heblishDescription"),
+                example: "\u{05D0}\u{05E0}\u{05D9} going \u{05DC}\u{05E9}\u{05D7}\u{05E7} basketball \u{05E2}\u{05DD} \u{05D7}\u{05D1}\u{05E8}\u{05D9}\u{05DD}",
+                isAI: true
+            ),
+        ]
+    }
 
     var body: some View {
         ScrollView {

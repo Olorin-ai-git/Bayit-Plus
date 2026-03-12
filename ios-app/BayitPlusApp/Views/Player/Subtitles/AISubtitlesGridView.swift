@@ -109,7 +109,7 @@ extension AISubtitlesPickerView {
                     .tint(.white)
                     .scaleEffect(0.8)
 
-                Text(jobProgress > 0 ? "\(jobProgress)%" : "Generating...")
+                Text(jobProgress > 0 ? "\(jobProgress)%" : localization.t("common.generating"))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
             }
@@ -125,7 +125,7 @@ extension AISubtitlesPickerView {
                     await handleCancelJob()
                 }
             } label: {
-                Text(isCancelling ? "..." : "Cancel")
+                Text(isCancelling ? "..." : localization.t("common.cancel"))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
                     .padding(.horizontal, DesignTokens.Spacing.md)

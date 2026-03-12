@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 import {
   colors,
@@ -37,6 +38,7 @@ interface TranslationData {
 export const InteractiveSubtitleOverlay: React.FC<
   InteractiveSubtitleOverlayProps
 > = ({ currentTime, subtitles, language, enabled, settings, onWordTap }) => {
+  const { t } = useTranslation();
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(
     null,
   );
@@ -132,7 +134,7 @@ export const InteractiveSubtitleOverlay: React.FC<
 
       {isLoading && (
         <View style={styles.loadingIndicator}>
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text style={styles.loadingText}>{t("common.loading")}</Text>
         </View>
       )}
     </View>

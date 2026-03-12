@@ -5802,11 +5802,7 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
-      ]
+      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
     },
     "premium": {
       "name": "प्लस",
@@ -6102,7 +6098,9 @@
       "togglePanel": "AI पैनल टॉगल करें",
       "translate": "अनुवाद करें",
       "trivia": "ट्रिविया",
-      "triviaToggle": "[hi] Trivia"
+      "triviaToggle": "[hi] Trivia",
+      "catchUp": "कैच अप",
+      "sceneSearch": "दृश्य खोज"
     },
     "catchup": {
       "description": "शुरुआत चूक गए? अब तक की कहानी का AI-जनित सारांश प्राप्त करें।",
@@ -6119,6 +6117,8 @@
       "quizStart": "प्रश्नोत्तरी शुरू करें",
       "quizTitle": "अपने ज्ञान का परीक्षण करने के लिए तैयार हैं?",
       "quizTryAgain": "पुनः प्रयास करें",
+      "quizNext": "अगला प्रश्न",
+      "quizProgress": "प्रश्न {{current}} / {{total}}",
       "tabContext": "संदर्भ",
       "tabQuiz": "प्रश्नोत्तरी",
       "tabVocabulary": "शब्दावली",
@@ -6132,6 +6132,7 @@
       "goBack": "वापस जाएं",
       "navigateBack": "वापस नेविगेट करें",
       "on": "ON",
+      "off": "बंद",
       "pause": "रोकें",
       "play": "चलाएं",
       "preview": "पूर्वावलोकन",
@@ -7871,7 +7872,16 @@
       "engrew": "एनग्रू",
       "heblish": "हेब्लिश",
       "shoresh": "शोरेश",
-      "standard": "मानक"
+      "standard": "मानक",
+      "nikud": "निकुद",
+      "grammar_flip": "व्याकरण पलट",
+      "slang_synthesis": "स्लैंग संश्लेषण",
+      "nikud_description": "उपशीर्षक पाठ में हिब्रू स्वर चिह्न (निकुद) जोड़ें, सही पढ़ने और उच्चारण के लिए।",
+      "shoresh_description": "उपशीर्षक में हिब्रू मूल शब्द (शोरेशिम) हाइलाइट करें, शब्द उत्पत्ति और पैटर्न समझने के लिए।",
+      "heblish_description": "हिब्रू उपशीर्षक को लैटिन अक्षरों में लिप्यंतरित करें, ताकि आप लैटिन वर्णमाला से हिब्रू ध्वनियाँ पढ़ सकें।",
+      "engrew_description": "हिब्रू अक्षरों में अंग्रेजी शब्द लिखें, हिब्रू पाठकों को अंग्रेजी संवाद ध्वन्यात्मक रूप से समझने में मदद के लिए।",
+      "grammar_flip_description": "हिब्रू शब्दावली को अंग्रेजी वाक्य संरचना के साथ मिलाएं एक अनोखे द्विभाषी सीखने के अनुभव के लिए।",
+      "slang_synthesis_description": "मजेदार और सांस्कृतिक रूप से मिश्रित उपशीर्षक ट्रैक के लिए इजरायली और अमेरिकी स्लैंग अभिव्यक्तियों को मिलाएं।"
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "बाहरी उपशीर्षक खोजें",
@@ -7882,7 +7892,33 @@
     "primary_language": "प्राथमिक भाषा",
     "secondary_language": "द्वितीयक भाषा",
     "layout_mode": "लेआउट मोड",
-    "interactive_title": "इंटरैक्टिव उपशीर्षक"
+    "interactive_title": "इंटरैक्टिव उपशीर्षक",
+    "layout": {
+      "stacked": "स्टैक्ड",
+      "sideBySide": "साथ-साथ"
+    },
+    "language": {
+      "en": "अंग्रेजी",
+      "he": "हिब्रू",
+      "es": "स्पेनिश",
+      "ar": "अरबी",
+      "ru": "रूसी",
+      "fr": "फ्रेंच",
+      "de": "जर्मन",
+      "pt": "पुर्तगाली",
+      "it": "इतालवी"
+    },
+    "picker": {
+      "regularTitle": "नियमित हिब्रू",
+      "regularDescription": "स्वर चिह्नों के बिना मानक हिब्रू पाठ",
+      "nikudTitle": "निकुद (स्वर चिह्न)",
+      "nikudDescription": "पढ़ने में आसानी के लिए स्वर चिह्न जोड़े गए",
+      "shoreshTitle": "शोरेश (मूल शब्द)",
+      "shoreshDescription": "भाषा सीखने के लिए मूल अक्षर हाइलाइट किए गए",
+      "heblishTitle": "हेब्लिश (अंग्रेजी मिश्रण)",
+      "heblishDescription": "हिब्रू में अंग्रेजी शब्द मिश्रित"
+    },
+    "shoreshRootAccessibilityLabel": "{{words}} में मूल अक्षर हाइलाइट किए गए"
   },
   "support": {
     "title": "सहायता केंद्र",
@@ -11678,7 +11714,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "भाषा अनुपात",
-    "wordsLearned": "सीखे गए शब्द"
+    "wordsLearned": "सीखे गए शब्द",
+    "on": "द्विभाषी ब्रिज चालू",
+    "off": "द्विभाषी ब्रिज बंद",
+    "active": "सक्रिय",
+    "accessibilityLabel": "द्विभाषी ब्रिज",
+    "accessibilityEnabled": "सक्षम",
+    "accessibilityDisabled": "अक्षम",
+    "accessibilityHint": "द्विभाषी डबिंग टॉगल करने के लिए चुनें दबाएं"
   },
   "coupons": {
     "noneAvailable": "कोई कूपन उपलब्ध नहीं",
@@ -11734,7 +11777,8 @@
     "emptyHint": "शब्दों को सहेजने के लिए सबटाइटल में टैप करें",
     "newWords": "नए शब्द",
     "reviewedWords": "समीक्षित शब्द",
-    "close": "बंद करें"
+    "close": "बंद करें",
+    "seenTimes": "{{count}} बार देखा"
   },
   "wallet": {
     "earned": "अर्जित",

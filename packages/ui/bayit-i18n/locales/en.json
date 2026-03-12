@@ -5802,11 +5802,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",
@@ -6102,7 +6098,9 @@
       "togglePanel": "Toggle AI Panel",
       "translate": "Translate",
       "trivia": "Trivia",
-      "triviaToggle": "Trivia"
+      "triviaToggle": "Trivia",
+      "catchUp": "Catch Up",
+      "sceneSearch": "Scene Search"
     },
     "catchup": {
       "description": "Missed the beginning? Get an AI-powered summary of what happened so far.",
@@ -6119,6 +6117,8 @@
       "quizStart": "Start Quiz",
       "quizTitle": "Ready to test your knowledge?",
       "quizTryAgain": "Try Again",
+      "quizNext": "Next Question",
+      "quizProgress": "Question {{current}} of {{total}}",
       "tabContext": "Context",
       "tabQuiz": "Quiz",
       "tabVocabulary": "Vocabulary",
@@ -6132,6 +6132,7 @@
       "goBack": "Go Back",
       "navigateBack": "Navigate back",
       "on": "ON",
+      "off": "Off",
       "pause": "Pause",
       "play": "Play",
       "preview": "Preview",
@@ -7871,7 +7872,16 @@
       "engrew": "Engrew",
       "heblish": "Heblish",
       "shoresh": "Shoresh",
-      "standard": "Standard"
+      "standard": "Standard",
+      "nikud": "Nikud",
+      "grammar_flip": "Grammar Flip",
+      "slang_synthesis": "Slang Synthesis",
+      "nikud_description": "Add Hebrew vocalization marks (nikkud) to subtitle text, making it easier to read and pronounce correctly.",
+      "shoresh_description": "Highlight Hebrew root words (shoreshim) in subtitles, helping you understand word origins and patterns.",
+      "heblish_description": "Transliterate Hebrew subtitles into English letters, so you can read Hebrew sounds using the Latin alphabet.",
+      "engrew_description": "Write English words using Hebrew letters, helping Hebrew readers follow English dialogue phonetically.",
+      "grammar_flip_description": "Blend Hebrew vocabulary with English sentence structure for a unique bilingual learning experience.",
+      "slang_synthesis_description": "Mix Israeli and American slang expressions for a fun, culturally blended subtitle track."
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "Search for external subtitles",
@@ -7882,7 +7892,33 @@
     "primary_language": "Primary Language",
     "secondary_language": "Secondary Language",
     "layout_mode": "Layout Mode",
-    "interactive_title": "Interactive Subtitles"
+    "interactive_title": "Interactive Subtitles",
+    "layout": {
+      "stacked": "Stacked",
+      "sideBySide": "Side by Side"
+    },
+    "language": {
+      "en": "English",
+      "he": "Hebrew",
+      "es": "Spanish",
+      "ar": "Arabic",
+      "ru": "Russian",
+      "fr": "French",
+      "de": "German",
+      "pt": "Portuguese",
+      "it": "Italian"
+    },
+    "picker": {
+      "regularTitle": "Regular Hebrew",
+      "regularDescription": "Standard Hebrew text without vowel marks",
+      "nikudTitle": "Nikud (Vowel Marks)",
+      "nikudDescription": "Vowel marks added for easier reading",
+      "shoreshTitle": "Shoresh (Root Words)",
+      "shoreshDescription": "Root letters highlighted for language learning",
+      "heblishTitle": "Heblish (English Mix)",
+      "heblishDescription": "Hebrew with English words mixed in"
+    },
+    "shoreshRootAccessibilityLabel": "Root letters highlighted in {{words}}"
   },
   "support": {
     "title": "Support Center",
@@ -11678,7 +11714,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "Language Ratio",
-    "wordsLearned": "words learned"
+    "wordsLearned": "words learned",
+    "on": "Bilingual Bridge On",
+    "off": "Bilingual Bridge Off",
+    "active": "Active",
+    "accessibilityLabel": "Bilingual Bridge",
+    "accessibilityEnabled": "Enabled",
+    "accessibilityDisabled": "Disabled",
+    "accessibilityHint": "Press select to toggle bilingual dubbing"
   },
   "coupons": {
     "noneAvailable": "No coupons available",
@@ -11734,7 +11777,8 @@
     "emptyHint": "Tap words in subtitles to save them",
     "newWords": "New Words",
     "reviewedWords": "Reviewed Words",
-    "close": "Close"
+    "close": "Close",
+    "seenTimes": "seen {{count}} times"
   },
   "wallet": {
     "earned": "Earned",

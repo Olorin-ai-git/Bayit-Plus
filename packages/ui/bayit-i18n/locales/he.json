@@ -5802,11 +5802,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -6102,7 +6098,9 @@
       "togglePanel": "הצג/הסתר לוח AI",
       "translate": "תרגם",
       "trivia": "טריוויה",
-      "triviaToggle": "טריוויה"
+      "triviaToggle": "טריוויה",
+      "catchUp": "עדכון",
+      "sceneSearch": "חיפוש סצנה"
     },
     "catchup": {
       "description": "פספסת את ההתחלה? קבל סיכום מבוסס AI של מה שקרה עד כה.",
@@ -6119,6 +6117,8 @@
       "quizStart": "התחל חידון",
       "quizTitle": "מוכן לבדוק את הידע שלך?",
       "quizTryAgain": "נסה שוב",
+      "quizNext": "שאלה הבאה",
+      "quizProgress": "שאלה {{current}} מתוך {{total}}",
       "tabContext": "הקשר",
       "tabQuiz": "חידון",
       "tabVocabulary": "אוצר מילים",
@@ -6132,6 +6132,7 @@
       "goBack": "חזרה",
       "navigateBack": "חזור אחורה",
       "on": "פעיל",
+      "off": "כבוי",
       "pause": "השהה",
       "play": "נגן",
       "preview": "תצוגה מקדימה",
@@ -7871,7 +7872,16 @@
       "engrew": "אנגרו",
       "heblish": "עברלי",
       "shoresh": "שורש",
-      "standard": "רגיל"
+      "standard": "רגיל",
+      "nikud": "ניקוד",
+      "grammar_flip": "היפוך דקדוקי",
+      "slang_synthesis": "סינתזת סלנג",
+      "nikud_description": "הוסף סימני ניקוד לטקסט הכתוביות, לקריאה ולהגייה נכונה יותר.",
+      "shoresh_description": "הדגש שורשים עבריים בכתוביות כדי להבין מוצא מילים ודפוסים.",
+      "heblish_description": "תעתק כתוביות עבריות לאותיות לטיניות כדי לקרוא צלילים עבריים באלפבית לטיני.",
+      "engrew_description": "כתוב מילים באנגלית באותיות עבריות לעזור לקוראי עברית לעקוב אחרי דיאלוג אנגלי.",
+      "grammar_flip_description": "שלב אוצר מילים עברי עם מבנה משפטים אנגלי לחוויית למידה דו-לשונית ייחודית.",
+      "slang_synthesis_description": "ערבב ביטויי סלנג ישראלי ואמריקאי לרצועת כתוביות מהנה ותרבותית משולבת."
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "חפש כתוביות חיצוניות",
@@ -7882,7 +7892,33 @@
     "primary_language": "שפה ראשית",
     "secondary_language": "שפה משנית",
     "layout_mode": "מצב פריסה",
-    "interactive_title": "כתוביות אינטראקטיביות"
+    "interactive_title": "כתוביות אינטראקטיביות",
+    "layout": {
+      "stacked": "מוערם",
+      "sideBySide": "זה לצד זה"
+    },
+    "language": {
+      "en": "אנגלית",
+      "he": "עברית",
+      "es": "ספרדית",
+      "ar": "ערבית",
+      "ru": "רוסית",
+      "fr": "צרפתית",
+      "de": "גרמנית",
+      "pt": "פורטוגזית",
+      "it": "איטלקית"
+    },
+    "picker": {
+      "regularTitle": "עברית רגילה",
+      "regularDescription": "טקסט עברי סטנדרטי ללא ניקוד",
+      "nikudTitle": "ניקוד (סימני תנועה)",
+      "nikudDescription": "סימני תנועה להקלת הקריאה",
+      "shoreshTitle": "שורש (ניתוח שורשים)",
+      "shoreshDescription": "אותיות השורש מודגשות ללימוד השפה",
+      "heblishTitle": "היבליש (שילוב אנגלית)",
+      "heblishDescription": "עברית עם מילים באנגלית מעורבות"
+    },
+    "shoreshRootAccessibilityLabel": "אותיות השורש מודגשות ב-{{words}}"
   },
   "support": {
     "title": "מרכז תמיכה",
@@ -11678,7 +11714,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "יחס שפה",
-    "wordsLearned": "מילים שנלמדו"
+    "wordsLearned": "מילים שנלמדו",
+    "on": "גשר דו-לשוני פעיל",
+    "off": "גשר דו-לשוני כבוי",
+    "active": "פעיל",
+    "accessibilityLabel": "גשר דו-לשוני",
+    "accessibilityEnabled": "מופעל",
+    "accessibilityDisabled": "מושבת",
+    "accessibilityHint": "לחץ על בחר כדי להחליף גשר דו-לשוני"
   },
   "coupons": {
     "noneAvailable": "אין קופונים זמינים",
@@ -11734,7 +11777,8 @@
     "emptyHint": "לחץ על מילים בכתוביות כדי לשמור אותן",
     "newWords": "מילים חדשות",
     "reviewedWords": "מילים שנסקרו",
-    "close": "סגור"
+    "close": "סגור",
+    "seenTimes": "נראה {{count}} פעמים"
   },
   "wallet": {
     "earned": "נצברו",

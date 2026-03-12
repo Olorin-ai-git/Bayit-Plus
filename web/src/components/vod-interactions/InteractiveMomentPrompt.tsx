@@ -5,9 +5,10 @@
  * Shows character info and gives user option to start or skip interaction.
  */
 
-import React from 'react';
-import { GlassCard, GlassButton } from '@bayit/glass';
-import { InteractiveMoment } from '../../hooks/useVODInteraction';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { GlassCard, GlassButton } from "@bayit/glass";
+import { InteractiveMoment } from "../../hooks/useVODInteraction";
 
 interface Props {
   moment: InteractiveMoment;
@@ -20,6 +21,8 @@ export const InteractiveMomentPrompt: React.FC<Props> = ({
   onAccept,
   onDismiss,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="absolute inset-0 flex items-center justify-center z-10 bg-black bg-opacity-50">
       <GlassCard className="max-w-md p-6 text-center">
@@ -37,15 +40,15 @@ export const InteractiveMomentPrompt: React.FC<Props> = ({
 
         <div className="flex gap-3 justify-center">
           <GlassButton onClick={onDismiss} variant="secondary">
-            Skip
+            {t("player.interaction.skip")}
           </GlassButton>
           <GlassButton onClick={onAccept} size="lg">
-            Start Interaction
+            {t("player.interaction.start")}
           </GlassButton>
         </div>
 
         <p className="text-sm text-gray-400 mt-4">
-          Interaction window: {moment.duration} seconds
+          {t("player.interaction.window", { duration: moment.duration })}
         </p>
       </GlassCard>
     </div>

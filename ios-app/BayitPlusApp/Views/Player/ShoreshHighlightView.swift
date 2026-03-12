@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Renders Hebrew text with root letters (shoresh) highlighted in amber for vocabulary learning.
 /// Complies with WCAG AA contrast requirements (amber #FFA500 on black background).
 struct ShoreshHighlightView: View {
+    @Environment(LocalizationManager.self) private var localization
     let words: [HighlightedWord]
 
     private let rootColor = Color(red: 1.0, green: 0.65, blue: 0) // Amber #FFA500
@@ -36,6 +38,6 @@ struct ShoreshHighlightView: View {
 
     private var accessibilityText: String {
         let wordsText = words.map { $0.originalWord }.joined(separator: " ")
-        return "Root letters highlighted in \(wordsText)"
+        return localization.t("subtitles.shoreshRootAccessibilityLabel", ["words": wordsText])
     }
 }

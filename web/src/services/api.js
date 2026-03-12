@@ -943,6 +943,14 @@ const apiBYOCService = {
     api.get("/byoc/channel-index/search", { params: { q: query, limit } }),
 };
 
+// AI Companion Service (API)
+const apiCompanionService = {
+  getContext: (contentId, language) =>
+    api.post("/companion/context", { contentId, language }),
+  getQuiz: (contentId, language) =>
+    api.post("/companion/quiz", { contentId, language }),
+};
+
 // Household Service (API)
 const apiHouseholdService = {
   get: () => api.get("/household"),
@@ -1015,5 +1023,6 @@ export const discoverService = apiDiscoverService;
 export const byocService = apiBYOCService;
 export const householdService = apiHouseholdService;
 export const dmService = apiDMService;
+export const companionService = apiCompanionService;
 
 export default api;

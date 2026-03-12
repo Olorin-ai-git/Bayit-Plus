@@ -5802,11 +5802,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্লাস",
@@ -6102,7 +6098,9 @@
       "togglePanel": "AI প্যানেল টগল করুন",
       "translate": "অনুবাদ করুন",
       "trivia": "ট্রিভিয়া",
-      "triviaToggle": "[bn] Trivia"
+      "triviaToggle": "[bn] Trivia",
+      "catchUp": "ক্যাচ আপ",
+      "sceneSearch": "দৃশ্য অনুসন্ধান"
     },
     "catchup": {
       "description": "শুরুটা মিস করেছেন? এখন পর্যন্ত কী হয়েছে তার AI-চালিত সারাংশ পান।",
@@ -6119,6 +6117,8 @@
       "quizStart": "কুইজ শুরু করুন",
       "quizTitle": "আপনার জ্ঞান পরীক্ষা করতে প্রস্তুত?",
       "quizTryAgain": "আবার চেষ্টা করুন",
+      "quizNext": "পরের প্রশ্ন",
+      "quizProgress": "প্রশ্ন {{current}} / {{total}}",
       "tabContext": "প্রসঙ্গ",
       "tabQuiz": "কুইজ",
       "tabVocabulary": "শব্দভান্ডার",
@@ -6132,6 +6132,7 @@
       "goBack": "ফিরে যান",
       "navigateBack": "পিছনে নেভিগেট করুন",
       "on": "ON",
+      "off": "বন্ধ",
       "pause": "বিরতি",
       "play": "চালান",
       "preview": "প্রিভিউ",
@@ -7871,7 +7872,16 @@
       "engrew": "এনগ্রু",
       "heblish": "হেবলিশ",
       "shoresh": "শোরেশ",
-      "standard": "স্ট্যান্ডার্ড"
+      "standard": "স্ট্যান্ডার্ড",
+      "nikud": "নিকুদ",
+      "grammar_flip": "ব্যাকরণ উল্টানো",
+      "slang_synthesis": "স্ল্যাং সংশ্লেষণ",
+      "nikud_description": "উপশিরোনাম পাঠে হিব্রু স্বর চিহ্ন (নিকুদ) যোগ করুন, সঠিক পড়া ও উচ্চারণের জন্য।",
+      "shoresh_description": "শব্দের উৎস ও নিদর্শন বুঝতে উপশিরোনামে হিব্রু মূল শব্দ (শোরেশিম) হাইলাইট করুন।",
+      "heblish_description": "হিব্রু উপশিরোনামকে লাতিন অক্ষরে প্রতিবর্ণীকরণ করুন, যাতে লাতিন বর্ণমালায় হিব্রু শব্দ পড়তে পারেন।",
+      "engrew_description": "হিব্রু অক্ষরে ইংরেজি শব্দ লিখুন, হিব্রু পাঠকদের ইংরেজি সংলাপ ধ্বন্যাত্মকভাবে অনুসরণ করতে সাহায্য করুন।",
+      "grammar_flip_description": "একটি অনন্য দ্বিভাষিক শিক্ষার অভিজ্ঞতার জন্য হিব্রু শব্দভান্ডারকে ইংরেজি বাক্য কাঠামোর সাথে মেলান।",
+      "slang_synthesis_description": "মজাদার এবং সাংস্কৃতিকভাবে মিশ্রিত উপশিরোনাম ট্র্যাকের জন্য ইসরায়েলি এবং আমেরিকান স্ল্যাং মেলান।"
     },
     "opensubtitles": "OpenSubtitles",
     "searchExternal": "বহিরাগত সাবটাইটেল অনুসন্ধান করুন",
@@ -7882,7 +7892,33 @@
     "primary_language": "প্রাথমিক ভাষা",
     "secondary_language": "সেকেন্ডারি ভাষা",
     "layout_mode": "লেআউট মোড",
-    "interactive_title": "ইন্টারঅ্যাক্টিভ সাবটাইটেল"
+    "interactive_title": "ইন্টারঅ্যাক্টিভ সাবটাইটেল",
+    "layout": {
+      "stacked": "স্তুপীকৃত",
+      "sideBySide": "পাশাপাশি"
+    },
+    "language": {
+      "en": "ইংরেজি",
+      "he": "হিব্রু",
+      "es": "স্প্যানিশ",
+      "ar": "আরবি",
+      "ru": "রাশিয়ান",
+      "fr": "ফরাসি",
+      "de": "জার্মান",
+      "pt": "পর্তুগিজ",
+      "it": "ইতালিয়ান"
+    },
+    "picker": {
+      "regularTitle": "নিয়মিত হিব্রু",
+      "regularDescription": "স্বরবর্ণ চিহ্ন ছাড়া মানক হিব্রু পাঠ",
+      "nikudTitle": "নিকুদ (স্বরবর্ণ চিহ্ন)",
+      "nikudDescription": "পড়া সহজ করতে স্বরবর্ণ চিহ্ন যোগ করা হয়েছে",
+      "shoreshTitle": "শোরেশ (মূল শব্দ)",
+      "shoreshDescription": "ভাষা শেখার জন্য মূল অক্ষর হাইলাইট করা হয়েছে",
+      "heblishTitle": "হেব্লিশ (ইংরেজি মিশ্রণ)",
+      "heblishDescription": "হিব্রুতে ইংরেজি শব্দ মিশ্রিত"
+    },
+    "shoreshRootAccessibilityLabel": "{{words}}-এ মূল অক্ষর হাইলাইট করা হয়েছে"
   },
   "support": {
     "title": "সাপোর্ট সেন্টার",
@@ -11678,7 +11714,14 @@
   },
   "bilingualBridge": {
     "languageRatio": "ভাষা অনুপাত",
-    "wordsLearned": "শেখা শব্দ"
+    "wordsLearned": "শেখা শব্দ",
+    "on": "দ্বিভাষিক সেতু চালু",
+    "off": "দ্বিভাষিক সেতু বন্ধ",
+    "active": "সক্রিয়",
+    "accessibilityLabel": "দ্বিভাষিক সেতু",
+    "accessibilityEnabled": "সক্ষম",
+    "accessibilityDisabled": "অক্ষম",
+    "accessibilityHint": "দ্বিভাষিক ডাবিং টগল করতে নির্বাচন চাপুন"
   },
   "coupons": {
     "noneAvailable": "কোনো কুপন উপলব্ধ নেই",
@@ -11734,7 +11777,8 @@
     "emptyHint": "শব্দ সংরক্ষণ করতে সাবটাইটেলে ট্যাপ করুন",
     "newWords": "নতুন শব্দ",
     "reviewedWords": "পর্যালোচিত শব্দ",
-    "close": "বন্ধ করুন"
+    "close": "বন্ধ করুন",
+    "seenTimes": "{{count}} বার দেখা হয়েছে"
   },
   "wallet": {
     "earned": "অর্জিত",

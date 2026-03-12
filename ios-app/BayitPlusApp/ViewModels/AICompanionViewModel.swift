@@ -7,9 +7,17 @@ import Observation
 @Observable
 final class AICompanionViewModel {
     enum Tab: String, CaseIterable {
-        case context = "Context"
-        case quiz = "Quiz"
-        case vocabulary = "Vocabulary"
+        case context
+        case quiz
+        case vocabulary
+
+        var localizationKey: String {
+            switch self {
+            case .context: return "aiCompanion.context"
+            case .quiz: return "aiCompanion.quiz"
+            case .vocabulary: return "aiCompanion.vocabulary"
+            }
+        }
     }
 
     private(set) var selectedTab: Tab = .context

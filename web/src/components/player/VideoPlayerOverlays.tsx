@@ -14,6 +14,7 @@ import TriviaOverlay from "./TriviaOverlay";
 import LiveFeatureUsageIndicator from "./LiveFeatureUsageIndicator";
 import OmriOverlay from "./OmriOverlay";
 import CulturalContextOverlay from "./cultural/CulturalContextOverlay";
+import CulturalReferencePopup from "./cultural/CulturalReferencePopup";
 import BilingualDubbingControls from "./BilingualDubbingControls";
 import { TalkBackOverlay } from "./talk-back";
 import { InteractiveMissionPlayer } from "@/components/interactive-mission/InteractiveMissionPlayer";
@@ -95,6 +96,8 @@ interface VideoPlayerOverlaysProps {
   // Cultural Context (VOD)
   culturalContextEnabled?: boolean;
   onCulturalReferenceSelect?: (referenceId: string) => void;
+  selectedCulturalReference?: string | null;
+  onCulturalPopupClose?: () => void;
 
   // Bilingual Bridge (VOD)
   bilingualBridgeEnabled?: boolean;
@@ -147,6 +150,8 @@ export default function VideoPlayerOverlays({
   isPlaying = false,
   culturalContextEnabled = false,
   onCulturalReferenceSelect,
+  selectedCulturalReference = null,
+  onCulturalPopupClose,
   bilingualBridgeEnabled = false,
   profileId,
   onHoveredButtonChange,
@@ -313,6 +318,15 @@ export default function VideoPlayerOverlays({
             onReferenceSelect={onCulturalReferenceSelect}
           />
         )}
+
+      {/* Cultural Reference Popup (VOD) - shown when a badge is tapped */}
+      {selectedCulturalReference && onCulturalPopupClose && (
+        <CulturalReferencePopup
+          referenceId={selectedCulturalReference}
+          visible={true}
+          onClose={onCulturalPopupClose}
+        />
+      )}
 
       {/* Bilingual Bridge Controls (VOD) - hidden in widget mode */}
       {!isLive &&

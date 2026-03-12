@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS AI features control bar for live content.
@@ -6,6 +7,7 @@ import SwiftUI
 /// split subtitles, and language selection.
 /// Uses focusable card buttons for Siri Remote navigation.
 struct TVAIFeaturesPanel: View {
+    @Environment(LocalizationManager.self) private var localization
     let isSubtitlesEnabled: Bool
     let isDubbingEnabled: Bool
     let isTriviaEnabled: Bool
@@ -56,21 +58,21 @@ struct TVAIFeaturesPanel: View {
 
                 featureButton(
                     icon: "captions.bubble",
-                    label: "Translate",
+                    label: localization.t("player.ai.translate"),
                     isActive: isSubtitlesEnabled,
                     action: onSubtitlesTap
                 )
 
                 featureButton(
                     icon: "waveform",
-                    label: "Dubbing",
+                    label: localization.t("player.ai.dubbing"),
                     isActive: isDubbingEnabled,
                     action: onDubbingTap
                 )
 
                 featureButton(
                     icon: "lightbulb",
-                    label: "Trivia",
+                    label: localization.t("player.ai.trivia"),
                     isActive: isTriviaEnabled,
                     action: onTriviaTap
                 )
@@ -78,7 +80,7 @@ struct TVAIFeaturesPanel: View {
                 if let onCatchUpTap, isCatchUpAvailable {
                     featureButton(
                         icon: "clock.arrow.circlepath",
-                        label: "Catch Up",
+                        label: localization.t("player.ai.catchUp"),
                         isActive: false,
                         action: onCatchUpTap
                     )
@@ -86,7 +88,7 @@ struct TVAIFeaturesPanel: View {
 
                 featureButton(
                     icon: "magnifyingglass",
-                    label: "Scene Search",
+                    label: localization.t("player.ai.sceneSearch"),
                     isActive: isSceneSearchActive,
                     action: onSceneSearchTap
                 )
@@ -144,6 +146,8 @@ struct TVAIFeaturesPanel: View {
         }
         .buttonStyle(AIFeatureCardStyle())
         .focusEffectDisabled()
-        .accessibilityLabel("\(label): \(isActive ? "On" : "Off")")
+        .accessibilityLabel(
+            "\(label): \(isActive ? localization.t("player.controls.on") : localization.t("player.controls.off"))"
+        )
     }
 }

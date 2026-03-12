@@ -85,7 +85,7 @@ struct TVSplitLanguagePickerView: View {
     private var layoutToggle: some View {
         HStack(spacing: TVDesignTokens.Spacing.focusGap) {
             ForEach(SplitSubtitleLayout.allCases, id: \.self) { option in
-                GlassChip(title: option.label, isSelected: layout == option) {
+                GlassChip(title: localization.t(option.localizationKey), isSelected: layout == option) {
                     layout = option
                 }
                 .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)

@@ -6,6 +6,7 @@ import tv.bayit.plus.core.byoc.BYOCSourceManager
 import tv.bayit.plus.core.byoc.enrichment.BYOCEnrichmentService
 import tv.bayit.plus.core.byoc.models.BYOCContentType
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class BYOCSubtitleEnricher @Inject constructor(
     private val enrichmentService: BYOCEnrichmentService,
     private val sourceManager: BYOCSourceManager,
+    private val stringProvider: BayitStringProvider,
     private val logger: BayitLogger,
 ) {
     fun enrichSubtitles(
@@ -60,7 +62,7 @@ class BYOCSubtitleEnricher @Inject constructor(
                         val details = enrichResult.subtitleDetails
                         langs.forEach { lang ->
                             val detail = details[lang]
-                            val langName = LANGUAGE_NAMES[lang] ?: lang
+                            val langName = stringProvider.string("subtitles.language.$lang")
                             if (detail != null) {
                                 onSubtitleAdded(SubtitleAddedEvent(langName, contentTitle))
                             }
@@ -86,20 +88,6 @@ class BYOCSubtitleEnricher @Inject constructor(
             }
             onComplete?.invoke()
         }
-    }
-
-    companion object {
-        private val LANGUAGE_NAMES = mapOf(
-            "en" to "English",
-            "es" to "Spanish",
-            "he" to "Hebrew",
-            "ar" to "Arabic",
-            "ru" to "Russian",
-            "fr" to "French",
-            "de" to "German",
-            "pt" to "Portuguese",
-            "it" to "Italian",
-        )
     }
 }
 

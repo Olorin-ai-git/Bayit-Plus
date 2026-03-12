@@ -143,6 +143,9 @@ extension PlayerView {
             catchUpAutoPromptOverlay
             catchUpSummaryOverlay
 
+            // Cultural context badge row (VOD only, above subtitles, below controls)
+            culturalContextOverlay
+
             // Controls overlay — below full-screen interaction overlays so they appear on top
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
                 controlsOverlay
