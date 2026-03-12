@@ -13,22 +13,33 @@ struct CreditsBadgeView: View {
     @Environment(AuthManager.self) private var authManager
 
     @State private var balance: CreditBalance?
+    @State private var isVisible = true
 
     private var isPlus: Bool {
         authManager.user?.subscriptionTier == .plus
     }
 
     var body: some View {
-        Button {
-            if !isPlus {
-                coordinator.navigate(to: .subscription)
+        Group {
+            if isVisible {
+                Button {
+                    if !isPlus {
+                        coordinator.navigate(to: .subscription)
+                    }
+                } label: {
+                    content
+                }
+                .buttonStyle(.plain)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
-        } label: {
-            content
         }
-        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.3), value: isVisible)
         .task {
             await loadBalance()
+            try? await Task.sleep(for: .seconds(8))
+            if !isPlus {
+                isVisible = false
+            }
         }
     }
 
@@ -73,7 +84,7 @@ struct CreditsBadgeView: View {
                 .foregroundStyle(status.color)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(String(format: localization.t("plus.badge.creditsRemaining"), remaining))
+                Text(localization.t("plus.badge.creditsRemaining", ["count": "\(remaining)"]))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 

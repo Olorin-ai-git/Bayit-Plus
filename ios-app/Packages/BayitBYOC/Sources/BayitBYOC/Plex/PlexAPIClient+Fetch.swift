@@ -2,11 +2,11 @@ import BayitCore
 import Foundation
 
 public extension PlexAPIClient {
-    /// Fetch library sections from a specific server.
+    /// Fetch library sections using a resolved base URL.
     func fetchLibraries(
-        server: PlexServer
+        baseURL: String
     ) async throws -> [PlexLibrary] {
-        let url = URL(string: "\(server.baseURL)/library/sections")!
+        let url = URL(string: "\(baseURL)/library/sections")!
         let data = try await authenticatedGet(url: url)
 
         let json = try JSONSerialization.jsonObject(
@@ -35,10 +35,10 @@ public extension PlexAPIClient {
 
     /// Fetch media items from a library section.
     func fetchLibraryItems(
-        server: PlexServer,
+        baseURL: String,
         libraryId: String
     ) async throws -> [PlexMediaItem] {
-        let urlStr = "\(server.baseURL)/library/sections/\(libraryId)/all"
+        let urlStr = "\(baseURL)/library/sections/\(libraryId)/all"
         let data = try await authenticatedGet(url: URL(string: urlStr)!)
 
         let json = try JSONSerialization.jsonObject(
@@ -77,11 +77,11 @@ public extension PlexAPIClient {
 
     /// Build a full stream URL for a media item.
     func streamURL(
-        server: PlexServer,
+        baseURL: String,
         path: String
     ) -> URL? {
         var components = URLComponents(
-            string: "\(server.baseURL)\(path)"
+            string: "\(baseURL)\(path)"
         )
         components?.queryItems = [
             URLQueryItem(name: "X-Plex-Token", value: authToken),

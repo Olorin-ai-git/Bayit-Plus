@@ -5,18 +5,18 @@ public enum PlexContentAdapter {
     /// Convert a Plex media item to a BYOC content item.
     public static func adapt(
         item: PlexMediaItem,
-        server: PlexServer,
+        baseURL: String,
         sourceId: String,
         authToken: String
     ) -> BYOCContentItem {
         let thumb: URL? = item.thumbPath.flatMap { path in
-            imageURL(server: server, path: path, token: authToken)
+            imageURL(baseURL: baseURL, path: path, token: authToken)
         }
         let art: URL? = item.artPath.flatMap { path in
-            imageURL(server: server, path: path, token: authToken)
+            imageURL(baseURL: baseURL, path: path, token: authToken)
         }
         let stream = transcodeURL(
-            server: server, ratingKey: item.id, token: authToken
+            baseURL: baseURL, ratingKey: item.id, token: authToken
         )
 
         return BYOCContentItem(
@@ -38,13 +38,13 @@ public enum PlexContentAdapter {
     /// Convert an array of Plex items.
     public static func adaptAll(
         items: [PlexMediaItem],
-        server: PlexServer,
+        baseURL: String,
         sourceId: String,
         authToken: String
     ) -> [BYOCContentItem] {
         items.map { adapt(
             item: $0,
-            server: server,
+            baseURL: baseURL,
             sourceId: sourceId,
             authToken: authToken
         ) }
@@ -61,23 +61,23 @@ public enum PlexContentAdapter {
     }
 
     private static func imageURL(
-        server: PlexServer,
+        baseURL: String,
         path: String,
         token: String
     ) -> URL? {
-        authenticatedURL(server: server, path: path, token: token)
+        authenticatedURL(baseURL: baseURL, path: path, token: token)
     }
 
     /// Build a universal transcode URL that serves HLS.
     /// AVPlayer cannot stream raw media files (MKV/AVI) over HTTP,
     /// so we use the Plex transcode endpoint which remuxes to HLS.
     private static func transcodeURL(
-        server: PlexServer,
+        baseURL: String,
         ratingKey: String,
         token: String
     ) -> URL? {
         var components = URLComponents(
-            string: "\(server.baseURL)/video/:/transcode/universal/start.m3u8"
+            string: "\(baseURL)/video/:/transcode/universal/start.m3u8"
         )
         components?.queryItems = [
             URLQueryItem(name: "path", value: "/library/metadata/\(ratingKey)"),
@@ -98,12 +98,12 @@ public enum PlexContentAdapter {
     }
 
     private static func authenticatedURL(
-        server: PlexServer,
+        baseURL: String,
         path: String,
         token: String
     ) -> URL? {
         var components = URLComponents(
-            string: "\(server.baseURL)\(path)"
+            string: "\(baseURL)\(path)"
         )
         components?.queryItems = [
             URLQueryItem(name: "X-Plex-Token", value: token),

@@ -127,18 +127,20 @@ extension BYOCSourceManager {
                 $0.baseURL == urlStr
             }) ?? servers.first else { return }
 
+            let resolvedURL = try await client.resolveBaseURL(server: server)
+
             plexItems.removeAll { $0.sourceId == source.id }
-            let libraries = try await client.fetchLibraries(server: server)
+            let libraries = try await client.fetchLibraries(baseURL: resolvedURL)
 
             var allItems: [BYOCContentItem] = []
             for lib in libraries {
                 let items = try await client.fetchLibraryItems(
-                    server: server,
+                    baseURL: resolvedURL,
                     libraryId: lib.id
                 )
                 allItems.append(contentsOf: PlexContentAdapter.adaptAll(
                     items: items,
-                    server: server,
+                    baseURL: resolvedURL,
                     sourceId: source.id,
                     authToken: token
                 ))

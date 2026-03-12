@@ -15,7 +15,7 @@
         var body: some View {
             Button(action: onSelect) {
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    Image(systemName: server.isLocal ? "desktopcomputer" : "cloud")
+                    Image(systemName: server.hasLocalConnection ? "desktopcomputer" : "cloud")
                         .font(.system(size: 32))
                         .foregroundStyle(.orange)
                         .frame(width: 50)
@@ -25,7 +25,7 @@
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                             .foregroundStyle(DesignTokens.Text.primary)
 
-                        Text(server.isLocal
+                        Text(server.hasLocalConnection
                             ? localization.t("byoc.plexLocal")
                             : localization.t("byoc.plexRemote"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))

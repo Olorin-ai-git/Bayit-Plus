@@ -146,28 +146,31 @@ public final class BYOCSourceManager: @unchecked Sendable {
         server: PlexServer,
         authToken: String
     ) async throws {
-        let config = BYOCSourceConfig(
-            type: .plex,
-            name: name,
-            url: URL(string: server.baseURL)
-        )
-        _ = BYOCKeychainStore.storeToken(authToken, forSourceId: config.id)
-
         let client = PlexAPIClient(
             authToken: authToken,
             clientId: plexClientId
         )
-        let libraries = try await client.fetchLibraries(server: server)
+
+        let resolvedURL = try await client.resolveBaseURL(server: server)
+
+        let config = BYOCSourceConfig(
+            type: .plex,
+            name: name,
+            url: URL(string: resolvedURL)
+        )
+        _ = BYOCKeychainStore.storeToken(authToken, forSourceId: config.id)
+
+        let libraries = try await client.fetchLibraries(baseURL: resolvedURL)
 
         var allItems: [BYOCContentItem] = []
         for lib in libraries {
             let mediaItems = try await client.fetchLibraryItems(
-                server: server,
+                baseURL: resolvedURL,
                 libraryId: lib.id
             )
             let converted = PlexContentAdapter.adaptAll(
                 items: mediaItems,
-                server: server,
+                baseURL: resolvedURL,
                 sourceId: config.id,
                 authToken: authToken
             )
