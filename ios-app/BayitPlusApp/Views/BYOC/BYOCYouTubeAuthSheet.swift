@@ -15,6 +15,7 @@ struct BYOCYouTubeAuthSheet: View {
     @State private var isSuccess = false
     @State private var error: String?
     @State private var generateInteractionMoments = false
+    @State private var pollTask: Task<Void, Never>?
 
     private let logger = BayitLogger(category: "BYOCYouTubeAuth")
 
@@ -47,7 +48,10 @@ struct BYOCYouTubeAuthSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(localization.t("common.cancel")) { dismiss() }
+                    Button(localization.t("common.cancel")) {
+                        pollTask?.cancel()
+                        dismiss()
+                    }
                 }
             }
             .task { await requestCode() }
@@ -129,22 +133,50 @@ struct BYOCYouTubeAuthSheet: View {
     }
 
     private func requestCode() async {
-        let authService = YouTubeAuthService(clientId: clientId, clientSecret: clientSecret)
+        guard deviceCode == nil else { return }
+
+        let authService = YouTubeAuthService(
+            clientId: clientId,
+            clientSecret: clientSecret
+        )
         do {
             let code = try await authService.requestDeviceCode()
             deviceCode = code
-            isPolling = true
-            let tokens = try await authService.pollForToken(deviceCode: code)
-            try await byocManager.addYouTubeSource(
-                name: "YouTube",
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken
-            )
-            isSuccess = true
+            startPolling(authService: authService, code: code)
+        } catch is CancellationError {
+            return
         } catch {
             self.error = error.localizedDescription
-            logger.error("YouTube auth failed", error: error)
+            logger.error("YouTube code request failed", error: error)
         }
-        isPolling = false
+    }
+
+    private func startPolling(
+        authService: YouTubeAuthService,
+        code: GoogleDeviceCode
+    ) {
+        pollTask?.cancel()
+        pollTask = Task {
+            isPolling = true
+            defer { isPolling = false }
+
+            do {
+                let tokens = try await authService.pollForToken(
+                    deviceCode: code
+                )
+                try Task.checkCancellation()
+                try await byocManager.addYouTubeSource(
+                    name: "YouTube",
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken
+                )
+                isSuccess = true
+            } catch is CancellationError {
+                return
+            } catch {
+                self.error = error.localizedDescription
+                logger.error("YouTube auth failed", error: error)
+            }
+        }
     }
 }

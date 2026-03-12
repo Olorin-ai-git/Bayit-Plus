@@ -1,18 +1,24 @@
 package tv.bayit.plus.core.byoc.clients
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import tv.bayit.plus.core.byoc.models.BYOCContentItem
 import tv.bayit.plus.core.byoc.models.BYOCContentType
 import tv.bayit.plus.core.byoc.models.BYOCSourceType
+import tv.bayit.plus.core.byoc.models.PlexConnection
 import tv.bayit.plus.core.byoc.models.PlexDeviceCode
 import tv.bayit.plus.core.byoc.models.PlexLibrary
 import tv.bayit.plus.core.byoc.models.PlexServer
 import tv.bayit.plus.core.common.logging.BayitLogger
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,6 +28,16 @@ class PlexClient @Inject constructor(
     private val logger: BayitLogger,
 ) {
     private val okHttpClient = OkHttpClient.Builder().build()
+
+    private val localProbeClient = OkHttpClient.Builder()
+        .connectTimeout(LOCAL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .readTimeout(LOCAL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .build()
+
+    private val remoteProbeClient = OkHttpClient.Builder()
+        .connectTimeout(REMOTE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .readTimeout(REMOTE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .build()
 
     private val plexTvApi: PlexApi by lazy {
         Retrofit.Builder()
@@ -68,23 +84,51 @@ class PlexClient @Inject constructor(
         return resources
             .filter { it.provides.contains("server") }
             .mapNotNull { resource ->
-                val connection = resource.connections
-                    .sortedByDescending { it.uri.startsWith("https") }
-                    .firstOrNull() ?: return@mapNotNull null
-                val uri = java.net.URI(connection.uri)
+                val connections = resource.connections.map { conn ->
+                    PlexConnection(
+                        uri = conn.uri,
+                        isLocal = conn.local,
+                        isRelay = conn.relay,
+                    )
+                }
+                if (connections.isEmpty()) return@mapNotNull null
                 PlexServer(
                     id = resource.clientId,
                     name = resource.name,
-                    host = uri.host ?: return@mapNotNull null,
-                    port = if (uri.port > 0) uri.port else DEFAULT_PLEX_PORT,
-                    isLocal = connection.local,
+                    connections = connections,
                     isOwned = resource.owned,
                 )
             }
     }
 
-    suspend fun fetchLibraries(server: PlexServer, authToken: String): List<PlexLibrary> {
-        val api = createServerApi(server)
+    suspend fun resolveBaseURL(
+        server: PlexServer,
+        authToken: String,
+    ): String = coroutineScope {
+        val results = server.connections.map { conn ->
+            async {
+                try {
+                    val client = if (conn.isLocal) localProbeClient else remoteProbeClient
+                    val request = Request.Builder()
+                        .url("${conn.uri}/identity")
+                        .header("X-Plex-Token", authToken)
+                        .header("Accept", "application/json")
+                        .build()
+                    val response = client.newCall(request).execute()
+                    if (response.isSuccessful) conn.uri else null
+                } catch (_: Exception) {
+                    null
+                }
+            }
+        }
+        val resolved = results.awaitAll().firstNotNullOfOrNull { it }
+        resolved ?: throw PlexAuthException(
+            "No reachable connection for ${server.name}",
+        )
+    }
+
+    suspend fun fetchLibraries(baseUrl: String, authToken: String): List<PlexLibrary> {
+        val api = createServerApi(baseUrl)
         val container = api.fetchLibraries(token = authToken)
         return container.container.directories.map { dir ->
             PlexLibrary(
@@ -96,17 +140,16 @@ class PlexClient @Inject constructor(
     }
 
     suspend fun fetchLibraryItems(
-        server: PlexServer,
+        baseUrl: String,
         libraryId: String,
         authToken: String,
         sourceId: String,
     ): List<BYOCContentItem> {
-        val api = createServerApi(server)
+        val api = createServerApi(baseUrl)
         val container = api.fetchLibraryItems(
             libraryId = libraryId,
             token = authToken,
         )
-        val baseUrl = buildServerUrl(server)
         return container.container.metadata.map { item ->
             val partKey = item.media.firstOrNull()?.parts?.firstOrNull()?.key
             val streamUrl = if (partKey != null) {
@@ -137,19 +180,13 @@ class PlexClient @Inject constructor(
         }
     }
 
-    private fun createServerApi(server: PlexServer): PlexServerApi {
-        val baseUrl = buildServerUrl(server)
+    private fun createServerApi(baseUrl: String): PlexServerApi {
         return Retrofit.Builder()
             .baseUrl("$baseUrl/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(JSON_MEDIA_TYPE.toMediaType()))
             .build()
             .create(PlexServerApi::class.java)
-    }
-
-    private fun buildServerUrl(server: PlexServer): String {
-        val scheme = if (server.isLocal) "http" else "https"
-        return "$scheme://${server.host}:${server.port}"
     }
 
     private fun buildDirectStreamUrl(baseUrl: String, partKey: String, token: String): String {
@@ -171,8 +208,9 @@ class PlexClient @Inject constructor(
         private const val PRODUCT_NAME = "Bayit+"
         private const val POLL_INTERVAL_MS = 3000L
         private const val MAX_POLL_ATTEMPTS = 100
-        private const val DEFAULT_PLEX_PORT = 32400
         private const val MILLIS_PER_SECOND = 1000
+        private const val LOCAL_TIMEOUT_SECONDS = 3L
+        private const val REMOTE_TIMEOUT_SECONDS = 8L
     }
 }
 

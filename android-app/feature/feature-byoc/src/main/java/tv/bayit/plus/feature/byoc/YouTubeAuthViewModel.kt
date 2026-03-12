@@ -3,6 +3,7 @@ package tv.bayit.plus.feature.byoc
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,6 +45,7 @@ class YouTubeAuthViewModel @Inject constructor(
     private var pollJob: Job? = null
 
     fun startAuth() {
+        if (_uiState.value !is YouTubeAuthUiState.Idle) return
         if (googleClientSecret.isBlank()) {
             _uiState.value = YouTubeAuthUiState.Error(stringProvider.string("error.byoc.youtubeNotConfigured"))
             logger.error("Google client secret not configured for YouTube auth")
@@ -86,6 +88,8 @@ class YouTubeAuthViewModel @Inject constructor(
                     accessToken = accessToken,
                 )
                 _uiState.value = YouTubeAuthUiState.Success
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 logger.error("YouTube auth poll failed", error = e)
                 _uiState.value = YouTubeAuthUiState.Error(

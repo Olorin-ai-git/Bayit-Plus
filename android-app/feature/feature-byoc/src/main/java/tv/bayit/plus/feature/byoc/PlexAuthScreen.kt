@@ -159,8 +159,12 @@ private fun ServerSelectionContent(
                             style = MaterialTheme.typography.titleMedium,
                             color = DesignTokens.Colors.Text.primary,
                         )
+                        val connectionLabel = when {
+                            server.connections.any { it.isLocal } -> bayitString("byoc.plex.localServer")
+                            else -> bayitString("byoc.plex.remoteServer")
+                        }
                         Text(
-                            text = "${server.host}:${server.port}",
+                            text = connectionLabel,
                             style = MaterialTheme.typography.bodySmall,
                             color = DesignTokens.Colors.Text.secondary,
                         )

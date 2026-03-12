@@ -12,17 +12,36 @@ public struct PlexPIN: Sendable {
     }
 }
 
+/// A single connection endpoint for a Plex server.
+public struct PlexConnection: Sendable, Hashable {
+    public let host: String
+    public let port: Int
+    public let uri: String?
+    public let isLocal: Bool
+    public let isRelay: Bool
+
+    public var baseURL: String {
+        if let uri { return uri }
+        return "http\(isLocal ? "" : "s")://\(host):\(port)"
+    }
+}
+
 /// A Plex media server discovered via the user's account.
 public struct PlexServer: Identifiable, Sendable, Hashable {
     public let id: String
     public let name: String
-    public let host: String
-    public let port: Int
-    public let isLocal: Bool
     public let isOwned: Bool
+    public let connections: [PlexConnection]
 
+    /// Whether this server has a local (LAN) connection available.
+    public var hasLocalConnection: Bool {
+        connections.contains { $0.isLocal }
+    }
+
+    /// Best-guess base URL (first connection). Use `resolveBaseURL` for
+    /// a validated connection with fallback.
     public var baseURL: String {
-        "http\(isLocal ? "" : "s")://\(host):\(port)"
+        connections.first?.baseURL ?? ""
     }
 
     public func hash(into hasher: inout Hasher) {

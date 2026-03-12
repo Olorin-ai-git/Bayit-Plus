@@ -50,11 +50,13 @@ class YouTubeClient @Inject constructor(
         clientSecret: String,
     ): String {
         val intervalMs = (deviceCode.interval * MILLIS_PER_SECOND).toLong()
-        while (true) {
+        val maxAttempts = deviceCode.expiresIn * MILLIS_PER_SECOND / intervalMs
+        repeat(maxAttempts.toInt()) {
             delay(intervalMs)
             val token = tryExchangeCode(deviceCode.deviceCode, clientId, clientSecret)
             if (token != null) return token
         }
+        throw IllegalStateException("Authorization code expired")
     }
 
     suspend fun fetchSubscriptions(accessToken: String): List<YouTubeVideo> = withContext(Dispatchers.IO) {

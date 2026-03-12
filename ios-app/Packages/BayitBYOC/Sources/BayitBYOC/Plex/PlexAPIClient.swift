@@ -40,16 +40,15 @@ public actor PlexAPIClient {
                   let name = resource["name"] as? String
             else { return nil }
 
-            let connections = resource["connections"] as? [[String: Any]] ?? []
-            guard let conn = bestConnection(connections) else { return nil }
+            let rawConns = resource["connections"] as? [[String: Any]] ?? []
+            let connections = orderedConnections(rawConns)
+            guard !connections.isEmpty else { return nil }
 
             return PlexServer(
                 id: id,
                 name: name,
-                host: conn.host,
-                port: conn.port,
-                isLocal: conn.isLocal,
-                isOwned: resource["owned"] as? Bool ?? false
+                isOwned: resource["owned"] as? Bool ?? false,
+                connections: connections
             )
         }
 
@@ -58,6 +57,76 @@ public actor PlexAPIClient {
             context: ["count": "\(servers.count)"]
         )
         return servers
+    }
+
+    /// Race all connections concurrently with a short timeout each.
+    /// Returns the first working base URL or throws if none respond.
+    public func resolveBaseURL(
+        server: PlexServer
+    ) async throws -> String {
+        guard !server.connections.isEmpty else {
+            throw PlexAPIError.networkError
+        }
+
+        return try await withThrowingTaskGroup(
+            of: String?.self
+        ) { group in
+            for conn in server.connections {
+                group.addTask {
+                    let testURL = URL(
+                        string: "\(conn.baseURL)/identity"
+                    )!
+                    do {
+                        _ = try await self.timedGet(
+                            url: testURL,
+                            timeoutSeconds: conn.isLocal ? 3 : 8
+                        )
+                        return conn.baseURL
+                    } catch {
+                        self.logger.info(
+                            "Plex connection failed",
+                            context: [
+                                "url": conn.baseURL,
+                                "error": "\(error)",
+                            ]
+                        )
+                        return nil
+                    }
+                }
+            }
+
+            for try await result in group {
+                guard let baseURL = result else { continue }
+                self.logger.info(
+                    "Plex connection resolved",
+                    context: [
+                        "server": server.name,
+                        "url": baseURL,
+                    ]
+                )
+                group.cancelAll()
+                return baseURL
+            }
+            throw PlexAPIError.networkError
+        }
+    }
+
+    /// GET with a per-request timeout so unreachable hosts fail fast.
+    private func timedGet(
+        url: URL,
+        timeoutSeconds: TimeInterval
+    ) async throws -> Data {
+        var request = URLRequest(url: url)
+        request.setValue(
+            "application/json",
+            forHTTPHeaderField: "Accept"
+        )
+        request.timeoutInterval = timeoutSeconds
+        addHeaders(&request)
+
+        let (data, response) = try await session.data(for: request)
+        try validateResponse(response)
+        return data
     }
 
     /// Perform an authenticated GET request.
@@ -91,22 +160,23 @@ public actor PlexAPIClient {
         }
     }
 
-    private func bestConnection(
+    /// Parse and order connections: local first (same LAN), then
+    /// remote with URI (*.plex.direct TLS), then remote by IP.
+    private func orderedConnections(
         _ connections: [[String: Any]]
-    ) -> (host: String, port: Int, isLocal: Bool)? {
-        let parsed: [(host: String, port: Int, isLocal: Bool)] = connections.compactMap { conn in
+    ) -> [PlexConnection] {
+        connections.compactMap { conn in
             guard let host = conn["address"] as? String,
                   let port = conn["port"] as? Int
             else { return nil }
-            return (host, port, conn["local"] as? Bool ?? false)
+            return PlexConnection(
+                host: host,
+                port: port,
+                uri: conn["uri"] as? String,
+                isLocal: conn["local"] as? Bool ?? false,
+                isRelay: conn["relay"] as? Bool ?? false
+            )
         }
-
-        // Prefer remote (HTTPS) connections for reliability across networks.
-        // Local connections only work when the device is on the same LAN.
-        if let remote = parsed.first(where: { !$0.isLocal }) {
-            return remote
-        }
-        return parsed.first
     }
 }
 

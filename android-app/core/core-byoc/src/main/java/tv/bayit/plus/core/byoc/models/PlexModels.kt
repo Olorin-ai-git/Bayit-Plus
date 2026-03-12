@@ -1,11 +1,15 @@
 package tv.bayit.plus.core.byoc.models
 
+data class PlexConnection(
+    val uri: String,
+    val isLocal: Boolean,
+    val isRelay: Boolean,
+)
+
 data class PlexServer(
     val id: String,
     val name: String,
-    val host: String,
-    val port: Int,
-    val isLocal: Boolean,
+    val connections: List<PlexConnection>,
     val isOwned: Boolean,
 )
 

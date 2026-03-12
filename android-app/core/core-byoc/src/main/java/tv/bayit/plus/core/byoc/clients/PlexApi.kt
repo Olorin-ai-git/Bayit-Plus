@@ -25,7 +25,7 @@ interface PlexApi {
         @Header("X-Plex-Client-Identifier") clientId: String,
     ): PlexPinResponse
 
-    @GET("api/v2/resources")
+    @GET("api/v2/resources?includeHttps=1&includeRelay=1")
     suspend fun discoverServers(
         @Header("Accept") accept: String = "application/json",
         @Header("X-Plex-Token") token: String,
@@ -71,6 +71,7 @@ data class PlexResourceResponse(
 data class PlexConnectionResponse(
     val uri: String,
     val local: Boolean = false,
+    val relay: Boolean = false,
 )
 
 @Serializable

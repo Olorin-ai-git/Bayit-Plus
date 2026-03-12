@@ -153,11 +153,14 @@
             pollTask = Task {
                 do {
                     let tokens = try await authService.pollForToken(deviceCode: code)
+                    try Task.checkCancellation()
                     try await byocManager.addYouTubeSource(
                         name: "YouTube", accessToken: tokens.accessToken,
                         refreshToken: tokens.refreshToken
                     )
                     onDismiss()
+                } catch is CancellationError {
+                    return
                 } catch {
                     self.error = error.localizedDescription
                 }

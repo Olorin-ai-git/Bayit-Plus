@@ -57,14 +57,15 @@ class BYOCSourceRefresher @Inject constructor(
             logger.warning("Plex refresh: no reachable server", metadata = mapOf("sourceId" to entity.id))
             return emptyList()
         }
-        val libraries = plexClient.fetchLibraries(server, token)
+        val baseUrl = plexClient.resolveBaseURL(server, token)
+        val libraries = plexClient.fetchLibraries(baseUrl, token)
         logger.info(
             "Plex refresh: fetched libraries",
             metadata = mapOf("count" to libraries.size.toString(), "server" to server.name),
         )
         val allItems = mutableListOf<BYOCContentItem>()
         for (library in libraries) {
-            val items = plexClient.fetchLibraryItems(server, library.id, token, entity.id)
+            val items = plexClient.fetchLibraryItems(baseUrl, library.id, token, entity.id)
             allItems.addAll(plexAdapter.filterPlayable(items))
         }
         logger.info("Plex refresh: total content items", metadata = mapOf("count" to allItems.size.toString()))

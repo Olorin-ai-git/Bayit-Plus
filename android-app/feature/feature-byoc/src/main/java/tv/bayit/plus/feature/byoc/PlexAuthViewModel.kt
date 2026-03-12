@@ -3,6 +3,7 @@ package tv.bayit.plus.feature.byoc
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,6 +41,7 @@ class PlexAuthViewModel @Inject constructor(
     private var authToken: String? = null
 
     fun startAuth() {
+        if (_uiState.value !is PlexAuthUiState.Idle) return
         viewModelScope.launch {
             try {
                 val deviceCode = plexClient.requestDeviceCode(clientId)
@@ -86,6 +88,8 @@ class PlexAuthViewModel @Inject constructor(
                 } else {
                     _uiState.value = PlexAuthUiState.SelectServer(servers)
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 logger.error("Plex auth poll failed", error = e)
                 _uiState.value = PlexAuthUiState.Error(e.message ?: "Authentication timed out")
