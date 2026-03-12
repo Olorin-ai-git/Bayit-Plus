@@ -58,7 +58,7 @@
                     .fill(DesignTokens.Primary.p400.opacity(0.15))
                     .frame(width: 70, height: 70)
 
-                Image(systemName: "play.tv")
+                Image(systemName: "wand.and.stars")
                     .font(.system(size: 32))
                     .foregroundStyle(DesignTokens.Primary.p400)
             }
@@ -66,11 +66,11 @@
 
         private var textSection: some View {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
-                Text(localization.t("byoc.bannerTitle"))
+                Text(localization.t("ai.gateway.title"))
                     .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text(localization.t("byoc.bannerSubtitle"))
+                Text(localization.t("ai.gateway.subtitle"))
                     .font(.system(size: TVDesignTokens.FontSize.md))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .lineLimit(2)
@@ -79,7 +79,7 @@
 
         private var connectButton: some View {
             HStack(spacing: TVDesignTokens.Spacing.xs) {
-                Text(localization.t("byoc.bannerConnect"))
+                Text(localization.t("ai.gateway.connectYouTube"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
 
                 Image(systemName: "arrow.right")

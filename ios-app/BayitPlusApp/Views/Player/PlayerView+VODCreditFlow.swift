@@ -75,6 +75,10 @@
         // MARK: - Activate Feature
 
         func activateVODFeature(_ feature: VODAIFeature) {
+            if mediaContentType.isYouTubeSource {
+                let gatewayState = AIGatewayState()
+                gatewayState.markFirstAIFeatureUsed()
+            }
             withAnimation(.spring(duration: 0.3)) {
                 switch feature {
                 case .pauseAsk:

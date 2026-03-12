@@ -50,7 +50,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .vod: return localization.t("nav.vod")
         case .zehAni: return localization.t("nav.zehAni")
         case .podcasts: return localization.t("nav.listen")
-        case .byoc: return localization.t("nav.byoc")
+        case .byoc: return localization.t("nav.myContent")
         case .search: return localization.t("nav.search")
         case .discover: return localization.t("nav.discover")
         case .profile: return localization.t("nav.profile")

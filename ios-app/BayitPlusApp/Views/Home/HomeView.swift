@@ -1,3 +1,4 @@
+import BayitBYOC
 import BayitDesignSystem
 import BayitLocalization
 import BayitWidgetShared
@@ -14,9 +15,12 @@ struct HomeView: View {
     @Environment(FeatureFlags.self) var featureFlags
     @Environment(LocalizationManager.self) var localization
     @Environment(WidgetDataSyncService.self) private var widgetSync
+    @Environment(BYOCSourceManager.self) var byocManager
     @Environment(\.appConfiguration) var appConfiguration
     @State var viewModel: HomeViewModel?
     @State var cardActions: CardActionsViewModel?
+    @State var aiGatewayState = AIGatewayState()
+    @State var showYouTubeAuth = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -72,5 +76,9 @@ struct HomeView: View {
                 Task { await viewModel?.refreshContinueWatching() }
             }
         }
+        .sheet(isPresented: $showYouTubeAuth) {
+            BYOCYouTubeAuthSheet()
+        }
+        .onAppear { aiGatewayState.incrementSession() }
     }
 }

@@ -26,7 +26,7 @@ struct BYOCSourceListView: View {
             .padding(.vertical, DesignTokens.Spacing.lg)
         }
         .background(DesignTokens.Background.primary)
-        .navigationTitle(localization.t("byoc.connectedSources"))
+        .navigationTitle(localization.t("byoc.yourContentSources"))
         .sheet(isPresented: $showAddIPTV) {
             AddIPTVSourceSheet()
         }

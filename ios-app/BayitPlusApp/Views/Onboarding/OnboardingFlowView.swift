@@ -105,8 +105,7 @@ struct OnboardingFlowView: View {
                 titleKey: "onboarding.neverMiss.title",
                 subtitleKey: "onboarding.neverMiss.subtitle",
                 pills: [
-                    "onboarding.neverMiss.catchup",
-                    "onboarding.neverMiss.byoc",
+                    "onboarding.neverMiss.yourContent",
                 ]
             ) { advance() }
         case .zehAni:

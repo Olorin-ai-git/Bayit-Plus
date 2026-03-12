@@ -1,3 +1,4 @@
+import BayitBYOC
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -36,10 +37,14 @@ extension HomeView {
             LiveTVRow(channels: vm.liveChannels, coordinator: coordinator)
         }
 
+        aiGatewaySection
+
         PlusFeatureCardView(feature: .dubbing)
             .padding(.horizontal, DesignTokens.Spacing.lg)
 
         BYOCShelfRow()
+
+        moreContentSection
 
         if !vm.radioStations.isEmpty {
             RadioStationsRow(stations: vm.radioStations)
@@ -84,6 +89,44 @@ extension HomeView {
         .padding(.leading, DesignTokens.Spacing.lg + 4)
         .padding(.trailing, DesignTokens.Spacing.lg)
         .padding(.bottom, DesignTokens.Spacing.md)
+    }
+
+    // MARK: - AI Gateway
+
+    @ViewBuilder
+    var aiGatewaySection: some View {
+        if aiGatewayState.shouldShowCard(hasYouTubeSource: byocManager.hasYouTube) {
+            AIGatewayCardView(
+                onConnectYouTube: { showYouTubeAuth = true },
+                onLearnMore: { coordinator.navigate(to: .byocSources) },
+                onDismiss: {
+                    withAnimation(.spring(response: 0.3)) { aiGatewayState.dismiss() }
+                },
+                showDontShowAgain: aiGatewayState.showDontShowAgain,
+                onDontShowAgain: {
+                    withAnimation(.spring(response: 0.3)) {
+                        aiGatewayState.permanentlyDismiss()
+                    }
+                }
+            )
+            .transition(.asymmetric(insertion: .opacity, removal: .scale.combined(with: .opacity)))
+        }
+    }
+
+    @ViewBuilder
+    var moreContentSection: some View {
+        if aiGatewayState.shouldShowMoreContentCard(hasYouTubeSource: byocManager.hasYouTube) {
+            MoreContentCardView(
+                onExplore: { coordinator.navigate(to: .byocSources) },
+                onDismiss: {
+                    withAnimation(.spring(response: 0.3)) {
+                        aiGatewayState.dismissMoreContent()
+                    }
+                }
+            )
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .transition(.asymmetric(insertion: .opacity, removal: .scale.combined(with: .opacity)))
+        }
     }
 
     // MARK: - Location Sections

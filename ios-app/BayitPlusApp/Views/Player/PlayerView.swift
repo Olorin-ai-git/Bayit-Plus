@@ -122,6 +122,9 @@ struct PlayerView: View {
     /// PiP state
     @State var isPiPActive = false
 
+    /// First BYOC play overlay
+    @State var showFirstBYOCOverlay = false
+
     // Quality & playback rate
     @State var showQualitySelector = false
     @State var showPlaybackRateMenu = false
@@ -177,6 +180,7 @@ struct PlayerView: View {
                 UIApplication.shared.isIdleTimerDisabled = true
                 await viewModel.load()
                 initializeViewModels()
+                handleFirstBYOCPlayIfNeeded()
                 castSessionManager.updateContent(
                     id: contentId,
                     title: viewModel.title ?? contentId

@@ -158,6 +158,9 @@ extension PlayerView {
             pauseAskOverlay
             sharedInteractionOverlay
 
+            // First BYOC play hint overlay
+            firstBYOCPlayOverlay
+
             // Recording indicator overlay (always on top)
             if isRecording {
                 recordingIndicatorOverlay
