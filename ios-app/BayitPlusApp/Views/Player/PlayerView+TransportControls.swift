@@ -1,6 +1,7 @@
 import BayitDesignSystem
 import BayitMedia
 import SwiftUI
+import WebKit
 
 /// Extension on PlayerView providing the controls overlay, controls gradient,
 /// controls toggling, auto-hide timer, and double-tap skip gesture.
@@ -23,12 +24,40 @@ extension PlayerView {
                 duration: viewModel.player.duration,
                 bufferedTime: viewModel.player.bufferedTime,
                 onPlayPause: {
-                    viewModel.player.togglePlayPause()
+                    if mediaContentType.isYouTubeSource {
+                        if youtubeIsPlaying {
+                            YouTubeEmbedPlayerView.pause(youtubeWebView)
+                        } else {
+                            YouTubeEmbedPlayerView.play(youtubeWebView)
+                        }
+                    } else {
+                        viewModel.player.togglePlayPause()
+                    }
                     Task { await viewModel.syncPlaybackState() }
                 },
-                onSkipForward: { Task { await viewModel.player.skipForward() } },
-                onSkipBackward: { Task { await viewModel.player.skipBackward() } },
-                onSeek: { time in Task { await viewModel.player.seek(to: time) } }
+                onSkipForward: {
+                    if mediaContentType.isYouTubeSource {
+                        let target = min(youtubeCurrentTime + 10, youtubeDuration)
+                        YouTubeEmbedPlayerView.seek(youtubeWebView, to: target)
+                    } else {
+                        Task { await viewModel.player.skipForward() }
+                    }
+                },
+                onSkipBackward: {
+                    if mediaContentType.isYouTubeSource {
+                        let target = max(youtubeCurrentTime - 10, 0)
+                        YouTubeEmbedPlayerView.seek(youtubeWebView, to: target)
+                    } else {
+                        Task { await viewModel.player.skipBackward() }
+                    }
+                },
+                onSeek: { time in
+                    if mediaContentType.isYouTubeSource {
+                        YouTubeEmbedPlayerView.seek(youtubeWebView, to: time)
+                    } else {
+                        Task { await viewModel.player.seek(to: time) }
+                    }
+                }
             )
             .walkthroughTarget(id: "discover_pause_ask_step2")
             .padding(.bottom, DesignTokens.Spacing.xs)

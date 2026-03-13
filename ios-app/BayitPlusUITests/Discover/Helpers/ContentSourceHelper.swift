@@ -32,18 +32,32 @@ enum ContentSourceHelper {
             }
 
         case .youtube:
-            let byocSection = app.staticTexts.matching(
-                NSPredicate(format: "label CONTAINS[c] 'BYOC' OR label CONTAINS[c] 'My Content' OR label CONTAINS[c] 'YouTube'")
-            ).firstMatch
-            XCTAssertTrue(byocSection.waitForExistence(timeout: timeout), "BYOC/YouTube section not found")
-            byocSection.tap()
+            NavigationHelper.switchToTab(app, tab: "Home")
 
-            let youtubeItem = app.buttons.matching(
-                NSPredicate(format: "label CONTAINS[c] 'youtube'")
+            let scrollView = app.scrollViews.firstMatch
+            let youtubeHeader = app.staticTexts.matching(
+                NSPredicate(format: "label CONTAINS[c] 'From YouTube' OR label CONTAINS[c] 'YouTube'")
             ).firstMatch
-            if youtubeItem.waitForExistence(timeout: 5) {
-                youtubeItem.tap()
+
+            if !youtubeHeader.waitForExistence(timeout: 3), scrollView.exists {
+                for _ in 0 ..< 4 {
+                    scrollView.swipeUp()
+                    if youtubeHeader.waitForExistence(timeout: 1) { break }
+                }
             }
+            XCTAssertTrue(
+                youtubeHeader.waitForExistence(timeout: timeout),
+                "BYOC/YouTube section not found"
+            )
+
+            let youtubeCard = app.buttons.matching(
+                NSPredicate(format: "accessibilityHint CONTAINS[c] 'Tap to open'")
+            ).firstMatch
+            XCTAssertTrue(
+                youtubeCard.waitForExistence(timeout: 5),
+                "No YouTube content card found"
+            )
+            youtubeCard.tap()
         }
     }
 

@@ -145,6 +145,9 @@ struct BayitPlusApp: App {
                 .environment(byocManager)
                 .environment(tooltipManager)
                 .task {
+                    byocManager.configureEnrichment(
+                        baseURL: AppConfiguration().apiBaseURL
+                    )
                     initializeWidgetBridge()
                     initializeCrashlyticsContext()
                     initializePushNotifications()

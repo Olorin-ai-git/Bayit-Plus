@@ -23,7 +23,7 @@ extension BYOCDetailView {
                     ))
                 }
             }
-            .disabled(enrichmentResult == nil)
+            .disabled(isEnriching)
 
             sparklesButton
         }

@@ -2,6 +2,7 @@ import BayitCore
 import BayitDesignSystem
 import BayitMedia
 import SwiftUI
+import WebKit
 
 /// Extension on PlayerView providing the main ZStack layer composition
 /// and lifecycle event handlers extracted from the body.
@@ -13,43 +14,62 @@ extension PlayerView {
             Color.black.ignoresSafeArea()
 
             // Video layer
-            VideoPlayerView(
-                player: viewModel.player.avPlayer,
-                allowsPiP: PiPController.isSupported,
-                videoGravity: .resizeAspect,
-                isPiPActive: $isPiPActive,
-                onRestoreUserInterface: { [weak coordinator] completion in
-                    guard let coordinator else {
+            if mediaContentType.isYouTubeSource {
+                YouTubeEmbedPlayerView(
+                    videoId: contentId,
+                    currentTime: $youtubeCurrentTime,
+                    duration: $youtubeDuration,
+                    isPlaying: $youtubeIsPlaying,
+                    isReady: $youtubeIsReady,
+                    webViewRef: $youtubeWebView
+                )
+                .ignoresSafeArea()
+                .background(GeometryReader { geo in
+                    Color.clear.preference(key: PlayerWidthKey.self, value: geo.size.width)
+                })
+                .onPreferenceChange(PlayerWidthKey.self) { playerWidth = $0 }
+                .onTapGesture { toggleControls() }
+                .simultaneousGesture(doubleTapSkipGesture)
+                .walkthroughTarget(id: "discover_interactive_subtitles_step4")
+            } else {
+                VideoPlayerView(
+                    player: viewModel.player.avPlayer,
+                    allowsPiP: PiPController.isSupported,
+                    videoGravity: .resizeAspect,
+                    isPiPActive: $isPiPActive,
+                    onRestoreUserInterface: { [weak coordinator] completion in
+                        guard let coordinator else {
+                            completion(true)
+                            return
+                        }
+                        if coordinator.fullscreenRoute == nil {
+                            coordinator.presentFullscreen(
+                                .player(contentId: contentId, contentType: contentType)
+                            )
+                        }
                         completion(true)
-                        return
                     }
-                    if coordinator.fullscreenRoute == nil {
-                        coordinator.presentFullscreen(
-                            .player(contentId: contentId, contentType: contentType)
-                        )
-                    }
-                    completion(true)
-                }
-            )
-            .ignoresSafeArea()
-            .background(GeometryReader { geo in
-                Color.clear.preference(key: PlayerWidthKey.self, value: geo.size.width)
-            })
-            .onPreferenceChange(PlayerWidthKey.self) { playerWidth = $0 }
-            .onTapGesture { toggleControls() }
-            .simultaneousGesture(doubleTapSkipGesture)
-            .walkthroughTarget(id: "discover_interactive_subtitles_step4")
-            .walkthroughTarget(id: "discover_vocabulary_step4")
-            .walkthroughTarget(id: "discover_vod_moments_step3")
-            .walkthroughTarget(id: "discover_cultural_context_step3")
-            .walkthroughTarget(id: "discover_bilingual_bridge_step4")
-            .walkthroughTarget(id: "discover_live_dubbing_step4")
-            .walkthroughTarget(id: "discover_live_subtitles_step4")
-            .walkthroughTarget(id: "discover_live_trivia_step3")
-            .walkthroughTarget(id: "discover_catch_up_step4")
-            .walkthroughTarget(id: "discover_scene_search_step4")
-            .walkthroughTarget(id: "discover_ai_companion_step4")
-            .walkthroughTarget(id: "discover_pause_ask_step4")
+                )
+                .ignoresSafeArea()
+                .background(GeometryReader { geo in
+                    Color.clear.preference(key: PlayerWidthKey.self, value: geo.size.width)
+                })
+                .onPreferenceChange(PlayerWidthKey.self) { playerWidth = $0 }
+                .onTapGesture { toggleControls() }
+                .simultaneousGesture(doubleTapSkipGesture)
+                .walkthroughTarget(id: "discover_interactive_subtitles_step4")
+                .walkthroughTarget(id: "discover_vocabulary_step4")
+                .walkthroughTarget(id: "discover_vod_moments_step3")
+                .walkthroughTarget(id: "discover_cultural_context_step3")
+                .walkthroughTarget(id: "discover_bilingual_bridge_step4")
+                .walkthroughTarget(id: "discover_live_dubbing_step4")
+                .walkthroughTarget(id: "discover_live_subtitles_step4")
+                .walkthroughTarget(id: "discover_live_trivia_step3")
+                .walkthroughTarget(id: "discover_catch_up_step4")
+                .walkthroughTarget(id: "discover_scene_search_step4")
+                .walkthroughTarget(id: "discover_ai_companion_step4")
+                .walkthroughTarget(id: "discover_pause_ask_step4")
+            }
 
             if viewModel.isLoading {
                 loadingOverlay

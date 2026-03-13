@@ -186,6 +186,28 @@ public final class MediaPlayer {
         audioSession.deactivate()
     }
 
+    // MARK: - YouTube External State
+
+    /// Configure for YouTube playback where state is driven externally
+    /// via the WKWebView JS bridge rather than AVPlayer observers.
+    public func configureForYouTube(contentType: MediaContentType) {
+        self.contentType = contentType
+        state = .ready
+    }
+
+    /// Update playback state from an external source (YouTube IFrame API).
+    /// Called by the YouTubeEmbedPlayerView coordinator on each time poll.
+    public func updateExternalPlaybackState(
+        currentTime: TimeInterval,
+        duration: TimeInterval,
+        isPlaying: Bool
+    ) {
+        self.currentTime = currentTime
+        if duration > 0 { self.duration = duration }
+        let newState: PlaybackState = isPlaying ? .playing : .paused
+        if state != newState { state = newState }
+    }
+
     /// Progress fraction (0.0 to 1.0).
     public var progress: Double {
         guard duration > 0 else { return 0 }

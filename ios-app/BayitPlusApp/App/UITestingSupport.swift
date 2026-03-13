@@ -1,13 +1,16 @@
 import Foundation
 
 enum UITestingSupport {
-
     static var isUITesting: Bool {
         ProcessInfo.processInfo.arguments.contains("--ui-testing")
     }
 
     static var isSkipAuth: Bool {
         ProcessInfo.processInfo.arguments.contains("--skip-auth")
+    }
+
+    static var seedBYOCYouTube: Bool {
+        ProcessInfo.processInfo.arguments.contains("--seed-youtube")
     }
 
     static var navigateToRoute: String? {

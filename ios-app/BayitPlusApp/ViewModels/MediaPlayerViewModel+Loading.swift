@@ -30,6 +30,15 @@ extension MediaPlayerViewModel {
             }
         #endif
 
+        // YouTube content uses WKWebView embed, not AVPlayer.
+        // Set metadata and mark ready without resolving a stream URL.
+        if contentType == .youtubeVOD || contentType == .youtubeLive {
+            let mediaType = mapContentType(contentType)
+            player.configureForYouTube(contentType: mediaType)
+            isLoading = false
+            return
+        }
+
         do {
             // Resolve stream URL and metadata
             let resolved = try await streamResolver.resolveStream(

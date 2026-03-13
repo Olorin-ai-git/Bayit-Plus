@@ -7,6 +7,7 @@ import BayitLocalization
 import BayitMedia
 import BayitVoice
 import SwiftUI
+import WebKit
 
 /// Full-screen media player with glass overlay controls.
 ///
@@ -122,6 +123,13 @@ struct PlayerView: View {
     /// PiP state
     @State var isPiPActive = false
 
+    // YouTube embed state (driven by WKWebView JS bridge)
+    @State var youtubeCurrentTime: TimeInterval = 0
+    @State var youtubeDuration: TimeInterval = 0
+    @State var youtubeIsPlaying = false
+    @State var youtubeIsReady = false
+    @State var youtubeWebView: WKWebView?
+
     /// First BYOC play overlay
     @State var showFirstBYOCOverlay = false
 
@@ -189,6 +197,20 @@ struct PlayerView: View {
             .onDisappear { performCleanup() }
             .onChange(of: viewModel.player.currentTime) { _, newTime in
                 handleTimeChange(newTime)
+            }
+            .onChange(of: youtubeCurrentTime) { _, newTime in
+                viewModel.player.updateExternalPlaybackState(
+                    currentTime: newTime,
+                    duration: youtubeDuration,
+                    isPlaying: youtubeIsPlaying
+                )
+            }
+            .onChange(of: youtubeIsPlaying) { _, playing in
+                viewModel.player.updateExternalPlaybackState(
+                    currentTime: youtubeCurrentTime,
+                    duration: youtubeDuration,
+                    isPlaying: playing
+                )
             }
             .onChange(of: subtitlesVM?.activeText) { _, newText in
                 guard !mediaContentType.isLive, let vm = culturalContextVM else { return }
