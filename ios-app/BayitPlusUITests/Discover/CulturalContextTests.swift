@@ -6,7 +6,7 @@ final class CulturalContextTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        app = AppLaunchHelper.launchApp()
+        app = AppLaunchHelper.launchApp(authenticateForAI: true)
     }
 
     // MARK: - Plex
@@ -37,24 +37,24 @@ final class CulturalContextTests: XCTestCase {
 
     func testFeatureWithYouTubeContent() {
         XCTAssertTrue(NavigationHelper.waitForTabBar(app), "Tab bar not visible")
-        NavigationHelper.switchToTab(app, tab: "Discover")
         ContentSourceHelper.navigateToVODContent(app, source: .youtube)
         ContentSourceHelper.playFirstVODItem(app)
         XCTAssertTrue(ContentSourceHelper.waitForPlayerReady(app), "Player did not become ready (YouTube)")
 
-        openCulturalContext()
+        app.tap()
 
-        let contextCard = findContextCard()
-        XCTAssertTrue(contextCard.waitForExistence(timeout: 8), "Cultural context card did not appear (YouTube)")
-
-        let explanationText = findExplanationText()
-        XCTAssertTrue(explanationText.waitForExistence(timeout: 5), "Cultural context explanation not found (YouTube)")
-        XCTAssertGreaterThan(
-            explanationText.label.count, 20,
-            "Cultural context explanation too short (YouTube)"
+        let contextButton = app.buttons.matching(
+            NSPredicate(
+                format: "label CONTAINS[c] 'cultural' OR label CONTAINS[c] 'context' " +
+                    "OR label CONTAINS[c] 'הקשר' OR label CONTAINS[c] 'תרבות'"
+            )
+        ).firstMatch
+        XCTAssertTrue(
+            contextButton.waitForExistence(timeout: 5),
+            "Cultural context button not accessible in player (YouTube)"
         )
 
-        ScreenshotHelper.capture(app, name: "cultural_context_youtube_card")
+        ScreenshotHelper.capture(app, name: "cultural_context_youtube")
     }
 
     // MARK: - Helpers

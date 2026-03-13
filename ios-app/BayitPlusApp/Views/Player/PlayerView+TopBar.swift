@@ -100,9 +100,10 @@ extension PlayerView {
             }
 
             // Interact button (VOD only, when interactions or characters enabled)
+            // Always enabled for YouTube BYOC (AI uses video transcript)
             // Gate on ownerMode for private content types
             if !mediaContentType.isLive,
-               interactionVM != nil || hasInteractiveCharacters,
+               interactionVM != nil || hasInteractiveCharacters || mediaContentType.isYouTubeSource,
                appConfiguration.ownerMode || !contentType.isOwnerOnly
             {
                 Button {

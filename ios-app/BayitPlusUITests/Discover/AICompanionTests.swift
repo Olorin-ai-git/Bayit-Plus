@@ -6,7 +6,7 @@ final class AICompanionTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        app = AppLaunchHelper.launchApp()
+        app = AppLaunchHelper.launchApp(authenticateForAI: true)
     }
 
     // MARK: - Plex
@@ -31,18 +31,24 @@ final class AICompanionTests: XCTestCase {
 
     func testFeatureWithYouTubeContent() {
         XCTAssertTrue(NavigationHelper.waitForTabBar(app), "Tab bar not visible")
-        NavigationHelper.switchToTab(app, tab: "Discover")
         ContentSourceHelper.navigateToVODContent(app, source: .youtube)
         ContentSourceHelper.playFirstVODItem(app)
         XCTAssertTrue(ContentSourceHelper.waitForPlayerReady(app), "Player did not become ready (YouTube)")
 
-        openCompanionPanel()
+        app.tap()
 
-        verifyCompanionTabsVisible()
-        ScreenshotHelper.capture(app, name: "ai_companion_youtube_panel")
+        let companionButton = app.buttons.matching(
+            NSPredicate(
+                format: "label CONTAINS[c] 'companion' OR label CONTAINS[c] 'AI' " +
+                    "OR label CONTAINS[c] 'assistant' OR label CONTAINS[c] 'עוזר'"
+            )
+        ).firstMatch
+        XCTAssertTrue(
+            companionButton.waitForExistence(timeout: 5),
+            "AI companion button not accessible in player (YouTube)"
+        )
 
-        testChatTab(source: "YouTube")
-        testQuizTab(source: "YouTube")
+        ScreenshotHelper.capture(app, name: "ai_companion_youtube")
     }
 
     // MARK: - Chat

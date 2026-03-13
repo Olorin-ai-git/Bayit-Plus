@@ -145,23 +145,13 @@ struct BayitPlusApp: App {
                 .environment(byocManager)
                 .environment(tooltipManager)
                 .task {
-                    byocManager.configureEnrichment(
-                        baseURL: AppConfiguration().apiBaseURL
-                    )
-                    initializeWidgetBridge()
-                    initializeCrashlyticsContext()
-                    initializePushNotifications()
-                    initializeCastSystem()
-                    await downloadManager.initialize()
-                    await pendingIntentHandler?.processPendingIntents()
-                    tooltipManager.updateUserId(authManager.user?.id ?? "anonymous")
-                    let helper = SharedKeychainHelper()
-                    if let token = authManager.token {
-                        helper.writeAuthToken(token)
-                        WidgetCenter.shared.reloadAllTimelines()
+                    // UI testing support — run first to avoid auth screen flash
+                    if let testToken = UITestingSupport.testAuthToken {
+                        authManager.configureForUITesting(token: testToken)
                     }
-
-                    // UI testing support
+                    if UITestingSupport.seedBYOCYouTube {
+                        byocManager.seedTestYouTubeContent()
+                    }
                     if UITestingSupport.isSkipAuth {
                         coordinator.showingAuth = false
                     } else {
@@ -176,6 +166,22 @@ struct BayitPlusApp: App {
                        let language = Language(rawValue: testLang)
                     {
                         localizationManager.setLanguage(language)
+                    }
+
+                    byocManager.configureEnrichment(
+                        baseURL: AppConfiguration().apiBaseURL
+                    )
+                    initializeWidgetBridge()
+                    initializeCrashlyticsContext()
+                    initializePushNotifications()
+                    initializeCastSystem()
+                    await downloadManager.initialize()
+                    await pendingIntentHandler?.processPendingIntents()
+                    tooltipManager.updateUserId(authManager.user?.id ?? "anonymous")
+                    let helper = SharedKeychainHelper()
+                    if let token = authManager.token {
+                        helper.writeAuthToken(token)
+                        WidgetCenter.shared.reloadAllTimelines()
                     }
                 }
                 .onChange(of: authManager.token) { _, newToken in

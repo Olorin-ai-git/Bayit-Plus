@@ -39,10 +39,10 @@ enum ContentSourceHelper {
                 NSPredicate(format: "label CONTAINS[c] 'From YouTube' OR label CONTAINS[c] 'YouTube'")
             ).firstMatch
 
-            if !youtubeHeader.waitForExistence(timeout: 3), scrollView.exists {
-                for _ in 0 ..< 4 {
+            if !youtubeHeader.waitForExistence(timeout: 5), scrollView.exists {
+                for _ in 0 ..< 6 {
                     scrollView.swipeUp()
-                    if youtubeHeader.waitForExistence(timeout: 1) { break }
+                    if youtubeHeader.waitForExistence(timeout: 2) { break }
                 }
             }
             XCTAssertTrue(
@@ -51,7 +51,11 @@ enum ContentSourceHelper {
             )
 
             let youtubeCard = app.buttons.matching(
-                NSPredicate(format: "accessibilityHint CONTAINS[c] 'Tap to open'")
+                NSPredicate(
+                    format: "label CONTAINS[c] 'Rick Astley' OR label CONTAINS[c] 'Me at the zoo' " +
+                        "OR label CONTAINS[c] 'GANGNAM' OR label CONTAINS[c] 'dQw4w9' " +
+                        "OR label CONTAINS[c] 'jNQXAC9'"
+                )
             ).firstMatch
             XCTAssertTrue(
                 youtubeCard.waitForExistence(timeout: 5),
@@ -65,11 +69,17 @@ enum ContentSourceHelper {
         _ app: XCUIApplication,
         timeout: TimeInterval = 8
     ) {
+        let byocPlay = app.buttons["byocPlayButton"]
+        if byocPlay.waitForExistence(timeout: timeout) {
+            byocPlay.tap()
+            return
+        }
+
         let firstItem = app.buttons.matching(
             NSPredicate(format: "label CONTAINS[c] 'play' OR label CONTAINS[c] 'watch'")
         ).firstMatch
 
-        if !firstItem.waitForExistence(timeout: timeout) {
+        if !firstItem.waitForExistence(timeout: 3) {
             let collectionItem = app.collectionViews.cells.firstMatch
             XCTAssertTrue(collectionItem.waitForExistence(timeout: timeout), "No VOD content found")
             collectionItem.tap()
@@ -100,11 +110,16 @@ enum ContentSourceHelper {
         _ app: XCUIApplication,
         timeout: TimeInterval = 15
     ) -> Bool {
+        let playerById = app.otherElements["playerView"]
+        if playerById.waitForExistence(timeout: timeout) {
+            return true
+        }
+
         let player = app.otherElements.matching(
             NSPredicate(format: "label CONTAINS[c] 'player' OR label CONTAINS[c] 'video'")
         ).firstMatch
 
-        return player.waitForExistence(timeout: timeout)
+        return player.waitForExistence(timeout: 3)
     }
 
     // MARK: - Performance Measurement

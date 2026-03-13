@@ -449,6 +449,24 @@ public final class AuthManager {
         self.error = error
     }
 
+    /// Inject a test token for UI testing — bypasses real authentication.
+    public func configureForUITesting(token testToken: String) {
+        token = testToken
+        user = BayitUser(
+            id: "ui-test-user",
+            email: "test@bayit.tv",
+            displayName: "UI Test User",
+            photoURL: nil,
+            role: .user,
+            isActive: true,
+            subscription: nil,
+            isVerified: true,
+            createdAt: nil,
+            lastLogin: nil
+        )
+        try? keychainService.save(token: testToken, for: backendTokenKeychainKey)
+    }
+
     /// Clears all local authentication state.
     func clearState() {
         user = nil

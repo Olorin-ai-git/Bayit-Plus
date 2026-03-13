@@ -21,6 +21,10 @@ enum UITestingSupport {
         ProcessInfo.processInfo.environment["UI_TEST_LANGUAGE"]
     }
 
+    static var testAuthToken: String? {
+        ProcessInfo.processInfo.environment["UI_TEST_AUTH_TOKEN"]
+    }
+
     static var shouldReduceAnimations: Bool {
         isUITesting
     }

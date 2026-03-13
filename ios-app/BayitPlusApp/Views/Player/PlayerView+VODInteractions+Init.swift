@@ -94,9 +94,9 @@
                     repository: repositories.avatarMeshRepository
                 )
             }
-            await dialogueVM?.loadCharacters(contentId: contentId)
             viewModel.player.avPlayer.pause()
             showPauseAskOverlay = true
+            await dialogueVM?.loadCharacters(contentId: contentId)
         }
 
         func dismissPauseAsk() async {

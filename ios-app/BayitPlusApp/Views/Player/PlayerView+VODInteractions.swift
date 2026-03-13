@@ -102,12 +102,9 @@
 
         @ViewBuilder
         var pauseAskOverlay: some View {
-            if showPauseAskOverlay,
-               let vm = dialogueVM,
-               let imgUrl = avatarImageUrl
-            {
+            if showPauseAskOverlay, let vm = dialogueVM {
                 PauseAskDialogueOverlayView(
-                    avatarImageUrl: imgUrl,
+                    avatarImageUrl: avatarImageUrl ?? "",
                     avatarId: resolvedAvatarId,
                     contentId: contentId,
                     currentTimestamp: viewModel.player.currentTime,

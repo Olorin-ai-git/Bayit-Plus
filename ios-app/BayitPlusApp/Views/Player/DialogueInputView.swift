@@ -44,6 +44,7 @@
                 .background(DesignTokens.Glass.bgLight)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                 .disabled(isSending)
+                .accessibilityIdentifier("dialogueQuestionInput")
 
                 GlassButton(
                     isSending

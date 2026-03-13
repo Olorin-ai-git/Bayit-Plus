@@ -48,6 +48,9 @@
                 phaseContent
             }
             .animation(.easeInOut(duration: 0.3), value: phase)
+            .onAppear {
+                if characters.isEmpty { phase = .input }
+            }
         }
 
         // MARK: - Phase Router
