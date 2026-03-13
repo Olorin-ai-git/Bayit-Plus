@@ -37,8 +37,8 @@ steps:
       # CPU boost for faster cold start
       - '--cpu-boost'
 
-      # Extended startup probe (AI service loads full monolith, needs ~5-8min)
-      - '--startup-probe=httpGet.path=/health,httpGet.port=8080,periodSeconds=10,failureThreshold=60'
+      # Extended startup probe (AI service loads full monolith + xvfb + 2 workers, needs ~10-12min)
+      - '--startup-probe=httpGet.path=/health,httpGet.port=8080,periodSeconds=10,failureThreshold=90,initialDelaySeconds=30'
 
       # Environment Variables (mirrors monolith - required by shared Settings class)
       - '--set-env-vars=ENVIRONMENT=production'

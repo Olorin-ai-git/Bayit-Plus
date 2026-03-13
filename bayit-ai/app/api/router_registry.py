@@ -120,11 +120,9 @@ def register_routes(app: FastAPI) -> None:
     app.include_router(nlp.router, prefix=prefix, tags=["nlp"])
 
     # Beta 500 Program
-    from app.api.routes.beta import signup, credits, sessions, status
-    app.include_router(signup.router, prefix=prefix, tags=["beta"])
+    from app.api.routes.beta import credits, credits_client
     app.include_router(credits.router, prefix=prefix, tags=["beta-credits"])
-    app.include_router(sessions.router, prefix=prefix, tags=["beta-sessions"])
-    app.include_router(status.router, prefix=prefix, tags=["beta-status"])
+    app.include_router(credits_client.router, prefix=prefix, tags=["beta-credits-client"])
 
     # Hebrew Engagement / Gamification (missions, shekels, leaderboard, zine, coupons)
     from app.api.routes.missions import missions_core, shekels, leaderboard, zine, coupons
