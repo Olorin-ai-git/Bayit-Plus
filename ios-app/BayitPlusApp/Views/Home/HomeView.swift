@@ -30,6 +30,10 @@ struct HomeView: View {
                         loadingState
                     } else if let error = vm.error, vm.categories.isEmpty {
                         errorState(error)
+                        // BYOC content is local — show even when API fails
+                        if byocManager.hasAnySources {
+                            BYOCShelfRow()
+                        }
                     } else {
                         contentSections(vm)
                     }

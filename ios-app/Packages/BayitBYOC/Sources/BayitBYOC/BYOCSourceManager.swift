@@ -46,6 +46,36 @@ public final class BYOCSourceManager: @unchecked Sendable {
         sources.contains { $0.type == .youtube }
     }
 
+    /// Seed test YouTube content for UI testing without real API calls.
+    public func seedTestYouTubeContent() {
+        let sourceId = "test-youtube-source"
+        let config = BYOCSourceConfig(
+            id: sourceId,
+            type: .youtube,
+            name: "Test YouTube"
+        )
+        sources.append(config)
+
+        let testVideos: [(id: String, title: String)] = [
+            ("dQw4w9WgXcQ", "Rick Astley - Never Gonna Give You Up"),
+            ("jNQXAC9IVRw", "Me at the zoo"),
+            ("9bZkp7q19f0", "PSY - GANGNAM STYLE"),
+        ]
+        for video in testVideos {
+            let item = BYOCContentItem(
+                id: "yt-\(sourceId)-\(video.id)",
+                title: video.title,
+                sourceType: .youtube,
+                sourceId: sourceId,
+                streamURL: URL(
+                    string: "https://www.youtube.com/watch?v=\(video.id)"
+                ),
+                contentType: .youtubeVOD
+            )
+            youtubeItems.append(item)
+        }
+    }
+
     public init() {
         sources = BYOCSourceStore.loadSources()
         if !sources.isEmpty {

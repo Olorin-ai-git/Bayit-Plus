@@ -23,7 +23,8 @@ extension BYOCDetailView {
                     ))
                 }
             }
-            .disabled(isEnriching)
+            .disabled(isEnriching && item.sourceType != .youtube)
+            .accessibilityIdentifier("byocPlayButton")
 
             sparklesButton
         }

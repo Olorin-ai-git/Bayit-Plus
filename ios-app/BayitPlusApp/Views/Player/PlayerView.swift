@@ -183,6 +183,7 @@ struct PlayerView: View {
                 including: mediaContentType.isLive ? .all : .subviews
             )
             .statusBarHidden(true)
+            .accessibilityIdentifier("playerView")
             .onAppear { requestLandscapeOrientation() }
             .task {
                 UIApplication.shared.isIdleTimerDisabled = true

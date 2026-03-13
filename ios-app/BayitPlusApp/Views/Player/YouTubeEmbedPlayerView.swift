@@ -25,6 +25,7 @@ struct YouTubeEmbedPlayerView: UIViewRepresentable {
         webView.isOpaque = false
         webView.backgroundColor = .black
         webView.scrollView.isScrollEnabled = false
+        webView.isUserInteractionEnabled = false
         webView.navigationDelegate = handler
 
         let html = Self.playerHTML(
