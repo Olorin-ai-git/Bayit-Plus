@@ -1,14 +1,6 @@
 import BayitCore
 import SwiftUI
 
-/// A single breadcrumb entry for the navigation trail
-struct BreadcrumbEntry: Identifiable {
-    let id = UUID()
-    let label: String
-    let icon: String?
-    let popCount: Int // How many levels to pop (0 = root)
-}
-
 /// Manages navigation state across the app
 @Observable
 public final class NavigationCoordinator {
@@ -36,6 +28,8 @@ public final class NavigationCoordinator {
 
     /// Breadcrumb trail per tab (parallel to NavigationPath which is opaque)
     var breadcrumbTrails: [AppTab: [Route]] = [:]
+
+    let lastVisitedManager = LastVisitedRouteManager()
 
     /// Current breadcrumb entries for the active tab
     var currentBreadcrumbs: [BreadcrumbEntry] {

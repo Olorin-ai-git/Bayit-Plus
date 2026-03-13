@@ -36,16 +36,41 @@ class DeepLinkHandler @Inject constructor(
         return when (host) {
             "player" -> segments.firstOrNull()?.let { Route.Player(it, uri.getQueryParameter("type") ?: "movie") }
             "play" -> segments.firstOrNull()?.let { Route.Player(it, uri.getQueryParameter("type") ?: "movie") }
+            "home" -> Route.Home
             "movie" -> segments.firstOrNull()?.let { Route.MovieDetail(it) }
             "series" -> segments.firstOrNull()?.let { Route.SeriesDetail(it) }
+            "collection" -> segments.firstOrNull()?.let { Route.CollectionDetail(it) }
             "livetv", "live" -> Route.LiveTV
+            "vod" -> Route.Vod
             "radio" -> Route.Radio
-            "podcasts" -> Route.Podcasts
+            "podcasts" -> when {
+                segments.isNotEmpty() -> Route.PodcastDetail(segments.first())
+                else -> Route.Podcasts
+            }
+            "audiobooks" -> when {
+                segments.isNotEmpty() -> Route.AudiobookDetail(segments.first())
+                else -> Route.Audiobooks
+            }
             "search" -> Route.Search
+            "discover" -> Route.Discover
             "resume" -> Route.Home
             "profile" -> Route.Profile
             "settings" -> Route.Settings
             "rewards" -> Route.Rewards
+            "trending" -> Route.Trending
+            "epg" -> Route.Epg
+            "favorites" -> Route.Favorites
+            "playlist" -> Route.Playlist
+            "chatbot" -> Route.Chatbot
+            "activity" -> Route.ActivityFeed
+            "culture" -> Route.Culture
+            "glossary" -> when {
+                segments.isNotEmpty() -> Route.GlossaryDetail(segments.first())
+                else -> Route.Glossary
+            }
+            "missions" -> Route.MissionsDashboard
+            "llm-search" -> Route.LlmSearch
+            "category" -> segments.firstOrNull()?.let { Route.CategoryBrowse(it) }
             "trivia" -> segments.firstOrNull()?.let { Route.Trivia(it) }
             "chess" -> Route.Chess(segments.firstOrNull())
             "tv-login" -> {

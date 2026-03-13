@@ -16,7 +16,7 @@ struct ContentView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(\.appConfiguration) private var appConfiguration
 
-    @State private var showingSplash = true
+    @State private var showingSplash = !UITestingSupport.isUITesting
     @State private var showingOnboarding = false
 
     var body: some View {
@@ -31,7 +31,7 @@ struct ContentView: View {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         showingSplash = false
                         if authManager.isAuthenticated {
-                            showingOnboarding = !OnboardingFlowViewModel.hasCompletedOnboarding
+                            showingOnboarding = !UITestingSupport.isSkipAuth && !OnboardingFlowViewModel.hasCompletedOnboarding
                         }
                     }
                 }
@@ -83,11 +83,24 @@ struct ContentView: View {
                 .transition(.move(edge: .top))
             }
         }
-        .onChange(of: authManager.isAuthenticated) { _, isAuth in
+        .onChange(of: authManager.isAuthenticated) { wasAuth, isAuth in
             coordinator.showingAuth = !isAuth
             if isAuth {
-                showingOnboarding = !OnboardingFlowViewModel.hasCompletedOnboarding
+                showingOnboarding = !UITestingSupport.isSkipAuth && !OnboardingFlowViewModel.hasCompletedOnboarding
+            } else if wasAuth, let userId = authManager.user?.id {
+                // User signed out: clear persisted route so the next session starts fresh.
+                coordinator.clearLastVisited(userId: userId)
             }
+        }
+        .onChange(of: coordinator.showingAuth) { wasShowing, isShowing in
+            // Auth flow just dismissed: restore where the user was before.
+            if wasShowing, !isShowing, let userId = authManager.user?.id {
+                coordinator.restoreLastVisited(userId: userId)
+            }
+        }
+        .onChange(of: coordinator.selectedTab) { _, _ in
+            guard let userId = authManager.user?.id else { return }
+            coordinator.saveLastVisited(userId: userId)
         }
         .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)

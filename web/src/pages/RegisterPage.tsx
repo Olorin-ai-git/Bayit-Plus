@@ -14,6 +14,7 @@ import {
   PlusIntroModal,
   hasSeenPlusIntro,
 } from "@/components/subscription/PlusIntroModal";
+import { getLastVisited, clearLastVisited } from "@/utils/lastVisitedRoute";
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -80,15 +81,22 @@ export default function RegisterPage() {
 
     try {
       const response = await register({ name, email, password });
+      const registeredUser = useAuthStore.getState().user;
 
       // Check if payment is required (payment-first flow)
       if ((response as any)?.requires_payment) {
-        // Payment required - redirect handled by PaymentPendingGuard
+        // Payment required - PaymentPendingGuard handles the redirect
         navigate("/", { replace: true });
       } else if (!hasSeenPlusIntro()) {
         setShowPlusIntro(true);
       } else {
-        navigate("/", { replace: true });
+        const lastVisited = registeredUser?.id
+          ? getLastVisited(registeredUser.id)
+          : null;
+        if (lastVisited && registeredUser?.id) {
+          clearLastVisited(registeredUser.id);
+        }
+        navigate(lastVisited ?? "/", { replace: true });
       }
     } catch (err: any) {
       setError(err.message || t("register.errors.registrationFailed"));
@@ -99,11 +107,8 @@ export default function RegisterPage() {
     setError("");
     try {
       await loginWithGoogle();
-      if (!hasSeenPlusIntro()) {
-        setShowPlusIntro(true);
-      } else {
-        navigate("/", { replace: true });
-      }
+      // For web, loginWithGoogle() redirects to Google — no navigation needed here.
+      // Navigation occurs in GoogleCallbackPage after the OAuth handshake completes.
     } catch (err: any) {
       setError(err.message || t("register.errors.googleFailed"));
     }
@@ -111,7 +116,12 @@ export default function RegisterPage() {
 
   const handlePlusIntroDismiss = () => {
     setShowPlusIntro(false);
-    navigate("/", { replace: true });
+    const currentUser = useAuthStore.getState().user;
+    const lastVisited = currentUser?.id ? getLastVisited(currentUser.id) : null;
+    if (lastVisited && currentUser?.id) {
+      clearLastVisited(currentUser.id);
+    }
+    navigate(lastVisited ?? "/", { replace: true });
   };
 
   return (

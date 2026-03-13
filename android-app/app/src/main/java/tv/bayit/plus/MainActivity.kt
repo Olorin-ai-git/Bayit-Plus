@@ -28,6 +28,7 @@ import tv.bayit.plus.designsystem.i18n.ProvideBayitStrings
 import tv.bayit.plus.designsystem.theme.BayitTheme
 import tv.bayit.plus.navigation.BayitNavHost
 import tv.bayit.plus.navigation.DeepLinkHandler
+import tv.bayit.plus.navigation.LastVisitedRouteManager
 import tv.bayit.plus.navigation.Route
 import tv.bayit.plus.ui.BayitMainScaffold
 import javax.inject.Inject
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var stringProvider: BayitStringProvider
     @Inject lateinit var networkMonitor: NetworkMonitor
     @Inject lateinit var deepLinkHandler: DeepLinkHandler
+    @Inject lateinit var lastVisitedRouteManager: LastVisitedRouteManager
 
     private val pendingDeepLink = MutableStateFlow<Route?>(null)
 
@@ -61,11 +63,25 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(authState) {
                         when (authState) {
                             is AuthState.Unauthenticated -> {
+                                val userId = authService.currentUserId
+                                if (userId != null) lastVisitedRouteManager.clear(userId)
                                 navController.navigate(Route.Login) {
                                     popUpTo(0) { inclusive = true }
                                 }
                             }
-                            is AuthState.Authenticated -> Unit
+                            is AuthState.Authenticated -> {
+                                if (pendingDeepLink.value == null) {
+                                    val userId = authService.currentUserId
+                                    if (userId != null) {
+                                        val restoredRoute = lastVisitedRouteManager.restore(userId)
+                                        if (restoredRoute != null) {
+                                            navController.navigate(restoredRoute) {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 

@@ -140,12 +140,25 @@ final class TVNavigationCoordinator {
 
     private let logger = BayitLogger(category: "TVNavigation")
 
-    init(isAutoLoginInProgress: Bool = false) {
+    /// Manages persistence of the last-visited tab and route per user.
+    let lastVisitedRouteManager: TVLastVisitedRouteManager
+
+    init(
+        isAutoLoginInProgress: Bool = false,
+        lastVisitedRouteManager: TVLastVisitedRouteManager
+    ) {
         self.isAutoLoginInProgress = isAutoLoginInProgress
+        self.lastVisitedRouteManager = lastVisitedRouteManager
         for tab in TVTab.allCases {
             paths[tab] = NavigationPath()
             breadcrumbTrails[tab] = []
         }
+    }
+
+    /// Record that the user has navigated to `tab` (and optionally a detail `route`).
+    /// Call this whenever the selected tab changes or a restorable route is pushed.
+    func trackVisit(tab: TVTab, route: TVRoute? = nil, userId: String) {
+        lastVisitedRouteManager.save(tab: tab, route: route, userId: userId)
     }
 
     func popToRoot() {

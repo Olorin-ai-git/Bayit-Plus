@@ -13,7 +13,10 @@ import SwiftUI
 @main
 struct BayitPlusTVApp: App {
     @State var coordinator = TVNavigationCoordinator(
-        isAutoLoginInProgress: BayitPlusTVApp.hasAutoLoginConfig
+        isAutoLoginInProgress: BayitPlusTVApp.hasAutoLoginConfig,
+        lastVisitedRouteManager: TVLastVisitedRouteManager(
+            appGroupIdentifier: TopShelfConstants.appGroupID
+        )
     )
     @State var appConfig: AppConfiguration
     @State var authManager: AuthManager

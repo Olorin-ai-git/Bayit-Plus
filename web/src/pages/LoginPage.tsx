@@ -15,6 +15,7 @@ import { AnimatedLogo } from "@bayit/shared";
 import { GlassInput } from "@bayit/shared/ui";
 import { useDirection } from "@/hooks/useDirection";
 import { languages } from "@bayit/i18n";
+import { getLastVisited, clearLastVisited } from "@/utils/lastVisitedRoute";
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -38,9 +39,15 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
-  // Get redirect path from query params or location state
-  const redirectParam = searchParams.get("redirect");
-  const from = redirectParam || (location.state as any)?.from?.pathname || "/";
+  // Redirect priority:
+  // 1. returnUrl query param (set by ProtectedRoute when redirecting to /login)
+  // 2. location.state.from (React Router navigation state)
+  // 3. last visited route saved in localStorage
+  // 4. home page
+  const returnUrlParam = searchParams.get("returnUrl");
+  const stateFrom = (location.state as any)?.from?.pathname as
+    | string
+    | undefined;
 
   const currentLanguage =
     languages.find((lang) => lang.code === i18n.language) || languages[0];
@@ -66,7 +73,15 @@ export default function LoginPage() {
 
     try {
       await login(email.trim().toLowerCase(), password);
-      navigate(from, { replace: true });
+      const { user } = useAuthStore.getState();
+      const lastVisited = user?.id ? getLastVisited(user.id) : null;
+      const destination = returnUrlParam
+        ? decodeURIComponent(returnUrlParam)
+        : (stateFrom ?? lastVisited ?? "/");
+      if (lastVisited && user?.id) {
+        clearLastVisited(user.id);
+      }
+      navigate(destination, { replace: true });
     } catch (err: any) {
       setError(err.message || t("login.errors.loginFailed"));
     }

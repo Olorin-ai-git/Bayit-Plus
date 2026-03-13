@@ -20,6 +20,7 @@ import {
   cleanupWizardActionHandler,
 } from "@/services/wizardActionHandler";
 import { useWizardNavigation } from "@/hooks/useWizardNavigation";
+import { useLastVisitedRoute } from "@/hooks/useLastVisitedRoute";
 import { sfxService } from "@bayit/shared/services/sfxService";
 import api from "@/services/api";
 import "./styles/layout-fix.css";
@@ -262,6 +263,9 @@ const AppContent = () => {
 
   // Bridge wizard voice navigation events to React Router
   useWizardNavigation();
+
+  // Track and persist the current route for post-login redirect
+  useLastVisitedRoute();
 
   // Remove splash screen when navigating away from home page
   useEffect(() => {

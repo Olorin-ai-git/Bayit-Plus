@@ -24,6 +24,7 @@
         @State private var multiUserService = TVMultiUserService()
         @State private var onboardingPrefs = TVOnboardingPreferences(profileId: "")
         @State private var byocManager = BYOCSourceManager()
+        @State private var didRestoreLastVisit = false
         @Environment(\.appConfiguration) private var appConfig
         @Environment(\.scenePhase) private var scenePhase
 
@@ -159,6 +160,19 @@
                         coordinator.showingAuth = true
                         coordinator.profileSelected = false
                         coordinator.selectedProfileId = nil
+                        didRestoreLastVisit = false
+                    }
+                }
+            }
+            .onChange(of: coordinator.profileSelected) { _, isSelected in
+                guard isSelected, !didRestoreLastVisit, let userId = authManager.user?.id else { return }
+                didRestoreLastVisit = true
+                if let saved = coordinator.lastVisitedRouteManager.restore(userId: userId) {
+                    withAnimation {
+                        coordinator.selectedTab = saved.tab
+                        if let route = saved.route {
+                            coordinator.fullscreenRoute = route
+                        }
                     }
                 }
             }

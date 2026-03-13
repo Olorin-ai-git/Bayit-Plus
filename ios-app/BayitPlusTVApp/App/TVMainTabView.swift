@@ -1,5 +1,6 @@
 #if os(tvOS)
     import BayitAuth
+    import BayitCore
     import BayitDesignSystem
     import BayitLocalization
     import BayitMedia
@@ -14,6 +15,7 @@
         @Environment(TVRepositoryProvider.self) var repos
         @Environment(LocalizationManager.self) var localization
         @Environment(TVOnboardingPreferences.self) var prefs
+        @Environment(AuthManager.self) var authManager
         @Environment(\.appConfiguration) private var appConfiguration
         @State var dockViewModel: WidgetDockViewModel?
         @State var proactiveSuggestionViewModel: TVProactiveSuggestionViewModel?
@@ -166,6 +168,10 @@
                 guard shouldToggle else { return }
                 coordinator.requestDockToggle = false
                 dockViewModel?.toggleDock()
+            }
+            .onChange(of: coordinator.selectedTab) { _, newTab in
+                guard let userId = authManager.user?.id else { return }
+                coordinator.trackVisit(tab: newTab, userId: userId)
             }
         }
     }
