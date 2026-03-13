@@ -15,9 +15,6 @@ from app.api.routes.content.utils import (convert_to_proxy_url,
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content
 from app.models.user import User
-from app.models.content_taxonomy import ContentSection
-from app.services.subtitle_enrichment import \
-    enrich_content_items_with_subtitles
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -87,63 +84,98 @@ async def get_all_content(
         ]
     }
 
-    async def get_content():
-        return await Content.find(content_filter).skip(skip).limit(limit).to_list()
+    # Use raw Motor queries to avoid Pydantic validation crashes on
+    # malformed documents (Beanie deserializes every doc through the
+    # Content model — a single bad field crashes the entire page).
+    from app.core.database import get_database
+    db = get_database()
+    content_col = db["content"]
+    section_col = db["content_sections"]
+
+    raw_projection = {
+        "_id": 1, "title": 1, "description": 1,
+        "thumbnail": 1, "thumbnail_data": 1, "backdrop": 1,
+        "backdrop_data": 1, "poster_url": 1, "category_id": 1,
+        "category_name": 1, "year": 1, "duration": 1,
+        "total_episodes": 1, "content_type": 1, "series_id": 1,
+        "total_seasons": 1, "has_subtitles": 1,
+        "available_subtitle_languages": 1,
+    }
+
+    async def get_content_raw():
+        cursor = content_col.find(
+            content_filter, raw_projection,
+        ).skip(skip).limit(limit)
+        return await cursor.to_list(length=limit)
 
     async def get_total():
-        return await Content.find(content_filter).count()
+        return await content_col.count_documents(content_filter)
 
     async def get_all_categories():
-        return await ContentSection.find().to_list()
+        return await section_col.find().to_list(length=500)
 
-    items, total, categories = await asyncio.gather(
-        get_content(), get_total(), get_all_categories()
+    raw_items, total, categories = await asyncio.gather(
+        get_content_raw(), get_total(), get_all_categories()
     )
 
     category_map = {
-        str(cat.id): {
-            "slug": cat.slug,
-            "name_key": cat.name_key,
+        str(cat["_id"]): {
+            "slug": cat.get("slug"),
+            "name_key": cat.get("name_key"),
         }
         for cat in categories
     }
 
-    # Use global is_series_content helper from utils (NOT local function)
     content_items = []
-    for item in items:
-        cat_info = category_map.get(item.category_id, {})
-        is_series = is_series_content(item.model_dump())
+    for doc in raw_items:
+        if not doc.get("title"):
+            logger.warning(
+                "Skipping content doc with missing title: %s",
+                doc.get("_id"),
+            )
+            continue
+        is_series = is_series_content(doc)
+        cat_info = category_map.get(doc.get("category_id") or "", {})
+
+        thumb_data = doc.get("thumbnail_data")
+        thumb_url = doc.get("thumbnail") or doc.get("poster_url")
+        backdrop_data = doc.get("backdrop_data")
+        backdrop_url = doc.get("backdrop")
+
         item_data = {
-            "id": str(item.id),
-            "title": item.title,
-            "description": item.description,
+            "id": str(doc["_id"]),
+            "title": doc["title"],
+            "description": doc.get("description"),
             "thumbnail": (
-                item.thumbnail_data
-                or convert_to_proxy_url(item.thumbnail or item.poster_url)
-                if (item.thumbnail_data or item.thumbnail or item.poster_url)
+                thumb_data or convert_to_proxy_url(thumb_url)
+                if (thumb_data or thumb_url)
                 else None
             ),
             "backdrop": (
-                item.backdrop_data or convert_to_proxy_url(item.backdrop)
-                if (item.backdrop_data or item.backdrop)
+                backdrop_data or convert_to_proxy_url(backdrop_url)
+                if (backdrop_data or backdrop_url)
                 else None
             ),
-            "category": item.category_name,
+            "category": doc.get("category_name"),
             "category_slug": cat_info.get("slug"),
             "category_name_key": cat_info.get("name_key"),
-            "year": item.year,
-            "duration": item.duration,
+            "year": doc.get("year"),
+            "duration": doc.get("duration"),
             "is_series": is_series,
             "type": "series" if is_series else "movie",
+            "available_subtitle_languages": doc.get(
+                "available_subtitle_languages", []
+            ),
+            "has_subtitles": doc.get("has_subtitles", False),
         }
 
         if is_series:
-            if item.total_episodes:
-                item_data["total_episodes"] = item.total_episodes
+            if doc.get("total_episodes"):
+                item_data["total_episodes"] = doc["total_episodes"]
             else:
-                episode_count = await Content.find(
-                    {"series_id": str(item.id), "is_published": True}
-).count()
+                episode_count = await content_col.count_documents(
+                    {"series_id": str(doc["_id"]), "is_published": True}
+                )
                 item_data["total_episodes"] = episode_count
 
         content_items.append(item_data)
@@ -159,7 +191,6 @@ async def get_all_content(
             return (2, 0)
 
     content_items.sort(key=availability_sort_key)
-    content_items = await enrich_content_items_with_subtitles(content_items)
 
     return {
         "items": content_items,
