@@ -5851,17 +5851,8 @@
     },
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -6942,6 +6933,7 @@
     "clearAll": "清除全部",
     "trending": "热门搜索",
     "trendingSearches": "热门搜索",
+    "popularSearches": "热门搜索",
     "noResultsFound": "未找到结果",
     "tryDifferentSearch": "尝试其他搜索词",
     "promptTitle": "您在找什么？",

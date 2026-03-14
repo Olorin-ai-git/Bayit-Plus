@@ -5857,11 +5857,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -6942,6 +6938,7 @@
     "clearAll": "Limpiar Todo",
     "trending": "Búsquedas Populares",
     "trendingSearches": "Búsquedas populares",
+    "popularSearches": "Búsquedas populares",
     "noResultsFound": "No se encontraron resultados",
     "tryDifferentSearch": "Prueba un término de búsqueda diferente",
     "promptTitle": "¿Qué estás buscando?",

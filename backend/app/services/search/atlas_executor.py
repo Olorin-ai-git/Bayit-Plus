@@ -322,7 +322,14 @@ class AtlasSearchExecutor:
                            extra={"source": source, "error": str(exc)})
             return await fallback_text(model, pipeline, source, fetch_limit)
 
-        return docs_to_scored(docs, source)
+        if docs:
+            return docs_to_scored(docs, source)
+
+        # Atlas index returned 0 results — try $text / $regex fallback
+        # so queries still work when the index analyzer misses matches.
+        logger.debug("Atlas $search returned 0 results, trying fallback",
+                     extra={"source": source})
+        return await fallback_text(model, pipeline, source, fetch_limit)
 
 
 def _filter_by_subtype(results: List[ScoredResult], subtype: str) -> List[ScoredResult]:

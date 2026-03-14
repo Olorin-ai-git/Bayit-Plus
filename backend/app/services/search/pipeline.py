@@ -87,6 +87,10 @@ class SearchPipelineService:
         # Stage 1: Query Analysis
         analysis = self._analyzer.analyze(query)
 
+        # Reset browse total so stale counts from prior browse
+        # requests don't leak into text-search responses.
+        self._atlas._browse_total = None
+
         # Stage 2: Parallel execution
         atlas_task = self._atlas.execute(
             analysis, filters, sort_by, sort_order, page, limit,
