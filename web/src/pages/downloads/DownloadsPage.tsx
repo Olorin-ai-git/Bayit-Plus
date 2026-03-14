@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Download, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
   GlassPageHeader,
   GlassEmptyState,
@@ -16,60 +17,28 @@ import {
   selectActiveDownloads,
   selectCompletedDownloads,
   selectFailedDownloads,
-  type DownloadItem,
 } from "@/stores/downloadStore";
 import { OfflineBanner } from "@/components/common/OfflineBanner";
 import { StorageBar } from "./StorageBar";
-import { DownloadCard } from "./DownloadCard";
+import { DownloadSection } from "./DownloadSection";
+import { useIncognitoDetect } from "@/hooks/useIncognitoDetect";
 
-function DownloadSection({
-  title,
-  items,
-  numColumns,
-  action,
-}: {
-  title: string;
-  items: DownloadItem[];
-  numColumns: number;
-  action?: React.ReactNode;
-}) {
-  if (items.length === 0) return null;
-
-  return (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>
-          {title} ({items.length})
-        </Text>
-        {action}
-      </View>
-      <FlatList
-        data={items}
-        keyExtractor={(item: DownloadItem) => item.id}
-        numColumns={numColumns}
-        key={`${title}-${numColumns}`}
-        contentContainerStyle={{ gap: spacing.md }}
-        columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
-        renderItem={({ item }: { item: DownloadItem }) => (
-          <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
-            <DownloadCard item={item} />
-          </View>
-        )}
-      />
-    </View>
-  );
-}
+const isSafari = () =>
+  typeof navigator !== "undefined" &&
+  /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export default function DownloadsPage() {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
   const { width } = useResponsive();
+  const navigate = useNavigate();
   const { loading, fetchDownloads, clearAll, startPolling, stopPolling } =
     useDownloadStore();
   const downloads = useDownloadStore((s) => s.downloads);
   const active = useDownloadStore(selectActiveDownloads);
   const completed = useDownloadStore(selectCompletedDownloads);
   const failed = useDownloadStore(selectFailedDownloads);
+  const { isIncognito } = useIncognitoDetect();
 
   const numColumns =
     width >= 1280
@@ -119,6 +88,21 @@ export default function DownloadsPage() {
       />
 
       <OfflineBanner />
+
+      {isSafari() && (
+        <View style={styles.warningBanner}>
+          <Text style={styles.warningText}>{t("downloads.safariWarning")}</Text>
+        </View>
+      )}
+
+      {isIncognito && (
+        <View style={styles.warningBanner}>
+          <Text style={styles.warningText}>
+            {t("downloads.incognitoWarning")}
+          </Text>
+        </View>
+      )}
+
       <StorageBar />
 
       {loading ? (
@@ -169,6 +153,15 @@ export default function DownloadsPage() {
           }
           title={t("downloads.empty")}
           description={t("downloads.emptyHint")}
+          action={
+            <GlassButton
+              onPress={() => navigate("/vod")}
+              variant="primary"
+              size="md"
+              title={t("downloads.browseVod")}
+              disabled={isIncognito}
+            />
+          }
         />
       )}
     </View>
@@ -184,17 +177,17 @@ const styles = StyleSheet.create({
     marginHorizontal: "auto",
     width: "100%",
   },
-  section: { marginBottom: spacing.xl },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  warningBanner: {
+    backgroundColor: "rgba(234,179,8,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(234,179,8,0.4)",
+    borderRadius: 8,
+    padding: spacing.md,
     marginBottom: spacing.md,
   },
-  sectionTitle: {
-    color: colors.text,
-    fontSize: fontSize.lg,
-    fontWeight: "600",
+  warningText: {
+    color: "#EAB308",
+    fontSize: fontSize.sm,
   },
   retryAllButton: {
     flexDirection: "row",

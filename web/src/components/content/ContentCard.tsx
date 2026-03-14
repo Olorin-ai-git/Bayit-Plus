@@ -1,32 +1,47 @@
-import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Play } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassBadge, GlassModal, GlassButton } from '@bayit/shared/ui';
-import { GlassPlaceholder } from '@olorin/glass-ui';
-import type { ContentType as GlassContentType } from '@olorin/design-tokens';
-import { SubtitleFlags, ContentBadges } from '@bayit/shared';
-import { useModeEnforcement } from '@bayit/shared-hooks';
-import AIEnhancedBadge from './AIEnhancedBadge';
-import ContentCardActions from './ContentCardActions';
-import { useDirection } from '@/hooks/useDirection';
-import { useResponsive } from '@/hooks/useResponsive';
-import { favoritesService, playlistService } from '@/services/api';
-import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
-import LinearGradient from 'react-native-linear-gradient';
-import logger from '@/utils/logger';
-import { isSeriesContent } from '@/utils/contentHelpers';
-import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet, Pressable, Image } from "react-native";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Play } from "lucide-react";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
+import {
+  GlassCard,
+  GlassBadge,
+  GlassModal,
+  GlassButton,
+} from "@bayit/shared/ui";
+import { GlassPlaceholder } from "@olorin/glass-ui";
+import type { ContentType as GlassContentType } from "@olorin/design-tokens";
+import { SubtitleFlags, ContentBadges } from "@bayit/shared";
+import { useModeEnforcement } from "@bayit/shared-hooks";
+import AIEnhancedBadge from "./AIEnhancedBadge";
+import ContentCardActions from "./ContentCardActions";
+import { useDirection } from "@/hooks/useDirection";
+import { useResponsive } from "@/hooks/useResponsive";
+import { favoritesService, playlistService } from "@/services/api";
+import { getLocalizedCategory } from "@bayit/shared-utils/contentLocalization";
+import LinearGradient from "react-native-linear-gradient";
+import logger from "@/utils/logger";
+import { isSeriesContent } from "@/utils/contentHelpers";
+import { useFullscreenPlayerStore } from "@/stores/fullscreenPlayerStore";
+import { useDownloadStore, selectIsDownloaded } from "@/stores/downloadStore";
 
-const log = logger.scope('ContentCard');
+const log = logger.scope("ContentCard");
 
 interface Content {
   id: string;
   title: string;
   thumbnail?: string;
-  type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series' | 'audiobook' | 'article' | 'event';
+  type?:
+    | "live"
+    | "radio"
+    | "podcast"
+    | "vod"
+    | "movie"
+    | "series"
+    | "audiobook"
+    | "article"
+    | "event";
   /** @deprecated Use isSeriesContent() helper instead */
   is_series?: boolean;
   duration?: string;
@@ -39,18 +54,18 @@ interface Content {
   total_episodes?: number;
   has_subtitles?: boolean;
   available_subtitle_languages?: string[];
-  ai_subtitle_languages?: string[];  // Languages with AI-enhanced subtitles (nikud, shoresh, heblish, etc.)
+  ai_subtitle_languages?: string[]; // Languages with AI-enhanced subtitles (nikud, shoresh, heblish, etc.)
   quality_tier?: string;
   source?: string;
   city?: string;
   state?: string;
   published_at?: string;
-  url?: string;  // Article/event URL for iframe display
-  video_url?: string;  // Video URL for playback (YouTube, direct video, etc.)
-  content_format?: string;  // Content format (article, event, movie, video, etc.)
+  url?: string; // Article/event URL for iframe display
+  video_url?: string; // Video URL for playback (YouTube, direct video, etc.)
+  content_format?: string; // Content format (article, event, movie, video, etc.)
   // AI Enhancement fields (for educational content like Kan Educational)
   is_ai_enhanced?: boolean;
-  ai_features?: string[];  // ['vocabulary', 'context', 'quiz', 'translation']
+  ai_features?: string[]; // ['vocabulary', 'context', 'quiz', 'translation']
   // Collection fields
   is_collection_parent?: boolean;
   available_movies?: number;
@@ -63,10 +78,21 @@ interface ContentCardProps {
   showActions?: boolean;
 }
 
-export default function ContentCard({ content, showProgress = false, showActions = true }: ContentCardProps) {
+export default function ContentCard({
+  content,
+  showProgress = false,
+  showActions = true,
+}: ContentCardProps) {
   // Early validation - prevent crashes from invalid content
-  if (!content || !content.id || !content.title || content.title.trim() === '') {
-    logger.error('Invalid content prop passed to ContentCard', 'ContentCard', { content });
+  if (
+    !content ||
+    !content.id ||
+    !content.title ||
+    content.title.trim() === ""
+  ) {
+    logger.error("Invalid content prop passed to ContentCard", "ContentCard", {
+      content,
+    });
     return null; // Don't render anything for invalid content (missing ID, title, or empty title)
   }
 
@@ -83,6 +109,7 @@ export default function ContentCard({ content, showProgress = false, showActions
   // Thumbnail error handling: YouTube fallback and CDN failures
   const [thumbnailError, setThumbnailError] = useState(false);
   const [cdnFailure, setCdnFailure] = useState(false);
+  const isDownloaded = useDownloadStore(selectIsDownloaded(content.id));
 
   const getThumbnailUrl = (): string | undefined => {
     if (!content.thumbnail) return undefined;
@@ -93,8 +120,8 @@ export default function ContentCard({ content, showProgress = false, showActions
     }
 
     // If maxresdefault failed, use hqdefault
-    if (thumbnailError && content.thumbnail.includes('maxresdefault')) {
-      return content.thumbnail.replace('maxresdefault', 'hqdefault');
+    if (thumbnailError && content.thumbnail.includes("maxresdefault")) {
+      return content.thumbnail.replace("maxresdefault", "hqdefault");
     }
 
     return content.thumbnail;
@@ -103,19 +130,32 @@ export default function ContentCard({ content, showProgress = false, showActions
   // Map article/event types to 'culture' for GlassPlaceholder with safe fallback
   const getPlaceholderContentType = (): GlassContentType => {
     try {
-      if (content.type === 'article' || content.type === 'event') {
-        return 'culture';
+      if (content.type === "article" || content.type === "event") {
+        return "culture";
       }
       // Valid content types: movie, series, podcast, live, radio, vod, audiobook, culture
-      const validTypes = ['movie', 'series', 'podcast', 'live', 'radio', 'vod', 'audiobook', 'culture'];
+      const validTypes = [
+        "movie",
+        "series",
+        "podcast",
+        "live",
+        "radio",
+        "vod",
+        "audiobook",
+        "culture",
+      ];
       if (content.type && validTypes.includes(content.type)) {
         return content.type as GlassContentType;
       }
       // Safe default fallback
-      return 'vod';
+      return "vod";
     } catch (error) {
-      logger.error('Error determining placeholder content type', 'ContentCard', { error, contentType: content.type });
-      return 'vod'; // Safe default
+      logger.error(
+        "Error determining placeholder content type",
+        "ContentCard",
+        { error, contentType: content.type },
+      );
+      return "vod"; // Safe default
     }
   };
 
@@ -124,29 +164,33 @@ export default function ContentCard({ content, showProgress = false, showActions
       const thumbnail = content.thumbnail;
 
       // Check if it's a CDN failure (cdn.bayit.tv or connection issues)
-      if (thumbnail?.includes('cdn.bayit.tv')) {
-        logger.warn('CDN image failed to load, using placeholder', 'ContentCard', {
-          thumbnail,
-          contentId: content.id
-        });
+      if (thumbnail?.includes("cdn.bayit.tv")) {
+        logger.warn(
+          "CDN image failed to load, using placeholder",
+          "ContentCard",
+          {
+            thumbnail,
+            contentId: content.id,
+          },
+        );
         setCdnFailure(true);
         return;
       }
 
       // YouTube thumbnail fallback: retry with lower quality
-      if (!thumbnailError && thumbnail?.includes('maxresdefault')) {
+      if (!thumbnailError && thumbnail?.includes("maxresdefault")) {
         setThumbnailError(true);
         return;
       }
 
       // Any other error: mark as CDN failure to show placeholder
-      logger.warn('Image failed to load, using placeholder', 'ContentCard', {
+      logger.warn("Image failed to load, using placeholder", "ContentCard", {
         thumbnail,
-        contentId: content.id
+        contentId: content.id,
       });
       setCdnFailure(true);
     } catch (error) {
-      logger.error('Error in handleThumbnailError', 'ContentCard', { error });
+      logger.error("Error in handleThumbnailError", "ContentCard", { error });
       setCdnFailure(true);
     }
   };
@@ -164,19 +208,20 @@ export default function ContentCard({ content, showProgress = false, showActions
   // Any content with city+state (location-based) or article/event type should open in modal
   const isScrapedArticle =
     Boolean(content.city && content.state) ||
-    ((content.type === 'article' || content.type === 'event') && content.id?.startsWith('article-'));
+    ((content.type === "article" || content.type === "event") &&
+      content.id?.startsWith("article-"));
 
   // Debug logging
   useEffect(() => {
-    if (content.type === 'article' || (content.city && content.state)) {
-      log.debug('Location/Article card rendered', {
+    if (content.type === "article" || (content.city && content.state)) {
+      log.debug("Location/Article card rendered", {
         id: content.id,
         title: content.title.substring(0, 50),
         type: content.type,
         isScrapedArticle,
         hasCity: Boolean(content.city),
         hasState: Boolean(content.state),
-        hasUrl: Boolean(content.url)
+        hasUrl: Boolean(content.url),
       });
     }
   }, [content.id, isScrapedArticle]);
@@ -189,11 +234,11 @@ export default function ContentCard({ content, showProgress = false, showActions
     }
 
     if (isScrapedArticle && content.url) {
-      logger.info('Opening article in modal', 'ContentCard', {
+      logger.info("Opening article in modal", "ContentCard", {
         contentId: content.id,
         url: content.url,
         city: content.city,
-        state: content.state
+        state: content.state,
       });
       setIframeLoading(true); // Reset loading state
       setShowArticleModal(true);
@@ -208,7 +253,7 @@ export default function ContentCard({ content, showProgress = false, showActions
   // Open in new tab
   const openInNewTab = () => {
     if (content.url) {
-      window.open(content.url, '_blank', 'noopener,noreferrer');
+      window.open(content.url, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -220,25 +265,40 @@ export default function ContentCard({ content, showProgress = false, showActions
         return null; // No navigation for articles
       }
 
-      const type = content.type?.toLowerCase() ?? '';
-      const cat = content.category?.toLowerCase() ?? '';
+      const type = content.type?.toLowerCase() ?? "";
+      const cat = content.category?.toLowerCase() ?? "";
 
-      if (type === 'live' || cat.includes('live')) return { pathname: `/live/${content.id}` };
-      if (type === 'radio' || cat.includes('radio')) return { pathname: `/radio/${content.id}` };
-      if (type === 'podcast' || cat.includes('podcast')) return { pathname: `/podcasts/${content.id}` };
-      if (type === 'audiobook' || cat.includes('audiobook')) return { pathname: `/audiobooks/${content.id}` };
+      if (type === "live" || cat.includes("live"))
+        return { pathname: `/live/${content.id}` };
+      if (type === "radio" || cat.includes("radio"))
+        return { pathname: `/radio/${content.id}` };
+      if (type === "podcast" || cat.includes("podcast"))
+        return { pathname: `/podcasts/${content.id}` };
+      if (type === "audiobook" || cat.includes("audiobook"))
+        return { pathname: `/audiobooks/${content.id}` };
 
       // Collection parent (movie collection)
-      if (content.is_collection_parent) return { pathname: `/vod/collection/${content.id}` };
+      if (content.is_collection_parent)
+        return { pathname: `/vod/collection/${content.id}` };
 
-      if (type === 'series' || isSeriesContent(content as any)) return { pathname: `/vod/series/${content.id}` };
-      if (type === 'movie' || type === 'vod' || cat.includes('movie') || cat.includes('film')) return { pathname: `/vod/movie/${content.id}` };
+      if (type === "series" || isSeriesContent(content as any))
+        return { pathname: `/vod/series/${content.id}` };
+      if (
+        type === "movie" ||
+        type === "vod" ||
+        cat.includes("movie") ||
+        cat.includes("film")
+      )
+        return { pathname: `/vod/movie/${content.id}` };
 
       // Fallback: player via VOD detail
       return { pathname: `/vod/movie/${content.id}` };
     } catch (error) {
-      logger.error('Error determining link destination', 'ContentCard', { error, contentType: content.type });
-      return { pathname: '/' }; // Safe fallback to home
+      logger.error("Error determining link destination", "ContentCard", {
+        error,
+        contentType: content.type,
+      });
+      return { pathname: "/" }; // Safe fallback to home
     }
   };
 
@@ -252,10 +312,17 @@ export default function ContentCard({ content, showProgress = false, showActions
     setFavoriteLoading(true);
 
     try {
-      const result = await favoritesService.toggleFavorite(content.id, content.type || 'vod');
+      const result = await favoritesService.toggleFavorite(
+        content.id,
+        content.type || "vod",
+      );
       setIsFavorite(result.is_favorite);
     } catch (error) {
-      logger.error('Failed to toggle favorite', 'ContentCard', { contentId: content.id, contentType: content.type, error });
+      logger.error("Failed to toggle favorite", "ContentCard", {
+        contentId: content.id,
+        contentType: content.type,
+        error,
+      });
     } finally {
       setFavoriteLoading(false);
     }
@@ -269,10 +336,17 @@ export default function ContentCard({ content, showProgress = false, showActions
     setPlaylistLoading(true);
 
     try {
-      const result = await playlistService.toggleItem(content.id, content.type || 'vod');
+      const result = await playlistService.toggleItem(
+        content.id,
+        content.type || "vod",
+      );
       setInPlaylist(result.in_playlist);
     } catch (error) {
-      logger.error('Failed to toggle playlist', 'ContentCard', { contentId: content.id, contentType: content.type, error });
+      logger.error("Failed to toggle playlist", "ContentCard", {
+        contentId: content.id,
+        contentType: content.type,
+        error,
+      });
     } finally {
       setPlaylistLoading(false);
     }
@@ -285,7 +359,13 @@ export default function ContentCard({ content, showProgress = false, showActions
       onHoverIn={() => setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
       disabled={isScrapedArticle ? false : !isUIInteractionEnabled}
-      style={isScrapedArticle ? undefined : (!isUIInteractionEnabled ? { pointerEvents: 'none' } : undefined)}
+      style={
+        isScrapedArticle
+          ? undefined
+          : !isUIInteractionEnabled
+            ? { pointerEvents: "none" }
+            : undefined
+      }
     >
       <GlassCard
         style={[
@@ -294,206 +374,284 @@ export default function ContentCard({ content, showProgress = false, showActions
           !isUIInteractionEnabled && { opacity: 0.6 },
         ]}
       >
-          {/* Thumbnail */}
-          <View style={[
+        {/* Thumbnail */}
+        <View
+          style={[
             styles.thumbnailContainer,
-            content.type === 'podcast' || content.type === 'audiobook'
+            content.type === "podcast" || content.type === "audiobook"
               ? styles.thumbnailSquare
-              : (content.type === 'article' || content.type === 'event' || isScrapedArticle)
-              ? styles.thumbnailSquare
-              : styles.thumbnailPortrait
-          ]}>
-            {(() => {
-              try {
-                const thumbnailUrl = getThumbnailUrl();
-                if (thumbnailUrl) {
-                  return (
-                    <Image
-                      source={{ uri: thumbnailUrl }}
-                      style={styles.thumbnail}
-                      resizeMode="contain"
-                      onError={handleThumbnailError}
-                    />
-                  );
-                }
+              : content.type === "article" ||
+                  content.type === "event" ||
+                  isScrapedArticle
+                ? styles.thumbnailSquare
+                : styles.thumbnailPortrait,
+          ]}
+        >
+          {(() => {
+            try {
+              const thumbnailUrl = getThumbnailUrl();
+              if (thumbnailUrl) {
+                return (
+                  <Image
+                    source={{ uri: thumbnailUrl }}
+                    style={styles.thumbnail}
+                    resizeMode="contain"
+                    onError={handleThumbnailError}
+                  />
+                );
+              }
 
-                // Render placeholder with error handling
-                try {
-                  return (
-                    <GlassPlaceholder
-                      contentType={getPlaceholderContentType()}
-                      width={200}
-                      height={300}
-                      accessibilityRole="image"
-                      accessibilityLabel={`${content.title || 'Content'} - Content placeholder`}
-                      contentTitle={content.title || 'Untitled'}
-                      contentReason="missing"
-                      style={styles.thumbnailPlaceholder}
-                    />
-                  );
-                } catch (placeholderError) {
-                  logger.error('GlassPlaceholder failed, using fallback', 'ContentCard', {
+              // Render placeholder with error handling
+              try {
+                return (
+                  <GlassPlaceholder
+                    contentType={getPlaceholderContentType()}
+                    width={200}
+                    height={300}
+                    accessibilityRole="image"
+                    accessibilityLabel={`${content.title || "Content"} - Content placeholder`}
+                    contentTitle={content.title || "Untitled"}
+                    contentReason="missing"
+                    style={styles.thumbnailPlaceholder}
+                  />
+                );
+              } catch (placeholderError) {
+                logger.error(
+                  "GlassPlaceholder failed, using fallback",
+                  "ContentCard",
+                  {
                     error: placeholderError,
-                    contentType: content.type
-                  });
-                  // Simple fallback div
-                  return (
-                    <View style={[styles.thumbnail, styles.fallbackThumbnail]}>
-                      <Text style={styles.fallbackText}>📍</Text>
-                    </View>
-                  );
-                }
-              } catch (error) {
-                logger.error('Thumbnail rendering failed completely', 'ContentCard', { error });
+                    contentType: content.type,
+                  },
+                );
+                // Simple fallback div
                 return (
                   <View style={[styles.thumbnail, styles.fallbackThumbnail]}>
-                    <Text style={styles.fallbackText}>?</Text>
+                    <Text style={styles.fallbackText}>📍</Text>
                   </View>
                 );
               }
-            })()}
-
-            {/* Action Buttons - Show on hover */}
-            {showActions && isHovered && (
-              <ContentCardActions
-                contentId={content.id}
-                contentTitle={content.title}
-                contentType={content.type}
-                contentThumbnail={content.thumbnail}
-                isFavorite={isFavorite}
-                inPlaylist={inPlaylist}
-                favoriteLoading={favoriteLoading}
-                playlistLoading={playlistLoading}
-                onToggleFavorite={handleFavoriteToggle}
-                onTogglePlaylist={handlePlaylistToggle}
-              />
-            )}
-
-            {/* Play Overlay - Hide for articles (larger on mobile) */}
-            {isHovered && !isScrapedArticle && (
-              <View style={styles.playOverlay}>
-                <LinearGradient
-                  colors={['transparent', 'rgba(10, 10, 20, 0.8)']}
-                  style={StyleSheet.absoluteFill}
-                />
-                <View style={[
-                  styles.playButton,
-                  isMobile && styles.playButtonMobile,
-                ]}>
-                  <Play size={isMobile ? 32 : 24} color={colors.text} fill={colors.text} />
+            } catch (error) {
+              logger.error(
+                "Thumbnail rendering failed completely",
+                "ContentCard",
+                { error },
+              );
+              return (
+                <View style={[styles.thumbnail, styles.fallbackThumbnail]}>
+                  <Text style={styles.fallbackText}>?</Text>
                 </View>
-              </View>
-            )}
+              );
+            }
+          })()}
 
-            {/* Duration Badge - for movies */}
-            {content.duration && !isSeriesContent(content as any) && (
-              <View style={[styles.durationBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
-                <Text style={styles.durationText}>{content.duration}</Text>
-              </View>
-            )}
+          {/* Action Buttons - Show on hover */}
+          {showActions && isHovered && (
+            <ContentCardActions
+              contentId={content.id}
+              contentTitle={content.title}
+              contentType={content.type}
+              contentThumbnail={content.thumbnail}
+              isFavorite={isFavorite}
+              inPlaylist={inPlaylist}
+              favoriteLoading={favoriteLoading}
+              playlistLoading={playlistLoading}
+              onToggleFavorite={handleFavoriteToggle}
+              onTogglePlaylist={handlePlaylistToggle}
+            />
+          )}
 
-            {/* Episode Count Badge - for series */}
-            {(isSeriesContent(content as any) || content.type === 'series') && content.total_episodes !== undefined && content.total_episodes > 0 && (
-              <View style={[styles.episodesBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
+          {/* Play Overlay - Hide for articles (larger on mobile) */}
+          {isHovered && !isScrapedArticle && (
+            <View style={styles.playOverlay}>
+              <LinearGradient
+                colors={["transparent", "rgba(10, 10, 20, 0.8)"]}
+                style={StyleSheet.absoluteFill}
+              />
+              <View
+                style={[styles.playButton, isMobile && styles.playButtonMobile]}
+              >
+                <Play
+                  size={isMobile ? 32 : 24}
+                  color={colors.text}
+                  fill={colors.text}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* Duration Badge - for movies */}
+          {content.duration && !isSeriesContent(content as any) && (
+            <View
+              style={[
+                styles.durationBadge,
+                isRTL ? { left: "auto", right: spacing.sm } : {},
+              ]}
+            >
+              <Text style={styles.durationText}>{content.duration}</Text>
+            </View>
+          )}
+
+          {/* Episode Count Badge - for series */}
+          {(isSeriesContent(content as any) || content.type === "series") &&
+            content.total_episodes !== undefined &&
+            content.total_episodes > 0 && (
+              <View
+                style={[
+                  styles.episodesBadge,
+                  isRTL ? { left: "auto", right: spacing.sm } : {},
+                ]}
+              >
                 <Text style={styles.episodesText}>
-                  {content.total_episodes} {t('content.episodes')}
+                  {content.total_episodes} {t("content.episodes")}
                 </Text>
               </View>
             )}
 
-            {/* Collection Badge - for movie collections */}
-            {content.is_collection_parent && content.available_movies !== undefined && content.available_movies > 0 && (
-              <View style={[styles.episodesBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
+          {/* Collection Badge - for movie collections */}
+          {content.is_collection_parent &&
+            content.available_movies !== undefined &&
+            content.available_movies > 0 && (
+              <View
+                style={[
+                  styles.episodesBadge,
+                  isRTL ? { left: "auto", right: spacing.sm } : {},
+                ]}
+              >
                 <Text style={styles.episodesText}>
-                  {content.available_movies} {t('vod.collection.movies', 'movies')}
-                  {content.total_movies && content.total_movies > content.available_movies && ` ${t('vod.collection.of', 'of')} ${content.total_movies}`}
+                  {content.available_movies}{" "}
+                  {t("vod.collection.movies", "movies")}
+                  {content.total_movies &&
+                    content.total_movies > content.available_movies &&
+                    ` ${t("vod.collection.of", "of")} ${content.total_movies}`}
                 </Text>
               </View>
             )}
 
-            {/* Subtitle Flags */}
-            {content.available_subtitle_languages && content.available_subtitle_languages.length > 0 && (
+          {/* Subtitle Flags */}
+          {content.available_subtitle_languages &&
+            content.available_subtitle_languages.length > 0 && (
               <SubtitleFlags
                 languages={content.available_subtitle_languages}
                 aiLanguages={content.ai_subtitle_languages}
-                position={isRTL ? 'bottom-left' : 'bottom-right'}
+                position={isRTL ? "bottom-left" : "bottom-right"}
                 isRTL={isRTL}
                 size="small"
               />
             )}
 
-            {/* Quality Badge */}
-            {content.quality_tier && content.type !== 'live' && (
-              <View style={[styles.qualityBadge, isRTL ? { right: 'auto', left: spacing.sm } : {}]}>
-                <ContentBadges
-                  qualityTier={content.quality_tier}
-                  compact
-                  showSubtitles={false}
-                />
-              </View>
-            )}
+          {/* Quality Badge */}
+          {content.quality_tier && content.type !== "live" && (
+            <View
+              style={[
+                styles.qualityBadge,
+                isRTL ? { right: "auto", left: spacing.sm } : {},
+              ]}
+            >
+              <ContentBadges
+                qualityTier={content.quality_tier}
+                compact
+                showSubtitles={false}
+              />
+            </View>
+          )}
 
-            {/* AI Enhanced Badge - for educational content */}
-            {content.is_ai_enhanced && (
-              <View style={[styles.aiEnhancedBadge, isRTL ? { right: 'auto', left: spacing.sm } : {}]}>
-                <AIEnhancedBadge
-                  features={content.ai_features}
-                  size="small"
-                />
-              </View>
-            )}
+          {/* AI Enhanced Badge - for educational content */}
+          {content.is_ai_enhanced && (
+            <View
+              style={[
+                styles.aiEnhancedBadge,
+                isRTL ? { right: "auto", left: spacing.sm } : {},
+              ]}
+            >
+              <AIEnhancedBadge features={content.ai_features} size="small" />
+            </View>
+          )}
 
-            {/* Live Badge - positioned to avoid action buttons */}
-            {content.type === 'live' && (
-              <View style={[
+          {/* Downloaded Badge */}
+          {isDownloaded && (
+            <View
+              style={[
+                styles.downloadedBadge,
+                isRTL ? { right: "auto", left: spacing.sm } : {},
+              ]}
+            >
+              <Text style={styles.downloadedText}>
+                {t("downloads.downloaded")}
+              </Text>
+            </View>
+          )}
+
+          {/* Live Badge - positioned to avoid action buttons */}
+          {content.type === "live" && (
+            <View
+              style={[
                 styles.liveBadge,
-                isRTL ? { right: 'auto', left: spacing.sm } : {},
+                isRTL ? { right: "auto", left: spacing.sm } : {},
                 // Move down when action buttons are shown
                 showActions && { top: spacing.sm + 40 },
-              ]}>
-                <View style={styles.liveDot} />
-                <Text style={styles.liveText}>{t('common.live')}</Text>
-              </View>
-            )}
-
-            {/* Progress Bar */}
-            {content.progress != null && content.progress > 0 && (
-              <View style={styles.progressContainer}>
-                <View style={[styles.progressBar, { width: `${content.progress}%` }]} />
-              </View>
-            )}
-          </View>
-
-          {/* Info */}
-          <View style={styles.info}>
-            <Text style={[styles.title, isHovered && styles.titleHovered, { textAlign }]} numberOfLines={1}>
-              {content.title}
-            </Text>
-            <View style={[styles.meta, { flexDirection }]}>
-              {/* For location-based content (articles/events/businesses), show source and location instead of year/category */}
-              {isScrapedArticle ? (
-                <>
-                  {content.source && <Text style={styles.metaText}>{content.source}</Text>}
-                  {content.source && (content.city || content.state) && (
-                    <Text style={styles.metaDivider}>|</Text>
-                  )}
-                  {content.city && content.state && (
-                    <Text style={styles.metaText}>{content.city}, {content.state}</Text>
-                  )}
-                </>
-              ) : (
-                <>
-                  {content.year && <Text style={styles.metaText}>{content.year}</Text>}
-                  {content.year && localizedCategory && (
-                    <Text style={styles.metaDivider}>|</Text>
-                  )}
-                  {localizedCategory && <Text style={styles.metaText}>{localizedCategory}</Text>}
-                </>
-              )}
+              ]}
+            >
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>{t("common.live")}</Text>
             </View>
+          )}
+
+          {/* Progress Bar */}
+          {content.progress != null && content.progress > 0 && (
+            <View style={styles.progressContainer}>
+              <View
+                style={[styles.progressBar, { width: `${content.progress}%` }]}
+              />
+            </View>
+          )}
+        </View>
+
+        {/* Info */}
+        <View style={styles.info}>
+          <Text
+            style={[
+              styles.title,
+              isHovered && styles.titleHovered,
+              { textAlign },
+            ]}
+            numberOfLines={1}
+          >
+            {content.title}
+          </Text>
+          <View style={[styles.meta, { flexDirection }]}>
+            {/* For location-based content (articles/events/businesses), show source and location instead of year/category */}
+            {isScrapedArticle ? (
+              <>
+                {content.source && (
+                  <Text style={styles.metaText}>{content.source}</Text>
+                )}
+                {content.source && (content.city || content.state) && (
+                  <Text style={styles.metaDivider}>|</Text>
+                )}
+                {content.city && content.state && (
+                  <Text style={styles.metaText}>
+                    {content.city}, {content.state}
+                  </Text>
+                )}
+              </>
+            ) : (
+              <>
+                {content.year && (
+                  <Text style={styles.metaText}>{content.year}</Text>
+                )}
+                {content.year && localizedCategory && (
+                  <Text style={styles.metaDivider}>|</Text>
+                )}
+                {localizedCategory && (
+                  <Text style={styles.metaText}>{localizedCategory}</Text>
+                )}
+              </>
+            )}
           </View>
-        </GlassCard>
-      </Pressable>
+        </View>
+      </GlassCard>
+    </Pressable>
   );
 
   // Handle modal close - cleanup state
@@ -535,7 +693,7 @@ export default function ContentCard({ content, showProgress = false, showActions
         {iframeLoading && (
           <View style={styles.iframeLoadingOverlay}>
             <View style={styles.spinner} />
-            <Text style={styles.loadingText}>{t('common.loadingArticle')}</Text>
+            <Text style={styles.loadingText}>{t("common.loadingArticle")}</Text>
           </View>
         )}
 
@@ -544,12 +702,12 @@ export default function ContentCard({ content, showProgress = false, showActions
           key={content.url} // Force remount on URL change
           src={content.url}
           style={{
-            width: '100%',
-            height: '70vh',
-            border: 'none',
-            borderRadius: '12px',
-            marginTop: '12px',
-            display: iframeLoading ? 'none' : 'block',
+            width: "100%",
+            height: "70vh",
+            border: "none",
+            borderRadius: "12px",
+            marginTop: "12px",
+            display: iframeLoading ? "none" : "block",
           }}
           title={content.title}
           sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
@@ -570,11 +728,11 @@ export default function ContentCard({ content, showProgress = false, showActions
         }}
         style={{
           flexShrink: 0,
-          cursor: 'pointer',
-          position: 'relative',
-          WebkitTapHighlightColor: 'transparent',
-          WebkitUserSelect: 'none',
-          userSelect: 'none',
+          cursor: "pointer",
+          position: "relative",
+          WebkitTapHighlightColor: "transparent",
+          WebkitUserSelect: "none",
+          userSelect: "none",
         }}
       >
         {CardContent}
@@ -584,30 +742,37 @@ export default function ContentCard({ content, showProgress = false, showActions
   }
 
   // Continue Watching: Open player directly with saved position
-  const isContinueWatching = content.progress != null && content.progress > 0
-    && content.type !== 'live' && content.type !== 'series' && !isSeriesContent(content as any);
+  const isContinueWatching =
+    content.progress != null &&
+    content.progress > 0 &&
+    content.type !== "live" &&
+    content.type !== "series" &&
+    !isSeriesContent(content as any);
 
   if (isUIInteractionEnabled && isContinueWatching) {
     const handleResumePlay = (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      openPlayer({
-        id: content.id,
-        title: content.title,
-        src: '',
-        poster: content.thumbnail,
-        type: (content.type as any) || 'movie',
-      }, content.position || 0);
+      openPlayer(
+        {
+          id: content.id,
+          title: content.title,
+          src: "",
+          poster: content.thumbnail,
+          type: (content.type as any) || "movie",
+        },
+        content.position || 0,
+      );
     };
     return (
       <div
         onMouseDown={handleResumePlay}
         style={{
           flexShrink: 0,
-          cursor: 'pointer',
-          WebkitTapHighlightColor: 'transparent',
-          WebkitUserSelect: 'none',
-          userSelect: 'none',
+          cursor: "pointer",
+          WebkitTapHighlightColor: "transparent",
+          WebkitUserSelect: "none",
+          userSelect: "none",
         }}
       >
         {CardContent}
@@ -621,7 +786,7 @@ export default function ContentCard({ content, showProgress = false, showActions
       <Link
         to={linkTo.pathname}
         state={linkTo.state}
-        style={{ textDecoration: 'none', flexShrink: 0 }}
+        style={{ textDecoration: "none", flexShrink: 0 }}
       >
         {CardContent}
       </Link>
@@ -634,9 +799,9 @@ export default function ContentCard({ content, showProgress = false, showActions
 
 const styles = StyleSheet.create({
   card: {
-    width: '100%',
+    width: "100%",
     padding: 0,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   cardHovered: {
     transform: [{ translateY: -4 }],
@@ -644,10 +809,10 @@ const styles = StyleSheet.create({
     boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
   },
   thumbnailContainer: {
-    position: 'relative',
+    position: "relative",
     borderTopLeftRadius: borderRadius.lg,
     borderTopRightRadius: borderRadius.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
     backgroundColor: colors.dark[950], // Background for letterboxing (pure black)
   },
   thumbnailPortrait: {
@@ -657,19 +822,19 @@ const styles = StyleSheet.create({
     aspectRatio: 1, // Square aspect ratio for podcasts, audiobooks, articles, and events
   },
   thumbnail: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     backgroundColor: colors.glass,
   },
   actionButtons: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.sm,
     right: spacing.sm,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.xs,
     zIndex: 10,
   },
@@ -677,12 +842,12 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
     // @ts-ignore
-    backdropFilter: 'blur(8px)',
-    transition: 'all 0.2s ease',
+    backdropFilter: "blur(8px)",
+    transition: "all 0.2s ease",
   },
   actionButtonMobile: {
     width: 56,
@@ -690,26 +855,26 @@ const styles = StyleSheet.create({
     borderRadius: 28,
   },
   actionButtonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
   },
   actionButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: "rgba(255, 255, 255, 0.25)",
     transform: [{ scale: 1.1 }],
   },
   playOverlay: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   playButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     // @ts-ignore
-    backdropFilter: 'blur(8px)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backdropFilter: "blur(8px)",
+    justifyContent: "center",
+    alignItems: "center",
     // @ts-ignore
     boxShadow: `0 0 20px ${colors.primary}`,
   },
@@ -719,41 +884,41 @@ const styles = StyleSheet.create({
     borderRadius: 32,
   },
   durationBadge: {
-    position: 'absolute',
+    position: "absolute",
     bottom: spacing.sm,
     left: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
   },
   episodesBadge: {
-    position: 'absolute',
+    position: "absolute",
     bottom: spacing.sm,
     left: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: borderRadius.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   episodesText: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   durationText: {
     fontSize: 11,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   liveBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.sm,
     right: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.error.DEFAULT,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
@@ -768,19 +933,19 @@ const styles = StyleSheet.create({
   },
   liveText: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
   },
   progressContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     height: 3,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   progressBar: {
-    height: '100%',
+    height: "100%",
     backgroundColor: colors.primary.DEFAULT,
     // @ts-ignore
     boxShadow: `0 0 8px ${colors.primary}`,
@@ -790,7 +955,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.text,
     marginBottom: spacing.xs,
   },
@@ -798,8 +963,8 @@ const styles = StyleSheet.create({
     color: colors.primary.DEFAULT,
   },
   meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
   },
   metaText: {
@@ -811,56 +976,70 @@ const styles = StyleSheet.create({
     color: colors.dark[400],
   },
   qualityBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.sm,
     right: spacing.sm,
   },
   aiEnhancedBadge: {
-    position: 'absolute',
-    top: spacing.sm + 28,  // Below quality badge
+    position: "absolute",
+    top: spacing.sm + 28, // Below quality badge
     right: spacing.sm,
+  },
+  downloadedBadge: {
+    position: "absolute",
+    bottom: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: "rgba(34,197,94,0.9)",
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  downloadedText: {
+    fontSize: 10,
+    color: colors.text,
+    fontWeight: "600",
   },
   fallbackThumbnail: {
     backgroundColor: colors.glass,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   fallbackText: {
     fontSize: 48,
     color: colors.textMuted,
   },
   articleModalContent: {
-    width: '100%',
+    width: "100%",
     minHeight: 600,
     borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
   articleModalHeader: {
     padding: spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderRadius: borderRadius.lg,
     marginBottom: spacing.sm,
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.sm,
   },
   articleModalHelperText: {
     fontSize: 14,
     color: colors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
   },
   openInNewTabButton: {
     marginTop: spacing.xs,
   },
   iframeLoadingOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 100,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(10, 10, 20, 0.95)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(10, 10, 20, 0.95)",
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.lg,
     borderRadius: borderRadius.xl,
     zIndex: 10,
@@ -870,17 +1049,17 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     borderWidth: 4,
-    borderColor: 'rgba(107, 33, 168, 0.3)',
+    borderColor: "rgba(107, 33, 168, 0.3)",
     borderTopColor: colors.primary.DEFAULT,
     // @ts-ignore - Web animation (React Native Web compatibility)
-    animationKeyframes: 'spin',
-    animationDuration: '1s',
-    animationTimingFunction: 'linear',
-    animationIterationCount: 'infinite',
+    animationKeyframes: "spin",
+    animationDuration: "1s",
+    animationTimingFunction: "linear",
+    animationIterationCount: "infinite",
   },
   loadingText: {
     fontSize: 16,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

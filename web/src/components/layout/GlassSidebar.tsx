@@ -364,11 +364,13 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
         };
       }
 
-      // Hide recordings from favorites if not premium (already in base, will be filtered)
+      // Hide recordings and downloads from favorites if not premium
       if (section.titleKey === "nav.favorites" && !isPremium) {
         return {
           ...section,
-          items: section.items.filter((item) => item.id !== "recordings"),
+          items: section.items.filter(
+            (item) => item.id !== "recordings" && item.id !== "downloads",
+          ),
         };
       }
 

@@ -115,6 +115,21 @@ export default function MovieDetailPage() {
   const isDownloadingNow = useDownloadStore(selectIsDownloading(movieId || ""));
   const { isOnline } = useOnlineStatus();
 
+  const estimatedDownloadMb = (() => {
+    if (!movie?.duration) return null;
+    const minutes = parseInt(movie.duration, 10);
+    if (isNaN(minutes) || minutes <= 0) return null;
+    const quality = (() => {
+      try {
+        return localStorage.getItem("downloadQuality") ?? "hd";
+      } catch {
+        return "hd";
+      }
+    })();
+    const mbPerMin = quality === "sd" ? 25 : quality === "fhd" ? 83 : 50;
+    return Math.round(minutes * mbPerMin);
+  })();
+
   // Video preview state
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const [showPoster, setShowPoster] = useState(true);
@@ -701,6 +716,13 @@ export default function MovieDetailPage() {
                   }
                   disabled={!isOnline || isDownloadingNow || isDownloaded}
                 />
+                {estimatedDownloadMb !== null && !isDownloaded && (
+                  <Text style={styles.estimatedSize}>
+                    {t("downloads.estimatedSize", {
+                      size: estimatedDownloadMb,
+                    })}
+                  </Text>
+                )}
 
                 {movie.trailer_stream_url || movie.trailer_url ? (
                   <GlassButton
@@ -1013,6 +1035,11 @@ export default function MovieDetailPage() {
 }
 
 const styles = StyleSheet.create({
+  estimatedSize: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+    marginTop: 2,
+  },
   scrollView: {
     flex: 1,
     backgroundColor: colors.background,

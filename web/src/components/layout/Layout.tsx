@@ -28,6 +28,7 @@ import { useVoiceSupport } from "@bayit/shared-hooks";
 import { supportConfig } from "@bayit/shared-config/supportConfig";
 import { useVoiceActionExecutor } from "@/hooks/useVoiceActionExecutor";
 import { VoiceAssistantPanel } from "@/components/voice-assistant/VoiceAssistantPanel";
+import { useOfflineRedirect } from "@/hooks/useOfflineRedirect";
 import logger from "@/utils/logger";
 
 // Check if this is a TV build (set by webpack)
@@ -35,6 +36,9 @@ declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== "undefined" && __TV__;
 
 export default function Layout() {
+  // Redirect to /downloads on offline launch
+  useOfflineRedirect();
+
   // Responsive state
   const { isMobile } = useResponsive();
 
