@@ -75,7 +75,7 @@ extension TVProfileView {
                 TVSettingsView()
             }
         case .help:
-            profileSheetWrapper(title: localization.t("settings.help")) {
+            profileSheetWrapper(title: localization.t("settings.help.title")) {
                 TVHelpView()
             }
         case .connectedAccounts:
@@ -89,7 +89,7 @@ extension TVProfileView {
         case .householdProfiles:
             TVHouseholdProfilesView(onDismiss: { activeSheet = nil })
         case .about:
-            profileSheetWrapper(title: localization.t("settings.about")) {
+            profileSheetWrapper(title: localization.t("settings.about.title")) {
                 TVAboutView()
             }
         case .changePassword:

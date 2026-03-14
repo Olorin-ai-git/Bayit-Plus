@@ -3268,7 +3268,9 @@
     "title": "Bayit+ 助手",
     "greeting": "您好！我是 Bayit+ 智能助手。今天我能为您做什么？点击麦克风说话，或输入消息。",
     "loading": "加载消息...",
-    "typing": "正在输入..."
+    "typing": "正在输入...",
+    "newChat": "New Chat",
+    "typeMessage": "Type a message..."
   },
   "chatbot": {
     "title": "Bayit+ 助手",
@@ -3419,7 +3421,9 @@
     "joinByGameCode": "通过代码加入",
     "challengeViaWhatsApp": "通过WhatsApp挑战",
     "whatsAppMessage": "我在Bayit+上挑战你下棋! 代码: {{code}} - 点击开始: {{link}}",
-    "turn": "回合"
+    "turn": "回合",
+    "newGameBot": "Play Against Bot",
+    "newGamePlayer": "Play Against Player"
   },
   "children": {
     "title": "儿童",
@@ -3725,7 +3729,7 @@
     "enabled": "已启用",
     "disabled": "已禁用",
     "invalidDate": "无效日期",
-    "appName": "🏠 Bayit+",
+    "appName": "Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
     "slogan": "您的家，随处可及。",
     "ok": "确定",
@@ -3847,7 +3851,9 @@
     "queued": "排队中",
     "on": "开启",
     "off": "关闭",
-    "pause": "[zh] Pause"
+    "pause": "[zh] Pause",
+    "accept": "Accept",
+    "decline": "Decline"
   },
   "badges": {
     "aiEnhanced": "AI 增强",
@@ -3855,9 +3861,15 @@
   },
   "aiCompanion": {
     "title": "AI学习伙伴",
-    "vocabulary": "词汇",
+    "vocabulary": {
+      "_label": "词汇",
+      "empty": "No vocabulary items yet"
+    },
     "context": "剧集上下文",
-    "quiz": "快速测验",
+    "quiz": {
+      "_label": "快速测验",
+      "empty": "No quizzes available"
+    },
     "nowPlaying": "正在播放",
     "upNext": "接下来",
     "timeRemaining": "剩余时间",
@@ -5454,7 +5466,8 @@
     "household": "家庭",
     "messages": "消息",
     "myContent": "我的内容",
-    "social": "社交"
+    "social": "社交",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -5500,7 +5513,10 @@
       "later": "稍后设置",
       "orType": "或输入你的名字",
       "enable": "启用麦克风",
-      "granted": "麦克风已成功启用"
+      "granted": "麦克风已成功启用",
+      "micUnavailable": "Microphone unavailable on this device",
+      "noAudio": "No audio detected",
+      "useTextInput": "Use text input instead"
     },
     "launch": {
       "title": "一切就绪",
@@ -5560,7 +5576,44 @@
       "learning": "希伯来语学习"
     },
     "tour": {
-      "done": "完成"
+      "done": "完成",
+      "byoc": {
+        "integrated": "All your content, one place",
+        "tagline": "Bring your own content",
+        "title": "BYOC"
+      },
+      "catchup": {
+        "aiSummary": "AI-powered recap",
+        "tagline": "Never miss a moment",
+        "title": "Catch Up"
+      },
+      "dismiss": "Dismiss",
+      "dubbing": {
+        "description": "Watch content dubbed in your language",
+        "dubbed": "Dubbed",
+        "original": "Original",
+        "selectLanguage": "Select Language",
+        "title": "AI Dubbing"
+      },
+      "getStarted": "Get Started",
+      "interaction": {
+        "clickCharacter": "Tap a character to learn more",
+        "title": "Interactive Features"
+      },
+      "skip": "Skip Tour",
+      "title": "Feature Tour",
+      "trivia": {
+        "correct": "Correct!",
+        "sampleQuestion": "Who directed this episode?",
+        "tryAgain": "Try Again"
+      },
+      "tryItNow": "Try It Now",
+      "zehAni": {
+        "description": "Create personalized avatars for your family",
+        "tagline": "Who am I?",
+        "title": "Zeh Ani",
+        "tvNote": "Avatar creation available on mobile"
+      }
     },
     "demo": {
       "dubbing": {
@@ -5609,7 +5662,9 @@
         "description": "生成与您一同学习的个性化 AI 头像",
         "generated": "AI 头像"
       }
-    }
+    },
+    "completeSetup": "Complete Setup",
+    "getStarted": "Get Started"
   },
   "notFound": {
     "title": "页面未找到",
@@ -6162,7 +6217,9 @@
       "searchFailed": "搜索失败，请重试。",
       "downloads": "{{count}} 次下载",
       "noResults": "未找到字幕"
-    }
+    },
+    "disconnect": "Disconnect",
+    "unknownDevice": "Unknown Device"
   },
   "podcast": {
     "selectLanguage": "选择语言",
@@ -6322,7 +6379,8 @@
     "episodeShort": "第{{number}}集",
     "author": "作者",
     "category": "类别",
-    "episodeCount": "集数"
+    "episodeCount": "集数",
+    "podcast": "Podcast"
   },
   "miniPlayer": {
     "skipBackward": "后退15秒",
@@ -7039,7 +7097,8 @@
       "yearFrom": "从 year",
       "yearTo": "至年份",
       "duration": "时长",
-      "apply": "应用筛选"
+      "apply": "应用筛选",
+      "applyCount": "Apply ({{count}})"
     }
   },
   "settings": {
@@ -7099,7 +7158,28 @@
     "autoplay": "自动播放",
     "appearance": "外观",
     "darkMode": "深色模式",
-    "privacy": "隐私",
+    "privacy": {
+      "_label": "隐私",
+      "analytics": "Analytics",
+      "analyticsDesc": "Help improve Bayit+ by sharing anonymous usage data",
+      "clear": "Clear",
+      "clearSearchHistory": "Clear Search History",
+      "clearSearchHistoryMessage": "This will remove all your search history. This action cannot be undone.",
+      "clearSearchHistoryTitle": "Clear Search History?",
+      "clearWatchHistory": "Clear Watch History",
+      "clearWatchHistoryMessage": "This will remove all your watch history and recommendations will be reset. This action cannot be undone.",
+      "clearWatchHistoryTitle": "Clear Watch History?",
+      "crashReports": "Crash Reports",
+      "crashReportsDesc": "Automatically send crash reports to help fix bugs",
+      "dataCollection": "Data Collection",
+      "description": "Control how your data is used",
+      "history": "History",
+      "personalization": "Personalization",
+      "personalizationDesc": "Use your activity to personalize recommendations",
+      "searchHistory": "Search History",
+      "title": "Privacy",
+      "watchHistory": "Watch History"
+    },
     "privacyPolicy": "隐私政策",
     "termsOfService": "服务条款",
     "connectedAccounts": "关联账户",
@@ -7114,7 +7194,23 @@
     "unlinkConfirm": "取消关联",
     "familyAndSafety": "家庭与安全",
     "familyControls": "家庭控制",
-    "about": "关于",
+    "about": {
+      "_label": "关于",
+      "appInfo": "App Info",
+      "build": "Build",
+      "cookiePolicy": "Cookie Policy",
+      "deviceInfo": "Device Info",
+      "environment": "Environment",
+      "legal": "Legal",
+      "licenses": "Open Source Licenses",
+      "locale": "Locale",
+      "model": "Model",
+      "osVersion": "OS Version",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "title": "About",
+      "version": "Version"
+    },
     "display": "显示",
     "homePageSections": "首页版块",
     "configureSections": "配置首页显示的版块",
@@ -8113,7 +8209,8 @@
       "autoPlay": "自动播放冷知识",
       "resetConfirm": "这将把所有问答设置重置为默认值。",
       "enableDescription": "[zh] Show trivia questions while watching content.",
-      "enableTrivia": "[zh] Enable Trivia"
+      "enableTrivia": "[zh] Enable Trivia",
+      "languages": "Languages"
     },
     "categories": {
       "cast": "演员",
@@ -8152,7 +8249,10 @@
     "quiz": {
       "title": "知识问答"
     },
-    "question": "问题",
+    "question": {
+      "_label": "问题",
+      "counter": "Question {{current}} of {{total}}"
+    },
     "results": {
       "title": "问答完成!",
       "playAgain": "再玩一次",
@@ -8164,7 +8264,9 @@
     "playerCount": "{{count}} 位玩家",
     "dayStreak": "连续 {{count}} 天",
     "tellMeMore": "告诉我更多",
-    "follow_up": "跟进"
+    "follow_up": "跟进",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
   },
   "splash": {
     "bayit": "Bayit",
@@ -8393,7 +8495,8 @@
       "watchLive": "观看直播电视",
       "search": "搜索内容",
       "listenRadio": "收听广播"
-    }
+    },
+    "ask": "Ask Bayit+"
   },
   "voiceMode": {
     "voiceOnly": "仅语音",
@@ -8587,7 +8690,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "与朋友一起观看",
-    "type": "Type"
+    "type": "Type",
+    "contentId": "Content ID",
+    "invite": "Invite",
+    "syncPlayback": "Sync Playback"
   },
   "playlist": {
     "title": "我的播放列表",
@@ -9120,7 +9226,8 @@
     "signingIn": "登录中...",
     "email": "电子邮件",
     "password": "密码",
-    "signOut": "[zh] Sign Out"
+    "signOut": "[zh] Sign Out",
+    "signIn": "Sign In"
   },
   "email": {
     "greeting": "您好",
@@ -9760,7 +9867,12 @@
     "type": "头像类型",
     "useIosOrWeb": "使用iOS或Web应用上传自定义头像",
     "tapToSpeak": "[zh] Tap to speak",
-    "title": "[zh] Avatar"
+    "title": "[zh] Avatar",
+    "animationLevel": "Animation Level",
+    "personality": "Personality",
+    "savePreferences": "Save Preferences",
+    "style": "Style",
+    "voice": "Voice"
   },
   "quiz": {
     "title": "答题时间",
@@ -10767,7 +10879,8 @@
       "delete": "删除联系人",
       "name": "显示名称",
       "phone": "电话号码",
-      "pin": "PIN码"
+      "pin": "PIN码",
+      "reelCount": "{{count}} reels"
     },
     "feedback": {
       "title": "反馈",
@@ -10820,7 +10933,8 @@
       "generate": "生成精彩集锦",
       "empty": "暂无精彩集锦",
       "share": "分享",
-      "generating": "正在生成精彩集锦..."
+      "generating": "正在生成精彩集锦...",
+      "momentCount": "{{count}} moments"
     },
     "title": "泽·阿尼",
     "arCapture": {
@@ -10996,6 +11110,18 @@
       "phoneLabel": "电话",
       "relationship": "关系",
       "language": "语言"
+    },
+    "avatarCreation": {
+      "childName": "Child Name",
+      "create": "Create Avatar",
+      "familyPin": "Family PIN",
+      "newAvatar": "New Avatar"
+    },
+    "avatarManagement": {
+      "active": "Active",
+      "createNew": "Create New",
+      "delete": "Delete",
+      "setActive": "Set Active"
     }
   },
   "security": {
@@ -11612,7 +11738,8 @@
       "freeAI": "50 AI积分（一次性）",
       "oneWidget": "1个小组件",
       "oneProfile": "1个家庭配置文件"
-    }
+    },
+    "selected": "Selected"
   },
   "billing": {
     "currentPlan": "当前计划",
@@ -12444,5 +12571,8 @@
     },
     "title": "[zh] Voice Wizard"
   },
-  "watch_now": "[zh] Watch Now"
+  "watch_now": "[zh] Watch Now",
+  "stories": {
+    "creditCost": "{{cost}} credit"
+  }
 }

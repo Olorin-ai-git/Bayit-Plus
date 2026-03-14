@@ -3268,7 +3268,9 @@
     "title": "עוזר בית+",
     "greeting": "שלום! אני העוזר החכם של בית+. איך אוכל לעזור לך היום? לחץ על המיקרופון ודבר אליי, או הקלד הודעה.",
     "loading": "טוען הודעות...",
-    "typing": "מקליד..."
+    "typing": "מקליד...",
+    "newChat": "New Chat",
+    "typeMessage": "Type a message..."
   },
   "chatbot": {
     "title": "עוזר בית+",
@@ -3419,7 +3421,9 @@
     "joinByGameCode": "הצטרף לפי קוד משחק",
     "challengeViaWhatsApp": "אתגר דרך WhatsApp",
     "whatsAppMessage": "אני מאתגר אותך לשחמט ב-Bayit+! קוד: {{code}} - לחץ לשחק: {{link}}",
-    "turn": "תור"
+    "turn": "תור",
+    "newGameBot": "Play Against Bot",
+    "newGamePlayer": "Play Against Player"
   },
   "children": {
     "title": "ילדים",
@@ -3725,7 +3729,7 @@
     "enabled": "מופעל",
     "disabled": "כבוי",
     "invalidDate": "תאריך לא תקין",
-    "appName": "🏠 בית+",
+    "appName": "בית+",
     "appVersion": "🏠 בית+ v1.0.0",
     "slogan": "הבית שלך. בכל מקום.",
     "ok": "אישור",
@@ -3847,7 +3851,9 @@
     "queued": "בתור",
     "on": "מופעל",
     "off": "כבוי",
-    "pause": "השהה"
+    "pause": "השהה",
+    "accept": "Accept",
+    "decline": "Decline"
   },
   "badges": {
     "aiEnhanced": "משופר בינה מלאכותית",
@@ -3855,9 +3861,15 @@
   },
   "aiCompanion": {
     "title": "עוזר למידה חכם",
-    "vocabulary": "אוצר מילים",
+    "vocabulary": {
+      "_label": "אוצר מילים",
+      "empty": "No vocabulary items yet"
+    },
     "context": "הקשר הפרק",
-    "quiz": "חידון מהיר",
+    "quiz": {
+      "_label": "חידון מהיר",
+      "empty": "No quizzes available"
+    },
     "nowPlaying": "כרגע משודר",
     "upNext": "הבא בתור",
     "timeRemaining": "זמן נותר",
@@ -5454,7 +5466,8 @@
     "household": "משק בית",
     "messages": "הודעות",
     "myContent": "התוכן שלי",
-    "social": "חברתי"
+    "social": "חברתי",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -5500,7 +5513,10 @@
       "later": "הגדרה מאוחר יותר",
       "orType": "או הקלד את שמך",
       "enable": "הפעל מיקרופון",
-      "granted": "המיקרופון הופעל בהצלחה"
+      "granted": "המיקרופון הופעל בהצלחה",
+      "micUnavailable": "Microphone unavailable on this device",
+      "noAudio": "No audio detected",
+      "useTextInput": "Use text input instead"
     },
     "launch": {
       "title": "הכל מוכן",
@@ -5560,7 +5576,44 @@
       "learning": "לימוד עברית"
     },
     "tour": {
-      "done": "סיום"
+      "done": "סיום",
+      "byoc": {
+        "integrated": "All your content, one place",
+        "tagline": "Bring your own content",
+        "title": "BYOC"
+      },
+      "catchup": {
+        "aiSummary": "AI-powered recap",
+        "tagline": "Never miss a moment",
+        "title": "Catch Up"
+      },
+      "dismiss": "Dismiss",
+      "dubbing": {
+        "description": "Watch content dubbed in your language",
+        "dubbed": "Dubbed",
+        "original": "Original",
+        "selectLanguage": "Select Language",
+        "title": "AI Dubbing"
+      },
+      "getStarted": "Get Started",
+      "interaction": {
+        "clickCharacter": "Tap a character to learn more",
+        "title": "Interactive Features"
+      },
+      "skip": "Skip Tour",
+      "title": "Feature Tour",
+      "trivia": {
+        "correct": "Correct!",
+        "sampleQuestion": "Who directed this episode?",
+        "tryAgain": "Try Again"
+      },
+      "tryItNow": "Try It Now",
+      "zehAni": {
+        "description": "Create personalized avatars for your family",
+        "tagline": "Who am I?",
+        "title": "Zeh Ani",
+        "tvNote": "Avatar creation available on mobile"
+      }
     },
     "demo": {
       "dubbing": {
@@ -5609,7 +5662,9 @@
         "description": "צור אווטאר AI מותאם אישית שלומד איתך",
         "generated": "אווטאר AI"
       }
-    }
+    },
+    "completeSetup": "Complete Setup",
+    "getStarted": "Get Started"
   },
   "notFound": {
     "title": "הדף לא נמצא",
@@ -6162,7 +6217,9 @@
       "searchFailed": "החיפוש נכשל. נסה שוב.",
       "downloads": "{{count}} הורדות",
       "noResults": "לא נמצאו כתוביות"
-    }
+    },
+    "disconnect": "Disconnect",
+    "unknownDevice": "Unknown Device"
   },
   "podcast": {
     "selectLanguage": "בחר שפה",
@@ -6322,7 +6379,8 @@
     "episodeShort": "פרק {{number}}",
     "author": "מחבר",
     "category": "קטגוריה",
-    "episodeCount": "פרקים"
+    "episodeCount": "פרקים",
+    "podcast": "Podcast"
   },
   "miniPlayer": {
     "skipBackward": "דלג 15 שניות אחורה",
@@ -7039,7 +7097,8 @@
       "yearFrom": "מאת year",
       "yearTo": "עד שנת",
       "duration": "משך",
-      "apply": "החל מסננים"
+      "apply": "החל מסננים",
+      "applyCount": "Apply ({{count}})"
     }
   },
   "settings": {
@@ -7099,7 +7158,28 @@
     "autoplay": "ניגון אוטומטי",
     "appearance": "מראה",
     "darkMode": "מצב כהה",
-    "privacy": "פרטיות",
+    "privacy": {
+      "_label": "פרטיות",
+      "analytics": "Analytics",
+      "analyticsDesc": "Help improve Bayit+ by sharing anonymous usage data",
+      "clear": "Clear",
+      "clearSearchHistory": "Clear Search History",
+      "clearSearchHistoryMessage": "This will remove all your search history. This action cannot be undone.",
+      "clearSearchHistoryTitle": "Clear Search History?",
+      "clearWatchHistory": "Clear Watch History",
+      "clearWatchHistoryMessage": "This will remove all your watch history and recommendations will be reset. This action cannot be undone.",
+      "clearWatchHistoryTitle": "Clear Watch History?",
+      "crashReports": "Crash Reports",
+      "crashReportsDesc": "Automatically send crash reports to help fix bugs",
+      "dataCollection": "Data Collection",
+      "description": "Control how your data is used",
+      "history": "History",
+      "personalization": "Personalization",
+      "personalizationDesc": "Use your activity to personalize recommendations",
+      "searchHistory": "Search History",
+      "title": "Privacy",
+      "watchHistory": "Watch History"
+    },
     "privacyPolicy": "מדיניות פרטיות",
     "termsOfService": "תנאי שימוש",
     "connectedAccounts": "חשבונות מקושרים",
@@ -7114,7 +7194,23 @@
     "unlinkConfirm": "נתק",
     "familyAndSafety": "משפחה ובטיחות",
     "familyControls": "בקרת הורים",
-    "about": "אודות",
+    "about": {
+      "_label": "אודות",
+      "appInfo": "App Info",
+      "build": "Build",
+      "cookiePolicy": "Cookie Policy",
+      "deviceInfo": "Device Info",
+      "environment": "Environment",
+      "legal": "Legal",
+      "licenses": "Open Source Licenses",
+      "locale": "Locale",
+      "model": "Model",
+      "osVersion": "OS Version",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "title": "About",
+      "version": "Version"
+    },
     "display": "תצוגה",
     "homePageSections": "סעיפי דף הבית",
     "configureSections": "הגדר אילו סעיפים יופיעו בדף הבית שלך",
@@ -8113,7 +8209,8 @@
       "autoPlay": "ניגון טריוויה אוטומטי",
       "resetConfirm": "פעולה זו תאפס את כל הגדרות הטריוויה לערכי ברירת המחדל.",
       "enableDescription": "הצג שאלות טריוויה בזמן צפייה בתוכן.",
-      "enableTrivia": "הפעל טריוויה"
+      "enableTrivia": "הפעל טריוויה",
+      "languages": "Languages"
     },
     "categories": {
       "cast": "שחקנים",
@@ -8152,7 +8249,10 @@
     "quiz": {
       "title": "חידון טריוויה"
     },
-    "question": "שאלה",
+    "question": {
+      "_label": "שאלה",
+      "counter": "Question {{current}} of {{total}}"
+    },
     "results": {
       "title": "החידון הושלם!",
       "playAgain": "שחק שוב",
@@ -8164,7 +8264,9 @@
     "playerCount": "{{count}} שחקנים",
     "dayStreak": "רצף {{count}} ימים",
     "tellMeMore": "ספר לי עוד",
-    "follow_up": "המשך"
+    "follow_up": "המשך",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
   },
   "splash": {
     "bayit": "בית",
@@ -8393,7 +8495,8 @@
       "watchLive": "צפה בטלוויזיה חיה",
       "search": "חפש תוכן",
       "listenRadio": "האזן לרדיו"
-    }
+    },
+    "ask": "Ask Bayit+"
   },
   "voiceMode": {
     "voiceOnly": "קולי בלבד",
@@ -8587,7 +8690,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "צפה יחד עם חברים",
-    "type": "Type"
+    "type": "Type",
+    "contentId": "Content ID",
+    "invite": "Invite",
+    "syncPlayback": "Sync Playback"
   },
   "playlist": {
     "title": "הרשימה שלי",
@@ -9120,7 +9226,8 @@
     "signingIn": "מתחבר...",
     "email": "אימייל",
     "password": "סיסמה",
-    "signOut": "התנתק"
+    "signOut": "התנתק",
+    "signIn": "Sign In"
   },
   "email": {
     "greeting": "שלום",
@@ -9760,7 +9867,12 @@
     "type": "סוג אווטאר",
     "useIosOrWeb": "השתמש באפליקציית iOS או באתר כדי להעלות אווטר מותאם אישית",
     "tapToSpeak": "הקש כדי לדבר",
-    "title": "אווטאר"
+    "title": "אווטאר",
+    "animationLevel": "Animation Level",
+    "personality": "Personality",
+    "savePreferences": "Save Preferences",
+    "style": "Style",
+    "voice": "Voice"
   },
   "quiz": {
     "title": "זמן חידון!",
@@ -10767,7 +10879,8 @@
       "delete": "מחק איש קשר",
       "name": "שם תצוגה",
       "phone": "מספר טלפון",
-      "pin": "קוד PIN"
+      "pin": "קוד PIN",
+      "reelCount": "{{count}} reels"
     },
     "feedback": {
       "title": "משוב",
@@ -10820,7 +10933,8 @@
       "generate": "צור סרטון הדגשות",
       "empty": "אין עדיין הדגשות",
       "share": "שתף",
-      "generating": "יוצר הדגשות..."
+      "generating": "יוצר הדגשות...",
+      "momentCount": "{{count}} moments"
     },
     "title": "זה אני",
     "arCapture": {
@@ -10996,6 +11110,18 @@
       "phoneLabel": "טלפון",
       "relationship": "קשר",
       "language": "שפה"
+    },
+    "avatarCreation": {
+      "childName": "Child Name",
+      "create": "Create Avatar",
+      "familyPin": "Family PIN",
+      "newAvatar": "New Avatar"
+    },
+    "avatarManagement": {
+      "active": "Active",
+      "createNew": "Create New",
+      "delete": "Delete",
+      "setActive": "Set Active"
     }
   },
   "security": {
@@ -11612,7 +11738,8 @@
       "freeAI": "50 קרדיטים של AI (חד-פעמי)",
       "oneWidget": "וידג'ט 1",
       "oneProfile": "פרופיל משפחתי 1"
-    }
+    },
+    "selected": "Selected"
   },
   "billing": {
     "currentPlan": "תוכנית נוכחית",
@@ -12444,5 +12571,8 @@
     },
     "title": "אשף קול"
   },
-  "watch_now": "צפה עכשיו"
+  "watch_now": "צפה עכשיו",
+  "stories": {
+    "creditCost": "{{cost}} credit"
+  }
 }

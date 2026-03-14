@@ -3268,7 +3268,9 @@
     "title": "Bayit+ সহায়ক",
     "greeting": "হ্যালো! আমি Bayit+ স্মার্ট সহায়ক। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি? মাইক্রোফোনে ক্লিক করে বলুন, বা একটি বার্তা টাইপ করুন।",
     "loading": "বার্তা লোড হচ্ছে...",
-    "typing": "টাইপ করছে..."
+    "typing": "টাইপ করছে...",
+    "newChat": "New Chat",
+    "typeMessage": "Type a message..."
   },
   "chatbot": {
     "title": "Bayit+ সহায়ক",
@@ -3419,7 +3421,9 @@
     "joinByGameCode": "কোড দিয়ে যোগ দিন",
     "challengeViaWhatsApp": "WhatsApp-এ চ্যালেঞ্জ করুন",
     "whatsAppMessage": "আমি আপনাকে Bayit+-এ দাবায় চ্যালেঞ্জ করছি! কোড: {{code}} - খেলতে ট্যাপ করুন: {{link}}",
-    "turn": "পালা"
+    "turn": "পালা",
+    "newGameBot": "Play Against Bot",
+    "newGamePlayer": "Play Against Player"
   },
   "children": {
     "title": "শিশু",
@@ -3725,7 +3729,7 @@
     "enabled": "সক্রিয়",
     "disabled": "নিষ্ক্রিয়",
     "invalidDate": "অবৈধ তারিখ",
-    "appName": "🏠 Bayit+",
+    "appName": "Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
     "slogan": "আপনার বাড়ি। যেকোনো জায়গায়।",
     "ok": "ঠিক আছে",
@@ -3847,7 +3851,9 @@
     "queued": "সারিতে আছে",
     "on": "চালু",
     "off": "বন্ধ",
-    "pause": "[bn] Pause"
+    "pause": "[bn] Pause",
+    "accept": "Accept",
+    "decline": "Decline"
   },
   "badges": {
     "aiEnhanced": "AI উন্নত",
@@ -3855,9 +3861,15 @@
   },
   "aiCompanion": {
     "title": "AI শেখার সঙ্গী",
-    "vocabulary": "শব্দভান্ডার",
+    "vocabulary": {
+      "_label": "শব্দভান্ডার",
+      "empty": "No vocabulary items yet"
+    },
     "context": "পর্বের প্রসঙ্গ",
-    "quiz": "দ্রুত কুইজ",
+    "quiz": {
+      "_label": "দ্রুত কুইজ",
+      "empty": "No quizzes available"
+    },
     "nowPlaying": "এখন চলছে",
     "upNext": "পরবর্তী",
     "timeRemaining": "অবশিষ্ট সময়",
@@ -5454,7 +5466,8 @@
     "household": "পরিবার",
     "messages": "বার্তা",
     "myContent": "আমার বিষয়বস্তু",
-    "social": "সামাজিক"
+    "social": "সামাজিক",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -5500,7 +5513,10 @@
       "later": "পরে সেট আপ করুন",
       "orType": "অথবা আপনার নাম টাইপ করুন",
       "enable": "মাইক্রোফোন সক্ষম করুন",
-      "granted": "মাইক্রোফোন সফলভাবে সক্ষম হয়েছে"
+      "granted": "মাইক্রোফোন সফলভাবে সক্ষম হয়েছে",
+      "micUnavailable": "Microphone unavailable on this device",
+      "noAudio": "No audio detected",
+      "useTextInput": "Use text input instead"
     },
     "launch": {
       "title": "সব প্রস্তুত",
@@ -5560,7 +5576,44 @@
       "learning": "হিব্রু শেখা"
     },
     "tour": {
-      "done": "সম্পন্ন"
+      "done": "সম্পন্ন",
+      "byoc": {
+        "integrated": "All your content, one place",
+        "tagline": "Bring your own content",
+        "title": "BYOC"
+      },
+      "catchup": {
+        "aiSummary": "AI-powered recap",
+        "tagline": "Never miss a moment",
+        "title": "Catch Up"
+      },
+      "dismiss": "Dismiss",
+      "dubbing": {
+        "description": "Watch content dubbed in your language",
+        "dubbed": "Dubbed",
+        "original": "Original",
+        "selectLanguage": "Select Language",
+        "title": "AI Dubbing"
+      },
+      "getStarted": "Get Started",
+      "interaction": {
+        "clickCharacter": "Tap a character to learn more",
+        "title": "Interactive Features"
+      },
+      "skip": "Skip Tour",
+      "title": "Feature Tour",
+      "trivia": {
+        "correct": "Correct!",
+        "sampleQuestion": "Who directed this episode?",
+        "tryAgain": "Try Again"
+      },
+      "tryItNow": "Try It Now",
+      "zehAni": {
+        "description": "Create personalized avatars for your family",
+        "tagline": "Who am I?",
+        "title": "Zeh Ani",
+        "tvNote": "Avatar creation available on mobile"
+      }
     },
     "demo": {
       "dubbing": {
@@ -5609,7 +5662,9 @@
         "description": "একটি ব্যক্তিগতকৃত AI অবতার তৈরি করুন যা আপনার সাথে শিখবে",
         "generated": "AI অবতার"
       }
-    }
+    },
+    "completeSetup": "Complete Setup",
+    "getStarted": "Get Started"
   },
   "notFound": {
     "title": "পৃষ্ঠা পাওয়া যায়নি",
@@ -6162,7 +6217,9 @@
       "searchFailed": "অনুসন্ধান ব্যর্থ। আবার চেষ্টা করুন।",
       "downloads": "{{count}} ডাউনলোড",
       "noResults": "কোনো সাবটাইটেল পাওয়া যায়নি"
-    }
+    },
+    "disconnect": "Disconnect",
+    "unknownDevice": "Unknown Device"
   },
   "podcast": {
     "selectLanguage": "ভাষা নির্বাচন করুন",
@@ -6322,7 +6379,8 @@
     "episodeShort": "পর্ব {{number}}",
     "author": "লেখক",
     "category": "বিভাগ",
-    "episodeCount": "পর্বসমূহ"
+    "episodeCount": "পর্বসমূহ",
+    "podcast": "Podcast"
   },
   "miniPlayer": {
     "skipBackward": "15 সেকেন্ড পিছনে",
@@ -7039,7 +7097,8 @@
       "yearFrom": "থেকে year",
       "yearTo": "বছর পর্যন্ত",
       "duration": "সময়কাল",
-      "apply": "ফিল্টার প্রয়োগ করুন"
+      "apply": "ফিল্টার প্রয়োগ করুন",
+      "applyCount": "Apply ({{count}})"
     }
   },
   "settings": {
@@ -7099,7 +7158,28 @@
     "autoplay": "অটোপ্লে",
     "appearance": "চেহারা",
     "darkMode": "ডার্ক মোড",
-    "privacy": "গোপনীয়তা",
+    "privacy": {
+      "_label": "গোপনীয়তা",
+      "analytics": "Analytics",
+      "analyticsDesc": "Help improve Bayit+ by sharing anonymous usage data",
+      "clear": "Clear",
+      "clearSearchHistory": "Clear Search History",
+      "clearSearchHistoryMessage": "This will remove all your search history. This action cannot be undone.",
+      "clearSearchHistoryTitle": "Clear Search History?",
+      "clearWatchHistory": "Clear Watch History",
+      "clearWatchHistoryMessage": "This will remove all your watch history and recommendations will be reset. This action cannot be undone.",
+      "clearWatchHistoryTitle": "Clear Watch History?",
+      "crashReports": "Crash Reports",
+      "crashReportsDesc": "Automatically send crash reports to help fix bugs",
+      "dataCollection": "Data Collection",
+      "description": "Control how your data is used",
+      "history": "History",
+      "personalization": "Personalization",
+      "personalizationDesc": "Use your activity to personalize recommendations",
+      "searchHistory": "Search History",
+      "title": "Privacy",
+      "watchHistory": "Watch History"
+    },
     "privacyPolicy": "গোপনীয়তা নীতি",
     "termsOfService": "সেবার শর্তাবলী",
     "connectedAccounts": "সংযুক্ত অ্যাকাউন্ট",
@@ -7114,7 +7194,23 @@
     "unlinkConfirm": "আনলিঙ্ক করুন",
     "familyAndSafety": "পরিবার ও নিরাপত্তা",
     "familyControls": "পারিবারিক নিয়ন্ত্রণ",
-    "about": "সম্পর্কে",
+    "about": {
+      "_label": "সম্পর্কে",
+      "appInfo": "App Info",
+      "build": "Build",
+      "cookiePolicy": "Cookie Policy",
+      "deviceInfo": "Device Info",
+      "environment": "Environment",
+      "legal": "Legal",
+      "licenses": "Open Source Licenses",
+      "locale": "Locale",
+      "model": "Model",
+      "osVersion": "OS Version",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "title": "About",
+      "version": "Version"
+    },
     "display": "প্রদর্শন",
     "homePageSections": "হোম পেজ বিভাগ",
     "configureSections": "আপনার হোম পেজে কোন বিভাগ দেখাবে তা কনফিগার করুন",
@@ -8113,7 +8209,8 @@
       "autoPlay": "স্বয়ংক্রিয় ট্রিভিয়া",
       "resetConfirm": "এটি সমস্ত ট্রিভিয়া সেটিংস ডিফল্ট মানে রিসেট করবে।",
       "enableDescription": "[bn] Show trivia questions while watching content.",
-      "enableTrivia": "[bn] Enable Trivia"
+      "enableTrivia": "[bn] Enable Trivia",
+      "languages": "Languages"
     },
     "categories": {
       "cast": "কাস্ট",
@@ -8152,7 +8249,10 @@
     "quiz": {
       "title": "ট্রিভিয়া কুইজ"
     },
-    "question": "প্রশ্ন",
+    "question": {
+      "_label": "প্রশ্ন",
+      "counter": "Question {{current}} of {{total}}"
+    },
     "results": {
       "title": "কুইজ সম্পন্ন!",
       "playAgain": "আবার খেলুন",
@@ -8164,7 +8264,9 @@
     "playerCount": "{{count}} খেলোয়াড়",
     "dayStreak": "{{count}} দিনের স্ট্রিক",
     "tellMeMore": "আরও বলুন",
-    "follow_up": "অনুসরণ করুন"
+    "follow_up": "অনুসরণ করুন",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
   },
   "splash": {
     "bayit": "Bayit",
@@ -8393,7 +8495,8 @@
       "watchLive": "লাইভ টিভি দেখুন",
       "search": "কন্টেন্ট অনুসন্ধান করুন",
       "listenRadio": "রেডিও শুনুন"
-    }
+    },
+    "ask": "Ask Bayit+"
   },
   "voiceMode": {
     "voiceOnly": "শুধুমাত্র ভয়েস",
@@ -8587,7 +8690,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "বন্ধুদের সাথে একসাথে দেখুন",
-    "type": "Type"
+    "type": "Type",
+    "contentId": "Content ID",
+    "invite": "Invite",
+    "syncPlayback": "Sync Playback"
   },
   "playlist": {
     "title": "আমার তালিকা",
@@ -9120,7 +9226,8 @@
     "signingIn": "সাইন ইন হচ্ছে...",
     "email": "ইমেইল",
     "password": "পাসওয়ার্ড",
-    "signOut": "[bn] Sign Out"
+    "signOut": "[bn] Sign Out",
+    "signIn": "Sign In"
   },
   "email": {
     "greeting": "নমস্কার",
@@ -9760,7 +9867,12 @@
     "type": "অবতার ধরন",
     "useIosOrWeb": "কাস্টম অবতার আপলোড করতে iOS বা ওয়েব অ্যাপ ব্যবহার করুন",
     "tapToSpeak": "[bn] Tap to speak",
-    "title": "[bn] Avatar"
+    "title": "[bn] Avatar",
+    "animationLevel": "Animation Level",
+    "personality": "Personality",
+    "savePreferences": "Save Preferences",
+    "style": "Style",
+    "voice": "Voice"
   },
   "quiz": {
     "title": "কুইজ সময়",
@@ -10767,7 +10879,8 @@
       "delete": "পরিচিতি মুছুন",
       "name": "প্রদর্শন নাম",
       "phone": "ফোন নম্বর",
-      "pin": "পিন"
+      "pin": "পিন",
+      "reelCount": "{{count}} reels"
     },
     "feedback": {
       "title": "মতামত",
@@ -10820,7 +10933,8 @@
       "generate": "হাইলাইট রিল তৈরি করুন",
       "empty": "এখনো কোনো হাইলাইট নেই",
       "share": "শেয়ার করুন",
-      "generating": "হাইলাইট তৈরি হচ্ছে..."
+      "generating": "হাইলাইট তৈরি হচ্ছে...",
+      "momentCount": "{{count}} moments"
     },
     "title": "জেহ আনি",
     "arCapture": {
@@ -10996,6 +11110,18 @@
       "phoneLabel": "ফোন",
       "relationship": "সম্পর্ক",
       "language": "ভাষা"
+    },
+    "avatarCreation": {
+      "childName": "Child Name",
+      "create": "Create Avatar",
+      "familyPin": "Family PIN",
+      "newAvatar": "New Avatar"
+    },
+    "avatarManagement": {
+      "active": "Active",
+      "createNew": "Create New",
+      "delete": "Delete",
+      "setActive": "Set Active"
     }
   },
   "security": {
@@ -11612,7 +11738,8 @@
       "freeAI": "50 AI ক্রেডিট (একবার)",
       "oneWidget": "1টি উইজেট",
       "oneProfile": "1টি পারিবারিক প্রোফাইল"
-    }
+    },
+    "selected": "Selected"
   },
   "billing": {
     "currentPlan": "বর্তমান প্ল্যান",
@@ -12444,5 +12571,8 @@
     },
     "title": "[bn] Voice Wizard"
   },
-  "watch_now": "[bn] Watch Now"
+  "watch_now": "[bn] Watch Now",
+  "stories": {
+    "creditCost": "{{cost}} credit"
+  }
 }

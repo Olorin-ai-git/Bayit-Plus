@@ -3268,7 +3268,9 @@
     "title": "Bayit+アシスタント",
     "greeting": "こんにちは！Bayit+スマートアシスタントです。今日は何をお手伝いしましょうか？マイクをクリックして話すか、メッセージを入力してください。",
     "loading": "メッセージを読み込み中...",
-    "typing": "入力中..."
+    "typing": "入力中...",
+    "newChat": "New Chat",
+    "typeMessage": "Type a message..."
   },
   "chatbot": {
     "title": "アシスタント",
@@ -3419,7 +3421,9 @@
     "joinByGameCode": "コードで参加",
     "challengeViaWhatsApp": "WhatsAppで対戦を申し込む",
     "whatsAppMessage": "Bayit+でチェスの対戦を申し込みます! コード: {{code}} - タップでプレイ: {{link}}",
-    "turn": "ターン"
+    "turn": "ターン",
+    "newGameBot": "Play Against Bot",
+    "newGamePlayer": "Play Against Player"
   },
   "children": {
     "title": "キッズ",
@@ -3725,7 +3729,7 @@
     "enabled": "有効",
     "disabled": "無効",
     "invalidDate": "無効な日付",
-    "appName": "[ja] 🏠 Bayit+",
+    "appName": "Bayit+",
     "appVersion": "[ja] 🏠 Bayit+ v1.0.0",
     "slogan": "あなたの家、どこでも",
     "ok": "OK",
@@ -3847,7 +3851,9 @@
     "queued": "キュー待ち",
     "on": "オン",
     "off": "オフ",
-    "pause": "[ja] Pause"
+    "pause": "[ja] Pause",
+    "accept": "Accept",
+    "decline": "Decline"
   },
   "badges": {
     "aiEnhanced": "AI強化",
@@ -3855,9 +3861,15 @@
   },
   "aiCompanion": {
     "title": "AI学習コンパニオン",
-    "vocabulary": "語彙",
+    "vocabulary": {
+      "_label": "語彙",
+      "empty": "No vocabulary items yet"
+    },
     "context": "エピソードコンテキスト",
-    "quiz": "クイッククイズ",
+    "quiz": {
+      "_label": "クイッククイズ",
+      "empty": "No quizzes available"
+    },
     "nowPlaying": "現在放送中",
     "upNext": "次の再生",
     "timeRemaining": "残り時間",
@@ -5454,7 +5466,8 @@
     "household": "世帯",
     "messages": "メッセージ",
     "myContent": "マイコンテンツ",
-    "social": "ソーシャル"
+    "social": "ソーシャル",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -5500,7 +5513,10 @@
       "later": "後で設定",
       "orType": "または名前を入力してください",
       "enable": "マイクを有効にする",
-      "granted": "マイクが正常に有効になりました"
+      "granted": "マイクが正常に有効になりました",
+      "micUnavailable": "Microphone unavailable on this device",
+      "noAudio": "No audio detected",
+      "useTextInput": "Use text input instead"
     },
     "launch": {
       "title": "準備完了",
@@ -5560,7 +5576,44 @@
       "learning": "ヘブライ語学習"
     },
     "tour": {
-      "done": "完了"
+      "done": "完了",
+      "byoc": {
+        "integrated": "All your content, one place",
+        "tagline": "Bring your own content",
+        "title": "BYOC"
+      },
+      "catchup": {
+        "aiSummary": "AI-powered recap",
+        "tagline": "Never miss a moment",
+        "title": "Catch Up"
+      },
+      "dismiss": "Dismiss",
+      "dubbing": {
+        "description": "Watch content dubbed in your language",
+        "dubbed": "Dubbed",
+        "original": "Original",
+        "selectLanguage": "Select Language",
+        "title": "AI Dubbing"
+      },
+      "getStarted": "Get Started",
+      "interaction": {
+        "clickCharacter": "Tap a character to learn more",
+        "title": "Interactive Features"
+      },
+      "skip": "Skip Tour",
+      "title": "Feature Tour",
+      "trivia": {
+        "correct": "Correct!",
+        "sampleQuestion": "Who directed this episode?",
+        "tryAgain": "Try Again"
+      },
+      "tryItNow": "Try It Now",
+      "zehAni": {
+        "description": "Create personalized avatars for your family",
+        "tagline": "Who am I?",
+        "title": "Zeh Ani",
+        "tvNote": "Avatar creation available on mobile"
+      }
     },
     "demo": {
       "dubbing": {
@@ -5609,7 +5662,9 @@
         "description": "あなたと一緒に学ぶパーソナライズされたAIアバターを生成",
         "generated": "AIアバター"
       }
-    }
+    },
+    "completeSetup": "Complete Setup",
+    "getStarted": "Get Started"
   },
   "notFound": {
     "title": "ページが見つかりません",
@@ -6144,7 +6199,9 @@
       "searchFailed": "検索に失敗しました。再試行してください。",
       "downloads": "{{count}}件のダウンロード",
       "noResults": "字幕が見つかりません"
-    }
+    },
+    "disconnect": "Disconnect",
+    "unknownDevice": "Unknown Device"
   },
   "podcast": {
     "selectLanguage": "言語を選択",
@@ -6304,7 +6361,8 @@
     "episodeShort": "第{{number}}話",
     "author": "著者",
     "category": "カテゴリ",
-    "episodeCount": "エピソード数"
+    "episodeCount": "エピソード数",
+    "podcast": "Podcast"
   },
   "miniPlayer": {
     "skipBackward": "15秒戻る",
@@ -7021,7 +7079,8 @@
       "yearFrom": "から year",
       "yearTo": "終了年",
       "duration": "再生時間",
-      "apply": "フィルターを適用"
+      "apply": "フィルターを適用",
+      "applyCount": "Apply ({{count}})"
     }
   },
   "settings": {
@@ -7081,7 +7140,28 @@
     "autoplay": "自動再生",
     "appearance": "外観",
     "darkMode": "ダークモード",
-    "privacy": "プライバシー",
+    "privacy": {
+      "_label": "プライバシー",
+      "analytics": "Analytics",
+      "analyticsDesc": "Help improve Bayit+ by sharing anonymous usage data",
+      "clear": "Clear",
+      "clearSearchHistory": "Clear Search History",
+      "clearSearchHistoryMessage": "This will remove all your search history. This action cannot be undone.",
+      "clearSearchHistoryTitle": "Clear Search History?",
+      "clearWatchHistory": "Clear Watch History",
+      "clearWatchHistoryMessage": "This will remove all your watch history and recommendations will be reset. This action cannot be undone.",
+      "clearWatchHistoryTitle": "Clear Watch History?",
+      "crashReports": "Crash Reports",
+      "crashReportsDesc": "Automatically send crash reports to help fix bugs",
+      "dataCollection": "Data Collection",
+      "description": "Control how your data is used",
+      "history": "History",
+      "personalization": "Personalization",
+      "personalizationDesc": "Use your activity to personalize recommendations",
+      "searchHistory": "Search History",
+      "title": "Privacy",
+      "watchHistory": "Watch History"
+    },
     "privacyPolicy": "プライバシーポリシー",
     "termsOfService": "利用規約",
     "connectedAccounts": "接続されたアカウント",
@@ -7096,7 +7176,23 @@
     "unlinkConfirm": "リンク解除",
     "familyAndSafety": "ファミリーと安全",
     "familyControls": "ファミリーコントロール",
-    "about": "概要",
+    "about": {
+      "_label": "概要",
+      "appInfo": "App Info",
+      "build": "Build",
+      "cookiePolicy": "Cookie Policy",
+      "deviceInfo": "Device Info",
+      "environment": "Environment",
+      "legal": "Legal",
+      "licenses": "Open Source Licenses",
+      "locale": "Locale",
+      "model": "Model",
+      "osVersion": "OS Version",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "title": "About",
+      "version": "Version"
+    },
     "display": "ディスプレイ",
     "homePageSections": "ホームページセクション",
     "configureSections": "ホームページに表示するセクションを設定",
@@ -8095,7 +8191,8 @@
       "autoPlay": "自動トリビア再生",
       "resetConfirm": "すべてのトリビア設定がデフォルト値にリセットされます。",
       "enableDescription": "[ja] Show trivia questions while watching content.",
-      "enableTrivia": "[ja] Enable Trivia"
+      "enableTrivia": "[ja] Enable Trivia",
+      "languages": "Languages"
     },
     "categories": {
       "cast": "キャスト",
@@ -8134,7 +8231,10 @@
     "quiz": {
       "title": "トリビアクイズ"
     },
-    "question": "質問",
+    "question": {
+      "_label": "質問",
+      "counter": "Question {{current}} of {{total}}"
+    },
     "results": {
       "title": "クイズ完了!",
       "playAgain": "もう一度プレイ",
@@ -8146,7 +8246,9 @@
     "playerCount": "{{count}} 人",
     "dayStreak": "{{count}} 日連続",
     "tellMeMore": "もっと教えて",
-    "follow_up": "フォローアップ"
+    "follow_up": "フォローアップ",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
   },
   "splash": {
     "bayit": "Bayit",
@@ -8375,7 +8477,8 @@
       "watchLive": "ライブTVを見る",
       "search": "コンテンツを検索",
       "listenRadio": "ラジオを聴く"
-    }
+    },
+    "ask": "Ask Bayit+"
   },
   "voiceMode": {
     "voiceOnly": "音声のみ",
@@ -8569,7 +8672,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "友達と一緒に視聴",
-    "type": "Type"
+    "type": "Type",
+    "contentId": "Content ID",
+    "invite": "Invite",
+    "syncPlayback": "Sync Playback"
   },
   "playlist": {
     "title": "マイリスト",
@@ -9102,7 +9208,8 @@
     "signingIn": "[ja] Signing in...",
     "email": "メールアドレス",
     "password": "パスワード",
-    "signOut": "[ja] Sign Out"
+    "signOut": "[ja] Sign Out",
+    "signIn": "Sign In"
   },
   "email": {
     "greeting": "こんにちは",
@@ -9742,7 +9849,12 @@
     "type": "アバタータイプ",
     "useIosOrWeb": "カスタムアバターをアップロードするにはiOSまたはWebアプリを使用してください",
     "tapToSpeak": "[ja] Tap to speak",
-    "title": "[ja] Avatar"
+    "title": "[ja] Avatar",
+    "animationLevel": "Animation Level",
+    "personality": "Personality",
+    "savePreferences": "Save Preferences",
+    "style": "Style",
+    "voice": "Voice"
   },
   "quiz": {
     "title": "クイズタイム",
@@ -10749,7 +10861,8 @@
       "delete": "連絡先を削除",
       "name": "表示名",
       "phone": "電話番号",
-      "pin": "PIN"
+      "pin": "PIN",
+      "reelCount": "{{count}} reels"
     },
     "feedback": {
       "title": "フィードバック",
@@ -10802,7 +10915,8 @@
       "generate": "ハイライトリールを生成",
       "empty": "まだハイライトがありません",
       "share": "共有",
-      "generating": "ハイライトを生成中..."
+      "generating": "ハイライトを生成中...",
+      "momentCount": "{{count}} moments"
     },
     "title": "ゼ・アニ",
     "arCapture": {
@@ -10978,6 +11092,18 @@
       "phoneLabel": "電話",
       "relationship": "関係",
       "language": "言語"
+    },
+    "avatarCreation": {
+      "childName": "Child Name",
+      "create": "Create Avatar",
+      "familyPin": "Family PIN",
+      "newAvatar": "New Avatar"
+    },
+    "avatarManagement": {
+      "active": "Active",
+      "createNew": "Create New",
+      "delete": "Delete",
+      "setActive": "Set Active"
     }
   },
   "security": {
@@ -11594,7 +11720,8 @@
       "freeAI": "50 AIクレジット（1回限り）",
       "oneWidget": "ウィジェット1つ",
       "oneProfile": "ファミリープロフィール1つ"
-    }
+    },
+    "selected": "Selected"
   },
   "billing": {
     "currentPlan": "現在のプラン",
@@ -12426,5 +12553,8 @@
     },
     "title": "[ja] Voice Wizard"
   },
-  "watch_now": "[ja] Watch Now"
+  "watch_now": "[ja] Watch Now",
+  "stories": {
+    "creditCost": "{{cost}} credit"
+  }
 }

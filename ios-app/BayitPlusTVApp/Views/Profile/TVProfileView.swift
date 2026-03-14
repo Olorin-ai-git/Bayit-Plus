@@ -118,9 +118,7 @@ struct TVProfileView: View {
 
     private var loadingView: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
-            ProgressView()
-                .tint(DesignTokens.Primary.default)
-                .scaleEffect(2.0)
+            GlassSpinner(size: .large)
 
             Text(localization.t("profile.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
@@ -141,17 +139,13 @@ struct TVProfileView: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 600)
 
-            Button {
+            GlassButton(
+                localization.t("common.retry"),
+                variant: .primary,
+                size: .medium
+            ) {
                 Task { await viewModel.load() }
-            } label: {
-                Text(localization.t("common.retry"))
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
-                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                    .padding(.vertical, TVDesignTokens.Spacing.md)
             }
-            .buttonStyle(.plain)
-            .background(DesignTokens.Glass.bgMedium)
-            .cornerRadius(TVDesignTokens.Radius.md)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

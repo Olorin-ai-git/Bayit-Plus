@@ -90,9 +90,7 @@ struct TVProfileSelectionView: View {
 
     private var loadingState: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
-            ProgressView()
-                .tint(DesignTokens.Primary.default)
-                .scaleEffect(2.0)
+            GlassSpinner(size: .large)
             Text(localization.t("profile.loadingProfiles"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)

@@ -6,6 +6,14 @@
 	<string>$(API_BASE_URL)</string>
 	<key>API_RETRYABLE_STATUS_CODES</key>
 	<string>$(API_RETRYABLE_STATUS_CODES)</string>
+	<key>AUTH_SERVICE_URL</key>
+	<string>$(AUTH_SERVICE_URL)</string>
+	<key>CATCHUP_AUTO_PROMPT_SECONDS</key>
+	<string>15</string>
+	<key>CATCHUP_CREDIT_COST</key>
+	<string>1</string>
+	<key>CATCHUP_DEFAULT_WINDOW_MINUTES</key>
+	<string>15</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -41,6 +49,8 @@
 	<string>230</string>
 	<key>DEFAULT_CULTURE_ID</key>
 	<string>$(DEFAULT_CULTURE_ID)</string>
+	<key>FirebaseCrashlyticsCollectionEnabled</key>
+	<true/>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
@@ -79,6 +89,8 @@
 	<string></string>
 	<key>WEBSOCKET_BASE_URL</key>
 	<string>$(WEBSOCKET_BASE_URL)</string>
+	<key>WIDGET_APP_GROUP_ID</key>
+	<string>group.tv.bayit.plus</string>
 	<key>YOUTUBE_CLIENT_ID</key>
 	<string>$(YOUTUBE_CLIENT_ID)</string>
 	<key>YOUTUBE_CLIENT_SECRET</key>

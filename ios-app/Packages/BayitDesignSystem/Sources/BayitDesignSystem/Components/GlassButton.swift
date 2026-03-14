@@ -104,8 +104,7 @@ public struct GlassButton: View {
         .disabled(isDisabled || isLoading)
         .opacity(effectivelyDisabled ? 0.5 : 1.0)
         #if os(tvOS)
-            .buttonStyle(GlassButtonTVStyle())
-            .focusEffectDisabled()
+            .buttonStyle(.card)
         #else
             .buttonStyle(GlassPressStyle())
         #endif
@@ -221,45 +220,6 @@ public struct GlassButton: View {
             configuration.label
                 .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
                 .brightness(configuration.isPressed ? -0.05 : 0)
-                .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
-        }
-    }
-#endif
-
-// MARK: - tvOS Button Style
-
-#if os(tvOS)
-    /// ButtonStyle for GlassButton on tvOS — matches the hero carousel capsule
-    /// button look with brightness lift on focus, purple glow shadow, and scale.
-    struct GlassButtonTVStyle: ButtonStyle {
-        @Environment(\.isFocused) private var isFocused
-
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .focusEffectDisabled()
-                .brightness(isFocused ? 0.22 : 0)
-                .overlay(
-                    Capsule()
-                        .stroke(
-                            isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
-                            lineWidth: TVDesignTokens.Focus.ringWidth
-                        )
-                )
-                .scaleEffect(
-                    isFocused
-                        ? TVDesignTokens.Focus.scaleAmount
-                        : (configuration.isPressed ? 0.97 : 1.0)
-                )
-                .shadow(
-                    color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
-                    radius: TVDesignTokens.Focus.shadowRadius,
-                    x: 0,
-                    y: isFocused ? 6 : 0
-                )
-                .animation(
-                    .easeInOut(duration: TVDesignTokens.Focus.animationDuration),
-                    value: isFocused
-                )
                 .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
         }
     }

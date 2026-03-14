@@ -19,6 +19,7 @@ struct TVCredentialPanel: View {
     @State var isPasswordVisible = false
     @State var isLoading = false
     @State var showingRegister = false
+    @State private var showLanguagePicker = false
     @FocusState var focusedField: Field?
 
     enum Field: Hashable {
@@ -55,10 +56,15 @@ struct TVCredentialPanel: View {
                 signInButtons
 
                 createAccountLink
+
+                languagePickerLink
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         .padding(.vertical, TVDesignTokens.Spacing.md)
+        .fullScreenCover(isPresented: $showLanguagePicker) {
+            TVSignInLanguagePickerSheet(onDismiss: { showLanguagePicker = false })
+        }
         .fullScreenCover(isPresented: $showingRegister) {
             TVRegisterView(
                 onSuccess: {
@@ -112,5 +118,20 @@ struct TVCredentialPanel: View {
         .font(.system(size: TVDesignTokens.FontSize.base))
         .buttonStyle(.plain)
         .focused($focusedField, equals: .createAccount)
+    }
+
+    // MARK: - Language Picker
+
+    private var languagePickerLink: some View {
+        Button { showLanguagePicker = true } label: {
+            HStack(spacing: TVDesignTokens.Spacing.xs) {
+                Image(systemName: "globe")
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                Text(localization.currentLanguage.displayName)
+                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
+            }
+            .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .buttonStyle(.plain)
     }
 }

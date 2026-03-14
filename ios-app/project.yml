@@ -83,12 +83,6 @@ targets:
     sources:
       - path: BayitPlusTVApp
         type: group
-        excludes:
-          - "Views/Avatar/TVAvatarModeView+ColorHelpers.swift"
-          - "Views/TVPodcastDetailView+EpisodeRow.swift"
-          - "Views/TVMovieDetailView+Sections.swift"
-          - "Views/TVDubbingMixerView.swift"
-          - "Views/TVProfileSelectionView.swift"
       - path: BayitPlusApp/Models
         type: group
       - path: BayitPlusApp/Repositories
@@ -167,6 +161,7 @@ targets:
       path: BayitPlusTVApp/Info.plist
       properties:
         API_BASE_URL: "$(API_BASE_URL)"
+        AUTH_SERVICE_URL: "$(AUTH_SERVICE_URL)"
         WEBSOCKET_BASE_URL: "$(WEBSOCKET_BASE_URL)"
         SUPPORT_EMAIL: "$(SUPPORT_EMAIL)"
         API_RETRYABLE_STATUS_CODES: "$(API_RETRYABLE_STATUS_CODES)"
@@ -179,6 +174,11 @@ targets:
         IAP_PLUS_YEARLY_PRODUCT_ID: "$(IAP_PLUS_YEARLY_PRODUCT_ID)"
         YOUTUBE_CLIENT_ID: "$(YOUTUBE_CLIENT_ID)"
         YOUTUBE_CLIENT_SECRET: "$(YOUTUBE_CLIENT_SECRET)"
+        CATCHUP_AUTO_PROMPT_SECONDS: "15"
+        CATCHUP_CREDIT_COST: "1"
+        CATCHUP_DEFAULT_WINDOW_MINUTES: "15"
+        WIDGET_APP_GROUP_ID: "group.tv.bayit.plus"
+        FirebaseCrashlyticsCollectionEnabled: true
         CFBundleDisplayName: "Bayit+"
         CFBundleShortVersionString: "1.0.10"
         CFBundleVersion: "230"

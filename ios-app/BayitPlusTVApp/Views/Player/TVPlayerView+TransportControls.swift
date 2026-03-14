@@ -29,7 +29,11 @@ extension TVPlayerView {
             try? await Task.sleep(for: .seconds(4))
             guard !Task.isCancelled else { return }
             guard !state.isDockFocused else { return }
-            await MainActor.run { state.showControlButtons = false }
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    state.showControlButtons = false
+                }
+            }
         }
     }
 

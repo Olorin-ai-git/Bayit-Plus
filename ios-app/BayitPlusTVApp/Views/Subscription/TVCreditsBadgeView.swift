@@ -80,9 +80,9 @@
 
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
                     Text(
-                        String(
-                            format: localization.t("plus.badge.creditsRemaining"),
-                            remaining
+                        localization.t(
+                            "plus.badge.creditsRemaining",
+                            ["count": String(remaining)]
                         )
                     )
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))

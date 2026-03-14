@@ -72,7 +72,8 @@ struct TVSignInView: View {
     private var logoHeader: some View {
         VStack(spacing: TVDesignTokens.Spacing.sm) {
             if let logoImage = UIImage(named: "logo")
-                ?? loadBundleLogo() {
+                ?? loadBundleLogo()
+            {
                 Image(uiImage: logoImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -84,7 +85,7 @@ struct TVSignInView: View {
 
             (Text(localization.t("splash.bayit"))
                 .foregroundColor(.white)
-            + Text(localization.t("splash.plus"))
+                + Text(localization.t("splash.plus"))
                 .foregroundColor(DesignTokens.Colors.Primary.base))
                 .font(.system(
                     size: TVDesignTokens.FontSize.xxxl,
@@ -141,7 +142,8 @@ struct TVSignInView: View {
         guard let url = Bundle.main.url(
             forResource: "logo", withExtension: "png"
         ),
-              let data = try? Data(contentsOf: url) else {
+            let data = try? Data(contentsOf: url)
+        else {
             return nil
         }
         return UIImage(data: data)

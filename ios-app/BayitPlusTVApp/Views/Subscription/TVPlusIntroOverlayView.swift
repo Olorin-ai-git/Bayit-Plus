@@ -20,7 +20,7 @@
 
         var body: some View {
             ZStack {
-                Color.black.opacity(0.85).ignoresSafeArea()
+                Color.black.ignoresSafeArea()
 
                 VStack(spacing: TVDesignTokens.Spacing.xl) {
                     Image(systemName: "sparkles")
@@ -61,19 +61,15 @@
                             TVPlusIntroOverlayView.markAsSeen()
                             onSeePlans()
                         }
-                        .buttonStyle(.card)
 
-                        Button {
+                        GlassButton(
+                            localization.t("plus.intro.maybeLater"),
+                            variant: .secondary,
+                            size: .large
+                        ) {
                             TVPlusIntroOverlayView.markAsSeen()
                             onDismiss()
-                        } label: {
-                            Text(localization.t("plus.intro.maybeLater"))
-                                .font(.system(size: TVDesignTokens.FontSize.base))
-                                .foregroundStyle(DesignTokens.Text.muted)
-                                .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                                .padding(.vertical, TVDesignTokens.Spacing.md)
                         }
-                        .buttonStyle(.card)
                     }
                 }
                 .padding(TVDesignTokens.Spacing.xxl)

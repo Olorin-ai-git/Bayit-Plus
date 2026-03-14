@@ -105,7 +105,9 @@ struct TVPlayerView: View {
         .task { resetOverlayTimer() }
         .onExitCommand {
             if state.showControlButtons {
-                state.showControlButtons = false
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    state.showControlButtons = false
+                }
             } else {
                 mediaPlayer.stop()
                 dismiss()

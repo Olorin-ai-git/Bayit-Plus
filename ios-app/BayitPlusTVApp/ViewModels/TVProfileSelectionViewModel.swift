@@ -50,16 +50,16 @@ final class TVProfileSelectionViewModel {
                 profiles = [ownerAsMember(from: profile)]
             }
         } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            } else {
-                do {
-                    let profile = try await userRepository.fetchProfile()
-                    profiles = [ownerAsMember(from: profile)]
-                } catch {
-                    if let message = error.userFriendlyMessage {
-                        self.error = message
-                    }
+            logger.warning("Household fetch failed: \(error)")
+            do {
+                let profile = try await userRepository.fetchProfile()
+                profiles = [ownerAsMember(from: profile)]
+            } catch {
+                logger.error("Profile fetch also failed: \(error)")
+                if error.isCancellation {
+                    // Don't show cancellation errors
+                } else {
+                    self.error = sanitizedErrorMessage(error)
                 }
             }
         }
@@ -87,9 +87,8 @@ final class TVProfileSelectionViewModel {
             isSaving = false
             return true
         } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
+            logger.error("Add profile failed: \(error)")
+            self.error = sanitizedErrorMessage(error)
             isSaving = false
             return false
         }
@@ -109,6 +108,23 @@ final class TVProfileSelectionViewModel {
     }
 
     // MARK: - Private
+
+    private func sanitizedErrorMessage(_ error: Error) -> String {
+        let raw = error.localizedDescription
+        if raw.localizedCaseInsensitiveContains("unauthorized")
+            || raw.localizedCaseInsensitiveContains("token")
+            || raw.localizedCaseInsensitiveContains("session not established")
+        {
+            return "Please sign in again to continue."
+        }
+        if raw.localizedCaseInsensitiveContains("network")
+            || raw.localizedCaseInsensitiveContains("offline")
+            || raw.localizedCaseInsensitiveContains("timed out")
+        {
+            return "Unable to connect. Check your network and try again."
+        }
+        return "Something went wrong. Please try again."
+    }
 
     private func ownerAsMember(from profile: ProfileResponse) -> HouseholdMember {
         HouseholdMember(

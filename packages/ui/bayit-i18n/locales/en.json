@@ -3268,7 +3268,9 @@
     "title": "Bayit+ Assistant",
     "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
     "loading": "Loading Messages...",
-    "typing": "Typing..."
+    "typing": "Typing...",
+    "newChat": "New Chat",
+    "typeMessage": "Type a message..."
   },
   "chatbot": {
     "title": "Bayit+ Assistant",
@@ -3419,7 +3421,9 @@
     "joinByGameCode": "Join by game code",
     "challengeViaWhatsApp": "Challenge via WhatsApp",
     "whatsAppMessage": "I challenge you to chess on Bayit+! Code: {{code}} - Tap to play: {{link}}",
-    "turn": "Turn"
+    "turn": "Turn",
+    "newGameBot": "Play Against Bot",
+    "newGamePlayer": "Play Against Player"
   },
   "children": {
     "title": "Kids",
@@ -3725,7 +3729,7 @@
     "enabled": "Enabled",
     "disabled": "Disabled",
     "invalidDate": "Invalid Date",
-    "appName": "🏠 Bayit+",
+    "appName": "Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
     "slogan": "Your Home. Anywhere.",
     "ok": "OK",
@@ -3847,7 +3851,9 @@
     "queued": "Queued",
     "on": "On",
     "off": "Off",
-    "pause": "Pause"
+    "pause": "Pause",
+    "accept": "Accept",
+    "decline": "Decline"
   },
   "badges": {
     "aiEnhanced": "AI Enhanced",
@@ -3855,9 +3861,15 @@
   },
   "aiCompanion": {
     "title": "AI Learning Companion",
-    "vocabulary": "Vocabulary",
+    "vocabulary": {
+      "_label": "Vocabulary",
+      "empty": "No vocabulary items yet"
+    },
     "context": "Episode Context",
-    "quiz": "Quick Quiz",
+    "quiz": {
+      "_label": "Quick Quiz",
+      "empty": "No quizzes available"
+    },
     "nowPlaying": "Now Playing",
     "upNext": "Up Next",
     "timeRemaining": "Time Remaining",
@@ -5454,7 +5466,8 @@
     "household": "Household",
     "messages": "Messages",
     "myContent": "My Content",
-    "social": "Social"
+    "social": "Social",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -5500,7 +5513,10 @@
       "later": "Set up later",
       "orType": "Or type your name",
       "enable": "Enable Microphone",
-      "granted": "Microphone enabled successfully"
+      "granted": "Microphone enabled successfully",
+      "micUnavailable": "Microphone unavailable on this device",
+      "noAudio": "No audio detected",
+      "useTextInput": "Use text input instead"
     },
     "launch": {
       "title": "You're all set",
@@ -5560,7 +5576,44 @@
       "learning": "Hebrew Learning"
     },
     "tour": {
-      "done": "Done"
+      "done": "Done",
+      "byoc": {
+        "integrated": "All your content, one place",
+        "tagline": "Bring your own content",
+        "title": "BYOC"
+      },
+      "catchup": {
+        "aiSummary": "AI-powered recap",
+        "tagline": "Never miss a moment",
+        "title": "Catch Up"
+      },
+      "dismiss": "Dismiss",
+      "dubbing": {
+        "description": "Watch content dubbed in your language",
+        "dubbed": "Dubbed",
+        "original": "Original",
+        "selectLanguage": "Select Language",
+        "title": "AI Dubbing"
+      },
+      "getStarted": "Get Started",
+      "interaction": {
+        "clickCharacter": "Tap a character to learn more",
+        "title": "Interactive Features"
+      },
+      "skip": "Skip Tour",
+      "title": "Feature Tour",
+      "trivia": {
+        "correct": "Correct!",
+        "sampleQuestion": "Who directed this episode?",
+        "tryAgain": "Try Again"
+      },
+      "tryItNow": "Try It Now",
+      "zehAni": {
+        "description": "Create personalized avatars for your family",
+        "tagline": "Who am I?",
+        "title": "Zeh Ani",
+        "tvNote": "Avatar creation available on mobile"
+      }
     },
     "demo": {
       "dubbing": {
@@ -5609,7 +5662,9 @@
         "description": "Generate a personalized AI avatar that learns with you",
         "generated": "AI Avatar"
       }
-    }
+    },
+    "completeSetup": "Complete Setup",
+    "getStarted": "Get Started"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -6162,7 +6217,9 @@
       "searchFailed": "Search failed. Try again.",
       "downloads": "{{count}} downloads",
       "noResults": "No subtitles found"
-    }
+    },
+    "disconnect": "Disconnect",
+    "unknownDevice": "Unknown Device"
   },
   "podcast": {
     "selectLanguage": "Select Language",
@@ -6322,7 +6379,8 @@
     "episodeShort": "Ep. {{number}}",
     "author": "Author",
     "category": "Category",
-    "episodeCount": "Episodes"
+    "episodeCount": "Episodes",
+    "podcast": "Podcast"
   },
   "miniPlayer": {
     "skipBackward": "Skip back 15 seconds",
@@ -7039,7 +7097,8 @@
       "yearFrom": "From year",
       "yearTo": "To year",
       "duration": "Duration",
-      "apply": "Apply Filters"
+      "apply": "Apply Filters",
+      "applyCount": "Apply ({{count}})"
     }
   },
   "settings": {
@@ -7099,7 +7158,28 @@
     "autoplay": "Autoplay",
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
-    "privacy": "Privacy",
+    "privacy": {
+      "_label": "Privacy",
+      "analytics": "Analytics",
+      "analyticsDesc": "Help improve Bayit+ by sharing anonymous usage data",
+      "clear": "Clear",
+      "clearSearchHistory": "Clear Search History",
+      "clearSearchHistoryMessage": "This will remove all your search history. This action cannot be undone.",
+      "clearSearchHistoryTitle": "Clear Search History?",
+      "clearWatchHistory": "Clear Watch History",
+      "clearWatchHistoryMessage": "This will remove all your watch history and recommendations will be reset. This action cannot be undone.",
+      "clearWatchHistoryTitle": "Clear Watch History?",
+      "crashReports": "Crash Reports",
+      "crashReportsDesc": "Automatically send crash reports to help fix bugs",
+      "dataCollection": "Data Collection",
+      "description": "Control how your data is used",
+      "history": "History",
+      "personalization": "Personalization",
+      "personalizationDesc": "Use your activity to personalize recommendations",
+      "searchHistory": "Search History",
+      "title": "Privacy",
+      "watchHistory": "Watch History"
+    },
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "connectedAccounts": "Connected Accounts",
@@ -7114,7 +7194,23 @@
     "unlinkConfirm": "Unlink",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
-    "about": "About",
+    "about": {
+      "_label": "About",
+      "appInfo": "App Info",
+      "build": "Build",
+      "cookiePolicy": "Cookie Policy",
+      "deviceInfo": "Device Info",
+      "environment": "Environment",
+      "legal": "Legal",
+      "licenses": "Open Source Licenses",
+      "locale": "Locale",
+      "model": "Model",
+      "osVersion": "OS Version",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "title": "About",
+      "version": "Version"
+    },
     "display": "Display",
     "homePageSections": "Home Page Sections",
     "configureSections": "Configure which sections appear on your home page",
@@ -8113,7 +8209,8 @@
       "autoPlay": "Auto-play Trivia",
       "resetConfirm": "This will reset all trivia settings to their default values.",
       "enableDescription": "Show trivia questions while watching content.",
-      "enableTrivia": "Enable Trivia"
+      "enableTrivia": "Enable Trivia",
+      "languages": "Languages"
     },
     "categories": {
       "cast": "Cast",
@@ -8152,7 +8249,10 @@
     "quiz": {
       "title": "Trivia Quiz"
     },
-    "question": "Question",
+    "question": {
+      "_label": "Question",
+      "counter": "Question {{current}} of {{total}}"
+    },
     "results": {
       "title": "Quiz Complete!",
       "playAgain": "Play Again",
@@ -8164,7 +8264,9 @@
     "playerCount": "{{count}} players",
     "dayStreak": "{{count}} day streak",
     "tellMeMore": "Tell me more",
-    "follow_up": "Follow up"
+    "follow_up": "Follow up",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
   },
   "splash": {
     "bayit": "Bayit",
@@ -8393,7 +8495,8 @@
       "watchLive": "Watch Live TV",
       "search": "Search Content",
       "listenRadio": "Listen to Radio"
-    }
+    },
+    "ask": "Ask Bayit+"
   },
   "voiceMode": {
     "voiceOnly": "Voice Only",
@@ -8587,7 +8690,10 @@
     "myParties": "My Parties",
     "noParties": "No active parties",
     "subtitle": "Watch together with friends",
-    "type": "Party Type"
+    "type": "Party Type",
+    "contentId": "Content ID",
+    "invite": "Invite",
+    "syncPlayback": "Sync Playback"
   },
   "playlist": {
     "title": "My Playlist",
@@ -9120,7 +9226,8 @@
     "signingIn": "Signing in...",
     "email": "Email",
     "password": "Password",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "signIn": "Sign In"
   },
   "email": {
     "greeting": "Hello",
@@ -9760,7 +9867,12 @@
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar",
     "tapToSpeak": "Tap to speak",
-    "title": "Avatar"
+    "title": "Avatar",
+    "animationLevel": "Animation Level",
+    "personality": "Personality",
+    "savePreferences": "Save Preferences",
+    "style": "Style",
+    "voice": "Voice"
   },
   "quiz": {
     "title": "Quiz Time!",
@@ -10767,7 +10879,8 @@
       "delete": "Delete Contact",
       "name": "Display Name",
       "phone": "Phone Number",
-      "pin": "PIN"
+      "pin": "PIN",
+      "reelCount": "{{count}} reels"
     },
     "feedback": {
       "title": "Feedback",
@@ -10820,7 +10933,8 @@
       "generate": "Generate Highlight Reel",
       "empty": "No highlights yet",
       "share": "Share",
-      "generating": "Generating highlights..."
+      "generating": "Generating highlights...",
+      "momentCount": "{{count}} moments"
     },
     "title": "Zeh Ani",
     "arCapture": {
@@ -10996,6 +11110,18 @@
       "phoneLabel": "Phone",
       "relationship": "Relationship",
       "language": "Language"
+    },
+    "avatarCreation": {
+      "childName": "Child Name",
+      "create": "Create Avatar",
+      "familyPin": "Family PIN",
+      "newAvatar": "New Avatar"
+    },
+    "avatarManagement": {
+      "active": "Active",
+      "createNew": "Create New",
+      "delete": "Delete",
+      "setActive": "Set Active"
     }
   },
   "security": {
@@ -11612,7 +11738,8 @@
       "freeAI": "50 AI Credits (one-time)",
       "oneWidget": "1 Widget",
       "oneProfile": "1 Family Profile"
-    }
+    },
+    "selected": "Selected"
   },
   "billing": {
     "currentPlan": "Current Plan",
@@ -12444,5 +12571,8 @@
     },
     "title": "Voice Wizard"
   },
-  "watch_now": "Watch Now"
+  "watch_now": "Watch Now",
+  "stories": {
+    "creditCost": "{{cost}} credit"
+  }
 }

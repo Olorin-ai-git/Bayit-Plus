@@ -20,7 +20,7 @@ extension TVSettingsView {
 
             settingsNavRow(
                 icon: "bell.badge",
-                title: localization.t("settings.notificationSettings"),
+                title: localization.t("settings.notificationSettings.title"),
                 detail: nil
             ) {
                 TVNotificationSettingsView()
@@ -76,7 +76,7 @@ extension TVSettingsView {
 
             settingsNavRow(
                 icon: "lightbulb.fill",
-                title: "Trivia Settings",
+                title: localization.t("trivia.settings.title"),
                 detail: nil
             ) {
                 TVTriviaSettingsView()
@@ -133,7 +133,7 @@ extension TVSettingsView {
         Section {
             settingsNavRow(
                 icon: "crown",
-                title: localization.t("settings.subscription"),
+                title: localization.t("settings.subscription.title"),
                 detail: nil
             ) {
                 TVSubscriptionView()
@@ -147,7 +147,7 @@ extension TVSettingsView {
                 TVBillingView()
             }
         } header: {
-            sectionHeader(localization.t("settings.subscription"))
+            sectionHeader(localization.t("settings.subscription.title"))
         }
     }
 
@@ -165,7 +165,7 @@ extension TVSettingsView {
 
             settingsNavRow(
                 icon: "lock.shield",
-                title: localization.t("settings.security"),
+                title: localization.t("settings.security.title"),
                 detail: nil
             ) {
                 TVSecurityView()

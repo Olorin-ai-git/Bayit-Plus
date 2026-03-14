@@ -22,7 +22,7 @@ extension TVSettingsView {
 
             settingsNavRow(
                 icon: "questionmark.circle",
-                title: localization.t("settings.help"),
+                title: localization.t("settings.help.title"),
                 detail: nil
             ) {
                 TVHelpView()
@@ -36,7 +36,7 @@ extension TVSettingsView {
                 TVConnectedAccountsView(onDismiss: {})
             }
         } header: {
-            sectionHeader(localization.t("settings.about"))
+            sectionHeader(localization.t("settings.about.title"))
         }
     }
 
