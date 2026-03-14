@@ -699,7 +699,15 @@ export default function MovieDetailPage() {
                 />
 
                 <GlassButton
-                  onPress={() => startDownload(movie.id, "movie")}
+                  onPress={() =>
+                    startDownload(movie.id, "movie", undefined, {
+                      title: movie.title,
+                      title_en: movie.title_en,
+                      title_es: movie.title_es,
+                      thumbnail: movie.backdrop || movie.thumbnail,
+                      stream_url: movie.stream_url,
+                    })
+                  }
                   variant="ghost"
                   size="lg"
                   icon={

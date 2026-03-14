@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Play, Trash2, Pause, RotateCcw, Download } from "lucide-react";
 import { GlassCard, GlassLoadingSpinner } from "@bayit/shared/ui";
