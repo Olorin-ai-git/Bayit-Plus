@@ -47,7 +47,7 @@ class SubscriptionViewModel @Inject constructor(
                     val sub = user?.subscription
                     val remaining = (creditsResult as? BayitResult.Success)?.data ?: 0
                     _uiState.value = SubscriptionUiState.Success(
-                        plan = sub?.plan ?: "Free",
+                        plan = sub?.plan ?: "settings.subscription.plan.free",
                         status = sub?.status ?: "active",
                         startDate = sub?.startDate.orEmpty(),
                         endDate = sub?.endDate.orEmpty(),

@@ -3853,7 +3853,8 @@
     "off": "关闭",
     "pause": "[zh] Pause",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "现在"
   },
   "badges": {
     "aiEnhanced": "AI 增强",
@@ -6203,7 +6204,9 @@
       "restart": "[zh] Restart",
       "skipBackward": "[zh] Skip Backward",
       "skipForward": "[zh] Skip Forward",
-      "volume": "[zh] Volume"
+      "volume": "[zh] Volume",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "音频描述",
     "scene_search": "场景搜索",
@@ -7098,7 +7101,12 @@
       "yearTo": "至年份",
       "duration": "时长",
       "apply": "应用筛选",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "电影",
+      "series": "电视剧",
+      "podcasts": "播客",
+      "audiobooks": "有声书",
+      "radio": "广播"
     }
   },
   "settings": {
@@ -7455,7 +7463,10 @@
       "manageViaStore": "通过App Store管理",
       "autoRenew": "自动续费",
       "promoCode": "促销代码",
-      "cancelSubscription": "取消订阅"
+      "cancelSubscription": "取消订阅",
+      "plan": {
+        "free": "免费"
+      }
     },
     "aboutSettings": {
       "title": "关于",
@@ -7587,7 +7598,26 @@
     "notificationsDisabled": "通知已禁用",
     "notificationsEnableMessage": "启用通知以接收有关新内容、直播活动等的更新。",
     "notificationsGoToSettings": "要接收通知，请在设置中启用。",
-    "replayTour": "重播功能导览"
+    "replayTour": "重播功能导览",
+    "menu": {
+      "profile": "个人资料",
+      "language": "语言",
+      "playback": "播放",
+      "subtitles": "字幕",
+      "audio": "音频",
+      "aiFeatures": "AI功能",
+      "accessibility": "辅助功能",
+      "notifications": "通知",
+      "subscription": "订阅",
+      "billing": "账单",
+      "security": "安全",
+      "connectedAccounts": "关联账户",
+      "familyControls": "家庭控制",
+      "household": "家庭",
+      "byoc": "我的内容源",
+      "replayTour": "重播功能导览",
+      "help": "帮助"
+    }
   },
   "familyControls": {
     "title": "家庭控制",
@@ -8273,7 +8303,13 @@
     "plus": "+",
     "poweredBy": "由 Olorin.ai 提供支持",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "您的家，随处可及。",
+    "tapToSkip": "点击跳过",
+    "logoContentDescription": "Bayit Plus 标志",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "场景搜索",
@@ -11256,7 +11292,12 @@
       "selectServer": "选择 Plex 服务器",
       "connecting": "正在连接到 {{serverName}}...",
       "connected": "已连接",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "启动认证失败",
+        "connectServer": "连接服务器失败",
+        "timeout": "认证超时"
+      }
     },
     "settings": {
       "title": "我的内容源",
@@ -11503,7 +11544,13 @@
         "cancel": "取消"
       }
     },
-    "youtubeCodeCopied": "代码已复制 - 点击粘贴"
+    "youtubeCodeCopied": "代码已复制 - 点击粘贴",
+    "status": {
+      "active": "活跃",
+      "error": "错误",
+      "syncing": "同步中",
+      "pending": "等待中"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, 打开个人资料",
@@ -12525,7 +12572,10 @@
   "subscription_required": "[zh] Subscription Required",
   "subscription_upsell_tv": "[zh] Upgrade to watch on TV",
   "talkback": {
-    "title": "[zh] Talkback"
+    "title": "[zh] Talkback",
+    "error": {
+      "missingContent": "TalkBack会话缺少内容标识符"
+    }
   },
   "voiceCommand": {
     "executing": "[zh] Executing...",
@@ -12574,5 +12624,12 @@
   "watch_now": "[zh] Watch Now",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "加载内容失败"
+      }
+    }
   }
 }

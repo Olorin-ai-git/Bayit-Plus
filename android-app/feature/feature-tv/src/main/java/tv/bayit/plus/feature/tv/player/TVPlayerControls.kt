@@ -20,6 +20,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.tv.material3.Text
 import tv.bayit.plus.designsystem.component.GlassTVButton
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.tv.design.TVDesignTokens
 
@@ -161,12 +162,12 @@ private fun TransportButtons(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        GlassTVButton(onClick = onSeekBack, text = "-10s")
+        GlassTVButton(onClick = onSeekBack, text = bayitString("player.controls.seekBack"))
         GlassTVButton(
             onClick = onPlayPause,
-            text = if (isPlaying) "Pause" else "Play",
+            text = if (isPlaying) bayitString("player.controls.pause") else bayitString("player.controls.play"),
         )
-        GlassTVButton(onClick = onSeekForward, text = "+10s")
+        GlassTVButton(onClick = onSeekForward, text = bayitString("player.controls.seekForward"))
     }
 }
 

@@ -3853,7 +3853,8 @@
     "off": "நிறுத்தம்",
     "pause": "[ta] Pause",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "இப்போது"
   },
   "badges": {
     "aiEnhanced": "AI மேம்படுத்தப்பட்ட",
@@ -6203,7 +6204,9 @@
       "restart": "[ta] Restart",
       "skipBackward": "[ta] Skip Backward",
       "skipForward": "[ta] Skip Forward",
-      "volume": "[ta] Volume"
+      "volume": "[ta] Volume",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "ஆடியோ விளக்கம்",
     "scene_search": "காட்சி தேடல்",
@@ -6971,9 +6974,9 @@
       "allContent": "அனைத்து உள்ளடக்கமும்",
       "actors": "நடிகர்கள்",
       "movies": "திரைப்படங்கள்",
-      "series": "தொடர்கள்",
+      "series": "தொடர்",
       "collections": "தொகுப்புகள்",
-      "audiobooks": "ஒலிப்புத்தகங்கள்"
+      "audiobooks": "ஆடியோ புத்தகங்கள்"
     },
     "suggestions": {
       "trendingTitle": "பிரபலமான தேடல்கள்",
@@ -7098,7 +7101,12 @@
       "yearTo": "ஆண்டு வரை",
       "duration": "கால அளவு",
       "apply": "வடிகட்டிகளை பயன்படுத்து",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "திரைப்படங்கள்",
+      "series": "தொடர்கள்",
+      "podcasts": "பாட்காஸ்ட்கள்",
+      "audiobooks": "ஆடியோ புத்தகங்கள்",
+      "radio": "ரேடியோ"
     }
   },
   "settings": {
@@ -7455,7 +7463,10 @@
       "manageViaStore": "App Store மூலம் எண்ணுக",
       "autoRenew": "தானியங்கி புதுப்பிக்கும்",
       "promoCode": "ப்ரோமோ கோட்",
-      "cancelSubscription": "சந்தாவை ரத்து செய்யுங்கள்"
+      "cancelSubscription": "சந்தாவை ரத்து செய்யுங்கள்",
+      "plan": {
+        "free": "உலகம்"
+      }
     },
     "aboutSettings": {
       "title": "பற்றி",
@@ -7587,7 +7598,26 @@
     "notificationsDisabled": "அறிவிப்புகள் முடக்கப்பட்டன",
     "notificationsEnableMessage": "புதிய உள்ளடக்கம், நேரடி நிகழ்வுகள் மற்றும் பலவற்றைப் பற்றிய புதுப்பிப்புகளைப் பெற அறிவிப்புகளை இயக்கவும்.",
     "notificationsGoToSettings": "அறிவிப்புகளைப் பெற, அமைப்புகளில் அவற்றை இயக்கவும்.",
-    "replayTour": "அம்சச் சுற்றுப் பயணத்தை மீண்டும் பார்க்கவும்"
+    "replayTour": "அம்சச் சுற்றுப் பயணத்தை மீண்டும் பார்க்கவும்",
+    "menu": {
+      "profile": "சுயவிவரம்",
+      "language": "மொழி",
+      "playback": "இயக்கம்",
+      "subtitles": "வசனங்கள்",
+      "audio": "ஆடியோ",
+      "aiFeatures": "AI அம்சங்கள்",
+      "accessibility": "அணுகல்தன்மை",
+      "notifications": "அறிவிப்புகள்",
+      "subscription": "சந்தா",
+      "billing": "பில்லிங்",
+      "security": "பாதுகாப்பு",
+      "connectedAccounts": "இணைக்கப்பட்ட கணக்குகள்",
+      "familyControls": "குடும்பக் கட்டுப்பாடுகள்",
+      "household": "வீடு",
+      "byoc": "எனது உள்ளடக்க ஆதாரங்கள்",
+      "replayTour": "அம்சச் சுற்றுப் பயணத்தை மீண்டும் பார்க்கவும்",
+      "help": "உதவி"
+    }
   },
   "familyControls": {
     "title": "குடும்பக் கட்டுப்பாடுகள்",
@@ -8273,7 +8303,13 @@
     "plus": "+",
     "poweredBy": "Olorin.ai ஆல் இயக்கப்படுகிறது",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "உங்கள் வீடு. எங்கும்.",
+    "tapToSkip": "தவிர்க்க தொடவும்",
+    "logoContentDescription": "Bayit Plus லோகோ",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "காட்சி தேடல்",
@@ -11256,7 +11292,12 @@
       "selectServer": "Plex சர்வரைத் தேர்வு செய்யவும்",
       "connecting": "{{serverName}}-உடன் இணைக்கிறது...",
       "connected": "இணைக்கப்பட்டது",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "அங்கீகரிப்பு தொடங்க தவறியது",
+        "connectServer": "சர்வருடன் இணைக்க தவறியது",
+        "timeout": "அங்கீகரிப்பு காலாவதி ஆனது"
+      }
     },
     "settings": {
       "title": "எனது உள்ளடக்க ஆதாரங்கள்",
@@ -11503,7 +11544,13 @@
         "cancel": "ரத்து செய்யவும்"
       }
     },
-    "youtubeCodeCopied": "குறியீடு நகலெடுக்கப்பட்டது - ஒட்ட தட்டவும்"
+    "youtubeCodeCopied": "குறியீடு நகலெடுக்கப்பட்டது - ஒட்ட தட்டவும்",
+    "status": {
+      "active": "செயல்படு",
+      "error": "பிழை",
+      "syncing": "ஒத்திசைவு",
+      "pending": "நிலுவையில்"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, சுயவிவரத்தைத் திற",
@@ -12525,7 +12572,10 @@
   "subscription_required": "[ta] Subscription Required",
   "subscription_upsell_tv": "[ta] Upgrade to watch on TV",
   "talkback": {
-    "title": "[ta] Talkback"
+    "title": "[ta] Talkback",
+    "error": {
+      "missingContent": "TalkBack அமர்வுக்கு உள்ளடக்க அடையாளம் காணவில்லை"
+    }
   },
   "voiceCommand": {
     "executing": "[ta] Executing...",
@@ -12574,5 +12624,12 @@
   "watch_now": "[ta] Watch Now",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "உள்ளடக்கம் ஏற்ற தவறியது"
+      }
+    }
   }
 }

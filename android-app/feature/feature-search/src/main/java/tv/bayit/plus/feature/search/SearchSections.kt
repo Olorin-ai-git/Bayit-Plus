@@ -41,7 +41,7 @@ internal fun FilterChipRow(
     ) {
         items(items = SearchFilter.entries.toList(), key = { it.name }) { filter ->
             GlassChip(
-                label = filter.label,
+                label = bayitString(filter.labelKey),
                 isSelected = selectedFilter == filter,
                 onClick = { onFilterClick(filter) },
             )

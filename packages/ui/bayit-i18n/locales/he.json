@@ -3853,7 +3853,8 @@
     "off": "כבוי",
     "pause": "השהה",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "עכשיו"
   },
   "badges": {
     "aiEnhanced": "משופר בינה מלאכותית",
@@ -6203,7 +6204,9 @@
       "restart": "התחל מחדש",
       "skipBackward": "דלג אחורה",
       "skipForward": "דלג קדימה",
-      "volume": "עוצמת שמע"
+      "volume": "עוצמת שמע",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "תיאור שמע",
     "scene_search": "חיפוש סצנה",
@@ -6973,7 +6976,7 @@
       "movies": "סרטים",
       "series": "סדרות",
       "collections": "אוספים",
-      "audiobooks": "ספרי שמע"
+      "audiobooks": "ספרי אודיו"
     },
     "suggestions": {
       "trendingTitle": "חיפושים פופולריים",
@@ -7098,7 +7101,12 @@
       "yearTo": "עד שנת",
       "duration": "משך",
       "apply": "החל מסננים",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "סרטים",
+      "series": "סדרות",
+      "podcasts": "פודקאסטים",
+      "audiobooks": "ספרי שמע",
+      "radio": "רדיו"
     }
   },
   "settings": {
@@ -7455,7 +7463,10 @@
       "manageViaStore": "ניהול דרך חנות האפליקציות",
       "autoRenew": "חידוש אוטומטי",
       "promoCode": "קוד קופון",
-      "cancelSubscription": "ביטול מנוי"
+      "cancelSubscription": "ביטול מנוי",
+      "plan": {
+        "free": "חינם"
+      }
     },
     "aboutSettings": {
       "title": "אודות",
@@ -7587,7 +7598,26 @@
     "notificationsDisabled": "התראות מושבתות",
     "notificationsEnableMessage": "הפעילו התראות כדי לקבל עדכונים על תוכן חדש, אירועים בשידור חי ועוד.",
     "notificationsGoToSettings": "כדי לקבל התראות, הפעילו אותן בהגדרות.",
-    "replayTour": "הצג מחדש את סיור התכונות"
+    "replayTour": "הצג מחדש את סיור התכונות",
+    "menu": {
+      "profile": "פרופיל",
+      "language": "שפה",
+      "playback": "ניגון",
+      "subtitles": "כתוביות",
+      "audio": "שמע",
+      "aiFeatures": "תכונות AI",
+      "accessibility": "נגישות",
+      "notifications": "התראות",
+      "subscription": "מנוי",
+      "billing": "חיוב",
+      "security": "אבטחה",
+      "connectedAccounts": "חשבונות מחוברים",
+      "familyControls": "בקרת הורים",
+      "household": "משק בית",
+      "byoc": "מקורות התוכן שלי",
+      "replayTour": "הצג מחדש את סיור התכונות",
+      "help": "עזרה"
+    }
   },
   "familyControls": {
     "title": "בקרת הורים",
@@ -8273,7 +8303,13 @@
     "plus": "+",
     "poweredBy": "Powered by Olorin.ai",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "הבית שלך. בכל מקום.",
+    "tapToSkip": "לחץ לדלג",
+    "logoContentDescription": "לוגו בית פלוס",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "חיפוש סצנה",
@@ -11256,7 +11292,12 @@
       "selectServer": "בחר שרת Plex",
       "connecting": "מתחבר ל-{{serverName}}...",
       "connected": "מחובר",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "נכשל בהתחלת אימות",
+        "connectServer": "נכשל בהתחברות לשרת",
+        "timeout": "זמן האימות פג"
+      }
     },
     "settings": {
       "title": "מקורות התוכן שלי",
@@ -11503,7 +11544,13 @@
         "cancel": "בטל"
       }
     },
-    "youtubeCodeCopied": "הקוד הועתק - הקש כדי להדביק"
+    "youtubeCodeCopied": "הקוד הועתק - הקש כדי להדביק",
+    "status": {
+      "active": "פעיל",
+      "error": "שגיאה",
+      "syncing": "מסנכרן",
+      "pending": "ממתין"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, פתח פרופיל",
@@ -12525,7 +12572,10 @@
   "subscription_required": "נדרש מנוי",
   "subscription_upsell_tv": "שדרג כדי לצפות בטלוויזיה",
   "talkback": {
-    "title": "טוקבק"
+    "title": "טוקבק",
+    "error": {
+      "missingContent": "מזהה תוכן חסר להפעלת TalkBack"
+    }
   },
   "voiceCommand": {
     "executing": "מבצע...",
@@ -12574,5 +12624,12 @@
   "watch_now": "צפה עכשיו",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "נכשל בטעינת תוכן"
+      }
+    }
   }
 }

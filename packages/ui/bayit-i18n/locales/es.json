@@ -3853,7 +3853,8 @@
     "off": "Desactivado",
     "pause": "Pausar",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "Ahora"
   },
   "badges": {
     "aiEnhanced": "Mejorado con IA",
@@ -6203,7 +6204,9 @@
       "restart": "Reiniciar",
       "skipBackward": "Retroceder",
       "skipForward": "Avanzar",
-      "volume": "Volumen"
+      "volume": "Volumen",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "Descripción de Audio",
     "scene_search": "Búsqueda de Escena",
@@ -7098,7 +7101,12 @@
       "yearTo": "Hasta el ano",
       "duration": "Duracion",
       "apply": "Aplicar filtros",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "Peliculas",
+      "series": "Series",
+      "podcasts": "Podcasts",
+      "audiobooks": "Audiolibros",
+      "radio": "Radio"
     }
   },
   "settings": {
@@ -7455,7 +7463,10 @@
       "manageViaStore": "Administrar via App Store",
       "autoRenew": "Renovacion Automatica",
       "promoCode": "Codigo Promocional",
-      "cancelSubscription": "Cancelar Suscripcion"
+      "cancelSubscription": "Cancelar Suscripcion",
+      "plan": {
+        "free": "Gratis"
+      }
     },
     "aboutSettings": {
       "title": "Acerca de",
@@ -7587,7 +7598,26 @@
     "notificationsDisabled": "Notificaciones desactivadas",
     "notificationsEnableMessage": "Habilita las notificaciones para recibir actualizaciones sobre nuevo contenido, eventos en vivo y más.",
     "notificationsGoToSettings": "Para recibir notificaciones, habilítalas en Configuración.",
-    "replayTour": "Repetir el tour de características"
+    "replayTour": "Repetir el tour de características",
+    "menu": {
+      "profile": "Perfil",
+      "language": "Idioma",
+      "playback": "Reproduccion",
+      "subtitles": "Subtítulos",
+      "audio": "Audio",
+      "aiFeatures": "Funciones de IA",
+      "accessibility": "Accesibilidad",
+      "notifications": "Notificaciones",
+      "subscription": "Suscripcion",
+      "billing": "Facturación",
+      "security": "Seguridad",
+      "connectedAccounts": "Cuentas conectadas",
+      "familyControls": "Controles familiares",
+      "household": "Hogar",
+      "byoc": "Mis Fuentes de Contenido",
+      "replayTour": "Repetir el tour de características",
+      "help": "Ayuda"
+    }
   },
   "familyControls": {
     "title": "Controles familiares",
@@ -8273,7 +8303,13 @@
     "plus": "+",
     "poweredBy": "Impulsado por Olorin.ai",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "Tu Casa. En Todas Partes.",
+    "tapToSkip": "Toca para saltar",
+    "logoContentDescription": "Logo de Bayit Plus",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "Búsqueda de Escena",
@@ -11256,7 +11292,12 @@
       "selectServer": "Selecciona un servidor Plex",
       "connecting": "Conectando a {{serverName}}...",
       "connected": "Conectado",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "Error al iniciar autenticacion",
+        "connectServer": "Error al conectar con el servidor",
+        "timeout": "Tiempo de autenticacion agotado"
+      }
     },
     "settings": {
       "title": "Mis Fuentes de Contenido",
@@ -11503,7 +11544,13 @@
         "cancel": "Cancelar"
       }
     },
-    "youtubeCodeCopied": "Codigo copiado - toca para pegar"
+    "youtubeCodeCopied": "Codigo copiado - toca para pegar",
+    "status": {
+      "active": "Activo",
+      "error": "Error",
+      "syncing": "Sincronizando",
+      "pending": "Pendiente"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, abrir perfil",
@@ -12525,7 +12572,10 @@
   "subscription_required": "Suscripcion requerida",
   "subscription_upsell_tv": "Actualiza para ver en TV",
   "talkback": {
-    "title": "Comentarios"
+    "title": "Comentarios",
+    "error": {
+      "missingContent": "Identificador de contenido faltante para sesion TalkBack"
+    }
   },
   "voiceCommand": {
     "executing": "Ejecutando...",
@@ -12574,5 +12624,12 @@
   "watch_now": "Ver ahora",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "Error al cargar contenido"
+      }
+    }
   }
 }

@@ -3853,7 +3853,8 @@
     "off": "Inactif",
     "pause": "Pause",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "Maintenant"
   },
   "badges": {
     "aiEnhanced": "Amélioré par IA",
@@ -6203,7 +6204,9 @@
       "restart": "Redemarrer",
       "skipBackward": "Reculer",
       "skipForward": "Avancer",
-      "volume": "Volume"
+      "volume": "Volume",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "Description Audio",
     "scene_search": "Recherche de Scène",
@@ -7098,7 +7101,12 @@
       "yearTo": "Jusqu'a l'annee",
       "duration": "Duree",
       "apply": "Appliquer les filtres",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "Films",
+      "series": "Series",
+      "podcasts": "Podcasts",
+      "audiobooks": "Livres audio",
+      "radio": "Radio"
     }
   },
   "settings": {
@@ -7455,7 +7463,10 @@
       "manageViaStore": "Gerer via App Store",
       "autoRenew": "Renouvellement Automatique",
       "promoCode": "Code Promotionnel",
-      "cancelSubscription": "Annuler l'Abonnement"
+      "cancelSubscription": "Annuler l'Abonnement",
+      "plan": {
+        "free": "Gratuit"
+      }
     },
     "aboutSettings": {
       "title": "A propos",
@@ -7587,7 +7598,26 @@
     "notificationsDisabled": "Notifications désactivées",
     "notificationsEnableMessage": "Activez les notifications pour recevoir des mises à jour sur le nouveau contenu, les événements en direct et plus encore.",
     "notificationsGoToSettings": "Pour recevoir des notifications, activez-les dans les Réglages.",
-    "replayTour": "Revoir la visite des fonctionnalités"
+    "replayTour": "Revoir la visite des fonctionnalités",
+    "menu": {
+      "profile": "Profil",
+      "language": "Langue",
+      "playback": "Lecture",
+      "subtitles": "Sous-titres",
+      "audio": "Audio",
+      "aiFeatures": "Fonctionnalites IA",
+      "accessibility": "Accessibilite",
+      "notifications": "Notifications",
+      "subscription": "Abonnement",
+      "billing": "Facturation",
+      "security": "Securite",
+      "connectedAccounts": "Comptes connectes",
+      "familyControls": "Contrôle parental",
+      "household": "Foyer",
+      "byoc": "Mes Sources de Contenu",
+      "replayTour": "Revoir la visite des fonctionnalités",
+      "help": "Aide"
+    }
   },
   "familyControls": {
     "title": "Contrôle parental",
@@ -8273,7 +8303,13 @@
     "plus": "+",
     "poweredBy": "Propulsé par Olorin.ai",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "Votre Maison. Partout.",
+    "tapToSkip": "Appuyez pour passer",
+    "logoContentDescription": "Logo Bayit Plus",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "Recherche de Scène",
@@ -11256,7 +11292,12 @@
       "selectServer": "Selectionnez un serveur Plex",
       "connecting": "Connexion a {{serverName}}...",
       "connected": "Connecte",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "Echec du demarrage de l'authentification",
+        "connectServer": "Echec de la connexion au serveur",
+        "timeout": "Delai d'authentification expire"
+      }
     },
     "settings": {
       "title": "Mes Sources de Contenu",
@@ -11503,7 +11544,13 @@
         "cancel": "Annuler"
       }
     },
-    "youtubeCodeCopied": "Code copie - appuyez pour coller"
+    "youtubeCodeCopied": "Code copie - appuyez pour coller",
+    "status": {
+      "active": "Actif",
+      "error": "Erreur",
+      "syncing": "Synchronisation",
+      "pending": "En attente"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, ouvrir le profil",
@@ -12525,7 +12572,10 @@
   "subscription_required": "Abonnement requis",
   "subscription_upsell_tv": "Mettez a niveau pour regarder sur TV",
   "talkback": {
-    "title": "Retour vocal"
+    "title": "Retour vocal",
+    "error": {
+      "missingContent": "Identifiant de contenu manquant pour la session TalkBack"
+    }
   },
   "voiceCommand": {
     "executing": "Execution...",
@@ -12574,5 +12624,12 @@
   "watch_now": "Regarder maintenant",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "Echec du chargement du contenu"
+      }
+    }
   }
 }

@@ -3853,7 +3853,8 @@
     "off": "Disattivo",
     "pause": "[it] Pause",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "Adesso"
   },
   "badges": {
     "aiEnhanced": "Potenziato con IA",
@@ -6203,7 +6204,9 @@
       "restart": "[it] Restart",
       "skipBackward": "[it] Skip Backward",
       "skipForward": "[it] Skip Forward",
-      "volume": "[it] Volume"
+      "volume": "[it] Volume",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "Descrizione Audio",
     "scene_search": "Ricerca Scena",
@@ -7098,7 +7101,12 @@
       "yearTo": "All'anno",
       "duration": "Durata",
       "apply": "Applica filtri",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "Film",
+      "series": "Serie",
+      "podcasts": "Podcast",
+      "audiobooks": "Audiolibri",
+      "radio": "Radio"
     }
   },
   "settings": {
@@ -7455,7 +7463,10 @@
       "manageViaStore": "Gestisci via App Store",
       "autoRenew": "Rinnovo Automatico",
       "promoCode": "Codice Promozionale",
-      "cancelSubscription": "Annulla Abbonamento"
+      "cancelSubscription": "Annulla Abbonamento",
+      "plan": {
+        "free": "Gratuito"
+      }
     },
     "aboutSettings": {
       "title": "Informazioni",
@@ -7587,7 +7598,26 @@
     "notificationsDisabled": "Notifiche disattivate",
     "notificationsEnableMessage": "Abilita le notifiche per ricevere aggiornamenti su nuovi contenuti, eventi in diretta e altro.",
     "notificationsGoToSettings": "Per ricevere notifiche, abilitale nelle Impostazioni.",
-    "replayTour": "Rivedi il tour delle funzionalità"
+    "replayTour": "Rivedi il tour delle funzionalità",
+    "menu": {
+      "profile": "Profilo",
+      "language": "Lingua",
+      "playback": "Riproduzione",
+      "subtitles": "Sottotitoli",
+      "audio": "Audio",
+      "aiFeatures": "Funzionalita IA",
+      "accessibility": "Accessibilita",
+      "notifications": "Notifiche",
+      "subscription": "Abbonamento",
+      "billing": "Fatturazione",
+      "security": "Sicurezza",
+      "connectedAccounts": "Account collegati",
+      "familyControls": "Controlli familiari",
+      "household": "Famiglia",
+      "byoc": "Le Mie Fonti di Contenuto",
+      "replayTour": "Rivedi il tour delle funzionalità",
+      "help": "Aiuto"
+    }
   },
   "familyControls": {
     "title": "Controlli familiari",
@@ -8273,7 +8303,13 @@
     "plus": "+",
     "poweredBy": "Realizzato da Olorin.ai",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "La Tua Casa. Ovunque.",
+    "tapToSkip": "Tocca per saltare",
+    "logoContentDescription": "Logo Bayit Plus",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "Ricerca Scena",
@@ -11256,7 +11292,12 @@
       "selectServer": "Seleziona un server Plex",
       "connecting": "Connessione a {{serverName}}...",
       "connected": "Connesso",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "Avvio autenticazione fallito",
+        "connectServer": "Connessione al server fallita",
+        "timeout": "Autenticazione scaduta"
+      }
     },
     "settings": {
       "title": "Le Mie Fonti di Contenuto",
@@ -11503,7 +11544,13 @@
         "cancel": "Annulla"
       }
     },
-    "youtubeCodeCopied": "Codice copiato - tocca per incollare"
+    "youtubeCodeCopied": "Codice copiato - tocca per incollare",
+    "status": {
+      "active": "Attivo",
+      "error": "Errore",
+      "syncing": "Sincronizzazione",
+      "pending": "In attesa"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, apri profilo",
@@ -12525,7 +12572,10 @@
   "subscription_required": "[it] Subscription Required",
   "subscription_upsell_tv": "[it] Upgrade to watch on TV",
   "talkback": {
-    "title": "[it] Talkback"
+    "title": "[it] Talkback",
+    "error": {
+      "missingContent": "Identificatore contenuto mancante per sessione TalkBack"
+    }
   },
   "voiceCommand": {
     "executing": "[it] Executing...",
@@ -12574,5 +12624,12 @@
   "watch_now": "[it] Watch Now",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "Caricamento contenuto fallito"
+      }
+    }
   }
 }

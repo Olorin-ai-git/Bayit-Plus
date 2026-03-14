@@ -38,7 +38,7 @@ internal fun LiveTVRow(
                     title = channel.name,
                     subtitle = channel.currentShow,
                     cardWidth = 140.dp,
-                    badge = "LIVE",
+                    badge = bayitString("common.live"),
                     onClick = { onChannelClick(channel.id) },
                 )
             }

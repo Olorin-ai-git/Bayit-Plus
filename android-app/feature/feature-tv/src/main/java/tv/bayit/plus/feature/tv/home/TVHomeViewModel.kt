@@ -105,7 +105,7 @@ class TVHomeViewModel @Inject constructor(
                     isPlusSubscriber = isPlus,
                 )
             } catch (e: Exception) {
-                _uiState.value = TVHomeUiState.Error(e.message ?: "Failed to load content")
+                _uiState.value = TVHomeUiState.Error(e.message ?: "tv.home.error.loadFailed")
             }
         }
     }

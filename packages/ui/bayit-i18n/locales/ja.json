@@ -3853,7 +3853,8 @@
     "off": "オフ",
     "pause": "[ja] Pause",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "今"
   },
   "badges": {
     "aiEnhanced": "AI強化",
@@ -6185,7 +6186,9 @@
       "restart": "[ja] Restart",
       "skipBackward": "[ja] Skip Backward",
       "skipForward": "[ja] Skip Forward",
-      "volume": "[ja] Volume"
+      "volume": "[ja] Volume",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "音声説明",
     "scene_search": "シーン検索",
@@ -7080,7 +7083,12 @@
       "yearTo": "終了年",
       "duration": "再生時間",
       "apply": "フィルターを適用",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "映画",
+      "series": "ドラマ",
+      "podcasts": "ポッドキャスト",
+      "audiobooks": "オーディオブック",
+      "radio": "ラジオ"
     }
   },
   "settings": {
@@ -7437,7 +7445,10 @@
       "manageViaStore": "App Storeで管理",
       "autoRenew": "自動更新",
       "promoCode": "プロモコード",
-      "cancelSubscription": "サブスクリプションをキャンセル"
+      "cancelSubscription": "サブスクリプションをキャンセル",
+      "plan": {
+        "free": "無料"
+      }
     },
     "aboutSettings": {
       "title": "アプリについて",
@@ -7569,7 +7580,26 @@
     "notificationsDisabled": "通知が無効です",
     "notificationsEnableMessage": "新しいコンテンツ、ライブイベントなどの最新情報を受け取るには、通知を有効にしてください。",
     "notificationsGoToSettings": "通知を受け取るには、設定で有効にしてください。",
-    "replayTour": "機能ツアーをもう一度見る"
+    "replayTour": "機能ツアーをもう一度見る",
+    "menu": {
+      "profile": "プロフィール",
+      "language": "言語",
+      "playback": "再生",
+      "subtitles": "字幕",
+      "audio": "オーディオ",
+      "aiFeatures": "AI機能",
+      "accessibility": "アクセシビリティ",
+      "notifications": "通知",
+      "subscription": "サブスクリプション",
+      "billing": "請求",
+      "security": "セキュリティ",
+      "connectedAccounts": "接続済みアカウント",
+      "familyControls": "ファミリーコントロール",
+      "household": "世帯",
+      "byoc": "マイコンテンツソース",
+      "replayTour": "機能ツアーをもう一度見る",
+      "help": "ヘルプ"
+    }
   },
   "familyControls": {
     "title": "ファミリーコントロール",
@@ -8255,7 +8285,13 @@
     "plus": "+",
     "poweredBy": "Powered by Olorin.ai",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "あなたの家、どこでも",
+    "tapToSkip": "タップしてスキップ",
+    "logoContentDescription": "Bayit Plus ロゴ",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "シーン検索",
@@ -11238,7 +11274,12 @@
       "selectServer": "Plexサーバーを選択",
       "connecting": "{{serverName}}に接続中...",
       "connected": "接続済み",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "認証の開始に失敗",
+        "connectServer": "サーバーへの接続に失敗",
+        "timeout": "認証がタイムアウト"
+      }
     },
     "settings": {
       "title": "マイコンテンツソース",
@@ -11485,7 +11526,13 @@
         "cancel": "キャンセル"
       }
     },
-    "youtubeCodeCopied": "コードをコピーしました - タップして貼り付け"
+    "youtubeCodeCopied": "コードをコピーしました - タップして貼り付け",
+    "status": {
+      "active": "アクティブ",
+      "error": "エラー",
+      "syncing": "同期中",
+      "pending": "保留中"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}、プロフィールを開く",
@@ -12507,7 +12554,10 @@
   "subscription_required": "[ja] Subscription Required",
   "subscription_upsell_tv": "[ja] Upgrade to watch on TV",
   "talkback": {
-    "title": "[ja] Talkback"
+    "title": "[ja] Talkback",
+    "error": {
+      "missingContent": "TalkBackセッションのコンテンツ識別子が不足"
+    }
   },
   "voiceCommand": {
     "executing": "[ja] Executing...",
@@ -12556,5 +12606,12 @@
   "watch_now": "[ja] Watch Now",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "コンテンツの読み込みに失敗"
+      }
+    }
   }
 }

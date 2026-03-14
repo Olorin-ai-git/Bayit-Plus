@@ -51,7 +51,7 @@ class PlexAuthViewModel @Inject constructor(
                 pollForAuth(deviceCode)
             } catch (e: Exception) {
                 logger.error("Plex auth start failed", error = e)
-                _uiState.value = PlexAuthUiState.Error(e.message ?: "Failed to start authentication")
+                _uiState.value = PlexAuthUiState.Error(e.message ?: "byoc.plex.error.startAuth")
             }
         }
     }
@@ -65,7 +65,7 @@ class PlexAuthViewModel @Inject constructor(
                 _uiState.value = PlexAuthUiState.Success
             } catch (e: Exception) {
                 logger.error("Plex server connection failed", error = e)
-                _uiState.value = PlexAuthUiState.Error(e.message ?: "Failed to connect to server")
+                _uiState.value = PlexAuthUiState.Error(e.message ?: "byoc.plex.error.connectServer")
             }
         }
     }
@@ -91,7 +91,7 @@ class PlexAuthViewModel @Inject constructor(
                 throw e
             } catch (e: Exception) {
                 logger.error("Plex auth poll failed", error = e)
-                _uiState.value = PlexAuthUiState.Error(e.message ?: "Authentication timed out")
+                _uiState.value = PlexAuthUiState.Error(e.message ?: "byoc.plex.error.timeout")
             }
         }
     }

@@ -164,10 +164,11 @@ private fun TipsToggleRow(tipsEnabled: Boolean, onToggle: (Boolean) -> Unit) {
 
 @Composable
 private fun SettingsMenuRow(item: SettingsMenuItem, onClick: () -> Unit) {
-    GlassCard(modifier = Modifier.fillMaxWidth().semantics { contentDescription = item.titleKey }.clickable(onClick = onClick)) {
+    val title = bayitString(item.titleKey)
+    GlassCard(modifier = Modifier.fillMaxWidth().semantics { contentDescription = title }.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Icon(item.icon, contentDescription = item.titleKey, tint = DesignTokens.Colors.Primary.light, modifier = Modifier.size(24.dp))
-            Text(text = item.titleKey, color = DesignTokens.Colors.Text.primary, modifier = Modifier.weight(1f).padding(start = DesignTokens.Spacing.md))
+            Icon(item.icon, contentDescription = title, tint = DesignTokens.Colors.Primary.light, modifier = Modifier.size(24.dp))
+            Text(text = title, color = DesignTokens.Colors.Text.primary, modifier = Modifier.weight(1f).padding(start = DesignTokens.Spacing.md))
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = DesignTokens.Colors.Text.muted)
         }
     }

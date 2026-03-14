@@ -57,7 +57,11 @@ fun ShabbatBanner(
         }
     }
 
-    val timeRemaining = calculateTimeRemaining(shabbatInfo, currentTime)
+    val timeRemaining = when (val result = calculateTimeRemaining(shabbatInfo, currentTime)) {
+        is TimeRemainingResult.Now -> bayitString("common.now")
+        is TimeRemainingResult.Unknown -> bayitString("common.unknown")
+        is TimeRemainingResult.Formatted -> result.text
+    }
     val statusText = if (shabbatInfo.isShabbat) {
         bayitString("home.shabbatBanner.endsIn")
     } else {

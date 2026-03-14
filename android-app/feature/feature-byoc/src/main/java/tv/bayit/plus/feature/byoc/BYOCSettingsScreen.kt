@@ -181,8 +181,7 @@ private fun SourceCard(source: BYOCSourceConfig, onRemove: () -> Unit) {
                     color = DesignTokens.Colors.Text.primary,
                 )
                 Text(
-                    text = source.status.name.lowercase()
-                        .replaceFirstChar { it.uppercase() },
+                    text = bayitString("byoc.status.${source.status.name.lowercase()}"),
                     style = MaterialTheme.typography.labelSmall,
                     color = when (source.status.name) {
                         "ACTIVE" -> DesignTokens.Colors.Primary.light

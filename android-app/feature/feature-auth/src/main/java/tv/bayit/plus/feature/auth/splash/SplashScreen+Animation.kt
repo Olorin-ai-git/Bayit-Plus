@@ -59,14 +59,14 @@ internal fun SplashLogoBlock(
         ) {
             if (isHebrew) {
                 Text(
-                    text = "+",
+                    text = bayitString("splash.plus"),
                     color = DesignTokens.Colors.Primary.base,
                     fontSize = DesignTokens.FontSize.display,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.offset(x = plusOffset.dp),
                 )
                 Text(
-                    text = "\u05D1\u05D9\u05EA",
+                    text = bayitString("splash.appNameHe"),
                     color = Color.White,
                     fontSize = DesignTokens.FontSize.display,
                     fontWeight = FontWeight.Bold,
@@ -74,14 +74,14 @@ internal fun SplashLogoBlock(
                 )
             } else {
                 Text(
-                    text = "Bayit",
+                    text = bayitString("splash.appName"),
                     color = Color.White,
                     fontSize = DesignTokens.FontSize.display,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.offset(x = wordOffset.dp),
                 )
                 Text(
-                    text = "+",
+                    text = bayitString("splash.plus"),
                     color = DesignTokens.Colors.Primary.base,
                     fontSize = DesignTokens.FontSize.display,
                     fontWeight = FontWeight.Bold,

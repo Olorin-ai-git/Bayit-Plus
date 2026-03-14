@@ -43,7 +43,7 @@ class TalkBackViewModel @Inject constructor(
     private fun initSession() {
         if (contentId.isBlank()) {
             _uiState.value = _uiState.value.copy(
-                error = "Missing content identifier for TalkBack session",
+                error = "talkback.error.missingContent",
             )
             return
         }

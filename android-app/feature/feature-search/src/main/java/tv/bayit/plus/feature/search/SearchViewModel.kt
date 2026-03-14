@@ -172,10 +172,10 @@ data class SearchUiState(
     val errorMessage: String? = null,
 )
 
-enum class SearchFilter(val label: String, val apiValue: String) {
-    MOVIES("Movies", "movie"),
-    SERIES("Series", "series"),
-    PODCASTS("Podcasts", "podcast"),
-    AUDIOBOOKS("Audiobooks", "audiobook"),
-    RADIO("Radio", "radio"),
+enum class SearchFilter(val labelKey: String, val apiValue: String) {
+    MOVIES("search.filter.movies", "movie"),
+    SERIES("search.filter.series", "series"),
+    PODCASTS("search.filter.podcasts", "podcast"),
+    AUDIOBOOKS("search.filter.audiobooks", "audiobook"),
+    RADIO("search.filter.radio", "radio"),
 }

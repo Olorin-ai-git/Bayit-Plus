@@ -3853,7 +3853,8 @@
     "off": "বন্ধ",
     "pause": "[bn] Pause",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "now": "এখন"
   },
   "badges": {
     "aiEnhanced": "AI উন্নত",
@@ -6203,7 +6204,9 @@
       "restart": "[bn] Restart",
       "skipBackward": "[bn] Skip Backward",
       "skipForward": "[bn] Skip Forward",
-      "volume": "[bn] Volume"
+      "volume": "[bn] Volume",
+      "seekBack": "-10s",
+      "seekForward": "+10s"
     },
     "audio_description": "অডিও বিবরণ",
     "scene_search": "দৃশ্য অনুসন্ধান",
@@ -6970,7 +6973,7 @@
       "excludeKids": "শিশুদের কন্টেন্ট বাদ দিন",
       "allContent": "সব কন্টেন্ট",
       "actors": "অভিনেতা",
-      "movies": "সিনেমা",
+      "movies": "মুভি",
       "series": "সিরিজ",
       "collections": "সংকলন",
       "audiobooks": "অডিওবুক"
@@ -7098,7 +7101,12 @@
       "yearTo": "বছর পর্যন্ত",
       "duration": "সময়কাল",
       "apply": "ফিল্টার প্রয়োগ করুন",
-      "applyCount": "Apply ({{count}})"
+      "applyCount": "Apply ({{count}})",
+      "movies": "চলচ্চিত্র",
+      "series": "ধারাবাহিক",
+      "podcasts": "পডক্যাস্ট",
+      "audiobooks": "অডিওবুক",
+      "radio": "রেডিও"
     }
   },
   "settings": {
@@ -7455,7 +7463,10 @@
       "manageViaStore": "App Store থেকে পরিচালনা করুন",
       "autoRenew": "স্বয়ংক্রিয় নবায়ন",
       "promoCode": "প্রোমো কোড",
-      "cancelSubscription": "সদস্যতা বাতিল করুন"
+      "cancelSubscription": "সদস্যতা বাতিল করুন",
+      "plan": {
+        "free": "বিনামূল্যে"
+      }
     },
     "aboutSettings": {
       "title": "সম্পর্কে",
@@ -7587,7 +7598,26 @@
     "notificationsDisabled": "বিজ্ঞপ্তি নিষ্ক্রিয়",
     "notificationsEnableMessage": "নতুন কন্টেন্ট, লাইভ ইভেন্ট এবং আরও অনেক কিছু সম্পর্কে আপডেট পেতে বিজ্ঞপ্তি সক্রিয় করুন।",
     "notificationsGoToSettings": "বিজ্ঞপ্তি পেতে, সেটিংসে সেগুলি সক্রিয় করুন।",
-    "replayTour": "ফিচার ট্যুর আবার দেখুন"
+    "replayTour": "ফিচার ট্যুর আবার দেখুন",
+    "menu": {
+      "profile": "প্রোফাইল",
+      "language": "ভাষা",
+      "playback": "প্লেব্যাক",
+      "subtitles": "সাবটাইটেল",
+      "audio": "অডিও",
+      "aiFeatures": "AI বৈশিষ্ট্য",
+      "accessibility": "অ্যাক্সেসিবিলিটি",
+      "notifications": "বিজ্ঞপ্তি",
+      "subscription": "সদস্যতা",
+      "billing": "বিলিং",
+      "security": "নিরাপত্তা",
+      "connectedAccounts": "সংযুক্ত অ্যাকাউন্ট",
+      "familyControls": "পারিবারিক নিয়ন্ত্রণ",
+      "household": "পরিবার",
+      "byoc": "আমার কন্টেন্ট উৎস",
+      "replayTour": "ফিচার ট্যুর আবার দেখুন",
+      "help": "সাহায্য"
+    }
   },
   "familyControls": {
     "title": "পারিবারিক নিয়ন্ত্রণ",
@@ -8273,7 +8303,13 @@
     "plus": "+",
     "poweredBy": "Olorin.ai দ্বারা পরিচালিত",
     "company": "Olorin.ai",
-    "companyLLC": "LLC"
+    "companyLLC": "LLC",
+    "slogan": "আপনার বাড়ি। যেকোনো জায়গায়।",
+    "tapToSkip": "এড়িয়ে যেতে ট্যাপ করুন",
+    "logoContentDescription": "Bayit Plus লোগো",
+    "poweredBySuffix": " Olorin.ai",
+    "appName": "Bayit",
+    "appNameHe": "בית"
   },
   "sceneSearch": {
     "title": "দৃশ্য অনুসন্ধান",
@@ -11256,7 +11292,12 @@
       "selectServer": "Plex সার্ভার নির্বাচন করুন",
       "connecting": "{{serverName}}-এ সংযুক্ত হচ্ছে...",
       "connected": "সংযুক্ত",
-      "label": "Plex"
+      "label": "Plex",
+      "error": {
+        "startAuth": "প্রমাণীকরণ শুরু করতে ব্যর্থ",
+        "connectServer": "সার্ভারে সংযোগ করতে ব্যর্থ",
+        "timeout": "প্রমাণীকরণের সময় শেষ"
+      }
     },
     "settings": {
       "title": "আমার কন্টেন্ট উৎস",
@@ -11503,7 +11544,13 @@
         "cancel": "বাতিল করুন"
       }
     },
-    "youtubeCodeCopied": "কোড কপি হয়েছে - পেস্ট করতে ট্যাপ করুন"
+    "youtubeCodeCopied": "কোড কপি হয়েছে - পেস্ট করতে ট্যাপ করুন",
+    "status": {
+      "active": "সক্রিয়",
+      "error": "ত্রুটি",
+      "syncing": "সিঙ্ক হচ্ছে",
+      "pending": "পেন্ডিং"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, প্রোফাইল খুলুন",
@@ -12525,7 +12572,10 @@
   "subscription_required": "[bn] Subscription Required",
   "subscription_upsell_tv": "[bn] Upgrade to watch on TV",
   "talkback": {
-    "title": "[bn] Talkback"
+    "title": "[bn] Talkback",
+    "error": {
+      "missingContent": "TalkBack সেশনের জন্য কন্টেন্ট শনাক্তকারী অনুপস্থিত"
+    }
   },
   "voiceCommand": {
     "executing": "[bn] Executing...",
@@ -12574,5 +12624,12 @@
   "watch_now": "[bn] Watch Now",
   "stories": {
     "creditCost": "{{cost}} credit"
+  },
+  "tv": {
+    "home": {
+      "error": {
+        "loadFailed": "কন্টেন্ট লোড করতে ব্যর্থ"
+      }
+    }
   }
 }
