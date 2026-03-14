@@ -76,6 +76,7 @@ internal fun CollectionHeroSection(state: CollectionDetailUiState.Success, onBac
 internal fun CollectionMetadataSection(
     state: CollectionDetailUiState.Success,
     onPlayAll: (() -> Unit)?,
+    onDownloadAll: (() -> Unit)? = null,
 ) {
     Column(modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base)) {
         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
@@ -92,9 +93,19 @@ internal fun CollectionMetadataSection(
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
             Text(desc, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
         }
-        if (onPlayAll != null) {
-            Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-            GlassButton(text = bayitString("vod.collection.playAll"), onClick = onPlayAll)
+        Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+            if (onPlayAll != null) {
+                Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+                GlassButton(text = bayitString("vod.collection.playAll"), onClick = onPlayAll)
+            }
+            if (onDownloadAll != null) {
+                Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+                GlassButton(
+                    text = bayitString("downloads.downloadAll"),
+                    onClick = onDownloadAll,
+                    isPrimary = false,
+                )
+            }
         }
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
     }

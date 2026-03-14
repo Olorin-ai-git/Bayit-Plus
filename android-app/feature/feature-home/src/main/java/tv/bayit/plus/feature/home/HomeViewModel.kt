@@ -10,7 +10,9 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.OwnerMode
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.download.BayitDownloadManager
 import tv.bayit.plus.core.data.repository.BetaCreditsRepository
+import tv.bayit.plus.core.model.DownloadStatus
 import tv.bayit.plus.core.data.repository.CategoryRepository
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
@@ -38,6 +40,7 @@ class HomeViewModel @Inject constructor(
     internal val tourDataStore: TourDataStore,
     internal val subscriptionRepository: SubscriptionRepository,
     internal val betaCreditsRepository: BetaCreditsRepository,
+    internal val downloadManager: BayitDownloadManager,
     internal val logger: BayitLogger,
     @OwnerMode internal val ownerMode: Boolean,
 ) : ViewModel() {
@@ -46,10 +49,22 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     internal val hiddenChannelKeywords = listOf("king 5", "king5", "cnn", "abc")
-    private val hiddenCategoryKeywords = emptyList<String>()
 
     init {
         loadHomeFeed()
+        observeDownloads()
+    }
+
+    private fun observeDownloads() {
+        viewModelScope.launch {
+            downloadManager.downloads.collect { downloads ->
+                val completedIds = downloads
+                    .filter { it.status == DownloadStatus.COMPLETED }
+                    .map { it.contentId }
+                    .toSet()
+                updateState { copy(downloadedContentIds = completedIds) }
+            }
+        }
     }
 
     fun refresh() {
@@ -140,55 +155,6 @@ class HomeViewModel @Inject constructor(
         val currentState = _uiState.value
         if (currentState is HomeUiState.Success) {
             _uiState.value = currentState.copy(isShabbatBannerDismissed = true)
-        }
-    }
-
-    private val ownerOnlyContentTypes = listOf("movie", "series", "film", "vod", "collection")
-
-    private fun filterCategories(categories: List<tv.bayit.plus.core.model.ContentCategory>): List<tv.bayit.plus.core.model.ContentCategory> {
-        val filtered = categories.filter { category ->
-            val name = category.name.lowercase()
-            !hiddenCategoryKeywords.any { keyword -> name.contains(keyword) }
-        }
-        if (ownerMode) return filtered
-        return filtered.map { category ->
-            category.copy(items = category.items.filter { item -> !isOwnerOnlyContent(item) })
-        }.filter { it.items.isNotEmpty() }
-    }
-
-    internal fun isOwnerOnlyContent(item: tv.bayit.plus.core.model.ContentItem): Boolean {
-        val type = (item.contentType ?: item.type)?.lowercase() ?: return false
-        return ownerOnlyContentTypes.any { type.contains(it) }
-    }
-
-    private fun filterSpotlight(items: List<tv.bayit.plus.core.model.SpotlightItem>): List<tv.bayit.plus.core.model.SpotlightItem> {
-        return items.filter { item ->
-            val type = item.type?.lowercase() ?: return@filter false
-            !ownerOnlyContentTypes.any { type.contains(it) }
-        }
-    }
-
-    internal fun filterWatchHistory(items: List<tv.bayit.plus.core.model.WatchHistoryItem>): List<tv.bayit.plus.core.model.WatchHistoryItem> {
-        if (ownerMode) return items
-        return items.filter { item ->
-            val type = item.type?.lowercase() ?: return@filter true
-            !ownerOnlyContentTypes.any { type.contains(it) }
-        }
-    }
-
-    private fun filterTrending(items: List<tv.bayit.plus.core.model.CultureTrendingItem>): List<tv.bayit.plus.core.model.CultureTrendingItem> {
-        if (ownerMode) return items
-        return items.filter { item ->
-            val type = item.type?.lowercase() ?: return@filter true
-            !ownerOnlyContentTypes.any { type.contains(it) }
-        }
-    }
-
-    private fun filterSectionContent(items: List<tv.bayit.plus.core.model.SectionContentItem>): List<tv.bayit.plus.core.model.SectionContentItem> {
-        if (ownerMode) return items
-        return items.filter { item ->
-            val type = item.type?.lowercase() ?: return@filter true
-            !ownerOnlyContentTypes.any { type.contains(it) }
         }
     }
 

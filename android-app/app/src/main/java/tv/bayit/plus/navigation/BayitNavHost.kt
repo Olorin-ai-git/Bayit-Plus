@@ -93,6 +93,7 @@ internal fun NavController.navigateToSettingsSubScreen(item: String) {
         SettingsMenuItem.DEVICES -> Route.DevicePairing
         SettingsMenuItem.VOICE -> Route.VoiceSettings
         SettingsMenuItem.BYOC -> Route.BYOCSettings
+        SettingsMenuItem.DOWNLOAD_SETTINGS -> Route.DownloadSettings
         SettingsMenuItem.REPLAY_TOUR -> Route.OnboardingIntro
         else -> null
     }
@@ -122,5 +123,6 @@ object SettingsMenuItem {
     const val DEVICES = "devices"
     const val VOICE = "voice"
     const val BYOC = "byoc"
+    const val DOWNLOAD_SETTINGS = "download_settings"
     const val REPLAY_TOUR = "replay_tour"
 }

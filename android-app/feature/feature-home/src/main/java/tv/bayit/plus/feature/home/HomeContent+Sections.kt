@@ -90,6 +90,7 @@ internal fun LazyListScope.homeLocationAndCityItems(
             category = category,
             onItemClick = onContentClick,
             onShowAllClick = onCategoryShowAll,
+            downloadedContentIds = uiState.downloadedContentIds,
         )
     }
 }

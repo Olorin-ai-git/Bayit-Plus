@@ -29,6 +29,8 @@ data class LocalDownload(
     @SerialName("created_at") val createdAt: Long = 0L,
     val error: String? = null,
     @SerialName("source_url") val sourceUrl: String,
+    @SerialName("bytes_downloaded") val bytesDownloaded: Long = 0L,
+    @SerialName("retry_count") val retryCount: Int = 0,
 )
 
 /** Request to start a local download. */

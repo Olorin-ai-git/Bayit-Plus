@@ -1,7 +1,6 @@
 package tv.bayit.plus.core.data.download
 
 import android.content.Context
-import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import tv.bayit.plus.core.common.NetworkMonitor
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.DownloadsRepository
 import tv.bayit.plus.core.model.DownloadStatus
@@ -22,10 +22,6 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Singleton download engine that manages file downloads to local storage.
- * Mirrors the iOS DownloadManager pattern with coroutine-based progress tracking.
- */
 @Singleton
 class BayitDownloadManager @Inject constructor(
     @ApplicationContext internal val context: Context,
@@ -34,6 +30,11 @@ class BayitDownloadManager @Inject constructor(
     internal val downloadsRepository: DownloadsRepository,
     internal val store: DownloadStore,
     internal val logger: BayitLogger,
+    internal val downloadQueue: DownloadQueue,
+    internal val downloadRetry: DownloadRetry,
+    internal val storageMonitor: StorageMonitor,
+    internal val downloadPreferences: DownloadPreferences,
+    internal val networkMonitor: NetworkMonitor,
 ) {
     internal val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     internal val activeJobs = mutableMapOf<String, Job>()
@@ -74,6 +75,12 @@ class BayitDownloadManager @Inject constructor(
                 return@launch
             }
 
+            val storageStatus = storageMonitor.checkStorage()
+            if (storageStatus == StorageStatus.CRITICAL) {
+                logger.warning("Storage critical, blocking download")
+                return@launch
+            }
+
             val id = UUID.randomUUID().toString()
             val download = LocalDownload(
                 id = id,
@@ -88,10 +95,15 @@ class BayitDownloadManager @Inject constructor(
 
             store.upsert(download)
             emitState()
-
             registerWithServer(request)
-            executeDownload(download)
+            downloadQueue.enqueue(download, this@BayitDownloadManager)
         }
+    }
+
+    fun pauseDownload(id: String) {
+        activeJobs[id]?.cancel()
+        activeJobs.remove(id)
+        logger.info("Download paused", mapOf("id" to id))
     }
 
     fun cancelDownload(id: String) {
@@ -109,16 +121,25 @@ class BayitDownloadManager @Inject constructor(
     fun retryDownload(id: String) {
         scope.launch {
             val download = findById(id) ?: return@launch
-            if (download.status != DownloadStatus.FAILED && download.status != DownloadStatus.PAUSED) return@launch
+            if (download.status != DownloadStatus.FAILED &&
+                download.status != DownloadStatus.PAUSED
+            ) return@launch
 
-            val retrying = download.copy(
-                status = DownloadStatus.QUEUED,
-                progress = 0f,
-                error = null,
-            )
+            val resumable = download.bytesDownloaded > 0 &&
+                download.status == DownloadStatus.PAUSED
+            val retrying = if (resumable) {
+                download.copy(status = DownloadStatus.QUEUED, error = null)
+            } else {
+                download.copy(
+                    status = DownloadStatus.QUEUED,
+                    progress = 0f,
+                    error = null,
+                    bytesDownloaded = 0L,
+                )
+            }
             store.upsert(retrying)
             emitState()
-            executeDownload(retrying)
+            downloadQueue.enqueue(retrying, this@BayitDownloadManager)
         }
     }
 
@@ -152,39 +173,6 @@ class BayitDownloadManager @Inject constructor(
         _downloads.value.firstOrNull {
             it.contentId == contentId && it.status == DownloadStatus.COMPLETED
         }
-
-    fun localFileUri(contentId: String): String? {
-        val download = localDownload(contentId)
-        if (download == null) {
-            logger.debug(
-                "No completed download found for offline playback",
-                mapOf("contentId" to contentId),
-            )
-            return null
-        }
-        val path = download.filePath
-        if (path == null) {
-            logger.warning(
-                "Completed download has no file path",
-                mapOf("contentId" to contentId, "downloadId" to download.id),
-            )
-            return null
-        }
-        val file = File(path)
-        if (!file.exists()) {
-            logger.warning(
-                "Download file missing from disk",
-                mapOf("contentId" to contentId, "path" to path),
-            )
-            return null
-        }
-        val uri = Uri.fromFile(file).toString()
-        logger.debug(
-            "Resolved local file for offline playback",
-            mapOf("contentId" to contentId, "uri" to uri),
-        )
-        return uri
-    }
 
     companion object {
         private const val DOWNLOADS_DIR = "BayitDownloads"

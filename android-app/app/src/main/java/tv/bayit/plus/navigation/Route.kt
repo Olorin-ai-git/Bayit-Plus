@@ -119,6 +119,7 @@ sealed class Route {
     @Serializable data object AIFeatures : Route()
     @Serializable data object AccessibilitySettings : Route()
     @Serializable data object PlaybackSettings : Route()
+    @Serializable data object DownloadSettings : Route()
 
     // Rewards
     @Serializable data object Rewards : Route()

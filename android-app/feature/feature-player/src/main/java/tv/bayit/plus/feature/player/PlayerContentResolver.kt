@@ -4,6 +4,7 @@ import tv.bayit.plus.core.byoc.BYOCSourceManager
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.download.BayitDownloadManager
+import tv.bayit.plus.core.data.download.localFileUri
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
 import tv.bayit.plus.core.data.repository.MediaRepository

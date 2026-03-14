@@ -45,6 +45,7 @@ sealed interface HomeUiState {
         val remainingCredits: Int = 0,
         val totalCredits: Int = 0,
         val isPlusSubscriber: Boolean = false,
+        val downloadedContentIds: Set<String> = emptySet(),
     ) : HomeUiState
 
     data class Error(

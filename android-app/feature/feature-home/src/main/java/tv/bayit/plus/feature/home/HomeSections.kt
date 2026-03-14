@@ -97,6 +97,7 @@ internal fun CategoryRow(
     onItemClick: (ContentItem) -> Unit,
     onShowAllClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    downloadedContentIds: Set<String> = emptySet(),
 ) {
     if (category.items.isEmpty()) return
 
@@ -122,11 +123,17 @@ internal fun CategoryRow(
                     "podcast", "radio" -> 1f
                     else -> 2f / 3f
                 }
+                val badge = if (item.id in downloadedContentIds) {
+                    bayitString("downloads.downloaded")
+                } else {
+                    null
+                }
                 GlassContentCard(
                     imageUrl = item.thumbnail ?: item.backdrop,
                     title = item.title,
                     onClick = { onItemClick(item) },
                     aspectRatio = cardAspectRatio,
+                    badge = badge,
                 )
             }
         }

@@ -38,6 +38,7 @@ fun CollectionDetailRoute(
         onNavigateToPlayer = onNavigateToPlayer,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
+        onDownloadAll = viewModel::downloadAll,
         modifier = modifier,
     )
 }
@@ -49,6 +50,7 @@ internal fun CollectionDetailScreen(
     onNavigateToPlayer: (movieId: String) -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onDownloadAll: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -64,6 +66,7 @@ internal fun CollectionDetailScreen(
                 onMovieClick = onMovieClick,
                 onNavigateToPlayer = onNavigateToPlayer,
                 onBack = onBack,
+                onDownloadAll = onDownloadAll,
             )
         }
     }
@@ -75,6 +78,7 @@ private fun CollectionSuccessContent(
     onMovieClick: (String) -> Unit,
     onNavigateToPlayer: (movieId: String) -> Unit,
     onBack: () -> Unit,
+    onDownloadAll: () -> Unit,
 ) {
     val firstMovieId = state.movies.firstOrNull()?.id
     LazyVerticalGrid(
@@ -91,6 +95,7 @@ private fun CollectionSuccessContent(
             CollectionMetadataSection(
                 state = state,
                 onPlayAll = firstMovieId?.let { id -> { onNavigateToPlayer(id) } },
+                onDownloadAll = onDownloadAll,
             )
         }
         items(items = state.movies, key = { it.id }) { movie ->

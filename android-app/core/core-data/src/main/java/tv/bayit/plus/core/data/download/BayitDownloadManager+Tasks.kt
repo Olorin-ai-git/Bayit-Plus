@@ -1,6 +1,7 @@
 package tv.bayit.plus.core.data.download
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tv.bayit.plus.core.common.BayitResult
@@ -9,6 +10,7 @@ import tv.bayit.plus.core.model.DownloadStatus
 import tv.bayit.plus.core.model.LocalDownload
 import tv.bayit.plus.core.model.LocalDownloadRequest
 import java.io.File
+import java.io.FileOutputStream
 
 internal fun BayitDownloadManager.executeDownload(download: LocalDownload) {
     val job = scope.launch {
@@ -23,10 +25,13 @@ internal fun BayitDownloadManager.executeDownload(download: LocalDownload) {
             )
             val extension = extractExtension(download.sourceUrl)
             val targetFile = File(downloadsDir, "${download.id}.$extension")
+            val resumeBytes = download.bytesDownloaded
 
-            val request = okhttp3.Request.Builder()
+            val requestBuilder = okhttp3.Request.Builder()
                 .url(download.sourceUrl)
-                .build()
+            if (resumeBytes > 0 && targetFile.exists()) {
+                requestBuilder.addHeader("Range", "bytes=$resumeBytes-")
+            }
 
             val client = if (download.sourceUrl.contains("/api/proxy/")) {
                 authClient
@@ -35,10 +40,10 @@ internal fun BayitDownloadManager.executeDownload(download: LocalDownload) {
             }
 
             val response = withContext(Dispatchers.IO) {
-                client.newCall(request).execute()
+                client.newCall(requestBuilder.build()).execute()
             }
 
-            if (!response.isSuccessful) {
+            if (!response.isSuccessful && response.code != PARTIAL_CONTENT_CODE) {
                 markFailed(download.id, "HTTP ${response.code}")
                 response.close()
                 return@launch
@@ -49,35 +54,60 @@ internal fun BayitDownloadManager.executeDownload(download: LocalDownload) {
                 return@launch
             }
 
-            val progressBody = ProgressResponseBody(body) { progress ->
-                updateProgressInMemory(download.id, progress)
+            val isResume = response.code == PARTIAL_CONTENT_CODE && resumeBytes > 0
+            val totalBytes = if (isResume) {
+                body.contentLength() + resumeBytes
+            } else {
+                body.contentLength()
             }
 
+            var bytesWritten = if (isResume) resumeBytes else 0L
+
             withContext(Dispatchers.IO) {
-                targetFile.outputStream().use { output ->
-                    progressBody.source().inputStream().use { input ->
-                        input.copyTo(output)
+                val outputStream = FileOutputStream(targetFile, isResume)
+                outputStream.use { output ->
+                    body.byteStream().use { input ->
+                        val buffer = ByteArray(BUFFER_SIZE)
+                        var read: Int
+                        while (input.read(buffer).also { read = it } != -1) {
+                            if (!isActive) {
+                                savePauseState(download.id, bytesWritten)
+                                return@withContext
+                            }
+                            output.write(buffer, 0, read)
+                            bytesWritten += read
+                            if (totalBytes > 0) {
+                                updateProgressInMemory(
+                                    download.id,
+                                    bytesWritten.toFloat() / totalBytes.toFloat(),
+                                )
+                            }
+                        }
                     }
                 }
             }
+
+            if (!isActive) return@launch
 
             val completed = download.copy(
                 status = DownloadStatus.COMPLETED,
                 progress = 1f,
                 filePath = targetFile.absolutePath,
                 fileSize = targetFile.length(),
+                bytesDownloaded = targetFile.length(),
             )
             store.upsert(completed)
             emitState()
             activeJobs.remove(download.id)
+            downloadQueue.onDownloadFinished()
             logger.info(
                 "Download completed",
-                mapOf(
-                    "id" to download.id,
-                    "size" to targetFile.length().toString(),
-                ),
+                mapOf("id" to download.id, "size" to targetFile.length().toString()),
             )
         } catch (e: Exception) {
+            if (!isActive) {
+                return@launch
+            }
             markFailed(download.id, e.message ?: "Download failed")
         }
     }
@@ -117,3 +147,5 @@ internal fun BayitDownloadManager.extractExtension(url: String): String {
 }
 
 internal const val DEFAULT_EXTENSION = "mp4"
+private const val PARTIAL_CONTENT_CODE = 206
+private const val BUFFER_SIZE = 8192

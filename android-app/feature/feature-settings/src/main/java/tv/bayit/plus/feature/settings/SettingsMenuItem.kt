@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SettingsInputAntenna
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,6 +45,7 @@ fun settingsMenuItems(): List<SettingsMenuItem> = listOf(
     SettingsMenuItem(titleKey = "settings.menu.playback", icon = Icons.Default.PlayCircle, route = "playback"),
     SettingsMenuItem(titleKey = "settings.menu.subtitles", icon = Icons.Default.Subtitles, route = "subtitles"),
     SettingsMenuItem(titleKey = "settings.menu.audio", icon = Icons.Default.GraphicEq, route = "audio"),
+    SettingsMenuItem(titleKey = "settings.downloads.title", icon = Icons.Default.Download, route = "download_settings"),
     SettingsMenuItem(titleKey = "settings.menu.aiFeatures", icon = Icons.Default.AutoAwesome, route = "ai_features"),
     SettingsMenuItem(titleKey = "settings.menu.accessibility", icon = Icons.Default.Accessibility, route = "accessibility"),
     SettingsMenuItem(titleKey = "settings.menu.notifications", icon = Icons.Default.Notifications, route = "notifications"),

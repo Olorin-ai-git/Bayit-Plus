@@ -11,9 +11,12 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.download.BayitDownloadManager
 import tv.bayit.plus.core.data.repository.ContentRepository
+import tv.bayit.plus.core.data.repository.MediaRepository
 import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.CollectionMovie
+import tv.bayit.plus.core.model.LocalDownloadRequest
 import javax.inject.Inject
 
 /**
@@ -27,6 +30,8 @@ import javax.inject.Inject
 class CollectionDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contentRepository: ContentRepository,
+    private val mediaRepository: MediaRepository,
+    private val downloadManager: BayitDownloadManager,
     private val logger: BayitLogger,
     private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
@@ -44,6 +49,34 @@ class CollectionDetailViewModel @Inject constructor(
         _uiState.value = CollectionDetailUiState.Loading
         loadCollectionDetail()
     }
+
+    fun downloadAll() {
+        val state = _uiState.value as? CollectionDetailUiState.Success ?: return
+        viewModelScope.launch {
+            state.movies.forEach { movie ->
+                val url = resolveDownloadUrl(movie.id) ?: return@forEach
+                downloadManager.startDownload(
+                    LocalDownloadRequest(
+                        contentId = movie.id,
+                        title = movie.title ?: state.title,
+                        thumbnail = movie.thumbnail,
+                        contentType = "vod",
+                        streamUrl = url,
+                    ),
+                )
+            }
+            logger.info("Download all started", mapOf(
+                "collectionId" to collectionId,
+                "count" to state.movies.size.toString(),
+            ))
+        }
+    }
+
+    private suspend fun resolveDownloadUrl(movieId: String): String? =
+        when (val result = mediaRepository.getDownloadUrl(movieId)) {
+            is BayitResult.Success -> result.data as? String
+            else -> null
+        }
 
     private fun loadCollectionDetail() {
         viewModelScope.launch {

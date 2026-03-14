@@ -31,6 +31,7 @@ import tv.bayit.plus.feature.byoc.AddSourceRoute
 import tv.bayit.plus.feature.byoc.BYOCSettingsRoute
 import tv.bayit.plus.feature.byoc.PlexAuthRoute
 import tv.bayit.plus.feature.byoc.YouTubeAuthRoute
+import tv.bayit.plus.feature.settings.downloads.DownloadSettingsRoute
 import tv.bayit.plus.feature.widgets.WidgetGalleryRoute
 
 fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
@@ -129,7 +130,11 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
         DownloadsRoute(
             onNavigateBack = { navController.popBackStack() },
             onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+            onNavigateToVod = { navController.navigate(Route.Vod) },
         )
+    }
+    composable<Route.DownloadSettings> {
+        DownloadSettingsRoute(onNavigateBack = { navController.popBackStack() })
     }
     composable<Route.Rewards> {
         RewardsRoute(onNavigateBack = { navController.popBackStack() })

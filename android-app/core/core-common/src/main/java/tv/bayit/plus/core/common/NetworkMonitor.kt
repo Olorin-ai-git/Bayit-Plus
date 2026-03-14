@@ -15,6 +15,7 @@ import javax.inject.Singleton
 
 interface NetworkMonitor {
     val isOnline: Flow<Boolean>
+    val isOnWifi: Flow<Boolean>
 }
 
 @Singleton
@@ -23,7 +24,7 @@ class ConnectivityNetworkMonitor @Inject constructor(
 ) : NetworkMonitor {
 
     override val isOnline: Flow<Boolean> = callbackFlow {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) { trySend(true) }
             override fun onLost(network: Network) { trySend(false) }
@@ -34,12 +35,36 @@ class ConnectivityNetworkMonitor @Inject constructor(
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
-        connectivityManager.registerNetworkCallback(request, callback)
+        cm.registerNetworkCallback(request, callback)
 
-        val currentNetwork = connectivityManager.activeNetwork
-        val currentCaps = connectivityManager.getNetworkCapabilities(currentNetwork)
+        val currentNetwork = cm.activeNetwork
+        val currentCaps = cm.getNetworkCapabilities(currentNetwork)
         trySend(currentCaps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true)
 
-        awaitClose { connectivityManager.unregisterNetworkCallback(callback) }
+        awaitClose { cm.unregisterNetworkCallback(callback) }
+    }.distinctUntilChanged()
+
+    override val isOnWifi: Flow<Boolean> = callbackFlow {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                val caps = cm.getNetworkCapabilities(network)
+                trySend(caps?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true)
+            }
+            override fun onLost(network: Network) { trySend(false) }
+            override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) {
+                trySend(caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+            }
+        }
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+        cm.registerNetworkCallback(request, callback)
+
+        val currentNetwork = cm.activeNetwork
+        val currentCaps = cm.getNetworkCapabilities(currentNetwork)
+        trySend(currentCaps?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true)
+
+        awaitClose { cm.unregisterNetworkCallback(callback) }
     }.distinctUntilChanged()
 }

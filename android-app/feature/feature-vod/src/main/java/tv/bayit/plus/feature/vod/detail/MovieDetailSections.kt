@@ -131,6 +131,7 @@ internal fun MovieActionSection(
     isDownloading: Boolean,
     isDownloaded: Boolean,
     hasTrailer: Boolean,
+    duration: String? = null,
     onPlay: (String) -> Unit,
     onDownload: () -> Unit,
     onTrailerClick: () -> Unit,
@@ -171,7 +172,27 @@ internal fun MovieActionSection(
                 )
             }
         }
+        if (!isDownloaded && !isDownloading && duration != null) {
+            val estimatedMb = estimateFileSizeMb(duration)
+            if (estimatedMb > 0) {
+                Text(
+                    text = bayitString("downloads.estimatedSize", mapOf("size" to estimatedMb.toString())),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DesignTokens.Colors.Text.muted,
+                )
+            }
+        }
     }
+}
+
+private fun estimateFileSizeMb(duration: String): Int {
+    val hm = Regex("(\\d+)h\\s*(\\d+)m").find(duration)
+    val mins = when {
+        hm != null -> (hm.groupValues[1].toIntOrNull() ?: 0) * 60 + (hm.groupValues[2].toIntOrNull() ?: 0)
+        else -> Regex("(\\d+)\\s*min").find(duration)?.groupValues?.get(1)?.toIntOrNull()
+            ?: duration.filter { it.isDigit() }.toIntOrNull() ?: 0
+    }
+    return mins * 8
 }
 
 // RelatedContentShelf, RelatedCard, MovieErrorContent are in MovieDetailSections+Related.kt

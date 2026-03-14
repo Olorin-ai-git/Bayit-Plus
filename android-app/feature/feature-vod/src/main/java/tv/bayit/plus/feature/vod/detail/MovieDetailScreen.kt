@@ -99,6 +99,7 @@ private fun MovieSuccessContent(
                 isDownloading = state.isDownloading,
                 isDownloaded = state.isDownloaded,
                 hasTrailer = state.hasTrailer,
+                duration = state.duration,
                 onPlay = onPlay,
                 onDownload = onDownload,
                 onTrailerClick = { state.trailerStreamUrl?.let { onTrailerClick(it) } },
