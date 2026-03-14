@@ -104,13 +104,14 @@
         var pauseAskOverlay: some View {
             if showPauseAskOverlay, let vm = dialogueVM {
                 PauseAskDialogueOverlayView(
-                    avatarImageUrl: avatarImageUrl ?? "",
                     avatarId: resolvedAvatarId,
                     contentId: contentId,
                     currentTimestamp: viewModel.player.currentTime,
                     characters: vm.availableCharacters,
                     viewModel: vm,
                     voiceService: voiceService,
+                    onResumePlayback: { viewModel.player.avPlayer.play() },
+                    onPausePlayback: { viewModel.player.avPlayer.pause() },
                     onDismiss: {
                         Task { await dismissPauseAsk() }
                     }

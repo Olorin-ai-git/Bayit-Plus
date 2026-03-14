@@ -14,37 +14,35 @@
         @Environment(LocalizationManager.self) var localization
         @Environment(AuthManager.self) var authManager
 
-        let avatarImageUrl: String
         let avatarId: String?
         let contentId: String
         let currentTimestamp: Double
         let characters: [ContentCharacter]
         @Bindable var viewModel: AvatarDialogueViewModel
         let voiceService: VoiceInteractionService?
+        let onResumePlayback: () -> Void
+        let onPausePlayback: () -> Void
         let onDismiss: () -> Void
 
         @State var phase: PauseAskPhase = .selecting
         @State var messageText = ""
         @State var inputMode: DialogueInputView.InputMode = .text
-        @State var userPlayer: AVPlayer?
         @State var characterPlayer: AVPlayer?
-        @State var isUserVideoReady = false
         @State var isCharacterVideoReady = false
         @State var lastResponse: PauseAskResponse?
-        @State var userEndObserver: NSObjectProtocol?
         @State var characterEndObserver: NSObjectProtocol?
-        @State var userStatusObserver: NSKeyValueObservation?
         @State var characterStatusObserver: NSKeyValueObservation?
         @State var polishingStageIndex = 0
         @State var polishingTimer: Timer?
 
-        let circleSize: CGFloat = 120
-        let transitionDelay: TimeInterval = 0.5
+        let circleSize: CGFloat = 140
         let logger = BayitLogger(category: "PauseAskOverlay")
 
         var body: some View {
             ZStack {
-                Color.black.opacity(0.4).ignoresSafeArea()
+                if phase != .polishing {
+                    Color.black.opacity(0.4).ignoresSafeArea()
+                }
                 phaseContent
             }
             .animation(.easeInOut(duration: 0.3), value: phase)
@@ -70,12 +68,10 @@
                 inputPanel
             case .polishing:
                 polishingProgressView
-            case .userSpeaking:
-                videoPlaybackView(isUserPhase: true)
-            case .transition:
-                videoPlaybackView(isUserPhase: false)
+            case .userSpeaking, .transition:
+                EmptyView()
             case .characterSpeaking:
-                videoPlaybackView(isUserPhase: false)
+                videoPlaybackView()
             case .idle:
                 idlePanel
             case .error:

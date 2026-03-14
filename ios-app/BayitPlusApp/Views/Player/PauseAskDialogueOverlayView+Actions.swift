@@ -34,10 +34,12 @@
 
         func transcribeAndSend(audioData: Data) {
             phase = .polishing
+            onResumePlayback()
 
             Task {
                 guard let sessionId = viewModel.sessionId else {
                     logger.error("No session ID for transcription")
+                    onPausePlayback()
                     phase = .input
                     return
                 }
@@ -50,6 +52,7 @@
                         )
                     guard !result.transcript.isEmpty else {
                         logger.info("Transcription returned empty text")
+                        onPausePlayback()
                         phase = .input
                         return
                     }
@@ -59,6 +62,7 @@
                     logger.error(
                         "Transcription failed: \(error.localizedDescription)"
                     )
+                    onPausePlayback()
                     phase = .input
                 }
             }
@@ -68,73 +72,19 @@
             let text = messageText
             messageText = ""
             phase = .polishing
+            onResumePlayback()
 
             Task {
                 let response = await viewModel.sendPauseAskMessage(text)
                 guard let response else {
                     logger.error("Pause & Ask returned nil response")
+                    onPausePlayback()
                     phase = .input
                     return
                 }
                 lastResponse = response
-                await playUserVideo(response)
-            }
-        }
-
-        func playUserVideo(_ response: PauseAskResponse) async {
-            guard !response.userAnimatedVideoUrl.isEmpty,
-                  let url = URL(string: response.userAnimatedVideoUrl)
-            else {
+                onPausePlayback()
                 await playCharacterVideo(response)
-                return
-            }
-
-            cleanupUserPlayer()
-            let player = AVPlayer(url: url)
-            player.automaticallyWaitsToMinimizeStalling = true
-            userPlayer = player
-            phase = .userSpeaking
-
-            userEndObserver = NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: player.currentItem, queue: .main
-            ) { [weak player] _ in
-                guard player != nil else { return }
-                Task { @MainActor in
-                    cleanupUserPlayer()
-                    phase = .transition
-                    try? await Task.sleep(for: .seconds(transitionDelay))
-                    await playCharacterVideo(response)
-                }
-            }
-
-            guard let item = player.currentItem else {
-                logger.error("User player has no current item")
-                await playCharacterVideo(response)
-                return
-            }
-
-            userStatusObserver = item.observe(
-                \.status, options: [.initial, .new]
-            ) { [weak player] observedItem, _ in
-                Task { @MainActor in
-                    switch observedItem.status {
-                    case .readyToPlay:
-                        withAnimation(.easeIn(duration: 0.3)) {
-                            isUserVideoReady = true
-                        }
-                        player?.play()
-                    case .failed:
-                        logger.error(
-                            "User video failed to load: "
-                                + "\(observedItem.error?.localizedDescription ?? "unknown")"
-                        )
-                        cleanupUserPlayer()
-                        await playCharacterVideo(response)
-                    default:
-                        break
-                    }
-                }
             }
         }
 
@@ -189,18 +139,6 @@
                     }
                 }
             }
-        }
-
-        func cleanupUserPlayer() {
-            if let obs = userEndObserver {
-                NotificationCenter.default.removeObserver(obs)
-                userEndObserver = nil
-            }
-            userStatusObserver?.invalidate()
-            userStatusObserver = nil
-            userPlayer?.pause()
-            userPlayer = nil
-            isUserVideoReady = false
         }
 
         func cleanupCharacterPlayer() {

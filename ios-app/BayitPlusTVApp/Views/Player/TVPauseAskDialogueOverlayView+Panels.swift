@@ -21,15 +21,31 @@
                 localization.t(key)
             }
 
-            return VStack(spacing: TVDesignTokens.Spacing.lg) {
-                GlassSpinner(size: .large)
-                Text(text)
-                    .font(.system(size: TVDesignTokens.FontSize.lg))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .multilineTextAlignment(.center)
-                    .animation(
-                        .easeInOut(duration: 0.4), value: polishingStageIndex
-                    )
+            return HStack {
+                Spacer()
+                VStack(spacing: TVDesignTokens.Spacing.lg) {
+                    Spacer()
+                    GlassSpinner(size: .large)
+                    Text(text)
+                        .font(.system(size: TVDesignTokens.FontSize.lg))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                        .multilineTextAlignment(.center)
+                        .animation(
+                            .easeInOut(duration: 0.4), value: polishingStageIndex
+                        )
+                    Spacer()
+                }
+                .frame(width: 400)
+                .padding(TVDesignTokens.Spacing.xl)
+                .background(DesignTokens.Glass.bgStrong)
+                .clipShape(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                )
+                .padding(.trailing, TVDesignTokens.Spacing.xxl)
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel(text)

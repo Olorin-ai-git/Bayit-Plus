@@ -14,25 +14,22 @@
         @Environment(LocalizationManager.self) var localization
         @Environment(AuthManager.self) private var authManager
 
-        let avatarImageUrl: String
         let avatarId: String?
         let contentId: String
         let currentTimestamp: Double
         let characters: [ContentCharacter]
         @Bindable var viewModel: AvatarDialogueViewModel
         let voiceService: TVVoiceInteractionService?
+        let onResumePlayback: () -> Void
+        let onPausePlayback: () -> Void
         let onDismiss: () -> Void
 
         @State var phase: PauseAskPhase = .selecting
         @State var messageText = ""
-        @State var userPlayer: AVPlayer?
         @State var characterPlayer: AVPlayer?
-        @State var isUserVideoReady = false
         @State var isCharacterVideoReady = false
         @State var lastResponse: PauseAskResponse?
-        @State var userEndObserver: NSObjectProtocol?
         @State var characterEndObserver: NSObjectProtocol?
-        @State var userStatusObserver: NSKeyValueObservation?
         @State var characterStatusObserver: NSKeyValueObservation?
         @State var polishingStageIndex = 0
         @State var polishingTimer: Timer?
@@ -43,7 +40,9 @@
 
         var body: some View {
             ZStack {
-                DesignTokens.Glass.bgStrong.ignoresSafeArea()
+                if phase != .polishing {
+                    DesignTokens.Glass.bgStrong.ignoresSafeArea()
+                }
                 phaseContent
             }
             .animation(.easeInOut(duration: 0.3), value: phase)
@@ -68,15 +67,14 @@
                 inputPanel
             case .polishing:
                 polishingProgressView
-            case .userSpeaking, .transition, .characterSpeaking:
+            case .userSpeaking, .transition:
+                EmptyView()
+            case .characterSpeaking:
                 TVPauseAskVideoPlaybackView(
-                    avatarImageUrl: avatarImageUrl,
                     characterFrameUrl: viewModel.selectedCharacter?.frameUrl,
                     lastResponse: lastResponse,
                     phase: $phase,
-                    userPlayer: $userPlayer,
                     characterPlayer: $characterPlayer,
-                    isUserVideoReady: $isUserVideoReady,
                     isCharacterVideoReady: $isCharacterVideoReady
                 )
             case .idle:
@@ -120,14 +118,17 @@
 
         func sendQuestion() {
             let text = messageText; messageText = ""; phase = .polishing
+            onResumePlayback()
             Task {
                 guard let response = await viewModel.sendPauseAskMessage(text) else {
                     logger.error("tvOS Pause & Ask returned nil")
                     lastFailedMessage = text
+                    onPausePlayback()
                     phase = .error
                     return
                 }
                 lastResponse = response
+                onPausePlayback()
                 await playResponse(response)
             }
         }

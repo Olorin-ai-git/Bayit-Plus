@@ -21,13 +21,27 @@
                 localization.t(key)
             }
 
-            return VStack(spacing: DesignTokens.Spacing.md) {
-                GlassSpinner(size: .large)
-                Text(text)
-                    .font(.system(size: DesignTokens.FontSize.md))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .multilineTextAlignment(.center)
-                    .animation(.easeInOut(duration: 0.4), value: polishingStageIndex)
+            return HStack {
+                Spacer()
+                VStack(spacing: DesignTokens.Spacing.md) {
+                    Spacer()
+                    GlassSpinner(size: .large)
+                    Text(text)
+                        .font(.system(size: DesignTokens.FontSize.md))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                        .multilineTextAlignment(.center)
+                        .animation(.easeInOut(duration: 0.4), value: polishingStageIndex)
+                    Spacer()
+                }
+                .frame(width: 280)
+                .padding(DesignTokens.Spacing.lg)
+                .background(DesignTokens.Glass.bgStrong)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                )
+                .padding(.trailing, DesignTokens.Spacing.xl)
             }
             .onAppear { startPolishingTimer() }
             .onDisappear { stopPolishingTimer() }
@@ -80,24 +94,13 @@
 
         // MARK: - Video Playback
 
-        func videoPlaybackView(isUserPhase _: Bool) -> some View {
+        func videoPlaybackView() -> some View {
             VStack {
                 Spacer()
-                HStack(spacing: DesignTokens.Spacing.xl) {
-                    Spacer()
-                    userCircle
-                        .opacity(phase == .userSpeaking ? 1 : 0.5)
-                        .scaleEffect(phase == .userSpeaking ? 1 : 0.85)
-                    characterCircle
-                        .opacity(phase == .characterSpeaking ? 1 : 0.5)
-                        .scaleEffect(phase == .characterSpeaking ? 1 : 0.85)
-                    Spacer()
-                }
+                characterCircle
 
                 if let response = lastResponse {
-                    Text(phase == .userSpeaking
-                        ? response.userPolishedText
-                        : response.characterResponseText)
+                    Text(response.characterResponseText)
                         .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.primary)
                         .multilineTextAlignment(.center)
@@ -107,22 +110,6 @@
 
                 Spacer()
             }
-        }
-
-        var userCircle: some View {
-            ZStack {
-                stillImage(url: avatarImageUrl)
-                if isUserVideoReady, let player = userPlayer {
-                    FillVideoLayer(player: player)
-                }
-            }
-            .frame(width: circleSize, height: circleSize)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 2))
-            .shadow(
-                color: DesignTokens.Primary.default.opacity(0.4),
-                radius: 12, x: 0, y: 4
-            )
         }
 
         var characterCircle: some View {

@@ -134,7 +134,7 @@ class AvatarDialogueViewModel @Inject constructor(
                     )
                 }
                 _pauseAskResponse.value = response
-                _pauseAskPhase.value = PauseAskPhase.USER_SPEAKING
+                _pauseAskPhase.value = PauseAskPhase.CHARACTER_SPEAKING
                 logger.debug(
                     "Pause-ask response received",
                     mapOf(

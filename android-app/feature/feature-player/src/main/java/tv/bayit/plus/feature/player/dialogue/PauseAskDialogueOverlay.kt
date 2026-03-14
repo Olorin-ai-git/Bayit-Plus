@@ -13,17 +13,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassSpinner
@@ -52,8 +56,20 @@ fun PauseAskDialogueOverlay(
     onPhaseAdvance: (PauseAskPhase) -> Unit,
     onResetPauseAsk: () -> Unit,
     onDismiss: () -> Unit,
+    onResumePlayback: () -> Unit,
+    onPausePlayback: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var previousPhase by remember { mutableStateOf(phase) }
+    LaunchedEffect(phase) {
+        if (phase == PauseAskPhase.POLISHING) {
+            onResumePlayback()
+        } else if (previousPhase == PauseAskPhase.POLISHING) {
+            onPausePlayback()
+        }
+        previousPhase = phase
+    }
+
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(),
@@ -63,57 +79,62 @@ fun PauseAskDialogueOverlay(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DesignTokens.Colors.Background.primary.copy(alpha = SCRIM_ALPHA)),
+                .background(
+                    if (phase == PauseAskPhase.POLISHING) Color.Transparent
+                    else DesignTokens.Colors.Background.primary.copy(alpha = SCRIM_ALPHA)
+                ),
             contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .glassMorphism(
-                        cornerRadius = DesignTokens.Radius.lg,
-                        backgroundColor = DesignTokens.Colors.Glass.bgStrong,
-                    )
-                    .padding(DesignTokens.Spacing.base),
-            ) {
-                when (phase) {
-                    PauseAskPhase.SELECTING -> PauseAskCharacterSelection(
-                        characters = characters,
-                        onCharacterSelected = onCharacterSelected,
-                        onResume = onDismiss,
-                    )
+            if (phase == PauseAskPhase.POLISHING) {
+                PolishingContent(characterName = selectedCharacter?.name)
+            } else {
+                Box(
+                    modifier = Modifier
+                        .glassMorphism(
+                            cornerRadius = DesignTokens.Radius.lg,
+                            backgroundColor = DesignTokens.Colors.Glass.bgStrong,
+                        )
+                        .padding(DesignTokens.Spacing.base),
+                ) {
+                    when (phase) {
+                        PauseAskPhase.SELECTING -> PauseAskCharacterSelection(
+                            characters = characters,
+                            onCharacterSelected = onCharacterSelected,
+                            onResume = onDismiss,
+                        )
 
-                    PauseAskPhase.INPUT -> {
-                        selectedCharacter?.let {
-                            PauseAskInputPanel(
-                                characterName = it.name,
-                                onSend = onSendQuestion,
-                                errorMessage = errorMessage,
-                            )
+                        PauseAskPhase.INPUT -> {
+                            selectedCharacter?.let {
+                                PauseAskInputPanel(
+                                    characterName = it.name,
+                                    onSend = onSendQuestion,
+                                    errorMessage = errorMessage,
+                                )
+                            }
                         }
-                    }
 
-                    PauseAskPhase.POLISHING -> PolishingContent(
-                        characterName = selectedCharacter?.name,
-                    )
-
-                    PauseAskPhase.USER_SPEAKING,
-                    PauseAskPhase.TRANSITION,
-                    PauseAskPhase.CHARACTER_SPEAKING -> {
-                        pauseAskResponse?.let {
-                            PauseAskVideoPhase(
-                                phase = phase,
-                                response = it,
-                                onPhaseAdvance = onPhaseAdvance,
-                            )
+                        PauseAskPhase.USER_SPEAKING,
+                        PauseAskPhase.TRANSITION,
+                        PauseAskPhase.CHARACTER_SPEAKING -> {
+                            pauseAskResponse?.let {
+                                PauseAskVideoPhase(
+                                    phase = phase,
+                                    response = it,
+                                    onPhaseAdvance = onPhaseAdvance,
+                                )
+                            }
                         }
-                    }
 
-                    PauseAskPhase.IDLE -> IdleContent(
-                        onAskAgain = {
-                            onResetPauseAsk()
-                            onPhaseAdvance(PauseAskPhase.SELECTING)
-                        },
-                        onResume = onDismiss,
-                    )
+                        PauseAskPhase.IDLE -> IdleContent(
+                            onAskAgain = {
+                                onResetPauseAsk()
+                                onPhaseAdvance(PauseAskPhase.SELECTING)
+                            },
+                            onResume = onDismiss,
+                        )
+
+                        PauseAskPhase.POLISHING -> { /* handled above */ }
+                    }
                 }
             }
         }
@@ -139,21 +160,33 @@ private fun PolishingContent(characterName: String?) {
         bayitString(key)
     }
 
-    Column(
-        modifier = Modifier.padding(DesignTokens.Spacing.xl),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.CenterEnd,
     ) {
-        GlassSpinner(size = SpinnerSize.LARGE)
+        Column(
+            modifier = Modifier
+                .width(280.dp)
+                .padding(end = DesignTokens.Spacing.xl)
+                .glassMorphism(
+                    cornerRadius = DesignTokens.Radius.lg,
+                    backgroundColor = DesignTokens.Colors.Glass.bgStrong,
+                )
+                .padding(DesignTokens.Spacing.xl),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            GlassSpinner(size = SpinnerSize.LARGE)
 
-        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+            Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
-        Text(
-            text = text,
-            color = DesignTokens.Colors.Text.secondary,
-            fontSize = DesignTokens.FontSize.md,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.animateContentSize(),
-        )
+            Text(
+                text = text,
+                color = DesignTokens.Colors.Text.secondary,
+                fontSize = DesignTokens.FontSize.md,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.animateContentSize(),
+            )
+        }
     }
 }
 

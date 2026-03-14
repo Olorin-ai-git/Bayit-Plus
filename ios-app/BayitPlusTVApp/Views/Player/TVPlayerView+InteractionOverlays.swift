@@ -29,17 +29,17 @@ extension TVPlayerView {
     var pauseAskOverlay: some View {
         if state.showPauseAskOverlay,
            let vm = state.dialogueVM,
-           let imgUrl = state.avatarImageUrl,
            state.hasVoiceClone
         {
             TVPauseAskDialogueOverlayView(
-                avatarImageUrl: imgUrl,
                 avatarId: state.resolvedAvatarId,
                 contentId: contentId,
                 currentTimestamp: mediaPlayer.currentTime,
                 characters: vm.availableCharacters,
                 viewModel: vm,
                 voiceService: state.voiceService,
+                onResumePlayback: { mediaPlayer.avPlayer.play() },
+                onPausePlayback: { mediaPlayer.avPlayer.pause() },
                 onDismiss: {
                     Task { await dismissPauseAsk() }
                 }

@@ -83,8 +83,14 @@ struct DiscoverFeatureDetailView: View {
                let url = URL(string: route)
             {
                 GlassButton(localization.t(prereq.labelKey), variant: .ghost, size: .small) {
+                    let targetRoute = DeepLink.route(from: url)
                     dismiss()
-                    UIApplication.shared.open(url)
+                    if let route = targetRoute {
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .milliseconds(350))
+                            coordinator.navigate(to: route)
+                        }
+                    }
                 }
             } else {
                 Text(localization.t(prereq.labelKey))
@@ -120,8 +126,14 @@ struct DiscoverFeatureDetailView: View {
                     size: .large
                 ) {
                     viewModel.startWalkthroughSession(for: feature)
+                    let targetRoute = DeepLink.route(from: url)
                     dismiss()
-                    UIApplication.shared.open(url)
+                    if let route = targetRoute {
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .milliseconds(350))
+                            coordinator.navigate(to: route)
+                        }
+                    }
                 }
                 .accessibilityIdentifier("discover_action_tryIt")
                 .accessibilityLabel(localization.t("discover.action.tryIt"))

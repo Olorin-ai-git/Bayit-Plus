@@ -1,10 +1,8 @@
 package tv.bayit.plus.feature.player.dialogue
 
 import android.net.Uri
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,17 +27,15 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import kotlinx.coroutines.delay
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
- * Video playback composable for USER_SPEAKING, TRANSITION, and CHARACTER_SPEAKING phases.
+ * Video playback composable for the CHARACTER_SPEAKING phase.
  *
- * Renders two ExoPlayer instances in circular clips: one for the user's
- * avatar lip-sync video and one for the character's response video.
- * Phase transitions are driven by [Player.Listener] on STATE_ENDED.
+ * Renders a single ExoPlayer instance in a circular clip for the character's
+ * response video. Phase transition is driven by [Player.Listener] on STATE_ENDED.
  */
 @Composable
 internal fun PauseAskVideoPhase(
@@ -54,28 +50,11 @@ internal fun PauseAskVideoPhase(
             .padding(DesignTokens.Spacing.base),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xl),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            VideoCircleWithState(
-                videoUrl = response.userAnimatedVideoUrl.ifEmpty { null },
-                isActivePhase = phase == PauseAskPhase.USER_SPEAKING,
-                onVideoEnded = { onPhaseAdvance(PauseAskPhase.TRANSITION) },
-            )
-            VideoCircleWithState(
-                videoUrl = response.characterAnimatedVideoUrl.ifEmpty { null },
-                isActivePhase = phase == PauseAskPhase.CHARACTER_SPEAKING,
-                onVideoEnded = { onPhaseAdvance(PauseAskPhase.IDLE) },
-            )
-        }
-
-        if (phase == PauseAskPhase.TRANSITION) {
-            LaunchedEffect(Unit) {
-                delay(TRANSITION_DELAY_MS)
-                onPhaseAdvance(PauseAskPhase.CHARACTER_SPEAKING)
-            }
-        }
+        VideoCircleWithState(
+            videoUrl = response.characterAnimatedVideoUrl.ifEmpty { null },
+            isActivePhase = phase == PauseAskPhase.CHARACTER_SPEAKING,
+            onVideoEnded = { onPhaseAdvance(PauseAskPhase.IDLE) },
+        )
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
@@ -167,4 +146,3 @@ private fun EmptyCirclePlaceholder() {
     }
 }
 
-private const val TRANSITION_DELAY_MS = 500L

@@ -168,26 +168,6 @@ extension TVPlayerView {
         )
     }
 
-    // MARK: - Pause & Ask Overlay (fullScreenCover)
-
-    @ViewBuilder
-    var pauseAskSheet: some View {
-        if let vm = state.dialogueVM,
-           let imgUrl = state.avatarImageUrl
-        {
-            TVPauseAskDialogueOverlayView(
-                avatarImageUrl: imgUrl,
-                avatarId: state.resolvedAvatarId,
-                contentId: contentId,
-                currentTimestamp: mediaPlayer.currentTime,
-                characters: vm.availableCharacters,
-                viewModel: vm,
-                voiceService: state.voiceService,
-                onDismiss: { Task { await dismissPauseAsk() } }
-            )
-        }
-    }
-
     // MARK: - Character → Dialogue Flow (single fullScreenCover, avoids sequential-cover tvOS bug)
 
     @ViewBuilder

@@ -146,9 +146,7 @@ struct TVPlayerView: View {
         .fullScreenCover(isPresented: $state.showCharacterSelection) {
             characterDialogueFlowSheet
         }
-        .fullScreenCover(isPresented: $state.showPauseAskOverlay) {
-            pauseAskSheet
-        }
+        .overlay { pauseAskOverlay }
         .fullScreenCover(isPresented: $state.showQuiz) {
             TVQuizOverlayView(
                 contentId: contentId,
