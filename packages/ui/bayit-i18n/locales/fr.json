@@ -4337,7 +4337,10 @@
     "downloadAll": "Tout télécharger",
     "play": "Lire hors ligne",
     "size": "{{size}} Mo",
-    "active": "Telechargements actifs"
+    "active": "Telechargements actifs",
+    "browseVod": "Parcourir VOD",
+    "storageLow": "L'espace de stockage est faible. Pensez a supprimer des telechargements.",
+    "storageCritical": "Pas assez d'espace pour telecharger. Liberez de l'espace d'abord."
   },
   "dubbing": {
     "title": "Doublage en direct",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "Terminé",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "Importez IPTV, Plex et YouTube — tout votre contenu avec Bayit+ AI",
+        "integrated": "Tout votre contenu au même endroit",
+        "tagline": "Apportez votre propre contenu",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "Récapitulatif par AI",
+        "description": "Vous avez manqué une partie d'une émission en direct ? L'AI résume tout ce que vous avez manqué",
+        "tagline": "Ne manquez aucun moment",
+        "title": "Rattrapage"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "Ignorer",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
+        "description": "Regardez du contenu doublé dans votre langue",
+        "dubbed": "Doublé",
         "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "selectLanguage": "Choisir la langue",
+        "tagline": "Regardez dans n'importe quelle langue",
+        "title": "Doublage AI"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "Sous-titres hébreu-anglais mixtes qui s'adaptent à votre niveau",
+        "tagline": "L'hébreu rencontre l'anglais",
+        "title": "Engrew"
+      },
+      "getStarted": "Commencer",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "Appuyez sur un personnage pour en savoir plus",
+        "description": "Appuyez sur des personnages, explorez des scènes et interagissez avec ce que vous regardez",
+        "tagline": "Votre TV vous répond",
+        "title": "Fonctionnalités interactives"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "Mettez en pause n'importe quelle scène et demandez à l'AI des informations sur les acteurs, les références ou le contexte culturel",
+        "tagline": "Curieux ? Demandez simplement",
+        "title": "Pause et Question"
+      },
+      "personalization": {
+        "done": "Terminé",
+        "genres": "Genres favoris",
+        "hasChildren": "J'ai des enfants",
+        "languages": "Langues du contenu",
+        "subtitle": "Aidez-nous à personnaliser votre expérience",
+        "title": "Presque là !"
+      },
+      "skip": "Passer le tour",
+      "subtitles": {
+        "description": "Appuyez sur n'importe quel mot pour une traduction, une prononciation et un contexte instantanés",
+        "tagline": "Sous-titres interactifs",
+        "title": "Sous-titres intelligents"
+      },
+      "title": "Tour des fonctionnalités",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "Correct !",
+        "description": "L'AI génère des quiz en direct à partir de ce que vous regardez — rivalisez et apprenez",
+        "sampleQuestion": "Qui a réalisé cet épisode ?",
+        "tagline": "Jouez pendant que vous regardez",
+        "title": "Quiz en direct",
+        "tryAgain": "Réessayer"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "Essayez maintenant",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "Créez des avatars personnalisés pour votre famille",
+        "tagline": "Qui suis-je ?",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "La création d'avatars est disponible sur mobile"
       }
     },
     "demo": {
@@ -7618,6 +7652,18 @@
       "byoc": "Mes Sources de Contenu",
       "replayTour": "Revoir la visite des fonctionnalités",
       "help": "Aide"
+    },
+    "downloads": {
+      "title": "Telechargements",
+      "quality": "Qualite de telechargement",
+      "qualitySd": "Standard (SD)",
+      "qualityHd": "Haute definition (HD)",
+      "qualityFhd": "Full HD (FHD)",
+      "sizeHintSd": "Utilise moins d'espace",
+      "sizeHintHd": "Recommande",
+      "sizeHintFhd": "Meilleure qualite, fichiers plus volumineux",
+      "network": "Reseau",
+      "allowCellular": "Telecharger en cellulaire"
     }
   },
   "familyControls": {

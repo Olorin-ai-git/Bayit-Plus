@@ -14,8 +14,11 @@ struct TVFeatureTourView: View {
 
             VStack(spacing: TVDesignTokens.Spacing.lg) {
                 topBar
+                    .focusSection()
                 cardContent
+                    .focusSection()
                 bottomControls
+                    .focusSection()
             }
         }
         .onAppear {

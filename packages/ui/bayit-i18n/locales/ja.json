@@ -4337,7 +4337,10 @@
     "downloadAll": "すべてダウンロード",
     "play": "オフラインで再生",
     "size": "{{size}} MB",
-    "active": "アクティブなダウンロード"
+    "active": "アクティブなダウンロード",
+    "browseVod": "VODを閲覧",
+    "storageLow": "ストレージが不足しています。ダウンロードの削除を検討してください。",
+    "storageCritical": "ダウンロードに十分なストレージがありません。先に空き容量を確保してください。"
   },
   "dubbing": {
     "title": "ライブ吹き替え",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "完了",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "IPTV、Plex、YouTubeをインポート — Bayit+ AIですべてのコンテンツを一元管理",
+        "integrated": "すべてのコンテンツを一か所に",
+        "tagline": "自分のコンテンツを持ち込もう",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "AIによる振り返り",
+        "description": "ライブ番組の一部を見逃しましたか？AIが見逃した内容をすべて要約します",
+        "tagline": "見逃しゼロへ",
+        "title": "キャッチアップ"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "閉じる",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
-        "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "description": "自分の言語に吹き替えられたコンテンツを視聴",
+        "dubbed": "吹き替え",
+        "original": "オリジナル",
+        "selectLanguage": "言語を選択",
+        "tagline": "どの言語でも視聴できる",
+        "title": "AI吹き替え"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "あなたのレベルに合わせて変わるヘブライ語・英語混合字幕",
+        "tagline": "ヘブライ語と英語の融合",
+        "title": "Engrew"
+      },
+      "getStarted": "はじめる",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "キャラクターをタップして詳細を確認",
+        "description": "キャラクターをタップし、シーンを探索し、視聴中のコンテンツとインタラクト",
+        "tagline": "テレビが話しかけてくる",
+        "title": "インタラクティブ機能"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "任意のシーンで一時停止し、俳優・参照・文化的背景についてAIに質問",
+        "tagline": "気になる？聞いてみよう",
+        "title": "一時停止して質問"
+      },
+      "personalization": {
+        "done": "完了",
+        "genres": "好きなジャンル",
+        "hasChildren": "子どもがいる",
+        "languages": "コンテンツの言語",
+        "subtitle": "体験をパーソナライズするためにご協力ください",
+        "title": "もう少しで完了！"
+      },
+      "skip": "ツアーをスキップ",
+      "subtitles": {
+        "description": "任意の単語をタップして即座に翻訳・発音・文脈を確認",
+        "tagline": "インタラクティブ字幕",
+        "title": "スマート字幕"
+      },
+      "title": "機能ツアー",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "正解！",
+        "description": "AIが視聴中のコンテンツからリアルタイムでトリビア問題を生成 — 競い合って学ぼう",
+        "sampleQuestion": "このエピソードを監督したのは誰ですか？",
+        "tagline": "視聴しながら遊ぼう",
+        "title": "ライブトリビア",
+        "tryAgain": "もう一度"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "今すぐ試す",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "家族のためのパーソナライズされたアバターを作成",
+        "tagline": "私は誰？",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "アバター作成はモバイルで利用可能"
       }
     },
     "demo": {
@@ -7600,6 +7634,18 @@
       "byoc": "マイコンテンツソース",
       "replayTour": "機能ツアーをもう一度見る",
       "help": "ヘルプ"
+    },
+    "downloads": {
+      "title": "ダウンロード",
+      "quality": "ダウンロード品質",
+      "qualitySd": "標準 (SD)",
+      "qualityHd": "高画質 (HD)",
+      "qualityFhd": "フルHD (FHD)",
+      "sizeHintSd": "容量が少ない",
+      "sizeHintHd": "推奨",
+      "sizeHintFhd": "最高品質、ファイルサイズ大",
+      "network": "ネットワーク",
+      "allowCellular": "モバイルデータでダウンロード"
     }
   },
   "familyControls": {

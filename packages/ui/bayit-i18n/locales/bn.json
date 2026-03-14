@@ -4337,7 +4337,10 @@
     "downloadAll": "সব ডাউনলোড করুন",
     "play": "অফলাইনে চালান",
     "size": "{{size}} MB",
-    "active": "সক্রিয় ডাউনলোড"
+    "active": "সক্রিয় ডাউনলোড",
+    "browseVod": "VOD ব্রাউজ করুন",
+    "storageLow": "স্টোরেজ কমে যাচ্ছে। কিছু ডাউনলোড মুছে ফেলার কথা ভাবুন।",
+    "storageCritical": "ডাউনলোডের জন্য যথেষ্ট স্টোরেজ নেই। আগে জায়গা খালি করুন।"
   },
   "dubbing": {
     "title": "লাইভ ডাবিং",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "সম্পন্ন",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "IPTV, Plex এবং YouTube আমদানি করুন — Bayit+ AI দিয়ে আপনার সমস্ত কন্টেন্ট",
+        "integrated": "সমস্ত কন্টেন্ট, এক জায়গায়",
+        "tagline": "আপনার নিজস্ব কন্টেন্ট আনুন",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "AI-চালিত সারসংক্ষেপ",
+        "description": "লাইভ শোর কিছু অংশ মিস করেছেন? AI আপনার মিস করা সব কিছু সারসংক্ষেপ করে",
+        "tagline": "কোনো মুহূর্ত মিস করবেন না",
+        "title": "ক্যাচ আপ"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "বন্ধ করুন",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
-        "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "description": "আপনার ভাষায় ডাব করা কন্টেন্ট দেখুন",
+        "dubbed": "ডাব করা",
+        "original": "মূল",
+        "selectLanguage": "ভাষা নির্বাচন করুন",
+        "tagline": "যেকোনো ভাষায় দেখুন",
+        "title": "AI ডাবিং"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "মিশ্রিত হিব্রু-ইংরেজি সাবটাইটেল যা আপনার স্তর অনুযায়ী মানিয়ে নেয়",
+        "tagline": "হিব্রু ইংরেজির সাথে মিলিত হয়",
+        "title": "Engrew"
+      },
+      "getStarted": "শুরু করুন",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "আরও জানতে একটি চরিত্রে ট্যাপ করুন",
+        "description": "চরিত্রগুলিতে ট্যাপ করুন, দৃশ্যগুলি অন্বেষণ করুন এবং আপনি যা দেখছেন তার সাথে ইন্টারঅ্যাক্ট করুন",
+        "tagline": "আপনার টিভি উত্তর দেয়",
+        "title": "ইন্টারেক্টিভ বৈশিষ্ট্য"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "যেকোনো দৃশ্য বিরতি দিন এবং অভিনেতা, রেফারেন্স বা সাংস্কৃতিক প্রেক্ষাপট সম্পর্কে AI কে জিজ্ঞেস করুন",
+        "tagline": "কৌতূহলী? শুধু জিজ্ঞেস করুন",
+        "title": "বিরতি ও জিজ্ঞেস করুন"
+      },
+      "personalization": {
+        "done": "সম্পন্ন",
+        "genres": "পছন্দের ঘরানা",
+        "hasChildren": "আমার সন্তান আছে",
+        "languages": "কন্টেন্টের ভাষা",
+        "subtitle": "আপনার অভিজ্ঞতা ব্যক্তিগতকৃত করতে আমাদের সাহায্য করুন",
+        "title": "প্রায় হয়ে গেছে!"
+      },
+      "skip": "ট্যুর এড়িয়ে যান",
+      "subtitles": {
+        "description": "তাৎক্ষণিক অনুবাদ, উচ্চারণ এবং প্রেক্ষাপটের জন্য যেকোনো শব্দ ট্যাপ করুন",
+        "tagline": "ইন্টারেক্টিভ সাবটাইটেল",
+        "title": "স্মার্ট সাবটাইটেল"
+      },
+      "title": "ফিচার ট্যুর",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "সঠিক!",
+        "description": "AI আপনি যা দেখছেন তা থেকে লাইভ ট্রিভিয়া তৈরি করে — প্রতিযোগিতা করুন এবং শিখুন",
+        "sampleQuestion": "এই পর্বটি কে পরিচালনা করেছেন?",
+        "tagline": "দেখার সময় খেলুন",
+        "title": "লাইভ ট্রিভিয়া",
+        "tryAgain": "আবার চেষ্টা করুন"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "এখনই চেষ্টা করুন",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "আপনার পরিবারের জন্য ব্যক্তিগতকৃত অ্যাভাটার তৈরি করুন",
+        "tagline": "আমি কে?",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "অ্যাভাটার তৈরি মোবাইলে পাওয়া যায়"
       }
     },
     "demo": {
@@ -7614,6 +7648,18 @@
       "byoc": "আমার কন্টেন্ট উৎস",
       "replayTour": "ফিচার ট্যুর আবার দেখুন",
       "help": "সাহায্য"
+    },
+    "downloads": {
+      "title": "ডাউনলোড",
+      "quality": "ডাউনলোড কোয়ালিটি",
+      "qualitySd": "স্ট্যান্ডার্ড (SD)",
+      "qualityHd": "হাই ডেফিনিশন (HD)",
+      "qualityFhd": "ফুল HD (FHD)",
+      "sizeHintSd": "কম স্টোরেজ ব্যবহার",
+      "sizeHintHd": "প্রস্তাবিত",
+      "sizeHintFhd": "সেরা মান, বড় ফাইল",
+      "network": "নেটওয়ার্ক",
+      "allowCellular": "সেলুলারে ডাউনলোড করুন"
     }
   },
   "familyControls": {

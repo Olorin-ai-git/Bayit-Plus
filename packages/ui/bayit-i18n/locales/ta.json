@@ -4337,7 +4337,10 @@
     "downloadAll": "அனைத்தையும் பதிவிறக்கு",
     "play": "ஆஃப்லைனில் இயக்கு",
     "size": "{{size}} MB",
-    "active": "செயலில் உள்ள பதிவிறக்கங்கள்"
+    "active": "செயலில் உள்ள பதிவிறக்கங்கள்",
+    "browseVod": "VOD உலாவுக",
+    "storageLow": "சேமிப்பு குறைவாக உள்ளது. சில பதிவிறக்கங்களை நீக்க பரிசீலிக்கவும்.",
+    "storageCritical": "பதிவிறக்க போதுமான சேமிப்பு இல்லை. முதலில் இடத்தை காலி செய்யுங்கள்."
   },
   "dubbing": {
     "title": "நேரடி டப்பிங்",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "முடிந்தது",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "IPTV, Plex மற்றும் YouTube இறக்குமதி செய்யுங்கள் — Bayit+ AI உடன் உங்கள் அனைத்து உள்ளடக்கமும்",
+        "integrated": "அனைத்து உள்ளடக்கமும், ஒரே இடத்தில்",
+        "tagline": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "AI-இயக்கும் சுருக்கம்",
+        "description": "நேரலை நிகழ்ச்சியின் ஒரு பகுதியை தவறவிட்டீர்களா? AI தவறவிட்ட அனைத்தையும் சுருக்கமாக கூறுகிறது",
+        "tagline": "எந்த தருணத்தையும் தவறவிடாதீர்கள்",
+        "title": "கேட்ச் அப்"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "மூடு",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
-        "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "description": "உங்கள் மொழியில் டப் செய்யப்பட்ட உள்ளடக்கத்தை பாருங்கள்",
+        "dubbed": "டப் செய்யப்பட்டது",
+        "original": "மூலம்",
+        "selectLanguage": "மொழியை தேர்ந்தெடுக்கவும்",
+        "tagline": "எந்த மொழியிலும் பாருங்கள்",
+        "title": "AI டப்பிங்"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "உங்கள் நிலைக்கு ஏற்ப மாறும் கலந்த ஹீப்ரு-ஆங்கில வசனங்கள்",
+        "tagline": "ஹீப்ரு ஆங்கிலத்தை சந்திக்கிறது",
+        "title": "Engrew"
+      },
+      "getStarted": "தொடங்குங்கள்",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "மேலும் அறிய ஒரு கதாபாத்திரத்தை தட்டவும்",
+        "description": "கதாபாத்திரங்களை தட்டவும், காட்சிகளை ஆராயுங்கள், நீங்கள் பார்ப்பதுடன் தொடர்பு கொள்ளுங்கள்",
+        "tagline": "உங்கள் டிவி திரும்பி பேசுகிறது",
+        "title": "ஊடாடும் அம்சங்கள்"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "எந்த காட்சியையும் நிறுத்தி நடிகர்கள், குறிப்புகள் அல்லது கலாச்சார சூழல் பற்றி AI யிடம் கேளுங்கள்",
+        "tagline": "ஆர்வமா? கேளுங்கள்",
+        "title": "நிறுத்தி கேளுங்கள்"
+      },
+      "personalization": {
+        "done": "முடிந்தது",
+        "genres": "விருப்பமான வகைகள்",
+        "hasChildren": "என்னிடம் குழந்தைகள் உள்ளனர்",
+        "languages": "உள்ளடக்க மொழிகள்",
+        "subtitle": "உங்கள் அனுபவத்தை தனிப்பயனாக்க உதவுங்கள்",
+        "title": "கிட்டத்தட்ட முடிந்தது!"
+      },
+      "skip": "சுற்றுப்பயணத்தை தவிர்க்கவும்",
+      "subtitles": {
+        "description": "உடனடி மொழிபெயர்ப்பு, உச்சரிப்பு மற்றும் சூழலுக்கு எந்த வார்த்தையையும் தட்டவும்",
+        "tagline": "ஊடாடும் வசனங்கள்",
+        "title": "ஸ்மார்ட் வசனங்கள்"
+      },
+      "title": "அம்சம் சுற்றுப்பயணம்",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "சரி!",
+        "description": "நீங்கள் பார்ப்பதிலிருந்து AI நேரடி ட்ரிவியா உருவாக்குகிறது — போட்டியிடுங்கள் மற்றும் கற்றுக்கொள்ளுங்கள்",
+        "sampleQuestion": "இந்த எபிசோடை யார் இயக்கினார்?",
+        "tagline": "பார்க்கும்போது விளையாடுங்கள்",
+        "title": "நேரடி ட்ரிவியா",
+        "tryAgain": "மீண்டும் முயற்சிக்கவும்"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "இப்போது முயற்சிக்கவும்",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "உங்கள் குடும்பத்திற்காக தனிப்பயனாக்கப்பட்ட அவதாரங்களை உருவாக்கவும்",
+        "tagline": "நான் யார்?",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "அவதார் உருவாக்கம் மொபைலில் கிடைக்கும்"
       }
     },
     "demo": {
@@ -7614,6 +7648,18 @@
       "byoc": "எனது உள்ளடக்க ஆதாரங்கள்",
       "replayTour": "அம்சச் சுற்றுப் பயணத்தை மீண்டும் பார்க்கவும்",
       "help": "உதவி"
+    },
+    "downloads": {
+      "title": "பதிவிறக்கங்கள்",
+      "quality": "பதிவிறக்க தரம்",
+      "qualitySd": "நிலையான (SD)",
+      "qualityHd": "உயர் வரையறை (HD)",
+      "qualityFhd": "முழு HD (FHD)",
+      "sizeHintSd": "குறைந்த சேமிப்பு",
+      "sizeHintHd": "பரிந்துரைக்கப்படுகிறது",
+      "sizeHintFhd": "சிறந்த தரம், பெரிய கோப்புகள்",
+      "network": "நெட்வொர்க்",
+      "allowCellular": "செல்லுலார் மூலம் பதிவிறக்கம்"
     }
   },
   "familyControls": {

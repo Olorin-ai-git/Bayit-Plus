@@ -4337,7 +4337,10 @@
     "downloadAll": "सभी डाउनलोड करें",
     "play": "ऑफ़लाइन चलाएं",
     "size": "{{size}} MB",
-    "active": "सक्रिय डाउनलोड"
+    "active": "सक्रिय डाउनलोड",
+    "browseVod": "VOD ब्राउज़ करें",
+    "storageLow": "स्टोरेज कम हो रहा है। कुछ डाउनलोड हटाने पर विचार करें।",
+    "storageCritical": "डाउनलोड के लिए पर्याप्त स्टोरेज नहीं है। पहले जगह खाली करें।"
   },
   "dubbing": {
     "title": "लाइव डबिंग",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "हो गया",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "IPTV, Plex और YouTube आयात करें — Bayit+ AI के साथ आपका सारा कंटेंट",
+        "integrated": "सारा कंटेंट, एक जगह",
+        "tagline": "अपना खुद का कंटेंट लाएं",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "AI-आधारित सारांश",
+        "description": "लाइव शो का कुछ हिस्सा छूट गया? AI ने जो छूटा उसे सारांशित करता है",
+        "tagline": "कोई पल न चूकें",
+        "title": "कैच अप"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "बंद करें",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
-        "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "description": "अपनी भाषा में डब किया गया कंटेंट देखें",
+        "dubbed": "डब किया हुआ",
+        "original": "मूल",
+        "selectLanguage": "भाषा चुनें",
+        "tagline": "किसी भी भाषा में देखें",
+        "title": "AI डबिंग"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "मिश्रित हिब्रू-अंग्रेज़ी सबटाइटल जो आपके स्तर के अनुसार ढलते हैं",
+        "tagline": "हिब्रू और अंग्रेज़ी का मिलन",
+        "title": "Engrew"
+      },
+      "getStarted": "शुरू करें",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "अधिक जानने के लिए किसी पात्र पर टैप करें",
+        "description": "पात्रों पर टैप करें, दृश्य एक्सप्लोर करें और जो देख रहे हैं उसके साथ इंटरैक्ट करें",
+        "tagline": "आपका टीवी जवाब देता है",
+        "title": "इंटरैक्टिव सुविधाएं"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "कोई भी दृश्य रोकें और AI से अभिनेताओं, संदर्भों या सांस्कृतिक पृष्ठभूमि के बारे में पूछें",
+        "tagline": "जिज्ञासु हैं? बस पूछें",
+        "title": "रोकें और पूछें"
+      },
+      "personalization": {
+        "done": "हो गया",
+        "genres": "पसंदीदा शैलियां",
+        "hasChildren": "मेरे बच्चे हैं",
+        "languages": "कंटेंट भाषाएं",
+        "subtitle": "अपना अनुभव वैयक्तिकृत करने में हमारी सहायता करें",
+        "title": "लगभग हो गया!"
+      },
+      "skip": "टूर छोड़ें",
+      "subtitles": {
+        "description": "तत्काल अनुवाद, उच्चारण और संदर्भ के लिए किसी भी शब्द पर टैप करें",
+        "tagline": "इंटरैक्टिव सबटाइटल",
+        "title": "स्मार्ट सबटाइटल"
+      },
+      "title": "फीचर टूर",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "सही!",
+        "description": "AI आप जो देख रहे हैं उससे लाइव ट्रिविया बनाता है — प्रतिस्पर्धा करें और सीखें",
+        "sampleQuestion": "इस एपिसोड का निर्देशन किसने किया?",
+        "tagline": "देखते हुए खेलें",
+        "title": "लाइव ट्रिविया",
+        "tryAgain": "पुनः प्रयास करें"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "अभी आज़माएं",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "अपने परिवार के लिए व्यक्तिगत अवतार बनाएं",
+        "tagline": "मैं कौन हूं?",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "अवतार निर्माण मोबाइल पर उपलब्ध है"
       }
     },
     "demo": {
@@ -7614,6 +7648,18 @@
       "byoc": "मेरे कंटेंट स्रोत",
       "replayTour": "फीचर टूर दोबारा देखें",
       "help": "मदद"
+    },
+    "downloads": {
+      "title": "डाउनलोड",
+      "quality": "डाउनलोड गुणवत्ता",
+      "qualitySd": "मानक (SD)",
+      "qualityHd": "उच्च गुणवत्ता (HD)",
+      "qualityFhd": "फुल HD (FHD)",
+      "sizeHintSd": "कम स्टोरेज उपयोग",
+      "sizeHintHd": "अनुशंसित",
+      "sizeHintFhd": "सर्वश्रेष्ठ गुणवत्ता, बड़ी फ़ाइलें",
+      "network": "नेटवर्क",
+      "allowCellular": "सेलुलर पर डाउनलोड करें"
     }
   },
   "familyControls": {

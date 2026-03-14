@@ -4337,7 +4337,10 @@
     "downloadAll": "הורד הכל",
     "play": "השמע במצב לא מקוון",
     "size": "{{size}} MB",
-    "active": "הורדות פעילות"
+    "active": "הורדות פעילות",
+    "browseVod": "עיון בתוכן VOD",
+    "storageLow": "האחסון עומד להיגמר. שקול למחוק הורדות.",
+    "storageCritical": "אין מספיק אחסון להורדה. פנה מקום קודם."
   },
   "dubbing": {
     "title": "דיבוב חי",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "סיום",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "ייבא IPTV, Plex ו-YouTube — כל התוכן שלך עם Bayit+ AI",
+        "integrated": "כל התוכן שלך, במקום אחד",
+        "tagline": "הבא את התוכן שלך",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "סיכום מבוסס AI",
+        "description": "פספסת חלק משידור חי? AI מסכם את כל מה שהחמצת",
+        "tagline": "לא תפספס שום רגע",
+        "title": "השלמת פערים"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "סגור",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
-        "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "description": "צפה בתוכן מדובב בשפה שלך",
+        "dubbed": "מדובב",
+        "original": "מקורי",
+        "selectLanguage": "בחר שפה",
+        "tagline": "צפה בכל שפה",
+        "title": "דיבוב AI"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "כתוביות מעורבות עברית-אנגלית המותאמות לרמתך",
+        "tagline": "עברית פוגשת אנגלית",
+        "title": "Engrew"
+      },
+      "getStarted": "התחל",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "הקש על דמות לקבלת מידע נוסף",
+        "description": "הקש על דמויות, חקור סצנות ותקיים אינטראקציה עם מה שאתה צופה",
+        "tagline": "הטלוויזיה שלך מגיבה",
+        "title": "תכונות אינטראקטיביות"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "עצור כל סצנה ושאל AI על שחקנים, אזכורים או הקשר תרבותי",
+        "tagline": "סקרן? פשוט שאל",
+        "title": "עצור ושאל"
+      },
+      "personalization": {
+        "done": "סיום",
+        "genres": "ז'אנרים מועדפים",
+        "hasChildren": "יש לי ילדים",
+        "languages": "שפות תוכן",
+        "subtitle": "עזור לנו להתאים את החוויה שלך",
+        "title": "כמעט שם!"
+      },
+      "skip": "דלג על הסיור",
+      "subtitles": {
+        "description": "הקש על כל מילה לתרגום, הגייה והקשר מיידיים",
+        "tagline": "כתוביות אינטראקטיביות",
+        "title": "כתוביות חכמות"
+      },
+      "title": "סיור בתכונות",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "נכון!",
+        "description": "AI מייצר טריוויה חיה ממה שאתה צופה — התחרה ולמד",
+        "sampleQuestion": "מי ביים את הפרק הזה?",
+        "tagline": "שחק תוך כדי צפייה",
+        "title": "טריוויה חיה",
+        "tryAgain": "נסה שוב"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "נסה עכשיו",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "צור אוואטרים מותאמים אישית למשפחתך",
+        "tagline": "מי אני?",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "יצירת אוואטר זמינה במובייל"
       }
     },
     "demo": {
@@ -5857,7 +5891,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פלוס",
@@ -7614,6 +7652,18 @@
       "byoc": "מקורות התוכן שלי",
       "replayTour": "הצג מחדש את סיור התכונות",
       "help": "עזרה"
+    },
+    "downloads": {
+      "title": "הורדות",
+      "quality": "איכות הורדה",
+      "qualitySd": "רגיל (SD)",
+      "qualityHd": "איכות גבוהה (HD)",
+      "qualityFhd": "Full HD (FHD)",
+      "sizeHintSd": "פחות אחסון",
+      "sizeHintHd": "מומלץ",
+      "sizeHintFhd": "האיכות הטובה ביותר, קבצים גדולים",
+      "network": "רשת",
+      "allowCellular": "הורדה בסלולר"
     }
   },
   "familyControls": {

@@ -4337,7 +4337,10 @@
     "downloadAll": "Download All",
     "play": "Play Offline",
     "size": "{{size}} MB",
-    "active": "Active Downloads"
+    "active": "Active Downloads",
+    "browseVod": "Browse VOD",
+    "storageLow": "Storage is running low. Consider deleting some downloads.",
+    "storageCritical": "Not enough storage to download. Free up space first."
   },
   "dubbing": {
     "title": "Live Dubbing",
@@ -5579,12 +5582,14 @@
     "tour": {
       "done": "Done",
       "byoc": {
+        "description": "Import IPTV, Plex, and YouTube -- all your content with Bayit+ AI",
         "integrated": "All your content, one place",
         "tagline": "Bring your own content",
         "title": "BYOC"
       },
       "catchup": {
         "aiSummary": "AI-powered recap",
+        "description": "Missed part of a live show? AI summarizes everything you missed",
         "tagline": "Never miss a moment",
         "title": "Catch Up"
       },
@@ -5594,18 +5599,47 @@
         "dubbed": "Dubbed",
         "original": "Original",
         "selectLanguage": "Select Language",
+        "tagline": "Watch in any language",
         "title": "AI Dubbing"
+      },
+      "engrew": {
+        "description": "Blended Hebrew-English subtitles that adapt to your level",
+        "tagline": "Hebrew meets English",
+        "title": "Engrew"
       },
       "getStarted": "Get Started",
       "interaction": {
         "clickCharacter": "Tap a character to learn more",
+        "description": "Tap characters, explore scenes, and interact with what you watch",
+        "tagline": "Your TV talks back",
         "title": "Interactive Features"
       },
+      "pauseAndAsk": {
+        "description": "Pause any scene and ask AI about actors, references, or cultural context",
+        "tagline": "Curious? Just ask",
+        "title": "Pause & Ask"
+      },
+      "personalization": {
+        "done": "Done",
+        "genres": "Favorite Genres",
+        "hasChildren": "I have children",
+        "languages": "Content Languages",
+        "subtitle": "Help us personalize your experience",
+        "title": "Almost There!"
+      },
       "skip": "Skip Tour",
+      "subtitles": {
+        "description": "Tap any word for instant translation, pronunciation, and context",
+        "tagline": "Interactive subtitles",
+        "title": "Smart Subtitles"
+      },
       "title": "Feature Tour",
       "trivia": {
         "correct": "Correct!",
+        "description": "AI generates live trivia from what you are watching -- compete and learn",
         "sampleQuestion": "Who directed this episode?",
+        "tagline": "Play while you watch",
+        "title": "Live Trivia",
         "tryAgain": "Try Again"
       },
       "tryItNow": "Try It Now",
@@ -5857,7 +5891,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -7614,6 +7652,18 @@
       "byoc": "My Content Sources",
       "replayTour": "Replay Feature Tour",
       "help": "Help"
+    },
+    "downloads": {
+      "title": "Downloads",
+      "quality": "Download Quality",
+      "qualitySd": "Standard (SD)",
+      "qualityHd": "High Definition (HD)",
+      "qualityFhd": "Full HD (FHD)",
+      "sizeHintSd": "Uses less storage",
+      "sizeHintHd": "Recommended",
+      "sizeHintFhd": "Best quality, largest files",
+      "network": "Network",
+      "allowCellular": "Download over cellular"
     }
   },
   "familyControls": {

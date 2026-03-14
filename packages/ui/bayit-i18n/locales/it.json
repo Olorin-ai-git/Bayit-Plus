@@ -4337,7 +4337,10 @@
     "downloadAll": "Scarica tutto",
     "play": "Riproduci offline",
     "size": "{{size}} MB",
-    "active": "Download attivi"
+    "active": "Download attivi",
+    "browseVod": "Sfoglia VOD",
+    "storageLow": "Lo spazio di archiviazione si sta esaurendo. Considera di eliminare alcuni download.",
+    "storageCritical": "Spazio insufficiente per il download. Libera spazio prima."
   },
   "dubbing": {
     "title": "Doppiaggio live",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "Fine",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "Importa IPTV, Plex e YouTube — tutti i tuoi contenuti con Bayit+ AI",
+        "integrated": "Tutti i tuoi contenuti in un unico posto",
+        "tagline": "Porta i tuoi contenuti",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "Riepilogo con AI",
+        "description": "Hai perso parte di un programma in diretta? L'AI riassume tutto ciò che hai perso",
+        "tagline": "Non perderti nessun momento",
+        "title": "Recupero"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "Ignora",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
-        "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "description": "Guarda contenuti doppiati nella tua lingua",
+        "dubbed": "Doppiato",
+        "original": "Originale",
+        "selectLanguage": "Seleziona lingua",
+        "tagline": "Guarda in qualsiasi lingua",
+        "title": "Doppiaggio AI"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "Sottotitoli misti ebraico-inglese che si adattano al tuo livello",
+        "tagline": "L'ebraico incontra l'inglese",
+        "title": "Engrew"
+      },
+      "getStarted": "Inizia",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "Tocca un personaggio per saperne di più",
+        "description": "Tocca i personaggi, esplora le scene e interagisci con quello che guardi",
+        "tagline": "La tua TV ti risponde",
+        "title": "Funzioni interattive"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "Metti in pausa qualsiasi scena e chiedi all'AI degli attori, dei riferimenti o del contesto culturale",
+        "tagline": "Curioso? Chiedi pure",
+        "title": "Pausa e Chiedi"
+      },
+      "personalization": {
+        "done": "Fine",
+        "genres": "Generi preferiti",
+        "hasChildren": "Ho dei figli",
+        "languages": "Lingue dei contenuti",
+        "subtitle": "Aiutaci a personalizzare la tua esperienza",
+        "title": "Ci siamo quasi!"
+      },
+      "skip": "Salta il tour",
+      "subtitles": {
+        "description": "Tocca qualsiasi parola per traduzione, pronuncia e contesto immediati",
+        "tagline": "Sottotitoli interattivi",
+        "title": "Sottotitoli intelligenti"
+      },
+      "title": "Tour delle funzionalità",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "Corretto!",
+        "description": "L'AI genera domande di trivia in tempo reale da quello che stai guardando — gareggia e impara",
+        "sampleQuestion": "Chi ha diretto questo episodio?",
+        "tagline": "Gioca mentre guardi",
+        "title": "Trivia in diretta",
+        "tryAgain": "Riprova"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "Prova ora",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "Crea avatar personalizzati per la tua famiglia",
+        "tagline": "Chi sono?",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "La creazione di avatar è disponibile su mobile"
       }
     },
     "demo": {
@@ -5857,7 +5891,11 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
+      "notIncluded": [
+        "Canali in diretta",
+        "Assistente AI",
+        "Visione offline"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -7614,6 +7652,18 @@
       "byoc": "Le Mie Fonti di Contenuto",
       "replayTour": "Rivedi il tour delle funzionalità",
       "help": "Aiuto"
+    },
+    "downloads": {
+      "title": "Download",
+      "quality": "Qualita download",
+      "qualitySd": "Standard (SD)",
+      "qualityHd": "Alta definizione (HD)",
+      "qualityFhd": "Full HD (FHD)",
+      "sizeHintSd": "Usa meno spazio",
+      "sizeHintHd": "Consigliato",
+      "sizeHintFhd": "Qualita migliore, file piu grandi",
+      "network": "Rete",
+      "allowCellular": "Scarica con dati mobili"
     }
   },
   "familyControls": {

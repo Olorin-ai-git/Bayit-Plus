@@ -4337,7 +4337,10 @@
     "downloadAll": "全部下载",
     "play": "离线播放",
     "size": "{{size}} MB",
-    "active": "活动下载"
+    "active": "活动下载",
+    "browseVod": "浏览点播",
+    "storageLow": "存储空间不足，请考虑删除一些下载内容。",
+    "storageCritical": "存储空间不足，无法下载。请先释放空间。"
   },
   "dubbing": {
     "title": "实时配音",
@@ -5579,41 +5582,72 @@
     "tour": {
       "done": "完成",
       "byoc": {
-        "integrated": "All your content, one place",
-        "tagline": "Bring your own content",
+        "description": "导入 IPTV、Plex 和 YouTube — 借助 Bayit+ AI 整合您的所有内容",
+        "integrated": "所有内容，一处掌握",
+        "tagline": "带来您自己的内容",
         "title": "BYOC"
       },
       "catchup": {
-        "aiSummary": "AI-powered recap",
-        "tagline": "Never miss a moment",
-        "title": "Catch Up"
+        "aiSummary": "AI 智能回顾",
+        "description": "错过了直播节目的部分内容？AI 为您总结所有错过的内容",
+        "tagline": "不错过任何精彩",
+        "title": "追赶回放"
       },
-      "dismiss": "Dismiss",
+      "dismiss": "关闭",
       "dubbing": {
-        "description": "Watch content dubbed in your language",
-        "dubbed": "Dubbed",
-        "original": "Original",
-        "selectLanguage": "Select Language",
-        "title": "AI Dubbing"
+        "description": "观看以您的语言配音的内容",
+        "dubbed": "配音版",
+        "original": "原版",
+        "selectLanguage": "选择语言",
+        "tagline": "用任何语言观看",
+        "title": "AI 配音"
       },
-      "getStarted": "Get Started",
+      "engrew": {
+        "description": "自适应您水平的希伯来语-英语混合字幕",
+        "tagline": "希伯来语与英语相遇",
+        "title": "Engrew"
+      },
+      "getStarted": "开始使用",
       "interaction": {
-        "clickCharacter": "Tap a character to learn more",
-        "title": "Interactive Features"
+        "clickCharacter": "点击角色了解更多",
+        "description": "点击角色、探索场景并与您观看的内容互动",
+        "tagline": "您的电视为您答疑",
+        "title": "互动功能"
       },
-      "skip": "Skip Tour",
-      "title": "Feature Tour",
+      "pauseAndAsk": {
+        "description": "暂停任意场景，向 AI 询问演员、典故或文化背景信息",
+        "tagline": "好奇？直接问",
+        "title": "暂停提问"
+      },
+      "personalization": {
+        "done": "完成",
+        "genres": "喜好类型",
+        "hasChildren": "我有孩子",
+        "languages": "内容语言",
+        "subtitle": "帮助我们个性化您的体验",
+        "title": "即将完成！"
+      },
+      "skip": "跳过导览",
+      "subtitles": {
+        "description": "点击任意单词即可获得即时翻译、发音和语境解释",
+        "tagline": "互动字幕",
+        "title": "智能字幕"
+      },
+      "title": "功能导览",
       "trivia": {
-        "correct": "Correct!",
-        "sampleQuestion": "Who directed this episode?",
-        "tryAgain": "Try Again"
+        "correct": "回答正确！",
+        "description": "AI 根据您正在观看的内容实时生成问答题 — 竞赛并学习",
+        "sampleQuestion": "谁执导了这一集？",
+        "tagline": "边看边玩",
+        "title": "实时问答",
+        "tryAgain": "再试一次"
       },
-      "tryItNow": "Try It Now",
+      "tryItNow": "立即体验",
       "zehAni": {
-        "description": "Create personalized avatars for your family",
-        "tagline": "Who am I?",
+        "description": "为您的家人创建个性化头像",
+        "tagline": "我是谁？",
         "title": "Zeh Ani",
-        "tvNote": "Avatar creation available on mobile"
+        "tvNote": "头像创建功能在移动设备上可用"
       }
     },
     "demo": {
@@ -5851,8 +5885,17 @@
     },
     "basic": {
       "name": "免费",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -7609,6 +7652,18 @@
       "byoc": "我的内容源",
       "replayTour": "重播功能导览",
       "help": "帮助"
+    },
+    "downloads": {
+      "title": "下载",
+      "quality": "下载质量",
+      "qualitySd": "标清 (SD)",
+      "qualityHd": "高清 (HD)",
+      "qualityFhd": "全高清 (FHD)",
+      "sizeHintSd": "占用较少存储",
+      "sizeHintHd": "推荐",
+      "sizeHintFhd": "最佳质量，文件较大",
+      "network": "网络",
+      "allowCellular": "使用移动数据下载"
     }
   },
   "familyControls": {
