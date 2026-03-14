@@ -100,6 +100,8 @@ internal fun PlayerScreenDialogueOverlays(
         onPhaseAdvance = { phase -> onAdvancePauseAskPhase?.invoke(phase) },
         onResetPauseAsk = { onResetPauseAsk?.invoke() },
         onDismiss = { onDismissPauseAsk?.invoke() },
+        onResumePlayback = { state.exoPlayer?.play() },
+        onPausePlayback = { state.exoPlayer?.pause() },
     )
 
     InteractiveMomentOverlay(
