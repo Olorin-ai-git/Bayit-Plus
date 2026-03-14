@@ -50,7 +50,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 mfa, mobile_auth,
                                 channel_chat, chess, chess_chat, chess_invite, children, companion, content, content_taxonomy,
                                 cultures, device_pairing, device_pairing_proxy, devices,
-                                diagnostics, direct_messages, downloads, dubbing, epg,
+                                diagnostics, direct_messages, downloads, downloads_actions, dubbing, epg,
                                 extension_config,
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
@@ -296,6 +296,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         downloads.router, prefix=f"{prefix}/downloads", tags=["downloads"]
+    )
+    app.include_router(
+        downloads_actions.router, prefix=f"{prefix}/downloads", tags=["downloads"]
     )
     app.include_router(history.router, prefix=f"{prefix}/history", tags=["history"])
     app.include_router(

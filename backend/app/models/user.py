@@ -116,6 +116,8 @@ class UserResponse(BaseModel):
     # Payment status fields
     payment_pending: bool = False
     pending_plan_id: Optional[str] = None
+    # Household ownership (derived at runtime)
+    is_household_owner: bool = False
 
     class Config:
         from_attributes = True

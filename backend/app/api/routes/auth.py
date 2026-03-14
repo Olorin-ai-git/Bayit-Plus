@@ -15,6 +15,7 @@ from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
 from app.core.security import (create_access_token, get_current_active_user,
                                get_password_hash, verify_password)
+from app.models.household import Household
 from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
                              UserResponse, UserUpdate)
 from app.services.audit_logger import audit_logger
@@ -355,7 +356,10 @@ async def login(request: Request, credentials: UserLogin):
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: User = Depends(get_current_active_user)):
     """Get current user info."""
-    return current_user.to_response()
+    response = current_user.to_response()
+    household = await Household.find_one({"owner_id": str(current_user.id)})
+    response.is_household_owner = household is not None
+    return response
 
 
 @router.patch("/profile", response_model=UserResponse)
