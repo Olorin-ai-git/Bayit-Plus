@@ -7189,7 +7189,9 @@
       "controls": "控件",
       "speed": "播放 Speed",
       "liveTV": "直播电视",
-      "bufferSize": "缓冲区大小"
+      "bufferSize": "缓冲区大小",
+      "interactiveMoments": "互动时刻",
+      "interactiveMomentsDescription": "在电影播放期间显示角色互动时刻"
     },
     "quality": "画质",
     "subtitles": "字幕",
@@ -7536,6 +7538,7 @@
     "showVoiceControlFAB": "语音控制按钮",
     "showFeatureTips": "显示功能提示",
     "interactiveMoments": "互动时刻",
+    "interactiveMomentsDesc": "在电影播放期间显示角色互动时刻",
     "interactiveMomentsRequiresAvatar": "互动时刻需要Creatify头像角色。请先在头像设置中创建一个。",
     "interactiveMomentsNoAvatar": "互动模式不可用，因为未找到头像角色。电影将在没有互动时刻的情况下播放。",
     "account": "账户",

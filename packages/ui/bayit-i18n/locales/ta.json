@@ -7194,7 +7194,9 @@
       "controls": "கட்டுப்பாடுகள்",
       "speed": "இயக்கம் Speed",
       "liveTV": "நேரலை டிவி",
-      "bufferSize": "இடையக அளவு"
+      "bufferSize": "இடையக அளவு",
+      "interactiveMoments": "ஊடாடும் தருணங்கள்",
+      "interactiveMomentsDescription": "திரைப்படங்களின் போது ஊடாடும் கதாபாத்திர தருணங்களைக் காட்டு"
     },
     "quality": "தரம்",
     "subtitles": "வசனங்கள்",
@@ -7541,6 +7543,7 @@
     "showVoiceControlFAB": "குரல் கட்டுப்பாட்டு பொத்தான்",
     "showFeatureTips": "அம்ச குறிப்புகளைக் காட்டு",
     "interactiveMoments": "ஊடாடும் தருணங்கள்",
+    "interactiveMomentsDesc": "திரைப்படங்களின் போது ஊடாடும் கதாபாத்திர தருணங்களைக் காட்டு",
     "interactiveMomentsRequiresAvatar": "இன்டராக்டிவ் மோமென்ட்ஸ் Creatify அவதார் தேவை. அவதார் அமைப்புகளில் முதலில் ஒன்றை உருவாக்கவும்.",
     "interactiveMomentsNoAvatar": "அவதார் கண்டறியப்படாததால் இன்டராக்டிவ் மோட் கிடைக்காது. படம் இன்டராக்டிவ் மோமென்ட்ஸ் இல்லாமல் இயங்கும்.",
     "account": "கணக்கு",

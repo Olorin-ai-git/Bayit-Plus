@@ -7194,7 +7194,9 @@
       "controls": "नियंत्रण",
       "speed": "प्लेबैक Speed",
       "liveTV": "लाइव टीवी",
-      "bufferSize": "बफ़र आकार"
+      "bufferSize": "बफ़र आकार",
+      "interactiveMoments": "इंटरैक्टिव क्षण",
+      "interactiveMomentsDescription": "फिल्मों के दौरान इंटरैक्टिव चरित्र क्षण दिखाएं"
     },
     "quality": "गुणवत्ता",
     "subtitles": "सबटाइटल",
@@ -7541,6 +7543,7 @@
     "showVoiceControlFAB": "वॉयस कंट्रोल बटन",
     "showFeatureTips": "फीचर टिप्स दिखाएं",
     "interactiveMoments": "इंटरैक्टिव क्षण",
+    "interactiveMomentsDesc": "फिल्मों के दौरान इंटरैक्टिव चरित्र क्षण दिखाएं",
     "interactiveMomentsRequiresAvatar": "इंटरैक्टिव मोमेंट्स के लिए Creatify अवतार आवश्यक है। पहले अवतार सेटिंग्स में एक बनाएं।",
     "interactiveMomentsNoAvatar": "इंटरैक्टिव मोड उपलब्ध नहीं है क्योंकि कोई अवतार नहीं मिला। फिल्म इंटरैक्टिव मोमेंट्स के बिना चलेगी।",
     "account": "खाता",

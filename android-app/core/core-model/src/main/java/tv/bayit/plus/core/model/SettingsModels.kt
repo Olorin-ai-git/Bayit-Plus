@@ -77,6 +77,7 @@ data class PlaybackSettings(
     val skipCredits: Boolean = false,
     val playbackSpeed: Float = 1.0f,
     val hardwareAcceleration: Boolean = true,
+    val interactiveMomentsEnabled: Boolean = false,
 )
 
 @Serializable

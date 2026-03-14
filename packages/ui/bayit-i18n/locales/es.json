@@ -7194,7 +7194,9 @@
       "controls": "Controles",
       "speed": "Reproduccion Speed",
       "liveTV": "TV en vivo",
-      "bufferSize": "Tamano del bufer"
+      "bufferSize": "Tamano del bufer",
+      "interactiveMoments": "Momentos Interactivos",
+      "interactiveMomentsDescription": "Mostrar momentos interactivos con personajes durante peliculas"
     },
     "quality": "Calidad",
     "subtitles": "Subtítulos",
@@ -7541,6 +7543,7 @@
     "showVoiceControlFAB": "Botón de control de voz",
     "showFeatureTips": "Mostrar consejos",
     "interactiveMoments": "Momentos interactivos",
+    "interactiveMomentsDesc": "Mostrar momentos interactivos con personajes durante peliculas",
     "interactiveMomentsRequiresAvatar": "Los Momentos Interactivos requieren un avatar de Creatify. Crea uno en Configuracion de Avatar primero.",
     "interactiveMomentsNoAvatar": "El modo interactivo no esta disponible porque no se encontro un avatar. La pelicula se reproducira sin momentos interactivos.",
     "account": "Cuenta",

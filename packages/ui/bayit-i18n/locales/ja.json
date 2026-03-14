@@ -7180,7 +7180,9 @@
       "controls": "コントロール",
       "speed": "再生 Speed",
       "liveTV": "ライブTV",
-      "bufferSize": "バッファサイズ"
+      "bufferSize": "バッファサイズ",
+      "interactiveMoments": "インタラクティブモーメント",
+      "interactiveMomentsDescription": "映画再生中にインタラクティブなキャラクターモーメントを表示"
     },
     "quality": "品質",
     "subtitles": "字幕",
@@ -7527,6 +7529,7 @@
     "showVoiceControlFAB": "音声コントロールボタン",
     "showFeatureTips": "機能ヒントを表示",
     "interactiveMoments": "インタラクティブモーメント",
+    "interactiveMomentsDesc": "映画再生中にインタラクティブなキャラクターモーメントを表示",
     "interactiveMomentsRequiresAvatar": "インタラクティブモーメントにはCreatifyアバターが必要です。まずアバター設定で作成してください。",
     "interactiveMomentsNoAvatar": "アバターが見つからないためインタラクティブモードは利用できません。インタラクティブモーメントなしで再生されます。",
     "account": "アカウント",

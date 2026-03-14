@@ -7194,7 +7194,9 @@
       "controls": "নিয়ন্ত্রণ",
       "speed": "প্লেব্যাক Speed",
       "liveTV": "লাইভ টিভি",
-      "bufferSize": "বাফার আকার"
+      "bufferSize": "বাফার আকার",
+      "interactiveMoments": "ইন্টারেক্টিভ মুহূর্ত",
+      "interactiveMomentsDescription": "চলচ্চিত্রের সময় ইন্টারেক্টিভ চরিত্র মুহূর্ত দেখান"
     },
     "quality": "মান",
     "subtitles": "সাবটাইটেল",
@@ -7541,6 +7543,7 @@
     "showVoiceControlFAB": "ভয়েস কন্ট্রোল বাটন",
     "showFeatureTips": "ফিচার টিপস দেখান",
     "interactiveMoments": "ইন্টারেক্টিভ মুহূর্ত",
+    "interactiveMomentsDesc": "চলচ্চিত্রের সময় ইন্টারেক্টিভ চরিত্র মুহূর্ত দেখান",
     "interactiveMomentsRequiresAvatar": "ইন্টার্যাক্টিভ মোমেন্টস Creatify অ্যাভাটার প্রয়োজন। প্রথমে অ্যাভাটার সেটিংসে একটি তৈরি করুন।",
     "interactiveMomentsNoAvatar": "অ্যাভাটার পাওয়া যায়নি তাই ইন্টার্যাক্টিভ মোড উপলব্ধ নয়। চলচ্চিত্রটি ইন্টার্যাক্টিভ মোমেন্টস ছাড়াই চলবে।",
     "account": "অ্যাকাউন্ট",

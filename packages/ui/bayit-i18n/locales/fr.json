@@ -7198,7 +7198,9 @@
       "controls": "Controles",
       "speed": "Lecture Speed",
       "liveTV": "TV en direct",
-      "bufferSize": "Taille du tampon"
+      "bufferSize": "Taille du tampon",
+      "interactiveMoments": "Moments Interactifs",
+      "interactiveMomentsDescription": "Afficher les moments interactifs avec les personnages pendant les films"
     },
     "quality": "Qualité",
     "subtitles": "Sous-titres",
@@ -7545,6 +7547,7 @@
     "showVoiceControlFAB": "Bouton de commande vocale",
     "showFeatureTips": "Afficher les conseils",
     "interactiveMoments": "Moments interactifs",
+    "interactiveMomentsDesc": "Afficher les moments interactifs avec les personnages pendant les films",
     "interactiveMomentsRequiresAvatar": "Les Moments Interactifs necessitent un avatar Creatify. Creez-en un dans les Parametres d'Avatar d'abord.",
     "interactiveMomentsNoAvatar": "Le mode interactif n'est pas disponible car aucun avatar n'a ete trouve. Le film sera lu sans moments interactifs.",
     "account": "Compte",

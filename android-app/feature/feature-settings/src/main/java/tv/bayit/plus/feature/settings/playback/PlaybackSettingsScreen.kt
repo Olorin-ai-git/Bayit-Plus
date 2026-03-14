@@ -100,6 +100,7 @@ private fun PlaybackContent(state: PlaybackUiState.Success, onUpdate: (PlaybackS
         item { PlaybackToggle(bayitString("settings.playback.skipCredits"), bayitString("settings.playback.skipCreditsDescription"), s.skipCredits, saving) { onUpdate(s.copy(skipCredits = it)) } }
         item { SpeedSelect(speedOptions, s.playbackSpeed, saving) { onUpdate(s.copy(playbackSpeed = it)) } }
         item { PlaybackToggle(bayitString("settings.playback.hardwareAcceleration"), bayitString("settings.playback.hardwareAccelerationDescription"), s.hardwareAcceleration, saving) { onUpdate(s.copy(hardwareAcceleration = it)) } }
+        item { PlaybackToggle(bayitString("settings.playback.interactiveMoments"), bayitString("settings.playback.interactiveMomentsDescription"), s.interactiveMomentsEnabled, saving) { onUpdate(s.copy(interactiveMomentsEnabled = it)) } }
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
 }

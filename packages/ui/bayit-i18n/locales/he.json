@@ -7194,7 +7194,9 @@
       "controls": "בקרות",
       "speed": "הפעלה Speed",
       "liveTV": "שידור חי",
-      "bufferSize": "גודל מאגר"
+      "bufferSize": "גודל מאגר",
+      "interactiveMoments": "רגעים אינטראקטיביים",
+      "interactiveMomentsDescription": "הצג רגעים אינטראקטיביים עם דמויות במהלך סרטים"
     },
     "quality": "איכות",
     "subtitles": "כתוביות",
@@ -7541,6 +7543,7 @@
     "showVoiceControlFAB": "כפתור שליטה קולית",
     "showFeatureTips": "הצג טיפים לתכונות",
     "interactiveMoments": "רגעים אינטראקטיביים",
+    "interactiveMomentsDesc": "הצג רגעים אינטראקטיביים עם דמויות במהלך סרטים",
     "interactiveMomentsRequiresAvatar": "רגעים אינטראקטיביים דורשים אווטאר Creatify. צור אחד בהגדרות האווטאר תחילה.",
     "interactiveMomentsNoAvatar": "מצב אינטראקטיבי לא זמין כי לא נמצא אווטאר. הסרט יופעל ללא רגעים אינטראקטיביים.",
     "account": "חשבון",

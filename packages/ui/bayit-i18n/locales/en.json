@@ -7194,7 +7194,9 @@
       "controls": "Controls",
       "speed": "Playback Speed",
       "liveTV": "Live TV",
-      "bufferSize": "Buffer Size"
+      "bufferSize": "Buffer Size",
+      "interactiveMoments": "Interactive Moments",
+      "interactiveMomentsDescription": "Show interactive character moments during movies"
     },
     "quality": "Quality",
     "subtitles": "Subtitles",
@@ -7541,6 +7543,7 @@
     "showVoiceControlFAB": "Voice Control Button",
     "showFeatureTips": "Show Feature Tips",
     "interactiveMoments": "Interactive Moments",
+    "interactiveMomentsDesc": "Show interactive character moments during movies",
     "interactiveMomentsRequiresAvatar": "Interactive Moments requires a Creatify avatar persona. Create one in Avatar Settings first.",
     "interactiveMomentsNoAvatar": "Interactive mode is unavailable because no avatar persona was found. The movie will play without interactive moments.",
     "account": "Account",
