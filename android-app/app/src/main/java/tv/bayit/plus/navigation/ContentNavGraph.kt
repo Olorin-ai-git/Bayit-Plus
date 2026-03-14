@@ -29,7 +29,6 @@ import tv.bayit.plus.feature.vod.favorites.FavoritesRoute
 import tv.bayit.plus.feature.vod.playlist.PlaylistRoute
 import tv.bayit.plus.feature.vod.recordings.RecordingsRoute
 import tv.bayit.plus.feature.vod.series.SeriesDetailRoute
-import tv.bayit.plus.feature.discover.ui.DiscoverRoute
 import tv.bayit.plus.feature.vod.trending.TrendingRoute
 
 fun NavGraphBuilder.contentNavGraph(navController: NavController) {
@@ -79,29 +78,34 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
     }
     composable<Route.Discover> {
         DiscoverRoute(
-            onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
-            onNavigateToZehAni = { navController.navigate(Route.ZehAni) },
-        )
-    }
-    composable<Route.Search> {
-        SearchRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
-    }
-    composable<Route.Discover> {
-        DiscoverRoute(
             onNavigateToPlayer = { id, type ->
                 navController.navigate(Route.Player(contentId = id, contentType = type))
             },
             onNavigateToZehAni = { navController.navigate(Route.ZehAni) },
-            onNavigateToFeatureDetail = { featureId ->
-                when (featureId) {
+            onNavigateToFeatureDetail = { route ->
+                when (route) {
                     "glossary" -> navController.navigate(Route.Glossary)
-                    "llm_search" -> navController.navigate(Route.LlmSearch)
+                    "search" -> navController.navigate(Route.LlmSearch)
                     "chatbot" -> navController.navigate(Route.Chatbot)
-                    "interactive_mission" -> navController.navigate(Route.MissionsDashboard)
+                    "missions" -> navController.navigate(Route.MissionsDashboard)
+                    "live_tv" -> navController.navigate(Route.LiveTV)
+                    "epg" -> navController.navigate(Route.Epg)
                     else -> navController.navigate(Route.Search)
                 }
             },
+            onNavigateToFixRoute = { route ->
+                when (route) {
+                    "settings" -> navController.navigate(Route.Settings)
+                    "zehani" -> navController.navigate(Route.ZehAni)
+                    "profile" -> navController.navigate(Route.Profile)
+                    "byoc" -> navController.navigate(Route.BYOCSettings)
+                    else -> navController.navigate(Route.Settings)
+                }
+            },
         )
+    }
+    composable<Route.Search> {
+        SearchRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
     }
     composable<Route.Player> { entry ->
         val route = entry.toRoute<Route.Player>()

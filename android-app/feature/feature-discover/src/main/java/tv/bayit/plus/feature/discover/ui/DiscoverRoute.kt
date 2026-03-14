@@ -12,6 +12,7 @@ fun DiscoverRoute(
     onNavigateToFeatureDetail: (featureId: String) -> Unit = {},
     onNavigateToPlayer: (contentId: String, contentType: String) -> Unit = { _, _ -> },
     onNavigateToZehAni: () -> Unit = {},
+    onNavigateToFixRoute: (route: String) -> Unit = {},
     viewModel: DiscoverViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -32,10 +33,15 @@ fun DiscoverRoute(
                 is WalkthroughNavTarget.ZehAni ->
                     onNavigateToZehAni()
                 is WalkthroughNavTarget.DeepLink ->
-                    onNavigateToFeatureDetail(target.featureId)
+                    onNavigateToFeatureDetail(target.route)
             }
         },
-        onNavigateToPlayer = onNavigateToPlayer,
-        onNavigateToZehAni = onNavigateToZehAni,
+        onWatchDemo = { url ->
+            viewModel.showDemoVideo(url)
+        },
+        onDismissDemoVideo = {
+            viewModel.dismissDemoVideo()
+        },
+        onNavigateToFixRoute = onNavigateToFixRoute,
     )
 }

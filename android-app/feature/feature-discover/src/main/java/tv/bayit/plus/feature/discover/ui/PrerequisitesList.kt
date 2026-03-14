@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.discover.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,17 +13,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.discover.model.FeaturePrerequisite
 
-/**
- * Vertical list of unmet prerequisites, each shown as a warning icon with a label.
- */
 @Composable
 internal fun PrerequisitesList(
     prerequisites: List<FeaturePrerequisite>,
+    onFixPrerequisite: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -30,16 +30,28 @@ internal fun PrerequisitesList(
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         prerequisites.forEach { prerequisite ->
-            PrerequisiteRow(prerequisite = prerequisite)
+            PrerequisiteRow(
+                prerequisite = prerequisite,
+                onFix = onFixPrerequisite,
+            )
         }
     }
 }
 
 @Composable
-private fun PrerequisiteRow(prerequisite: FeaturePrerequisite) {
+private fun PrerequisiteRow(
+    prerequisite: FeaturePrerequisite,
+    onFix: (String) -> Unit,
+) {
+    val hasFix = prerequisite.fixRoute != null
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+        modifier = if (hasFix) {
+            Modifier.clickable { onFix(prerequisite.fixRoute!!) }
+        } else {
+            Modifier
+        },
     ) {
         Icon(
             imageVector = Icons.Filled.Warning,
@@ -50,7 +62,12 @@ private fun PrerequisiteRow(prerequisite: FeaturePrerequisite) {
         Text(
             text = bayitString(prerequisite.labelKey),
             style = MaterialTheme.typography.bodySmall,
-            color = DesignTokens.Colors.Text.secondary,
+            color = if (hasFix) {
+                DesignTokens.Colors.Primary.light
+            } else {
+                DesignTokens.Colors.Text.secondary
+            },
+            textDecoration = if (hasFix) TextDecoration.Underline else TextDecoration.None,
         )
     }
 }

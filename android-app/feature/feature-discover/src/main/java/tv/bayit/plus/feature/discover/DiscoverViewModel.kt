@@ -53,20 +53,31 @@ class DiscoverViewModel @Inject constructor(
         _uiState.update { it.copy(selectedFeature = null) }
     }
 
+    fun showDemoVideo(url: String) {
+        _uiState.update { it.copy(selectedFeature = null, demoVideoUrl = url) }
+    }
+
+    fun dismissDemoVideo() {
+        _uiState.update { it.copy(demoVideoUrl = null) }
+    }
+
     fun startWalkthrough(feature: DiscoverFeature): WalkthroughNavTarget? {
         val config = _uiState.value.configFor(feature.id)
         val walkthroughContentId = config?.walkthroughContentId
         val route = feature.deepLinkRoute
 
         val target = when {
-            route == "player" || route == "live_tv" -> {
+            route == "player" -> {
                 val contentId = walkthroughContentId ?: return null
-                val contentType = if (route == "live_tv") "live" else "movie"
-                WalkthroughNavTarget.Player(contentId, contentType)
+                WalkthroughNavTarget.Player(contentId, "movie")
             }
-            route == "epg" -> {
-                val contentId = walkthroughContentId ?: return null
-                WalkthroughNavTarget.Player(contentId, "live")
+            route == "live_tv" || route == "epg" -> {
+                val contentId = walkthroughContentId
+                if (contentId != null) {
+                    WalkthroughNavTarget.Player(contentId, "live")
+                } else {
+                    WalkthroughNavTarget.DeepLink(route, feature.id)
+                }
             }
             route == "zeh_ani" -> WalkthroughNavTarget.ZehAni
             route != null -> WalkthroughNavTarget.DeepLink(route, feature.id)
@@ -123,6 +134,7 @@ data class DiscoverUiState(
     val selectedFeature: DiscoverFeature? = null,
     val featureConfigs: Map<String, FeatureConfigDto> = emptyMap(),
     val availabilityStates: Map<String, FeatureAvailabilityState> = emptyMap(),
+    val demoVideoUrl: String? = null,
 ) {
     fun featuresForCategory(category: DiscoverCategory): List<DiscoverFeature> =
         DiscoverFeatureCatalog.features(category)

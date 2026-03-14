@@ -188,4 +188,9 @@ def register_routes(app: FastAPI) -> None:
     app.include_router(za_whatsapp.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(movie_interactions.router, prefix=prefix, tags=["movie-interactions"])
 
+    # Discover tab config (AI features hub)
+    from app.api.routes import discover, discover_characters
+    app.include_router(discover.router, prefix=f"{prefix}/discover", tags=["discover"])
+    app.include_router(discover_characters.router, prefix=f"{prefix}/discover", tags=["discover-characters"])
+
     logger.info("All AI feature routes registered with prefix %s", prefix)

@@ -15,18 +15,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.discover.DiscoverUiState
+import tv.bayit.plus.feature.discover.model.DiscoverFeature
 
 @Composable
 internal fun DiscoverScreen(
     uiState: DiscoverUiState,
-    onFeatureClick: (tv.bayit.plus.feature.discover.model.DiscoverFeature) -> Unit,
+    onFeatureClick: (DiscoverFeature) -> Unit,
     onDismissDetail: () -> Unit,
-    onStartWalkthrough: (tv.bayit.plus.feature.discover.model.DiscoverFeature) -> Unit,
-    onNavigateToPlayer: (String, String) -> Unit,
-    onNavigateToZehAni: () -> Unit,
+    onStartWalkthrough: (DiscoverFeature) -> Unit,
+    onWatchDemo: (String) -> Unit,
+    onDismissDemoVideo: () -> Unit,
+    onNavigateToFixRoute: (String) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (uiState.isLoading) {
@@ -48,9 +52,24 @@ internal fun DiscoverScreen(
                 config = uiState.configFor(feature.id),
                 onDismiss = onDismissDetail,
                 onStartWalkthrough = onStartWalkthrough,
-                onNavigateToPlayer = onNavigateToPlayer,
-                onNavigateToZehAni = onNavigateToZehAni,
+                onWatchDemo = onWatchDemo,
+                onNavigateToFixRoute = onNavigateToFixRoute,
             )
+        }
+
+        uiState.demoVideoUrl?.let { url ->
+            Dialog(
+                onDismissRequest = onDismissDemoVideo,
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = false,
+                ),
+            ) {
+                DemoVideoPlayerScreen(
+                    videoUrl = url,
+                    onDismiss = onDismissDemoVideo,
+                )
+            }
         }
     }
 }
@@ -58,7 +77,7 @@ internal fun DiscoverScreen(
 @Composable
 private fun DiscoverContent(
     uiState: DiscoverUiState,
-    onFeatureClick: (tv.bayit.plus.feature.discover.model.DiscoverFeature) -> Unit,
+    onFeatureClick: (DiscoverFeature) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
