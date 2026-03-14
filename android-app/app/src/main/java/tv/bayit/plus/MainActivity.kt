@@ -17,6 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
@@ -45,6 +47,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var lastVisitedRouteManager: LastVisitedRouteManager
 
     private val pendingDeepLink = MutableStateFlow<Route?>(null)
+    internal val splashFinished = MutableStateFlow(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,15 +64,19 @@ class MainActivity : ComponentActivity() {
                     val deepLink by pendingDeepLink.collectAsStateWithLifecycle()
 
                     LaunchedEffect(authState) {
+                        splashFinished.filter { it }.first()
                         when (authState) {
                             is AuthState.Unauthenticated -> {
                                 val userId = authService.currentUserId
                                 if (userId != null) lastVisitedRouteManager.clear(userId)
                                 navController.navigate(Route.Login) {
-                                    popUpTo(0) { inclusive = true }
+                                    popUpTo(Route.Splash) { inclusive = true }
                                 }
                             }
                             is AuthState.Authenticated -> {
+                                navController.navigate(Route.Home) {
+                                    popUpTo(Route.Splash) { inclusive = true }
+                                }
                                 if (pendingDeepLink.value == null) {
                                     val userId = authService.currentUserId
                                     if (userId != null) {

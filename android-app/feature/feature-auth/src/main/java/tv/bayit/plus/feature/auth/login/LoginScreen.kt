@@ -1,13 +1,17 @@
 package tv.bayit.plus.feature.auth.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
@@ -59,11 +64,23 @@ internal fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = bayitString("common.appName"),
-                style = MaterialTheme.typography.displayLarge,
-                color = DesignTokens.Colors.Primary.base,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = tv.bayit.plus.feature.auth.R.drawable.splash_logo,
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.size(DesignTokens.Spacing.xxxl),
+                )
+                Spacer(modifier = Modifier.width(DesignTokens.Spacing.sm))
+                Text(
+                    text = bayitString("common.appName"),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = DesignTokens.Colors.Primary.base,
+                )
+            }
 
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxxl))
 

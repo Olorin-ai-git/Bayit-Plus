@@ -50,17 +50,10 @@ fun NavGraphBuilder.authNavGraph(
     coroutineScope: CoroutineScope,
 ) {
     composable<Route.Splash> {
+        val activity = LocalContext.current as? tv.bayit.plus.MainActivity
         SplashRoute(
             onFinished = {
-                if (BuildConfig.DEBUG) {
-                    navController.navigate(Route.OnboardingIntro) {
-                        popUpTo(Route.Splash) { inclusive = true }
-                    }
-                } else {
-                    navController.navigate(Route.Home) {
-                        popUpTo(Route.Splash) { inclusive = true }
-                    }
-                }
+                activity?.splashFinished?.value = true
             },
         )
     }
