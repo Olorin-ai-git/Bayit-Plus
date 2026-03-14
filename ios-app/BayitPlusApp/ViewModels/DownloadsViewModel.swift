@@ -35,7 +35,16 @@ final class DownloadsViewModel {
         await downloadManager.retryDownload(id: download.id)
     }
 
+    func pauseDownload(_ download: LocalDownload) {
+        downloadManager.pauseDownload(id: download.id)
+    }
+
+    func resumeDownload(_ download: LocalDownload) async {
+        await downloadManager.resumeDownload(id: download.id)
+    }
+
     func clearAllDownloads() async {
+        downloadManager.clearAllResumeData()
         await downloadManager.clearAllDownloads()
     }
 

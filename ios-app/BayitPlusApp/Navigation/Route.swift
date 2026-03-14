@@ -43,6 +43,7 @@ public enum Route: Hashable {
     case audioSettings
     case accessibilitySettings
     case privacySettings
+    case downloadSettings
 
     // Content categories
     case children

@@ -37,6 +37,7 @@ extension Route {
         case .audioSettings: return "Audio"
         case .accessibilitySettings: return "Accessibility"
         case .privacySettings: return "Privacy"
+        case .downloadSettings: return "Downloads"
         case .children: return "Children"
         case .youngsters: return "Youngsters"
         case .judaism: return "Judaism"

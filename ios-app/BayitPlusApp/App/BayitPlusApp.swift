@@ -37,6 +37,7 @@ struct BayitPlusApp: App {
     @State var audioPlaybackManager: AudioPlaybackManager
     @State var downloadManager: DownloadManager
     @State var byocManager = BYOCSourceManager()
+    @State var networkMonitor = NetworkMonitor()
     @State var tooltipManager = TooltipManager(userId: "anonymous")
 
     init() {
@@ -142,6 +143,7 @@ struct BayitPlusApp: App {
                 .environment(castSessionManager)
                 .environment(audioPlaybackManager)
                 .environment(downloadManager)
+                .environment(networkMonitor)
                 .environment(byocManager)
                 .environment(tooltipManager)
                 .task {

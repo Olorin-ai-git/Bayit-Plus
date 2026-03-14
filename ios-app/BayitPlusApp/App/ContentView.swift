@@ -13,6 +13,7 @@ struct ContentView: View {
     @Environment(MediaPlayer.self) private var mediaPlayer
     @Environment(WidgetDataSyncService.self) private var widgetSync
     @Environment(DownloadManager.self) private var downloadManager
+    @Environment(NetworkMonitor.self) private var networkMonitor
     @Environment(LocalizationManager.self) private var localization
     @Environment(\.appConfiguration) private var appConfiguration
 
@@ -101,6 +102,13 @@ struct ContentView: View {
         .onChange(of: coordinator.selectedTab) { _, _ in
             guard let userId = authManager.user?.id else { return }
             coordinator.saveLastVisited(userId: userId)
+        }
+        .onChange(of: networkMonitor.isConnected) { wasConnected, isConnected in
+            if !isConnected, wasConnected, !coordinator.showingAuth,
+               !downloadManager.downloads.filter({ $0.status == .completed }).isEmpty
+            {
+                coordinator.selectedTab = .downloads
+            }
         }
         .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)

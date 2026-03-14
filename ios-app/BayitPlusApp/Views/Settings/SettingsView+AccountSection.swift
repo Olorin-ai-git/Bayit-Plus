@@ -23,6 +23,9 @@ extension SettingsView {
             navRow(icon: "hand.raised", title: localization.t("settings.privacyData")) {
                 coordinator.pushToCurrentTab(.privacySettings)
             }
+            navRow(icon: "arrow.down.circle", title: localization.t("settings.downloads.title")) {
+                coordinator.pushToCurrentTab(.downloadSettings)
+            }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

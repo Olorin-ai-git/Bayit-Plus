@@ -5,6 +5,7 @@ import SwiftUI
 /// Individual VOD content card with poster, title, and metadata
 struct VODCard: View {
     let item: ContentItem
+    var isDownloaded: Bool = false
     let onTap: () -> Void
 
     @Environment(LocalizationManager.self) private var localization
@@ -31,7 +32,7 @@ struct VODCard: View {
                         contentRatingBadge
                     }
                     .overlay(alignment: .topTrailing) {
-                        hebrewDubBadge
+                        if isDownloaded { downloadedBadge } else { hebrewDubBadge }
                     }
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -177,21 +178,13 @@ struct VODCard: View {
         }
     }
 
-    private var subtitle: String? {
-        var parts: [String] = []
-        if let year = item.year { parts.append(String(year)) }
-        if let duration = item.duration { parts.append(duration) }
-        return parts.isEmpty ? nil : parts.joined(separator: " | ")
-    }
-
-    private var aiLanguages: Set<String> {
-        var langs = Set<String>()
-        if item.availableSubtitleLanguages?.contains("he") == true {
-            langs.insert("he")
-        }
-        if item.availableSubtitleLanguages?.contains("en") == true {
-            langs.insert("en")
-        }
-        return langs
+    private var downloadedBadge: some View {
+        Image(systemName: "arrow.down.circle.fill")
+            .font(.system(size: DesignTokens.FontSize.sm))
+            .foregroundColor(.green)
+            .padding(4)
+            .background(Color.black.opacity(0.7))
+            .clipShape(Circle())
+            .padding(DesignTokens.Spacing.xs)
     }
 }

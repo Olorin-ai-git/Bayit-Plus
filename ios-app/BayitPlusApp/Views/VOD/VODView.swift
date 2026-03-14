@@ -6,6 +6,7 @@ import SwiftUI
 struct VODView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) var coordinator
+    @Environment(DownloadManager.self) var downloadManager
     @Environment(LocalizationManager.self) var localization
     @State private var viewModel: VODViewModel?
     @State private var continueWatchingItems: [WatchHistoryItem] = []
@@ -137,7 +138,7 @@ struct VODView: View {
     ) -> some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
             ForEach(items) { item in
-                VODCard(item: item) {
+                VODCard(item: item, isDownloaded: downloadManager.downloads.contains(where: { $0.contentId == item.id && $0.status == .completed })) {
                     navigateToItem(item)
                 }
                 .onAppear {

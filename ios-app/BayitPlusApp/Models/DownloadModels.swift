@@ -32,17 +32,20 @@ struct LocalDownload: Identifiable, Codable, Sendable {
     var sourceUrl: String?
     /// True when filePath is an absolute path (HLS .movpkg).
     var isHLSDownload: Bool
+    /// Number of auto-retry attempts (max 3).
+    var retryCount: Int
 
     init(contentId: String, title: String, thumbnail: String?, contentType: ContentType) {
-        self.id = UUID().uuidString
+        id = UUID().uuidString
         self.contentId = contentId
         self.title = title
         self.thumbnail = thumbnail
         self.contentType = contentType
-        self.status = .queued
-        self.progress = 0
-        self.createdAt = Date()
-        self.isHLSDownload = false
+        status = .queued
+        progress = 0
+        createdAt = Date()
+        isHLSDownload = false
+        retryCount = 0
     }
 }
 

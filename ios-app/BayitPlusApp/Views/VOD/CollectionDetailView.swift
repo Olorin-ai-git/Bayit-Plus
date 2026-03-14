@@ -7,6 +7,7 @@ import SwiftUI
 struct CollectionDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(DownloadManager.self) private var downloadManager
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: CollectionDetailViewModel?
 
@@ -43,10 +44,7 @@ struct CollectionDetailView: View {
         }
     }
 
-    private func collectionContent(
-        _ collection: CollectionDetail,
-        _: CollectionDetailViewModel
-    ) -> some View {
+    private func collectionContent(_ collection: CollectionDetail, _: CollectionDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if let backdrop = collection.backdrop {
                 backdropHero(backdrop, title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"))
@@ -125,6 +123,22 @@ struct CollectionDetailView: View {
                         .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
+
+                    Button {
+                        Task { await downloadAll(movies) }
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.down.circle")
+                            Text(localization.t("downloads.downloadAll"))
+                                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.vertical, DesignTokens.Spacing.md)
+                        .background(DesignTokens.Glass.bgStrong)
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.top, DesignTokens.Spacing.sm)
             }
@@ -166,10 +180,14 @@ struct CollectionDetailView: View {
         }
     }
 
-    private func playAll(_ movies: [CollectionMovie]) async {
-        let movieIds = movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) }).map { $0.id }
-        guard !movieIds.isEmpty else { return }
+    private func downloadAll(_ movies: [CollectionMovie]) async {
+        let requests = movies.map { DownloadRequest(contentId: $0.id, title: $0.title ?? "", thumbnail: $0.thumbnail, contentType: .movie, streamUrl: $0.streamUrl) }
+        await downloadManager.enqueueAll(requests)
+    }
 
+    private func playAll(_ movies: [CollectionMovie]) async {
+        let movieIds = movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) }).map(\.id)
+        guard !movieIds.isEmpty else { return }
         do {
             try await repos.playlist.addBulkToPlaylist(contentIds: movieIds)
             coordinator.navigate(to: .player(contentId: movieIds[0], contentType: .movie))

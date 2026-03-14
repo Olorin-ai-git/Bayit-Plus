@@ -116,7 +116,7 @@ public final class NavigationCoordinator {
              .notificationSettings, .billing, .subscription,
              .security, .connectedAccounts, .byocSources, .byocDetail,
              .playbackSettings, .audioSettings,
-             .accessibilitySettings, .privacySettings,
+             .accessibilitySettings, .privacySettings, .downloadSettings,
              .children, .youngsters, .judaism,
              .flows, .morningRitual, .voiceOnboarding, .support,
              .trivia, .llmSearch, .glossary, .familyControls, .shabbatMode,

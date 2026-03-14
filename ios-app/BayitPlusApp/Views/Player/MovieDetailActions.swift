@@ -6,26 +6,29 @@ import SwiftUI
 
 extension MovieDetailView {
     func actionButtons(_ detail: ContentDetail) -> some View {
-        HStack(spacing: DesignTokens.Spacing.md) {
-            GlassButton(localization.t("content.play"), variant: .primary, size: .large,
-                        icon: Image(systemName: "play.fill"))
-            {
-                coordinator.presentFullscreen(.player(
-                    contentId: detail.id,
-                    contentType: .movie
-                ))
-            }
-
-            if viewModel?.hasTrailer == true {
-                GlassButton(localization.t("content.trailer"), variant: .secondary, size: .large,
-                            icon: Image(systemName: "film"))
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                GlassButton(localization.t("content.play"), variant: .primary, size: .large,
+                            icon: Image(systemName: "play.fill"))
                 {
-                    Task { await resolveAndShowTrailer(contentId: detail.id) }
+                    coordinator.presentFullscreen(.player(
+                        contentId: detail.id,
+                        contentType: .movie
+                    ))
                 }
-            }
 
-            favoriteButton
-            downloadButton(detail)
+                if viewModel?.hasTrailer == true {
+                    GlassButton(localization.t("content.trailer"), variant: .secondary, size: .large,
+                                icon: Image(systemName: "film"))
+                    {
+                        Task { await resolveAndShowTrailer(contentId: detail.id) }
+                    }
+                }
+
+                favoriteButton
+                downloadButton(detail)
+            }
+            fileSizeEstimate(detail)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
@@ -55,6 +58,34 @@ extension MovieDetailView {
         }
         .buttonStyle(.plain)
         .disabled(isActive || isDownloaded)
+    }
+
+    @ViewBuilder
+    func fileSizeEstimate(_ detail: ContentDetail) -> some View {
+        let existing = downloadManager.downloads.first(where: { $0.contentId == detail.id })
+        if existing == nil, let duration = detail.duration {
+            let minutes = Self.parseDurationMinutes(duration)
+            if minutes > 0 {
+                let quality = DownloadQualitySetting(rawValue: UserDefaults.standard.string(forKey: "downloadQuality") ?? "") ?? .hd
+                let megabytes = Int(Double(minutes) * quality.mbPerMinute)
+                Text(localization.t("downloads.estimatedSize", ["size": "\(megabytes)"]))
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundColor(DesignTokens.Text.muted)
+            }
+        }
+    }
+
+    static func parseDurationMinutes(_ duration: String) -> Int {
+        let lower = duration.lowercased()
+        var total = 0
+        if let hRange = lower.range(of: #"(\d+)\s*h"#, options: .regularExpression) {
+            total += (Int(lower[hRange].filter(\.isNumber)) ?? 0) * 60
+        }
+        if let mRange = lower.range(of: #"(\d+)\s*m"#, options: .regularExpression) {
+            total += Int(lower[mRange].filter(\.isNumber)) ?? 0
+        }
+        if total == 0, let plain = Int(lower.filter(\.isNumber)) { total = plain }
+        return total
     }
 
     var favoriteButton: some View {

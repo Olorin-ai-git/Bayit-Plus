@@ -59,6 +59,8 @@ struct RouteDestinationResolver {
             AccessibilitySettingsView()
         case .privacySettings:
             PrivacySettingsView()
+        case .downloadSettings:
+            DownloadSettingsView()
         case .children:
             ChildrenView()
         case .youngsters:
