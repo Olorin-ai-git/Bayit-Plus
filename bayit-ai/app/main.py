@@ -52,7 +52,7 @@ async def lifespan(ai_app: FastAPI):
         logger.info("MongoDB connection established (%s)", SERVICE_NAME)
     except Exception as e:
         logger.error("MongoDB connection failed: %s", e, exc_info=True)
-        logger.error("%s will start in DEGRADED mode", SERVICE_TITLE)
+        raise
 
     # Initialize Redis client and pub/sub
     async def init_redis():

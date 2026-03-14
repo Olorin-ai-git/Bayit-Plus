@@ -45,7 +45,7 @@ async def lifespan(workers_app: FastAPI):
         logger.info("MongoDB connection established (%s)", SERVICE_NAME)
     except Exception as e:
         logger.error("MongoDB connection failed: %s", e, exc_info=True)
-        logger.error("Workers will start in DEGRADED mode")
+        raise
 
     # Initialize Redis client
     try:

@@ -55,6 +55,7 @@ async def lifespan(service_app: FastAPI):
         )
     except Exception as e:
         logger.error("MongoDB connection failed: %s", e, exc_info=True)
+        raise
 
     # Initialize Redis client (search caching, rate limiting)
     try:

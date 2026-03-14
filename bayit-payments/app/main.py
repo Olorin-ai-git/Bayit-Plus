@@ -53,6 +53,7 @@ async def lifespan(service_app: FastAPI):
         )
     except Exception as e:
         logger.error("MongoDB connection failed: %s", e, exc_info=True)
+        raise
 
     try:
         await get_redis_client()
