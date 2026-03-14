@@ -4340,7 +4340,11 @@
     "active": "הורדות פעילות",
     "browseVod": "עיון בתוכן VOD",
     "storageLow": "האחסון עומד להיגמר. שקול למחוק הורדות.",
-    "storageCritical": "אין מספיק אחסון להורדה. פנה מקום קודם."
+    "storageCritical": "אין מספיק אחסון להורדה. פנה מקום קודם.",
+    "estimatedSize": "~{{size}} מ\"ב משוער",
+    "safariWarning": "ספארי מגביל אחסון לא מקוון ל-1 GB. שקול להשתמש ב-Chrome או Firefox להורדות גדולות יותר.",
+    "incognitoWarning": "הורדות אינן זמינות במצב פרטי/גלישה פרטית.",
+    "offlineReady": "מוכן לצפייה במצב לא מקוון"
   },
   "dubbing": {
     "title": "דיבוב חי",
@@ -5891,11 +5895,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -7663,7 +7663,9 @@
       "sizeHintHd": "מומלץ",
       "sizeHintFhd": "האיכות הטובה ביותר, קבצים גדולים",
       "network": "רשת",
-      "allowCellular": "הורדה בסלולר"
+      "allowCellular": "הורדה בסלולר",
+      "wifiOnly": "WiFi בלבד",
+      "wifiOnlyHint": "הורדה רק כשמחובר ל-WiFi"
     }
   },
   "familyControls": {

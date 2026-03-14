@@ -4340,7 +4340,11 @@
     "active": "アクティブなダウンロード",
     "browseVod": "VODを閲覧",
     "storageLow": "ストレージが不足しています。ダウンロードの削除を検討してください。",
-    "storageCritical": "ダウンロードに十分なストレージがありません。先に空き容量を確保してください。"
+    "storageCritical": "ダウンロードに十分なストレージがありません。先に空き容量を確保してください。",
+    "estimatedSize": "~{{size}} MB 推定",
+    "safariWarning": "Safariはオフラインストレージを1GBに制限しています。大きなダウンロードにはChromeまたはFirefoxをご利用ください。",
+    "incognitoWarning": "プライベート/シークレットモードではダウンロードを利用できません。",
+    "offlineReady": "オフライン視聴の準備完了"
   },
   "dubbing": {
     "title": "ライブ吹き替え",
@@ -7645,7 +7649,9 @@
       "sizeHintHd": "推奨",
       "sizeHintFhd": "最高品質、ファイルサイズ大",
       "network": "ネットワーク",
-      "allowCellular": "モバイルデータでダウンロード"
+      "allowCellular": "モバイルデータでダウンロード",
+      "wifiOnly": "WiFiのみ",
+      "wifiOnlyHint": "WiFi接続時のみダウンロード"
     }
   },
   "familyControls": {

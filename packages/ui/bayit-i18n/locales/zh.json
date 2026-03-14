@@ -4340,7 +4340,11 @@
     "active": "活动下载",
     "browseVod": "浏览点播",
     "storageLow": "存储空间不足，请考虑删除一些下载内容。",
-    "storageCritical": "存储空间不足，无法下载。请先释放空间。"
+    "storageCritical": "存储空间不足，无法下载。请先释放空间。",
+    "estimatedSize": "~{{size}} MB 预估",
+    "safariWarning": "Safari 将离线存储限制为 1 GB。建议使用 Chrome 或 Firefox 进行较大文件的下载。",
+    "incognitoWarning": "在隐私/无痕模式下无法使用下载功能。",
+    "offlineReady": "可离线观看"
   },
   "dubbing": {
     "title": "实时配音",
@@ -5885,17 +5889,8 @@
     },
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -7663,7 +7658,9 @@
       "sizeHintHd": "推荐",
       "sizeHintFhd": "最佳质量，文件较大",
       "network": "网络",
-      "allowCellular": "使用移动数据下载"
+      "allowCellular": "使用移动数据下载",
+      "wifiOnly": "仅WiFi",
+      "wifiOnlyHint": "仅在连接WiFi时下载"
     }
   },
   "familyControls": {

@@ -4340,7 +4340,11 @@
     "active": "Descargas activas",
     "browseVod": "Explorar VOD",
     "storageLow": "El almacenamiento se esta agotando. Considera eliminar descargas.",
-    "storageCritical": "No hay suficiente espacio para descargar. Libera espacio primero."
+    "storageCritical": "No hay suficiente espacio para descargar. Libera espacio primero.",
+    "estimatedSize": "~{{size}} MB estimado",
+    "safariWarning": "Safari limita el almacenamiento sin conexión a 1 GB. Considera usar Chrome o Firefox para descargas más grandes.",
+    "incognitoWarning": "Las descargas no están disponibles en modo privado/incógnito.",
+    "offlineReady": "Listo para ver sin conexión"
   },
   "dubbing": {
     "title": "Doblaje en Directo",
@@ -5891,11 +5895,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -7663,7 +7663,9 @@
       "sizeHintHd": "Recomendado",
       "sizeHintFhd": "Mejor calidad, archivos mas grandes",
       "network": "Red",
-      "allowCellular": "Descargar con datos moviles"
+      "allowCellular": "Descargar con datos moviles",
+      "wifiOnly": "Solo WiFi",
+      "wifiOnlyHint": "Solo descargar cuando este conectado a WiFi"
     }
   },
   "familyControls": {

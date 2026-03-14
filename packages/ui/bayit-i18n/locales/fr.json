@@ -4340,7 +4340,11 @@
     "active": "Telechargements actifs",
     "browseVod": "Parcourir VOD",
     "storageLow": "L'espace de stockage est faible. Pensez a supprimer des telechargements.",
-    "storageCritical": "Pas assez d'espace pour telecharger. Liberez de l'espace d'abord."
+    "storageCritical": "Pas assez d'espace pour telecharger. Liberez de l'espace d'abord.",
+    "estimatedSize": "~{{size}} Mo estime",
+    "safariWarning": "Safari limite le stockage hors ligne à 1 Go. Utilisez Chrome ou Firefox pour les téléchargements plus volumineux.",
+    "incognitoWarning": "Les téléchargements ne sont pas disponibles en mode privé/incognito.",
+    "offlineReady": "Prêt pour la lecture hors ligne"
   },
   "dubbing": {
     "title": "Doublage en direct",
@@ -7663,7 +7667,9 @@
       "sizeHintHd": "Recommande",
       "sizeHintFhd": "Meilleure qualite, fichiers plus volumineux",
       "network": "Reseau",
-      "allowCellular": "Telecharger en cellulaire"
+      "allowCellular": "Telecharger en cellulaire",
+      "wifiOnly": "WiFi uniquement",
+      "wifiOnlyHint": "Telecharger uniquement en WiFi"
     }
   },
   "familyControls": {

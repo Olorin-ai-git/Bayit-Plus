@@ -4340,7 +4340,11 @@
     "active": "Active Downloads",
     "browseVod": "Browse VOD",
     "storageLow": "Storage is running low. Consider deleting some downloads.",
-    "storageCritical": "Not enough storage to download. Free up space first."
+    "storageCritical": "Not enough storage to download. Free up space first.",
+    "estimatedSize": "~{{size}} MB estimated",
+    "safariWarning": "Safari limits offline storage to 1 GB. Consider using Chrome or Firefox for larger downloads.",
+    "incognitoWarning": "Downloads are not available in private/incognito mode.",
+    "offlineReady": "Ready for offline viewing"
   },
   "dubbing": {
     "title": "Live Dubbing",
@@ -5891,11 +5895,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",
@@ -7663,7 +7663,9 @@
       "sizeHintHd": "Recommended",
       "sizeHintFhd": "Best quality, largest files",
       "network": "Network",
-      "allowCellular": "Download over cellular"
+      "allowCellular": "Download over cellular",
+      "wifiOnly": "WiFi Only",
+      "wifiOnlyHint": "Only download when connected to WiFi"
     }
   },
   "familyControls": {
