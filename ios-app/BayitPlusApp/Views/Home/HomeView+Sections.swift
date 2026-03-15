@@ -74,14 +74,14 @@ extension HomeView {
         HStack(spacing: DesignTokens.Spacing.md) {
             CultureClock(
                 flagEmoji: "\u{1F1EE}\u{1F1F1}",
-                locationLabel: "Time in Israel",
+                locationLabel: localization.t("cultureClock.timeInIsrael"),
                 timezone: TimeZone(identifier: "Asia/Jerusalem")!,
                 isIsraeli: true
             )
             Spacer()
             CultureClock(
                 flagEmoji: "\u{1F1FA}\u{1F1F8}",
-                locationLabel: "Time in New York, NY",
+                locationLabel: localization.t("cultureClock.timeInNewYork"),
                 timezone: TimeZone(identifier: "America/New_York")!,
                 isIsraeli: false
             )
@@ -139,7 +139,7 @@ extension HomeView {
         {
             let items = newsArticles + (content.communityEvents ?? [])
             LocationContentRow(
-                title: "Israelis in Your City",
+                title: localization.t("home.israelisInCity"),
                 items: items,
                 coverage: israelisResponse.coverage
             )
@@ -150,7 +150,7 @@ extension HomeView {
            let businesses = content.newsArticles, !businesses.isEmpty
         {
             LocationContentRow(
-                title: "Israeli Businesses Near You",
+                title: localization.t("home.israeliBusinesses"),
                 items: businesses,
                 coverage: businessesResponse.coverage
             )
@@ -162,13 +162,13 @@ extension HomeView {
     @ViewBuilder
     func citySections(_ vm: HomeViewModel) -> some View {
         if let jerusalem = vm.jerusalemContent, !jerusalem.items.isEmpty {
-            CityContentRow(title: "Jerusalem", items: jerusalem.items) {
+            CityContentRow(title: localization.t("cities.jerusalem.title"), items: jerusalem.items) {
                 coordinator.navigate(to: .jerusalemContent)
             }
         }
 
         if let telAviv = vm.telAvivContent, !telAviv.items.isEmpty {
-            CityContentRow(title: "Tel Aviv", items: telAviv.items) {
+            CityContentRow(title: localization.t("cities.telAviv.title"), items: telAviv.items) {
                 coordinator.navigate(to: .telAvivContent)
             }
         }
