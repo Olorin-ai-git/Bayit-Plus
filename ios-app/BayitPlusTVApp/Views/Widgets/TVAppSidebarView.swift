@@ -100,7 +100,7 @@
         private var avatarButton: some View {
             Button { onAvatarTap() } label: {
                 ZStack {
-                    if let url = authManager.user?.photoURL {
+                    if let url = avatarURL {
                         CachedAsyncImage(url: url) { phase in
                             if case let .success(img) = phase {
                                 img.resizable()
