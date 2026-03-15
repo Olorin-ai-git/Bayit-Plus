@@ -23,6 +23,7 @@
         @State var widgetAutoHideTask: Task<Void, Never>?
         @State var isWidgetAreaFocused = false
         @State var hasAppeared = false
+        @State var showProfile = false
 
         var body: some View {
             @Bindable var coord = coordinator
@@ -68,9 +69,9 @@
                     .tabItem { Label(localization.t("nav.widgets"), systemImage: TVTab.widgets.iconName) }
                     .tag(TVTab.widgets)
 
-                TVProfileView()
-                    .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
-                    .tag(TVTab.profile)
+                HelpSupportView()
+                    .tabItem { Label(localization.t("nav.help"), systemImage: TVTab.help.iconName) }
+                    .tag(TVTab.help)
             }
             .onAppear {
                 guard !hasAppeared else { return }
@@ -83,6 +84,10 @@
             }
             .fullScreenCover(isPresented: $showLanguagePicker) {
                 languagePickerSheet
+            }
+            .fullScreenCover(isPresented: $showProfile) {
+                TVProfileView()
+                    .onExitCommand { showProfile = false }
             }
             // Widget sidebar as overlay so it never compresses the TabView tab bar.
             .overlay(alignment: .trailing) {
@@ -102,6 +107,7 @@
                         widgetsButton(viewModel: vm)
                     }
                     languageButton
+                    profileButton
                 }
                 .padding(.top, TVDesignTokens.Spacing.md)
                 .padding(.trailing, TVDesignTokens.Spacing.xl)

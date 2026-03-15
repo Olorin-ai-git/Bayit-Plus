@@ -86,6 +86,24 @@
             .accessibilityLabel(localization.t("nav.widgets"))
         }
 
+        var profileButton: some View {
+            Button {
+                showProfile = true
+            } label: {
+                Image(systemName: "person.crop.circle")
+                    .font(.system(size: TVDesignTokens.FontSize.md))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle().stroke(DesignTokens.Glass.border, lineWidth: 1)
+                    )
+            }
+            .tvCardStyle()
+            .accessibilityLabel(localization.t("nav.profile"))
+        }
+
         // MARK: - Widget Auto-Hide
 
         func handleWidgetFocusChanged(_ focused: Bool) {
