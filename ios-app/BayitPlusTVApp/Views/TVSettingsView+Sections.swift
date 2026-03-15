@@ -106,16 +106,59 @@
             }
         }
 
-        // MARK: - Notifications
+        // MARK: - Preferences
 
-        var notificationsDetail: some View {
+        @ViewBuilder
+        var preferencesDetail: some View {
+            settingsGlassNavRow(
+                icon: "globe",
+                title: localization.t("settings.language"),
+                detail: nil
+            ) {
+                TVLanguageSettingsView()
+            }
+
             settingsGlassNavRow(
                 icon: "bell.badge",
-                title: localization.t("settings.notificationPreferences"),
-                subtitle: localization.t("settings.notificationDescription"),
+                title: localization.t("settings.notifications"),
                 detail: nil
             ) {
                 TVNotificationSettingsView()
+            }
+
+            settingsGlassNavRow(
+                icon: "speaker.wave.2",
+                title: localization.t("settings.audio.title"),
+                detail: nil
+            ) {
+                TVAudioSettingsView()
+            }
+
+            settingsGlassNavRow(
+                icon: "accessibility",
+                title: localization.t("settings.accessibility.title"),
+                detail: nil
+            ) {
+                TVAccessibilitySettingsView()
+            }
+
+            if let vm = viewModel {
+                settingsGlassToggleRow(
+                    title: localization.t("settings.subtitles"),
+                    isOn: Bindable(vm).subtitles
+                ) { _ in }
+
+                settingsGlassToggleRow(
+                    title: localization.t("settings.autoplay"),
+                    isOn: Bindable(vm).autoplay
+                ) { newValue in
+                    Task { await vm.updateAutoplay(newValue) }
+                }
+
+                settingsGlassToggleRow(
+                    title: localization.t("settings.interactiveMoments"),
+                    isOn: Bindable(vm).subtitles
+                ) { _ in }
             }
         }
 
@@ -150,10 +193,10 @@
             }
         }
 
-        // MARK: - Family & Safety
+        // MARK: - Social
 
         @ViewBuilder
-        var familyDetail: some View {
+        var socialDetail: some View {
             settingsGlassNavRow(
                 icon: "person.2.circle",
                 title: localization.t("settings.household"),

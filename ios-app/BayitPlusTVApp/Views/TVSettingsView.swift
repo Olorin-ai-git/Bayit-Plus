@@ -8,10 +8,10 @@
 
     enum SettingsCategory: String, CaseIterable, Identifiable {
         case account
+        case preferences
         case playback
-        case notifications
         case security
-        case family
+        case social
         case help
 
         var id: String {
@@ -21,10 +21,10 @@
         var icon: String {
             switch self {
             case .account: return "person.circle"
+            case .preferences: return "slider.horizontal.3"
             case .playback: return "play.circle"
-            case .notifications: return "bell.badge"
             case .security: return "shield.lefthalf.filled"
-            case .family: return "person.2.circle"
+            case .social: return "person.2.circle"
             case .help: return "questionmark.circle"
             }
         }
@@ -32,10 +32,10 @@
         func localizedTitle(_ loc: LocalizationManager) -> String {
             switch self {
             case .account: return loc.t("settings.account")
+            case .preferences: return loc.t("settings.preferences")
             case .playback: return loc.t("settings.playback.title")
-            case .notifications: return loc.t("settings.notifications")
             case .security: return loc.t("settings.security.title")
-            case .family: return loc.t("settings.familyAndSafety")
+            case .social: return loc.t("settings.social")
             case .help: return loc.t("settings.help.title")
             }
         }
@@ -210,14 +210,14 @@
             switch selectedCategory {
             case .account:
                 accountDetail
+            case .preferences:
+                preferencesDetail
             case .playback:
                 playbackDetail
-            case .notifications:
-                notificationsDetail
             case .security:
                 securityDetail
-            case .family:
-                familyDetail
+            case .social:
+                socialDetail
             case .help:
                 helpDetail
             }
