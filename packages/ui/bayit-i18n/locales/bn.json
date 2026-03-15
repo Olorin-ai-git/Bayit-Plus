@@ -10449,6 +10449,13 @@
         "primary": "প্রাথমিক",
         "secondary": "মাধ্যমিক"
       }
+    },
+    "dock": {
+      "widgets": "উইজেট",
+      "voice": "ভয়েস",
+      "nowPlaying": "এখন চলছে",
+      "autoFill": "অটো ফিল",
+      "close": "বন্ধ করুন"
     }
   },
   "missions": {

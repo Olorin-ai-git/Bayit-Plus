@@ -30,7 +30,8 @@
                     restoredWidgets: dockViewModel?.widgets ?? [],
                     onAvatarTap: { coordinator.selectedTab = .profile },
                     onAddWidget: { showCreateWidget = true },
-                    onClose: { dockViewModel?.dismissFromSidebar(widgetId: $0) }
+                    onClose: { dockViewModel?.dismissFromSidebar(widgetId: $0) },
+                    onShowQuickDock: { coordinator.showQuickDock = true }
                 )
 
                 TabView(selection: $coord.selectedTab) {
@@ -80,6 +81,17 @@
                 }
                 .overlay(alignment: .bottom) {
                     TVMiniAudioPlayerBar()
+                }
+                .overlay(alignment: .bottom) {
+                    if coordinator.showQuickDock {
+                        TVQuickDockView(
+                            onShowWidgets: { showCreateWidget = true },
+                            onDismiss: { coordinator.showQuickDock = false }
+                        )
+                        .padding(.bottom, 60)
+                        .zIndex(100)
+                        .animation(.spring(duration: 0.35, bounce: 0.1), value: coordinator.showQuickDock)
+                    }
                 }
                 .overlay(alignment: .topTrailing) {
                     languageButton

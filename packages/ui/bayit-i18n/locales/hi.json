@@ -10449,6 +10449,13 @@
         "primary": "प्राथमिक",
         "secondary": "माध्यमिक"
       }
+    },
+    "dock": {
+      "widgets": "विजेट्स",
+      "voice": "आवाज",
+      "nowPlaying": "अभी चल रहा है",
+      "autoFill": "स्वतः भरें",
+      "close": "बंद करें"
     }
   },
   "missions": {

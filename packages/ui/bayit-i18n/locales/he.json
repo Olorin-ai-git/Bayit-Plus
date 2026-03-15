@@ -10449,6 +10449,13 @@
         "primary": "ראשי",
         "secondary": "משני"
       }
+    },
+    "dock": {
+      "widgets": "ווידג'טים",
+      "voice": "קול",
+      "nowPlaying": "מתנגן עכשיו",
+      "autoFill": "מילוי אוטומטי",
+      "close": "סגור"
     }
   },
   "missions": {

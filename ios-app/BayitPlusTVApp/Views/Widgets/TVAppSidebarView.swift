@@ -14,6 +14,7 @@
         let onAvatarTap: () -> Void
         let onAddWidget: () -> Void
         let onClose: (String) -> Void
+        var onShowQuickDock: (() -> Void)? = nil
 
         @State private var isManuallyCollapsed = false
 
@@ -61,10 +62,30 @@
                     expandToggleButton
                 }
 
+                if let showDock = onShowQuickDock {
+                    quickDockTriggerButton(action: showDock)
+                }
+
                 Spacer()
             }
             .frame(width: collapsedWidth)
             .frame(maxHeight: .infinity)
+        }
+
+        private func quickDockTriggerButton(action: @escaping () -> Void) -> some View {
+            Button(action: action) {
+                Image(systemName: "square.grid.3x1.below.line.grid.1x2")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                    .frame(width: 36, height: 36)
+                    .background(DesignTokens.Primary.p600.opacity(0.12))
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle().strokeBorder(DesignTokens.Primary.p400.opacity(0.3), lineWidth: 1)
+                    )
+            }
+            .tvCardStyle()
+            .accessibilityLabel(localization.t("tvos.dock.widgets"))
         }
 
         /// Small badge showing the number of active widgets when collapsed.

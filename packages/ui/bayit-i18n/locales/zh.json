@@ -10449,6 +10449,13 @@
         "primary": "主要",
         "secondary": "次要"
       }
+    },
+    "dock": {
+      "widgets": "小组件",
+      "voice": "语音",
+      "nowPlaying": "正在播放",
+      "autoFill": "自动填充",
+      "close": "关闭"
     }
   },
   "missions": {

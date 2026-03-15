@@ -10449,6 +10449,13 @@
         "primary": "Principale",
         "secondary": "Secondario"
       }
+    },
+    "dock": {
+      "widgets": "Widget",
+      "voice": "Voce",
+      "nowPlaying": "In riproduzione",
+      "autoFill": "Riempimento auto",
+      "close": "Chiudi"
     }
   },
   "missions": {

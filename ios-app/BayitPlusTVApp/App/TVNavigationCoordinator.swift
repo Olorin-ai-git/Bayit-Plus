@@ -128,6 +128,9 @@ final class TVNavigationCoordinator {
 
     var showWidgetDock: Bool = false
 
+    /// Controls visibility of the quick-access floating dock overlay.
+    var showQuickDock: Bool = false
+
     /// Reflects the current dock visibility state, kept in sync by TVMainTabView.
     /// Read by TVWidgetsView to drive the dock toggle button label/icon.
     var dockIsVisible: Bool = false
