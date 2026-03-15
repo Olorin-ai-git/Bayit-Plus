@@ -36,13 +36,13 @@ struct ChatbotView: View {
                     Button {
                         viewModel.startNewConversation()
                     } label: {
-                        Label("New Chat", systemImage: "plus.message")
+                        Label(localization.t("chat.newChat"), systemImage: "plus.message")
                     }
 
                     Button(role: .destructive) {
                         Task { await viewModel.deleteConversation() }
                     } label: {
-                        Label("Delete Chat", systemImage: "trash")
+                        Label(localization.t("chat.deleteChat"), systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
