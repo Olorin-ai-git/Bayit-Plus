@@ -118,6 +118,8 @@ struct BayitPlusTVApp: App {
                                 repos: repositories
                             )
                         }
+                    } else if BayitPlusTVApp.hasAutoLoginConfig {
+                        Task { await loginWithCredentials() }
                     }
                 }
         }
