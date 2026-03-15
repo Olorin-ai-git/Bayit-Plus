@@ -3270,7 +3270,8 @@
     "loading": "טוען הודעות...",
     "typing": "מקליד...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "מחק צ'אט"
   },
   "chatbot": {
     "title": "עוזר בית+",
@@ -3321,7 +3322,10 @@
       "setupRequired": "נדרשת הגדרה",
       "startSetup": "התחל הגדרה",
       "title": "עוזר קולי"
-    }
+    },
+    "testMicrophone": "בדוק מיקרופון",
+    "wakeWordDetected": "מילת הפעלה זוהתה!",
+    "idle": "בטל"
   },
   "chess": {
     "title": "שחמט",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "נגן מיני",
     "podcast": "נגן פודקאסט",
     "radio": "תחנות רדיו",
-    "weather": "מזג אוויר"
+    "weather": "מזג אוויר",
+    "createPersonal": "צור ווידג'ט אישי"
   },
   "liveCategories": {
     "educational": "חינוכי"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "השעה ב{{location}}",
     "shabbat": "שבת",
-    "weekend": "סוף שבוע"
+    "weekend": "סוף שבוע",
+    "timeInIsrael": "זמן בישראל",
+    "timeInNewYork": "זמן בניו יורק"
   },
   "cultureTrending": {
     "whatsHotIn": "מה חם ב{{location}}",
@@ -5039,7 +5046,11 @@
     "empty": "אין חברים עדיין",
     "emptyHint": "חפש חברים להתחבר",
     "loading": "טוען חברים...",
-    "list": "חברים ({{count}})"
+    "list": "חברים ({{count}})",
+    "pendingRequests": "בקשות ממתינות",
+    "emptyTitle": "אין חברים עדיין",
+    "emptySubtitle": "חפש משתמשים להוסיף חברים",
+    "addFriend": "הוסף"
   },
   "googleLogin": {
     "cancelledError": "ההתחברות עם Google בוטלה",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "סיור גילוי תכונות"
   },
   "notFound": {
     "title": "הדף לא נמצא",
@@ -6272,7 +6284,8 @@
       "noResults": "לא נמצאו כתוביות"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "צ'אט ערוץ"
   },
   "podcast": {
     "selectLanguage": "בחר שפה",
@@ -6433,7 +6446,8 @@
     "author": "מחבר",
     "category": "קטגוריה",
     "episodeCount": "פרקים",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "רענן פרקים אחרונים"
   },
   "miniPlayer": {
     "skipBackward": "דלג 15 שניות אחורה",
@@ -7315,6 +7329,9 @@
       "largeText": "טקסט גדול",
       "largeTextDesc": "הגדל את גודל הטקסט בכל האפליקציה",
       "reduceMotion": "הפחת תנועה",
+      "reduceMotionDesc": "הגבלת אנימציות ואפקטי תנועה",
+      "audioDescriptions": "תיאורי שמע",
+      "audioDescDesc": "תיאורים מוקראים של תוכן חזותי לנגישות",
       "title": "נגישות"
     },
     "signOut": "התנתק",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "אין טיפים זמינים",
       "noTutorialsAvailable": "אין הדרכות זמינות",
       "scanEmailQR": "סרוק בטלפון או שלח אלינו אימייל:",
-      "videoTutorials": "סרטוני הדרכה"
+      "videoTutorials": "סרטוני הדרכה",
+      "typeMessage": "הקלד את שאלתך...",
+      "sendMessage": "שלח"
     },
     "autoplayDescription": "נגן אוטומטית את הפרק הבא כשאחד מסתיים",
     "autoplayNextEpisode": "ניגון אוטומטי של הפרק הבא",
@@ -8291,7 +8310,10 @@
       "weather": "מזג אוויר",
       "health": "בריאות",
       "general": "כללי"
-    }
+    },
+    "loadFailed": "טעינת מגמות נכשלה",
+    "headlines": "כותרות",
+    "trendingTopics": "נושאים עולים"
   },
   "trivia": {
     "didYouKnow": "הידעת?",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "צור מסיבה",
+    "joinExisting": "הצטרף למסיבה",
+    "emptyTitle": "אין מסיבות צפייה",
+    "emptySubtitle": "צור או הצטרף למסיבה לצפייה משותפת",
+    "joinSubtitle": "הזן את קוד החדר שהמארח שיתף",
+    "roomCodePlaceholder": "קוד חדר",
+    "contentIdPlaceholder": "מזהה תוכן",
+    "contentType": "סוג",
+    "maxParticipants": "מקסימום אורחים"
   },
   "playlist": {
     "title": "הרשימה שלי",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "קצב עברית",
       "recentAttempts": "ניסיונות אחרונים",
       "shekels": "שקלים שנצברו"
-    }
+    },
+    "listeningForResponse": "מאזין לתגובה שלך",
+    "evaluatingResponse": "מעריך את תגובתך"
   },
   "bilingual": {
     "title": "גשר דו-לשוני",
@@ -12732,5 +12765,9 @@
         "loadFailed": "נכשל בטעינת תוכן"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "סגור הצעה",
+    "accept": "קבל הצעה"
   }
 }

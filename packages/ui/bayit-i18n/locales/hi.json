@@ -3270,7 +3270,8 @@
     "loading": "संदेश लोड हो रहे हैं...",
     "typing": "टाइप कर रहा है...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "चैट हटाएं"
   },
   "chatbot": {
     "title": "Bayit+ सहायक",
@@ -3321,7 +3322,10 @@
       "setupRequired": "[hi] Setup Required",
       "startSetup": "[hi] Start Setup",
       "title": "[hi] Voice Assistant"
-    }
+    },
+    "testMicrophone": "माइक्रोफोन परीक्षण",
+    "wakeWordDetected": "वेक वर्ड डिटेक्ट हुआ!",
+    "idle": "निष्क्रिय"
   },
   "chess": {
     "title": "शतरंज",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "नाउ प्लेइंग मिनी-प्लेयर",
     "podcast": "पॉडकास्ट प्लेयर",
     "radio": "रेडियो स्टेशन",
-    "weather": "मौसम"
+    "weather": "मौसम",
+    "createPersonal": "व्यक्तिगत विजेट बनाएं"
   },
   "liveCategories": {
     "educational": "शैक्षिक"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "{{location}} में समय",
     "shabbat": "शब्बत",
-    "weekend": "सप्ताहांत"
+    "weekend": "सप्ताहांत",
+    "timeInIsrael": "इज़राइल में समय",
+    "timeInNewYork": "न्यूयॉर्क में समय"
   },
   "cultureTrending": {
     "whatsHotIn": "{{location}} में क्या गरम है",
@@ -5039,7 +5046,11 @@
     "empty": "अभी कोई मित्र नहीं",
     "emptyHint": "जुड़ने के लिए दोस्त खोजें",
     "loading": "मित्र लोड हो रहे हैं...",
-    "list": "मित्र ({{count}})"
+    "list": "मित्र ({{count}})",
+    "pendingRequests": "लंबित अनुरोध",
+    "emptyTitle": "अभी तक कोई मित्र नहीं",
+    "emptySubtitle": "मित्र जोड़ने के लिए उपयोगकर्ता खोजें",
+    "addFriend": "जोड़ें"
   },
   "googleLogin": {
     "cancelledError": "Google साइन-इन रद्द कर दिया गया",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "फीचर डिस्कवरी टूर"
   },
   "notFound": {
     "title": "पेज नहीं मिला",
@@ -6272,7 +6284,8 @@
       "noResults": "कोई सबटाइटल नहीं मिला"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "चैनल चैट"
   },
   "podcast": {
     "selectLanguage": "भाषा चुनें",
@@ -6433,7 +6446,8 @@
     "author": "लेखक",
     "category": "श्रेणी",
     "episodeCount": "एपिसोड",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "नवीनतम एपिसोड रिफ्रेश करें"
   },
   "miniPlayer": {
     "skipBackward": "15 सेकंड पीछे",
@@ -7315,6 +7329,9 @@
       "largeText": "बड़ा टेक्स्ट",
       "largeTextDesc": "ऐप में टेक्स्ट का आकार बढ़ाएँ",
       "reduceMotion": "मोशन कम करें",
+      "reduceMotionDesc": "एनिमेशन और मोशन इफेक्ट सीमित करें",
+      "audioDescriptions": "ऑडियो विवरण",
+      "audioDescDesc": "पहुंच के लिए दृश्य सामग्री का वर्णित विवरण",
       "title": "एक्सेसिबिलिटी"
     },
     "signOut": "साइन आउट",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "कोई सुझाव उपलब्ध नहीं",
       "noTutorialsAvailable": "कोई ट्यूटोरियल उपलब्ध नहीं",
       "scanEmailQR": "फोन पर स्कैन करें या हमें ईमेल करें:",
-      "videoTutorials": "वीडियो ट्यूटोरियल"
+      "videoTutorials": "वीडियो ट्यूटोरियल",
+      "typeMessage": "अपना प्रश्न लिखें...",
+      "sendMessage": "भेजें"
     },
     "autoplayDescription": "समाप्त होने पर अगला एपिसोड स्वचालित चलाएं",
     "autoplayNextEpisode": "अगला एपिसोड ऑटोप्ले",
@@ -8291,7 +8310,10 @@
       "weather": "मौसम",
       "health": "स्वास्थ्य",
       "general": "सामान्य"
-    }
+    },
+    "loadFailed": "ट्रेंडिंग लोड करना विफल",
+    "headlines": "सुर्खियाँ",
+    "trendingTopics": "ट्रेंडिंग विषय"
   },
   "trivia": {
     "didYouKnow": "क्या आप जानते हैं?",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "पार्टी बनाएं",
+    "joinExisting": "पार्टी में शामिल हों",
+    "emptyTitle": "कोई वॉच पार्टी नहीं",
+    "emptySubtitle": "साथ देखने के लिए पार्टी बनाएं या जुड़ें",
+    "joinSubtitle": "होस्ट द्वारा साझा किया गया कमरा कोड दर्ज करें",
+    "roomCodePlaceholder": "कमरा कोड",
+    "contentIdPlaceholder": "सामग्री आईडी",
+    "contentType": "प्रकार",
+    "maxParticipants": "अधिकतम मेहमान"
   },
   "playlist": {
     "title": "मेरी सूची",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "हिब्रू दर",
       "recentAttempts": "हाल के प्रयास",
       "shekels": "अर्जित शेकेल"
-    }
+    },
+    "listeningForResponse": "आपकी प्रतिक्रिया सुन रहे हैं",
+    "evaluatingResponse": "आपकी प्रतिक्रिया का मूल्यांकन"
   },
   "bilingual": {
     "title": "द्विभाषी सेतु",
@@ -12732,5 +12765,9 @@
         "loadFailed": "सामग्री लोड करने में विफल"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "सुझाव खारिज करें",
+    "accept": "सुझाव स्वीकार करें"
   }
 }

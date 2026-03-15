@@ -3270,7 +3270,8 @@
     "loading": "Loading Messages...",
     "typing": "Typing...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "Delete Chat"
   },
   "chatbot": {
     "title": "Bayit+ Assistant",
@@ -3321,7 +3322,10 @@
       "setupRequired": "Setup Required",
       "startSetup": "Start Setup",
       "title": "Voice Assistant"
-    }
+    },
+    "testMicrophone": "Test Microphone",
+    "wakeWordDetected": "Wake word detected!",
+    "idle": "Idle"
   },
   "chess": {
     "title": "Chess",
@@ -4036,7 +4040,8 @@
     "activeWidgets": "Active Widgets",
     "sidebar": {
       "label": "Widgets sidebar"
-    }
+    },
+    "createPersonal": "Create personal widget"
   },
   "liveCategories": {
     "educational": "Educational"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "Time in {{location}}",
     "shabbat": "Shabbat",
-    "weekend": "Weekend"
+    "weekend": "Weekend",
+    "timeInIsrael": "Time in Israel",
+    "timeInNewYork": "Time in New York, NY"
   },
   "cultureTrending": {
     "whatsHotIn": "What's Hot in {{location}}",
@@ -5039,7 +5046,11 @@
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
     "loading": "Loading Friends...",
-    "list": "Friends ({{count}})"
+    "list": "Friends ({{count}})",
+    "pendingRequests": "Pending Requests",
+    "emptyTitle": "No friends yet",
+    "emptySubtitle": "Search for users to add friends",
+    "addFriend": "Add"
   },
   "googleLogin": {
     "cancelledError": "Google sign-in was cancelled",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "Feature Discovery Tour"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -5907,7 +5919,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6268,7 +6284,8 @@
       "noResults": "No subtitles found"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "Channel Chat"
   },
   "podcast": {
     "selectLanguage": "Select Language",
@@ -6429,7 +6446,8 @@
     "author": "Author",
     "category": "Category",
     "episodeCount": "Episodes",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "Refresh latest episodes"
   },
   "miniPlayer": {
     "skipBackward": "Skip back 15 seconds",
@@ -7311,6 +7329,9 @@
       "largeText": "Large Text",
       "largeTextDesc": "Increase text size throughout the app",
       "reduceMotion": "Reduce Motion",
+      "reduceMotionDesc": "Limit animations and motion effects",
+      "audioDescriptions": "Audio Descriptions",
+      "audioDescDesc": "Narrated descriptions of visual content for accessibility",
       "title": "Accessibility"
     },
     "signOut": "Sign Out",
@@ -7622,7 +7643,9 @@
       "noTipsAvailable": "No tips available",
       "noTutorialsAvailable": "No tutorials available",
       "scanEmailQR": "Scan on your phone or email us at:",
-      "videoTutorials": "Video Tutorials"
+      "videoTutorials": "Video Tutorials",
+      "typeMessage": "Type your question...",
+      "sendMessage": "Send"
     },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
@@ -8287,7 +8310,10 @@
       "weather": "Weather",
       "health": "Health",
       "general": "General"
-    }
+    },
+    "loadFailed": "Failed to load trending",
+    "headlines": "Headlines",
+    "trendingTopics": "Trending Topics"
   },
   "trivia": {
     "didYouKnow": "Did You Know?",
@@ -8805,7 +8831,16 @@
     "type": "Party Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "Create Party",
+    "joinExisting": "Join Party",
+    "emptyTitle": "No watch parties",
+    "emptySubtitle": "Create or join a party to watch together",
+    "joinSubtitle": "Enter the room code shared by the host",
+    "roomCodePlaceholder": "Room Code",
+    "contentIdPlaceholder": "Content ID",
+    "contentType": "Type",
+    "maxParticipants": "Max guests"
   },
   "playlist": {
     "title": "My Playlist",
@@ -10526,7 +10561,9 @@
       "hebrewRate": "Hebrew Rate",
       "recentAttempts": "Recent Attempts",
       "shekels": "Shekels Earned"
-    }
+    },
+    "listeningForResponse": "Listening for your response",
+    "evaluatingResponse": "Evaluating your response"
   },
   "bilingual": {
     "title": "Bilingual Bridge",
@@ -12728,5 +12765,9 @@
         "loadFailed": "Failed to load content"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "Dismiss suggestion",
+    "accept": "Accept suggestion"
   }
 }

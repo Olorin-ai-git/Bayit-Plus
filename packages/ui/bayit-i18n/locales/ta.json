@@ -3270,7 +3270,8 @@
     "loading": "செய்திகள் ஏற்றுகிறது...",
     "typing": "தட்டச்சு செய்கிறது...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "அரட்டையை நீக்கு"
   },
   "chatbot": {
     "title": "Bayit+ உதவியாளர்",
@@ -3321,7 +3322,10 @@
       "setupRequired": "[ta] Setup Required",
       "startSetup": "[ta] Start Setup",
       "title": "[ta] Voice Assistant"
-    }
+    },
+    "testMicrophone": "மைக்ரோஃபோனை சோதிக்கவும்",
+    "wakeWordDetected": "விழிப்பு வார்த்தை கண்டறியப்பட்டது!",
+    "idle": "செயலற்று"
   },
   "chess": {
     "title": "சதுரங்கம்",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "இப்போது வாசிக்கும் மினி-பிளேயர்",
     "podcast": "போட்கேஸ்ட் பிளேயர்",
     "radio": "வானொலி நிலையங்கள்",
-    "weather": "வானிலை"
+    "weather": "வானிலை",
+    "createPersonal": "தனிப்பட்ட விட்ஜெட் உருவாக்கு"
   },
   "liveCategories": {
     "educational": "கல்வி"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "{{location}} நேரம்",
     "shabbat": "ஷப்பத்",
-    "weekend": "வார இறுதி"
+    "weekend": "வார இறுதி",
+    "timeInIsrael": "இஸ்ரேலில் நேரம்",
+    "timeInNewYork": "நியூயார்க்கில் நேரம்"
   },
   "cultureTrending": {
     "whatsHotIn": "{{location}} இல் என்ன பிரபலம்",
@@ -5039,7 +5046,11 @@
     "empty": "இன்னும் நண்பர்கள் இல்லை",
     "emptyHint": "இணைய நண்பர்களைத் தேடு",
     "loading": "நண்பர்கள் ஏற்றுகிறது...",
-    "list": "நண்பர்கள் ({{count}})"
+    "list": "நண்பர்கள் ({{count}})",
+    "pendingRequests": "நிலுவை கோரிக்கைகள்",
+    "emptyTitle": "இன்னும் நண்பர்கள் இல்லை",
+    "emptySubtitle": "நண்பர்களை சேர்க்க பயனர்களைத் தேடுங்கள்",
+    "addFriend": "சேர்"
   },
   "googleLogin": {
     "cancelledError": "Google உள்நுழைவு ரத்து செய்யப்பட்டது",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "அம்சம் கண்டுபிடிப்பு சுற்றுப்பயணம்"
   },
   "notFound": {
     "title": "பக்கம் கிடைக்கவில்லை",
@@ -6272,7 +6284,8 @@
       "noResults": "வசனங்கள் எதுவும் இல்லை"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "சேனல் அரட்டை"
   },
   "podcast": {
     "selectLanguage": "மொழியைத் தேர்ந்தெடு",
@@ -6433,7 +6446,8 @@
     "author": "ஆசிரியர்",
     "category": "வகை",
     "episodeCount": "அத்தியாயங்கள்",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "சமீபத்திய எபிசோட்களை புதுப்பிக்கவும்"
   },
   "miniPlayer": {
     "skipBackward": "15 வினாடி பின்னால்",
@@ -7315,6 +7329,9 @@
       "largeText": "பெரிய எழுத்து",
       "largeTextDesc": "பயன்பாடு முழுவதும் எழுத்து அளவை அதிகரிக்கவும்",
       "reduceMotion": "இயக்கத்தைக் குறை",
+      "reduceMotionDesc": "அனிமேஷன்கள் மற்றும் இயக்க விளைவுகளை கட்டுப்படுத்தவும்",
+      "audioDescriptions": "ஒலி விளக்கங்கள்",
+      "audioDescDesc": "அணுகலுக்கான காட்சி உள்ளடக்கத்தின் விவரிக்கப்பட்ட விளக்கங்கள்",
       "title": "அணுகல்தன்மை"
     },
     "signOut": "வெளியேறு",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "குறிப்புகள் இல்லை",
       "noTutorialsAvailable": "டுடோரியல்கள் இல்லை",
       "scanEmailQR": "உங்கள் தொலைபேசியில் ஸ்கேன் செய்யுங்கள் அல்லது மின்னஞ்சல்:",
-      "videoTutorials": "வீடியோ பயிற்சிகள்"
+      "videoTutorials": "வீடியோ பயிற்சிகள்",
+      "typeMessage": "உங்கள் கேள்வியை தட்டச்சு செய்யுங்கள்...",
+      "sendMessage": "அனுப்பு"
     },
     "autoplayDescription": "முடிந்ததும் அடுத்த தொடர் தானியங்கி இயக்கும்",
     "autoplayNextEpisode": "அடுத்த தொடர் தானியங்கி இயக்கு",
@@ -8291,7 +8310,10 @@
       "weather": "வானிலை",
       "health": "ஆரோக்கியம்",
       "general": "பொது"
-    }
+    },
+    "loadFailed": "ட்ரெண்டிங் ஏற்றுவதில் தோல்வி",
+    "headlines": "தலைப்புச் செய்திகள்",
+    "trendingTopics": "டிரெண்டிங் தலைப்புகள்"
   },
   "trivia": {
     "didYouKnow": "உங்களுக்குத் தெரியுமா?",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "விழா உருவாக்கு",
+    "joinExisting": "விழாவில் சேரு",
+    "emptyTitle": "கண்காணிப்பு விழாக்கள் இல்லை",
+    "emptySubtitle": "ஒன்றாக பார்க்க விழா உருவாக்கவும் அல்லது சேரவும்",
+    "joinSubtitle": "ஹோஸ்ட் பகிர்ந்த அறை குறியீட்டை உள்ளிடுக",
+    "roomCodePlaceholder": "அறை குறியீடு",
+    "contentIdPlaceholder": "உள்ளடக்க ஐடி",
+    "contentType": "வகை",
+    "maxParticipants": "அதிகபட்ச விருந்தினர்கள்"
   },
   "playlist": {
     "title": "எனது பட்டியல்",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "எபிரேய விகிதம்",
       "recentAttempts": "சமீபத்திய முயற்சிகள்",
       "shekels": "பெற்ற ஷெக்கல்ஸ்"
-    }
+    },
+    "listeningForResponse": "உங்கள் பதிலை கேட்கிறோம்",
+    "evaluatingResponse": "உங்கள் பதிலை மதிப்பீடு செய்கிறோம்"
   },
   "bilingual": {
     "title": "இருமொழி பாலம்",
@@ -12732,5 +12765,9 @@
         "loadFailed": "உள்ளடக்கம் ஏற்ற தவறியது"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "பரிந்துரையை நிராகரிக்கவும்",
+    "accept": "பரிந்துரையை ஏற்கவும்"
   }
 }

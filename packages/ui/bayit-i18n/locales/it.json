@@ -3270,7 +3270,8 @@
     "loading": "Caricamento messaggi...",
     "typing": "Sta scrivendo...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "Elimina chat"
   },
   "chatbot": {
     "title": "Assistente Bayit+",
@@ -3321,7 +3322,10 @@
       "setupRequired": "[it] Setup Required",
       "startSetup": "[it] Start Setup",
       "title": "[it] Voice Assistant"
-    }
+    },
+    "testMicrophone": "Testa microfono",
+    "wakeWordDetected": "Parola di attivazione rilevata!",
+    "idle": "Inattivo"
   },
   "chess": {
     "title": "Scacchi",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "Mini-player in riproduzione",
     "podcast": "Lettore podcast",
     "radio": "Stazioni radio",
-    "weather": "Meteo"
+    "weather": "Meteo",
+    "createPersonal": "Crea widget personale"
   },
   "liveCategories": {
     "educational": "Educativo"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "Ora in {{location}}",
     "shabbat": "Shabbat",
-    "weekend": "Fine settimana"
+    "weekend": "Fine settimana",
+    "timeInIsrael": "Ora in Israele",
+    "timeInNewYork": "Ora a New York"
   },
   "cultureTrending": {
     "whatsHotIn": "Tendenze in {{location}}",
@@ -5039,7 +5046,11 @@
     "empty": "Nessun amico",
     "emptyHint": "Cerca amici con cui connetterti",
     "loading": "Caricamento amici...",
-    "list": "Amici ({{count}})"
+    "list": "Amici ({{count}})",
+    "pendingRequests": "Richieste in attesa",
+    "emptyTitle": "Nessun amico ancora",
+    "emptySubtitle": "Cerca utenti per aggiungere amici",
+    "addFriend": "Aggiungi"
   },
   "googleLogin": {
     "cancelledError": "Accesso con Google annullato",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "Tour scoperta funzionalità"
   },
   "notFound": {
     "title": "Pagina non trovata",
@@ -6272,7 +6284,8 @@
       "noResults": "Nessun sottotitolo trovato"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "Chat del canale"
   },
   "podcast": {
     "selectLanguage": "Seleziona lingua",
@@ -6433,7 +6446,8 @@
     "author": "Autore",
     "category": "Categoria",
     "episodeCount": "Episodi",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "Aggiorna episodi recenti"
   },
   "miniPlayer": {
     "skipBackward": "Indietro di 15 secondi",
@@ -7315,6 +7329,9 @@
       "largeText": "Testo grande",
       "largeTextDesc": "Aumenta la dimensione del testo",
       "reduceMotion": "Riduci movimento",
+      "reduceMotionDesc": "Limita animazioni ed effetti di movimento",
+      "audioDescriptions": "Audiodescrizioni",
+      "audioDescDesc": "Descrizioni narrate del contenuto visivo per l'accessibilità",
       "title": "Accessibilita"
     },
     "signOut": "Esci",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "Nessun suggerimento disponibile",
       "noTutorialsAvailable": "Nessun tutorial disponibile",
       "scanEmailQR": "Scansiona sul telefono o scrivici a:",
-      "videoTutorials": "Video tutorial"
+      "videoTutorials": "Video tutorial",
+      "typeMessage": "Scrivi la tua domanda...",
+      "sendMessage": "Invia"
     },
     "autoplayDescription": "Riproduci automaticamente l'episodio successivo al termine",
     "autoplayNextEpisode": "Riproduzione Automatica",
@@ -8291,7 +8310,10 @@
       "weather": "Meteo",
       "health": "Salute",
       "general": "Generale"
-    }
+    },
+    "loadFailed": "Caricamento tendenze fallito",
+    "headlines": "Titoli",
+    "trendingTopics": "Argomenti di tendenza"
   },
   "trivia": {
     "didYouKnow": "Lo Sapevi?",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "Crea festa",
+    "joinExisting": "Unisciti alla festa",
+    "emptyTitle": "Nessuna watch party",
+    "emptySubtitle": "Crea o unisciti a una festa per guardare insieme",
+    "joinSubtitle": "Inserisci il codice stanza condiviso dall'host",
+    "roomCodePlaceholder": "Codice stanza",
+    "contentIdPlaceholder": "ID contenuto",
+    "contentType": "Tipo",
+    "maxParticipants": "Massimo partecipanti"
   },
   "playlist": {
     "title": "La Mia Lista",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "Tasso di ebraico",
       "recentAttempts": "Tentativi recenti",
       "shekels": "Shekel guadagnati"
-    }
+    },
+    "listeningForResponse": "In ascolto della tua risposta",
+    "evaluatingResponse": "Valutazione della tua risposta"
   },
   "bilingual": {
     "title": "Ponte Bilingue",
@@ -12732,5 +12765,9 @@
         "loadFailed": "Caricamento contenuto fallito"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "Ignora suggerimento",
+    "accept": "Accetta suggerimento"
   }
 }

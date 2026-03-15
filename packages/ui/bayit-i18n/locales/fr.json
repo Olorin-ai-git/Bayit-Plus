@@ -3270,7 +3270,8 @@
     "loading": "Chargement des messages...",
     "typing": "En train d'écrire...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "Supprimer le chat"
   },
   "chatbot": {
     "title": "Assistant Bayit+",
@@ -3321,7 +3322,10 @@
       "setupRequired": "Configuration requise",
       "startSetup": "Demarrer la configuration",
       "title": "Assistant vocal"
-    }
+    },
+    "testMicrophone": "Tester le microphone",
+    "wakeWordDetected": "Mot de déclenchement détecté!",
+    "idle": "Inactif"
   },
   "chess": {
     "title": "Échecs",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "Mini-lecteur",
     "podcast": "Lecteur de podcast",
     "radio": "Stations de radio",
-    "weather": "Météo"
+    "weather": "Météo",
+    "createPersonal": "Créer un widget personnel"
   },
   "liveCategories": {
     "educational": "Éducatif"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "Heure à {{location}}",
     "shabbat": "Chabbat",
-    "weekend": "Week-end"
+    "weekend": "Week-end",
+    "timeInIsrael": "Heure en Israël",
+    "timeInNewYork": "Heure à New York"
   },
   "cultureTrending": {
     "whatsHotIn": "Tendances en {{location}}",
@@ -5039,7 +5046,11 @@
     "empty": "Pas encore d'amis",
     "emptyHint": "Rechercher des amis pour se connecter",
     "loading": "Chargement des amis...",
-    "list": "Amis ({{count}})"
+    "list": "Amis ({{count}})",
+    "pendingRequests": "Demandes en attente",
+    "emptyTitle": "Pas encore d'amis",
+    "emptySubtitle": "Recherchez des utilisateurs pour ajouter des amis",
+    "addFriend": "Ajouter"
   },
   "googleLogin": {
     "cancelledError": "Connexion Google annulée",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "Tour de découverte des fonctionnalités"
   },
   "notFound": {
     "title": "Page non trouvée",
@@ -6272,7 +6284,8 @@
       "noResults": "Aucun sous-titre trouvé"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "Chat de la chaîne"
   },
   "podcast": {
     "selectLanguage": "Sélectionner la langue",
@@ -6433,7 +6446,8 @@
     "author": "Auteur",
     "category": "Catégorie",
     "episodeCount": "Épisodes",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "Actualiser les derniers épisodes"
   },
   "miniPlayer": {
     "skipBackward": "Reculer de 15 secondes",
@@ -7315,6 +7329,9 @@
       "largeText": "Grand texte",
       "largeTextDesc": "Augmenter la taille du texte",
       "reduceMotion": "Reduire les animations",
+      "reduceMotionDesc": "Limiter les animations et effets de mouvement",
+      "audioDescriptions": "Audiodescriptions",
+      "audioDescDesc": "Descriptions narratives du contenu visuel pour l'accessibilité",
       "title": "Accessibilite"
     },
     "signOut": "Se deconnecter",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "Aucun conseil disponible",
       "noTutorialsAvailable": "Aucun tutoriel disponible",
       "scanEmailQR": "Scannez sur votre téléphone ou envoyez-nous un email à:",
-      "videoTutorials": "Tutoriels vidéo"
+      "videoTutorials": "Tutoriels vidéo",
+      "typeMessage": "Tapez votre question...",
+      "sendMessage": "Envoyer"
     },
     "autoplayDescription": "Lire automatiquement l'episode suivant a la fin",
     "autoplayNextEpisode": "Lecture Automatique",
@@ -8291,7 +8310,10 @@
       "weather": "Météo",
       "health": "Santé",
       "general": "Général"
-    }
+    },
+    "loadFailed": "Impossible de charger les tendances",
+    "headlines": "Gros titres",
+    "trendingTopics": "Sujets tendance"
   },
   "trivia": {
     "didYouKnow": "Le Saviez-Vous?",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "Créer une fête",
+    "joinExisting": "Rejoindre la fête",
+    "emptyTitle": "Pas de fêtes de visionnage",
+    "emptySubtitle": "Créez ou rejoignez une fête pour regarder ensemble",
+    "joinSubtitle": "Entrez le code de salle du organisateur",
+    "roomCodePlaceholder": "Code de salle",
+    "contentIdPlaceholder": "ID de contenu",
+    "contentType": "Type",
+    "maxParticipants": "Maximum de participants"
   },
   "playlist": {
     "title": "Ma Liste",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "Taux d'hébreu",
       "recentAttempts": "Tentatives récentes",
       "shekels": "Shekels gagnés"
-    }
+    },
+    "listeningForResponse": "Écoute de votre réponse",
+    "evaluatingResponse": "Évaluation de votre réponse"
   },
   "bilingual": {
     "title": "Pont Bilingue",
@@ -12732,5 +12765,9 @@
         "loadFailed": "Echec du chargement du contenu"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "Ignorer la suggestion",
+    "accept": "Accepter la suggestion"
   }
 }

@@ -3270,7 +3270,8 @@
     "loading": "加载消息...",
     "typing": "正在输入...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "删除聊天"
   },
   "chatbot": {
     "title": "Bayit+ 助手",
@@ -3321,7 +3322,10 @@
       "setupRequired": "[zh] Setup Required",
       "startSetup": "[zh] Start Setup",
       "title": "[zh] Voice Assistant"
-    }
+    },
+    "testMicrophone": "测试麦克风",
+    "wakeWordDetected": "唤醒词已检测到！",
+    "idle": "空闲"
   },
   "chess": {
     "title": "国际象棋",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "正在播放迷你播放器",
     "podcast": "播客播放器",
     "radio": "广播电台",
-    "weather": "天气"
+    "weather": "天气",
+    "createPersonal": "创建个人小部件"
   },
   "liveCategories": {
     "educational": "教育"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "{{location}}时间",
     "shabbat": "安息日",
-    "weekend": "周末"
+    "weekend": "周末",
+    "timeInIsrael": "以色列时间",
+    "timeInNewYork": "纽约时间"
   },
   "cultureTrending": {
     "whatsHotIn": "{{location}}热门",
@@ -5039,7 +5046,11 @@
     "empty": "暂无好友",
     "emptyHint": "搜索朋友进行连接",
     "loading": "加载好友...",
-    "list": "好友 ({{count}})"
+    "list": "好友 ({{count}})",
+    "pendingRequests": "待处理请求",
+    "emptyTitle": "还没有朋友",
+    "emptySubtitle": "搜索用户以添加好友",
+    "addFriend": "添加"
   },
   "googleLogin": {
     "cancelledError": "Google 登录已取消",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "功能探索之旅"
   },
   "notFound": {
     "title": "页面未找到",
@@ -6272,7 +6284,8 @@
       "noResults": "未找到字幕"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "频道聊天"
   },
   "podcast": {
     "selectLanguage": "选择语言",
@@ -6433,7 +6446,8 @@
     "author": "作者",
     "category": "类别",
     "episodeCount": "集数",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "刷新最新剧集"
   },
   "miniPlayer": {
     "skipBackward": "后退15秒",
@@ -7315,6 +7329,9 @@
       "largeText": "大字体",
       "largeTextDesc": "增大应用中的字体大小",
       "reduceMotion": "减少动画",
+      "reduceMotionDesc": "限制动画和动效",
+      "audioDescriptions": "音频描述",
+      "audioDescDesc": "为无障碍功能提供视觉内容的语音描述",
       "title": "辅助功能"
     },
     "signOut": "退出登录",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "暂无提示",
       "noTutorialsAvailable": "暂无教程",
       "scanEmailQR": "在手机上扫描或发送邮件至:",
-      "videoTutorials": "视频教程"
+      "videoTutorials": "视频教程",
+      "typeMessage": "输入您的问题...",
+      "sendMessage": "发送"
     },
     "autoplayDescription": "当前集结束后自动播放下一集",
     "autoplayNextEpisode": "自动播放下一集",
@@ -8291,7 +8310,10 @@
       "weather": "天气",
       "health": "健康",
       "general": "综合"
-    }
+    },
+    "loadFailed": "加载趋势失败",
+    "headlines": "头条新闻",
+    "trendingTopics": "热门话题"
   },
   "trivia": {
     "didYouKnow": "你知道吗？",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "创建派对",
+    "joinExisting": "加入派对",
+    "emptyTitle": "没有观影派对",
+    "emptySubtitle": "创建或加入派对一起观看",
+    "joinSubtitle": "输入主持人分享的房间码",
+    "roomCodePlaceholder": "房间码",
+    "contentIdPlaceholder": "内容ID",
+    "contentType": "类型",
+    "maxParticipants": "最多参与者"
   },
   "playlist": {
     "title": "我的播放列表",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "希伯来语比例",
       "recentAttempts": "最近尝试",
       "shekels": "已获得谢克尔"
-    }
+    },
+    "listeningForResponse": "正在听您的回答",
+    "evaluatingResponse": "正在评估您的回答"
   },
   "bilingual": {
     "title": "双语桥梁",
@@ -12732,5 +12765,9 @@
         "loadFailed": "加载内容失败"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "忽略建议",
+    "accept": "接受建议"
   }
 }

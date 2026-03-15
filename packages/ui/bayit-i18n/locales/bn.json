@@ -3270,7 +3270,8 @@
     "loading": "বার্তা লোড হচ্ছে...",
     "typing": "টাইপ করছে...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "চ্যাট মুছুন"
   },
   "chatbot": {
     "title": "Bayit+ সহায়ক",
@@ -3321,7 +3322,10 @@
       "setupRequired": "[bn] Setup Required",
       "startSetup": "[bn] Start Setup",
       "title": "[bn] Voice Assistant"
-    }
+    },
+    "testMicrophone": "মাইক্রোফোন পরীক্ষা করুন",
+    "wakeWordDetected": "ওয়েক ওয়ার্ড শনাক্ত হয়েছে!",
+    "idle": "নিষ্ক্রিয়"
   },
   "chess": {
     "title": "দাবা",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "নাউ প্লেয়িং মিনি-প্লেয়ার",
     "podcast": "পডকাস্ট প্লেয়ার",
     "radio": "রেডিও স্টেশন",
-    "weather": "আবহাওয়া"
+    "weather": "আবহাওয়া",
+    "createPersonal": "ব্যক্তিগত উইজেট তৈরি করুন"
   },
   "liveCategories": {
     "educational": "শিক্ষামূলক"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "{{location}} সময়",
     "shabbat": "শাব্বাত",
-    "weekend": "সপ্তাহান্ত"
+    "weekend": "সপ্তাহান্ত",
+    "timeInIsrael": "ইসরায়েলে সময়",
+    "timeInNewYork": "নিউ ইয়র্কে সময়"
   },
   "cultureTrending": {
     "whatsHotIn": "{{location}}-এ কী হট",
@@ -5039,7 +5046,11 @@
     "empty": "এখনও কোনো বন্ধু নেই",
     "emptyHint": "সংযোগ করতে বন্ধু খুঁজুন",
     "loading": "বন্ধু লোড হচ্ছে...",
-    "list": "বন্ধু ({{count}})"
+    "list": "বন্ধু ({{count}})",
+    "pendingRequests": "মুলতুবি অনুরোধ",
+    "emptyTitle": "এখনও কোনো বন্ধু নেই",
+    "emptySubtitle": "বন্ধু যোগ করতে ব্যবহারকারী খুঁজুন",
+    "addFriend": "যোগ করুন"
   },
   "googleLogin": {
     "cancelledError": "Google সাইন-ইন বাতিল করা হয়েছে",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "ফিচার ডিসকভারি ট্যুর"
   },
   "notFound": {
     "title": "পৃষ্ঠা পাওয়া যায়নি",
@@ -6272,7 +6284,8 @@
       "noResults": "কোনো সাবটাইটেল পাওয়া যায়নি"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "চ্যানেল চ্যাট"
   },
   "podcast": {
     "selectLanguage": "ভাষা নির্বাচন করুন",
@@ -6433,7 +6446,8 @@
     "author": "লেখক",
     "category": "বিভাগ",
     "episodeCount": "পর্বসমূহ",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "সর্বশেষ এপিসোড রিফ্রেশ করুন"
   },
   "miniPlayer": {
     "skipBackward": "15 সেকেন্ড পিছনে",
@@ -7315,6 +7329,9 @@
       "largeText": "বড় টেক্সট",
       "largeTextDesc": "অ্যাপ জুড়ে টেক্সট সাইজ বাড়ান",
       "reduceMotion": "মোশন কমান",
+      "reduceMotionDesc": "অ্যানিমেশন এবং মোশন ইফেক্ট সীমিত করুন",
+      "audioDescriptions": "অডিও বর্ণনা",
+      "audioDescDesc": "অ্যাক্সেসিবিলিটির জন্য ভিজ্যুয়াল কন্টেন্টের বর্ণিত বিবরণ",
       "title": "অ্যাক্সেসিবিলিটি"
     },
     "signOut": "সাইন আউট",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "কোনো টিপস নেই",
       "noTutorialsAvailable": "কোনো টিউটোরিয়াল নেই",
       "scanEmailQR": "ফোনে স্ক্যান করুন বা আমাদের ইমেইল করুন:",
-      "videoTutorials": "ভিডিও টিউটোরিয়াল"
+      "videoTutorials": "ভিডিও টিউটোরিয়াল",
+      "typeMessage": "আপনার প্রশ্ন টাইপ করুন...",
+      "sendMessage": "পাঠান"
     },
     "autoplayDescription": "শেষ হলে পরবর্তী এপিসোড স্বয়ংক্রিয়ভাবে চালান",
     "autoplayNextEpisode": "পরবর্তী এপিসোড অটোপ্লে",
@@ -8291,7 +8310,10 @@
       "weather": "আবহাওয়া",
       "health": "স্বাস্থ্য",
       "general": "সাধারণ"
-    }
+    },
+    "loadFailed": "ট্রেন্ডিং লোড করতে ব্যর্থ",
+    "headlines": "শিরোনাম",
+    "trendingTopics": "ট্রেন্ডিং বিষয়"
   },
   "trivia": {
     "didYouKnow": "আপনি কি জানেন?",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "পার্টি তৈরি করুন",
+    "joinExisting": "পার্টিতে যোগ দিন",
+    "emptyTitle": "কোনো ওয়াচ পার্টি নেই",
+    "emptySubtitle": "একসাথে দেখতে পার্টি তৈরি করুন বা যোগ দিন",
+    "joinSubtitle": "হোস্ট দ্বারা শেয়ার করা রুম কোড লিখুন",
+    "roomCodePlaceholder": "রুম কোড",
+    "contentIdPlaceholder": "কন্টেন্ট আইডি",
+    "contentType": "ধরন",
+    "maxParticipants": "সর্বোচ্চ অতিথি"
   },
   "playlist": {
     "title": "আমার তালিকা",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "হিব্রু হার",
       "recentAttempts": "সাম্প্রতিক প্রচেষ্টা",
       "shekels": "অর্জিত শেকেল"
-    }
+    },
+    "listeningForResponse": "আপনার প্রতিক্রিয়া শুনছি",
+    "evaluatingResponse": "আপনার প্রতিক্রিয়া মূল্যায়ন করছি"
   },
   "bilingual": {
     "title": "দ্বিভাষিক সেতু",
@@ -12732,5 +12765,9 @@
         "loadFailed": "কন্টেন্ট লোড করতে ব্যর্থ"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "পরামর্শ খারিজ করুন",
+    "accept": "পরামর্শ গ্রহণ করুন"
   }
 }

@@ -3270,7 +3270,8 @@
     "loading": "メッセージを読み込み中...",
     "typing": "入力中...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "チャットを削除"
   },
   "chatbot": {
     "title": "アシスタント",
@@ -3321,7 +3322,10 @@
       "setupRequired": "[ja] Setup Required",
       "startSetup": "[ja] Start Setup",
       "title": "[ja] Voice Assistant"
-    }
+    },
+    "testMicrophone": "マイクテスト",
+    "wakeWordDetected": "ウェイクワードが検出されました！",
+    "idle": "アイドル"
   },
   "chess": {
     "title": "チェス",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "再生中ミニプレーヤー",
     "podcast": "ポッドキャストプレーヤー",
     "radio": "ラジオ局",
-    "weather": "天気"
+    "weather": "天気",
+    "createPersonal": "個人ウィジェット作成"
   },
   "liveCategories": {
     "educational": "[ja] Educational"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "{{location}}の時間",
     "shabbat": "シャバット",
-    "weekend": "週末"
+    "weekend": "週末",
+    "timeInIsrael": "イスラエルの時間",
+    "timeInNewYork": "ニューヨークの時間"
   },
   "cultureTrending": {
     "whatsHotIn": "{{location}}のトレンド",
@@ -5039,7 +5046,11 @@
     "empty": "フレンドはまだいません",
     "emptyHint": "つながる友達を検索",
     "loading": "フレンドを読み込み中...",
-    "list": "フレンド ({{count}})"
+    "list": "フレンド ({{count}})",
+    "pendingRequests": "保留中のリクエスト",
+    "emptyTitle": "まだ友達がいません",
+    "emptySubtitle": "友達を追加するユーザーを検索",
+    "addFriend": "追加"
   },
   "googleLogin": {
     "cancelledError": "Googleログインがキャンセルされました",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "機能発見ツアー"
   },
   "notFound": {
     "title": "ページが見つかりません",
@@ -6254,7 +6266,8 @@
       "noResults": "字幕が見つかりません"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "チャンネルチャット"
   },
   "podcast": {
     "selectLanguage": "言語を選択",
@@ -6415,7 +6428,8 @@
     "author": "著者",
     "category": "カテゴリ",
     "episodeCount": "エピソード数",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "最新エピソードを更新"
   },
   "miniPlayer": {
     "skipBackward": "15秒戻る",
@@ -7297,6 +7311,9 @@
       "largeText": "大きなテキスト",
       "largeTextDesc": "アプリ全体のテキストサイズを拡大",
       "reduceMotion": "モーションを減らす",
+      "reduceMotionDesc": "アニメーションとモーションエフェクトを制限",
+      "audioDescriptions": "音声ガイド",
+      "audioDescDesc": "アクセシビリティのための視覚コンテンツの音声解説",
       "title": "アクセシビリティ"
     },
     "signOut": "サインアウト",
@@ -7608,7 +7625,9 @@
       "noTipsAvailable": "ヒントはありません",
       "noTutorialsAvailable": "チュートリアルはありません",
       "scanEmailQR": "スマホでスキャンするかメールしてください:",
-      "videoTutorials": "動画チュートリアル"
+      "videoTutorials": "動画チュートリアル",
+      "typeMessage": "質問を入力してください...",
+      "sendMessage": "送信"
     },
     "autoplayDescription": "終了時に次のエピソードを自動的に再生",
     "autoplayNextEpisode": "次のエピソードを自動再生",
@@ -8273,7 +8292,10 @@
       "weather": "天気",
       "health": "健康",
       "general": "一般"
-    }
+    },
+    "loadFailed": "トレンドの読み込み失敗",
+    "headlines": "ヘッドライン",
+    "trendingTopics": "トレンドトピック"
   },
   "trivia": {
     "didYouKnow": "知っていますか？",
@@ -8791,7 +8813,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "パーティーを作成",
+    "joinExisting": "パーティーに参加",
+    "emptyTitle": "ウォッチパーティーなし",
+    "emptySubtitle": "一緒に観るためのパーティーを作成または参加",
+    "joinSubtitle": "ホストが共有したルームコードを入力",
+    "roomCodePlaceholder": "ルームコード",
+    "contentIdPlaceholder": "コンテンツID",
+    "contentType": "タイプ",
+    "maxParticipants": "最大参加者数"
   },
   "playlist": {
     "title": "マイリスト",
@@ -10512,7 +10543,9 @@
       "hebrewRate": "ヘブライ語率",
       "recentAttempts": "最近の試行",
       "shekels": "獲得したシェケル"
-    }
+    },
+    "listeningForResponse": "あなたの返答を聞いています",
+    "evaluatingResponse": "あなたの返答を評価しています"
   },
   "bilingual": {
     "title": "バイリンガルブリッジ",
@@ -12714,5 +12747,9 @@
         "loadFailed": "コンテンツの読み込みに失敗"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "提案を却下",
+    "accept": "提案を受け入れる"
   }
 }

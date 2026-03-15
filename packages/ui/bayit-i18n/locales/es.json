@@ -3270,7 +3270,8 @@
     "loading": "Cargando mensajes...",
     "typing": "Escribiendo...",
     "newChat": "New Chat",
-    "typeMessage": "Type a message..."
+    "typeMessage": "Type a message...",
+    "deleteChat": "Eliminar chat"
   },
   "chatbot": {
     "title": "Asistente Bayit+",
@@ -3321,7 +3322,10 @@
       "setupRequired": "Configuracion requerida",
       "startSetup": "Iniciar configuracion",
       "title": "Asistente de voz"
-    }
+    },
+    "testMicrophone": "Probar micrófono",
+    "wakeWordDetected": "¡Palabra de activación detectada!",
+    "idle": "Inactivo"
   },
   "chess": {
     "title": "Ajedrez",
@@ -4036,7 +4040,8 @@
     "nowPlaying": "Minireproductor",
     "podcast": "Reproductor de podcast",
     "radio": "Estaciones de radio",
-    "weather": "Clima"
+    "weather": "Clima",
+    "createPersonal": "Crear widget personal"
   },
   "liveCategories": {
     "educational": "Educativo"
@@ -4234,7 +4239,9 @@
   "cultureClock": {
     "timeIn": "Hora en {{location}}",
     "shabbat": "Shabat",
-    "weekend": "Fin de Semana"
+    "weekend": "Fin de Semana",
+    "timeInIsrael": "Hora en Israel",
+    "timeInNewYork": "Hora en Nueva York"
   },
   "cultureTrending": {
     "whatsHotIn": "Tendencias en {{location}}",
@@ -5039,7 +5046,11 @@
     "empty": "Sin amigos aún",
     "emptyHint": "Buscar amigos para conectar",
     "loading": "Cargando amigos...",
-    "list": "Amigos ({{count}})"
+    "list": "Amigos ({{count}})",
+    "pendingRequests": "Solicitudes pendientes",
+    "emptyTitle": "Aún sin amigos",
+    "emptySubtitle": "Busca usuarios para agregar amigos",
+    "addFriend": "Agregar"
   },
   "googleLogin": {
     "cancelledError": "Inicio de sesión con Google cancelado",
@@ -5715,7 +5726,8 @@
       }
     },
     "completeSetup": "Complete Setup",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "featureTour": "Tour de descubrimiento de funciones"
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -6272,7 +6284,8 @@
       "noResults": "No se encontraron subtitulos"
     },
     "disconnect": "Disconnect",
-    "unknownDevice": "Unknown Device"
+    "unknownDevice": "Unknown Device",
+    "channelChat": "Chat del canal"
   },
   "podcast": {
     "selectLanguage": "Seleccionar Idioma",
@@ -6433,7 +6446,8 @@
     "author": "Autor",
     "category": "Categoría",
     "episodeCount": "Episodios",
-    "podcast": "Podcast"
+    "podcast": "Podcast",
+    "refreshEpisodes": "Actualizar episodios recientes"
   },
   "miniPlayer": {
     "skipBackward": "Retroceder 15 segundos",
@@ -7315,6 +7329,9 @@
       "largeText": "Texto grande",
       "largeTextDesc": "Aumentar el tamano del texto",
       "reduceMotion": "Reducir movimiento",
+      "reduceMotionDesc": "Limitar animaciones y efectos de movimiento",
+      "audioDescriptions": "Audiodescripciones",
+      "audioDescDesc": "Descripciones narradas de contenido visual para accesibilidad",
       "title": "Accesibilidad"
     },
     "signOut": "Cerrar Sesion",
@@ -7626,7 +7643,9 @@
       "noTipsAvailable": "Sin consejos disponibles",
       "noTutorialsAvailable": "Sin tutoriales disponibles",
       "scanEmailQR": "Escanea en tu teléfono o envíanos un email a:",
-      "videoTutorials": "Videotutoriales"
+      "videoTutorials": "Videotutoriales",
+      "typeMessage": "Escribe tu pregunta...",
+      "sendMessage": "Enviar"
     },
     "autoplayDescription": "Reproducir automaticamente el siguiente episodio al terminar",
     "autoplayNextEpisode": "Reproducir Siguiente Episodio",
@@ -8291,7 +8310,10 @@
       "weather": "Clima",
       "health": "Salud",
       "general": "General"
-    }
+    },
+    "loadFailed": "Error al cargar tendencias",
+    "headlines": "Titulares",
+    "trendingTopics": "Temas de moda"
   },
   "trivia": {
     "didYouKnow": "¿Sabías Que?",
@@ -8809,7 +8831,16 @@
     "type": "Type",
     "contentId": "Content ID",
     "invite": "Invite",
-    "syncPlayback": "Sync Playback"
+    "syncPlayback": "Sync Playback",
+    "createNew": "Crear fiesta",
+    "joinExisting": "Unirse a la fiesta",
+    "emptyTitle": "Sin fiestas de visualización",
+    "emptySubtitle": "Crea o únete a una fiesta para ver juntos",
+    "joinSubtitle": "Ingresa el código de sala del anfitrión",
+    "roomCodePlaceholder": "Código de sala",
+    "contentIdPlaceholder": "ID de contenido",
+    "contentType": "Tipo",
+    "maxParticipants": "Máximo de invitados"
   },
   "playlist": {
     "title": "Mi Lista",
@@ -10530,7 +10561,9 @@
       "hebrewRate": "Tasa de hebreo",
       "recentAttempts": "Intentos recientes",
       "shekels": "Shekels ganados"
-    }
+    },
+    "listeningForResponse": "Escuchando tu respuesta",
+    "evaluatingResponse": "Evaluando tu respuesta"
   },
   "bilingual": {
     "title": "Puente Bilingue",
@@ -12732,5 +12765,9 @@
         "loadFailed": "Error al cargar contenido"
       }
     }
+  },
+  "proactiveSuggestions": {
+    "dismiss": "Descartar sugerencia",
+    "accept": "Aceptar sugerencia"
   }
 }
