@@ -3325,7 +3325,8 @@
     },
     "testMicrophone": "マイクテスト",
     "wakeWordDetected": "ウェイクワードが検出されました！",
-    "idle": "アイドル"
+    "idle": "アイドル",
+    "microphoneDenied": "マイクへのアクセスが拒否されました。設定を確認してください。"
   },
   "chess": {
     "title": "チェス",

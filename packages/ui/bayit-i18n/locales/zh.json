@@ -3325,7 +3325,8 @@
     },
     "testMicrophone": "测试麦克风",
     "wakeWordDetected": "唤醒词已检测到！",
-    "idle": "空闲"
+    "idle": "空闲",
+    "microphoneDenied": "麦克风访问被拒绝。请检查设置。"
   },
   "chess": {
     "title": "国际象棋",
@@ -5913,17 +5914,8 @@
     },
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",

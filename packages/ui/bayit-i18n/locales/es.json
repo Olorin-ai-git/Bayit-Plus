@@ -3325,7 +3325,8 @@
     },
     "testMicrophone": "Probar micrófono",
     "wakeWordDetected": "¡Palabra de activación detectada!",
-    "idle": "Inactivo"
+    "idle": "Inactivo",
+    "microphoneDenied": "Acceso al micrófono denegado. Comprueba la configuración."
   },
   "chess": {
     "title": "Ajedrez",
@@ -5919,11 +5920,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",

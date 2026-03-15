@@ -3325,7 +3325,8 @@
     },
     "testMicrophone": "Tester le microphone",
     "wakeWordDetected": "Mot de déclenchement détecté!",
-    "idle": "Inactif"
+    "idle": "Inactif",
+    "microphoneDenied": "Accès au microphone refusé. Vérifiez les paramètres."
   },
   "chess": {
     "title": "Échecs",

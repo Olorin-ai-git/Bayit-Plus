@@ -3325,7 +3325,8 @@
     },
     "testMicrophone": "Test Microphone",
     "wakeWordDetected": "Wake word detected!",
-    "idle": "Idle"
+    "idle": "Idle",
+    "microphoneDenied": "Microphone access denied. Check Settings."
   },
   "chess": {
     "title": "Chess",
@@ -5919,11 +5920,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",

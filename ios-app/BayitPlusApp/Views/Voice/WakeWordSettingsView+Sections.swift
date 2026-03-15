@@ -75,7 +75,7 @@ extension WakeWordSettingsView {
 
     var testSection: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            GlassButton("Test Microphone", variant: .secondary) {
+            GlassButton(localization.t("voiceAssistant.testMicrophone"), variant: .secondary) {
                 testMicrophone()
             }
 
@@ -108,9 +108,9 @@ extension WakeWordSettingsView {
     }
 
     var statusText: String {
-        if wakeWordService.isDetected { return "Wake word detected!" }
-        if wakeWordService.isListening { return "Listening..." }
-        return "Idle"
+        if wakeWordService.isDetected { return localization.t("voiceAssistant.wakeWordDetected") }
+        if wakeWordService.isListening { return localization.t("voiceAssistant.listening") }
+        return localization.t("voiceAssistant.idle")
     }
 
     // MARK: - Actions
@@ -123,13 +123,13 @@ extension WakeWordSettingsView {
                 case .granted:
                     testResult = WakeWordTestResult(
                         icon: "checkmark.circle.fill",
-                        message: "Microphone access granted",
+                        message: localization.t("voiceOnboarding.permissionsGranted"),
                         color: DesignTokens.Success.default
                     )
                 case .denied:
                     testResult = WakeWordTestResult(
                         icon: "xmark.circle.fill",
-                        message: "Microphone access denied. Check Settings.",
+                        message: localization.t("voiceAssistant.microphoneDenied"),
                         color: DesignTokens.ErrorColor.default
                     )
                 case .undetermined:
@@ -138,7 +138,7 @@ extension WakeWordSettingsView {
                         await MainActor.run {
                             testResult = WakeWordTestResult(
                                 icon: granted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                                message: granted ? "Microphone access granted" : "Microphone access denied",
+                                message: granted ? localization.t("voiceOnboarding.permissionsGranted") : localization.t("voiceAssistant.microphoneDenied"),
                                 color: granted ? DesignTokens.Success.default : DesignTokens.ErrorColor.default
                             )
                         }
