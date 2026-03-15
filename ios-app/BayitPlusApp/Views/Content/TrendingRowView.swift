@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Horizontal scrolling row displaying trending topics, headlines,
@@ -7,6 +8,7 @@ struct TrendingRowView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) var coordinator
     @Environment(\.appConfiguration) private var appConfiguration
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: TrendingViewModel?
 
     var body: some View {
@@ -22,7 +24,7 @@ struct TrendingRowView: View {
             if let error = viewModel?.error {
                 GlassAlert(
                     type: .error,
-                    title: "Failed to load trending",
+                    title: localization.t("trending.loadFailed"),
                     message: error
                 )
                 .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -42,7 +44,7 @@ struct TrendingRowView: View {
     private func topicsSection(_ topics: [TrendingTopic]) -> some View {
         if !topics.isEmpty {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                sectionHeader(title: "Trending Topics", icon: "chart.line.uptrend.xyaxis")
+                sectionHeader(title: localization.t("trending.trendingTopics"), icon: "chart.line.uptrend.xyaxis")
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: DesignTokens.Spacing.sm) {
@@ -93,7 +95,7 @@ struct TrendingRowView: View {
     private func headlinesSection(_ headlines: [TrendingHeadline]) -> some View {
         if !headlines.isEmpty {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                sectionHeader(title: "Headlines", icon: "newspaper")
+                sectionHeader(title: localization.t("trending.headlines"), icon: "newspaper")
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: DesignTokens.Spacing.md) {
@@ -144,7 +146,7 @@ struct TrendingRowView: View {
             : items.filter { !ContentType.isOwnerOnlyType($0.type) }
         if !filtered.isEmpty {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                sectionHeader(title: "Recommended for You", icon: "sparkles")
+                sectionHeader(title: localization.t("home.recommended"), icon: "sparkles")
 
                 GlassCarousel(items: filtered, itemWidth: 160) { item in
                     GlassContentCard(
