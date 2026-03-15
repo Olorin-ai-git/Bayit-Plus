@@ -16,7 +16,7 @@ enum VODFilterType: String, CaseIterable, Identifiable {
         switch self {
         case .all: return "vod.allContent"
         case .movies: return "vod.movies"
-        case .series: return "vod.series"
+        case .series: return "vod.seriesOnly"
         case .collections: return "vod.collectionsOnly"
         case .actors: return "vod.actors"
         }
