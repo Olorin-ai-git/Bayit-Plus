@@ -26,8 +26,9 @@
 
             HStack(spacing: 0) {
                 TVAppSidebarView(
+                    avatarURL: coordinator.selectedProfileAvatar.flatMap { URL(string: $0) },
                     restoredWidgets: dockViewModel?.widgets ?? [],
-                    onAvatarTap: { coordinator.selectedTab = .profile },
+                    onAvatarTap: { showProfile = true },
                     onAddWidget: { showCreateWidget = true },
                     onClose: { dockViewModel?.dismissFromSidebar(widgetId: $0) }
                 )
@@ -97,7 +98,7 @@
             .onAppear {
                 guard !hasAppeared else { return }
                 hasAppeared = true
-                coord.selectedTab = .home
+                coord.selectedTab = .byoc
             }
             .fullScreenCover(isPresented: $showLanguagePicker) {
                 languagePickerSheet
