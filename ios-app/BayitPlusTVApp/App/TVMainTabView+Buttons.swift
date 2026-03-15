@@ -90,14 +90,15 @@
             Button {
                 showProfile = true
             } label: {
-                Image(systemName: "person.crop.circle")
+                Image(systemName: "person.crop.circle.fill")
                     .font(.system(size: TVDesignTokens.FontSize.md))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .frame(width: 44, height: 44)
+                    .foregroundStyle(DesignTokens.Primary.default)
+                    .padding(.horizontal, TVDesignTokens.Spacing.sm)
+                    .padding(.vertical, TVDesignTokens.Spacing.sm)
                     .background(DesignTokens.Glass.bgMedium)
-                    .clipShape(Circle())
+                    .clipShape(Capsule())
                     .overlay(
-                        Circle().stroke(DesignTokens.Glass.border, lineWidth: 1)
+                        Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1)
                     )
             }
             .tvCardStyle()
