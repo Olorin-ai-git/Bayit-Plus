@@ -11588,7 +11588,10 @@
       "enrichFailed": "Failed to analyze source",
       "syncFailed": "Failed to sync source",
       "normalizationFailed": "Content processing failed",
-      "normalizationPollFailed": "Lost connection during processing"
+      "normalizationPollFailed": "Lost connection during processing",
+      "authExpired": "Authorization expired - reconnect required",
+      "connectionError": "Connection error",
+      "reconnect": "Reconnect"
     },
     "authExpired": "Authorization expired - reconnect required",
     "connectionError": "Connection error",
