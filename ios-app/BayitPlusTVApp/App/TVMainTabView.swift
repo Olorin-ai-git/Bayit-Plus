@@ -130,8 +130,11 @@
                     )
                 }
             }
-            // NavigationStack handles Menu/Back button navigation automatically.
-            // No .onExitCommand override needed - it would trap users in sub-pages.
+            // Block Menu/Back from propagating beyond the main tab view.
+            // NavigationStack inside each tab handles its own back navigation;
+            // onExitCommand only fires when the stack is at root, preventing
+            // the Siri Remote from navigating back to the login/profile screen.
+            .onExitCommand {}
             .task {
                 if dockViewModel == nil {
                     dockViewModel = WidgetDockViewModel(

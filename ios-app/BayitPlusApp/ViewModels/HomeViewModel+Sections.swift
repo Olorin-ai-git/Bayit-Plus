@@ -81,27 +81,27 @@ extension HomeViewModel {
     }
 
     @MainActor
-    func loadTelAvivContent() async {
+    func loadTelAvivContent(lang: String? = nil) async {
         do {
-            telAvivContent = try await contentRepo.fetchTelAvivContent()
+            telAvivContent = try await contentRepo.fetchTelAvivContent(lang: lang)
         } catch {
             telAvivContent = nil
         }
     }
 
     @MainActor
-    func loadJerusalemContent() async {
+    func loadJerusalemContent(lang: String? = nil) async {
         do {
-            jerusalemContent = try await contentRepo.fetchJerusalemContent()
+            jerusalemContent = try await contentRepo.fetchJerusalemContent(lang: lang)
         } catch {
             jerusalemContent = nil
         }
     }
 
     @MainActor
-    func loadTrending() async {
+    func loadTrending(lang: String? = nil) async {
         do {
-            trendingContent = try await contentRepo.fetchTrending(cultureId: defaultCultureId)
+            trendingContent = try await contentRepo.fetchTrending(cultureId: defaultCultureId, lang: lang)
         } catch {
             trendingContent = []
         }

@@ -43,27 +43,13 @@ async def get_jerusalem_content(
     enable_geolocation: bool = Query(
         True, description="Enable geolocation enhancement"
     ),
+    lang: Optional[str] = Query(None, description="Target language code (e.g. en, es)"),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get Jerusalem-focused content from Israeli news.
 
-    Content is filtered and scored based on Jerusalem-related keywords
-    and optional geolocation proximity.
-
-    Returns content about:
-    - The Western Wall (Kotel)
-    - IDF ceremonies
-    - Diaspora connection news
-    - Holy sites
-    - Jerusalem events
-
-    NEW FEATURES:
-    - latitude/longitude: Override default Jerusalem center with user's location
-    - radius_km: Only show content within specified radius
-    - enable_geolocation: Toggle geolocation on/off (default: on)
-
-    BACKWARD COMPATIBLE: All new parameters optional.
+    Pass lang= to translate Hebrew headlines to the target language.
     """
     valid_categories = [
         JerusalemContentCategory.KOTEL,
@@ -82,7 +68,7 @@ async def get_jerusalem_content(
 
     reference_coords = (latitude, longitude) if latitude and longitude else None
 
-    return await jerusalem_content_service.fetch_all_content(
+    response = await jerusalem_content_service.fetch_all_content(
         category=category,
         page=page,
         limit=limit,
@@ -90,6 +76,27 @@ async def get_jerusalem_content(
         radius_km=radius_km,
         enable_geolocation=enable_geolocation,
     )
+
+    if lang and lang != "he" and response.items:
+        from app.services.headline_translator import translate_headlines
+
+        titles = [item.title for item in response.items]
+        summaries = [item.summary for item in response.items if item.summary]
+        all_texts = titles + [s for s in summaries if s]
+        translations = await translate_headlines(all_texts, lang)
+
+        for item in response.items:
+            translated_title = translations.get(item.title, item.title)
+            if lang == "en":
+                item.title_en = translated_title
+            item.title = translated_title
+            if item.summary:
+                translated_summary = translations.get(item.summary, item.summary)
+                if lang == "en":
+                    item.summary_en = translated_summary
+                item.summary = translated_summary
+
+    return response
 
 
 @router.get("/featured", response_model=JerusalemFeaturedResponse)

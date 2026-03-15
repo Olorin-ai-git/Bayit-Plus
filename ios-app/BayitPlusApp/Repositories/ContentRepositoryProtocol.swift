@@ -67,20 +67,20 @@ protocol ContentRepository: Sendable {
     ///
     /// - Returns: City content response for Tel Aviv.
     /// - Throws: `NetworkError` if the request fails.
-    func fetchTelAvivContent() async throws -> CityContentResponse
+    func fetchTelAvivContent(lang: String?) async throws -> CityContentResponse
 
     /// Fetch Jerusalem specific content.
     ///
     /// - Returns: City content response for Jerusalem.
     /// - Throws: `NetworkError` if the request fails.
-    func fetchJerusalemContent() async throws -> CityContentResponse
+    func fetchJerusalemContent(lang: String?) async throws -> CityContentResponse
 
     /// Fetch trending culture content (news topics) for a culture.
     ///
     /// - Parameter cultureId: Culture ID (e.g., "israeli", "jewish").
     /// - Returns: Array of culture trending items (news topics).
     /// - Throws: `NetworkError` if the request fails.
-    func fetchTrending(cultureId: String) async throws -> [CultureTrendingItem]
+    func fetchTrending(cultureId: String, lang: String?) async throws -> [CultureTrendingItem]
 
     /// Fetch series (parent series, not episodes).
     ///

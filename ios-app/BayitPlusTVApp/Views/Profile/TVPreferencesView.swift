@@ -95,7 +95,7 @@ struct TVPreferencesView: View {
 
     var playbackSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            sectionHeader(localization.t("settings.playbackSettings"))
+            sectionHeader(localization.t("settings.playbackSettings.title"))
 
             VStack(spacing: TVDesignTokens.Spacing.xs) {
                 toggleRow(

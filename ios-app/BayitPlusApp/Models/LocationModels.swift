@@ -24,7 +24,7 @@ struct LocationInfo: Decodable, Sendable {
     let state: String?
     let latitude: Double?
     let longitude: Double?
-    let source: String?  // 'geolocation' | 'cache' | 'timezone_inferred'
+    let source: String? // 'geolocation' | 'cache' | 'timezone_inferred'
 }
 
 /// Location-based content (israelis in city)
@@ -35,13 +35,13 @@ struct LocationContent: Decodable, Sendable {
 
 /// Business content
 struct BusinessContent: Decodable, Sendable {
-    let newsArticles: [LocationItem]?  // Actually business listings
+    let newsArticles: [LocationItem]? // Actually business listings
 }
 
 /// Coverage information
 struct Coverage: Decodable, Sendable {
     let hasContent: Bool?
-    let contentSource: String?  // 'local' | 'nearby'
+    let contentSource: String? // 'local' | 'nearby'
     let nearestMajorCity: String?
     let distanceMiles: Double?
 }
@@ -73,7 +73,11 @@ struct CityContentResponse: Decodable, Sendable {
 struct CityContentItem: Decodable, Sendable, Identifiable {
     let id: String
     let title: String?
+    let titleHe: String?
+    let titleEn: String?
     let description: String?
+    let descriptionHe: String?
+    let descriptionEn: String?
     let url: String?
     let imageUrl: String?
     let sourceName: String?
@@ -107,4 +111,5 @@ struct CultureTrendingItem: Decodable, Sendable, Identifiable, Equatable {
 }
 
 // MARK: - Continue Watching
+
 // Note: ContinueWatchingResponse and WatchHistoryItem are defined in MediaModels.swift

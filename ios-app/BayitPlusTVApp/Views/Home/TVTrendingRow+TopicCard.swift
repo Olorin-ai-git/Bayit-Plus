@@ -5,6 +5,7 @@ import SwiftUI
 /// Individual topic card for tvOS with larger fonts and focus support
 struct TVTrendingTopicCard: View {
     let item: CultureTrendingItem
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
@@ -94,22 +95,22 @@ struct TVTrendingTopicCard: View {
     }
 
     private var localizedTitle: String {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        let lang = localization.currentLanguage.rawValue
         if let localized = item.titleLocalized, let text = localized[lang], !text.isEmpty {
             return text
         }
-        if let localized = item.titleLocalized, let enText = localized["en"], !enText.isEmpty {
+        if lang != "en", let localized = item.titleLocalized, let enText = localized["en"], !enText.isEmpty {
             return enText
         }
         return item.title
     }
 
     private var localizedSummary: String? {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        let lang = localization.currentLanguage.rawValue
         if let localized = item.summaryLocalized, let text = localized[lang], !text.isEmpty {
             return text
         }
-        if let localized = item.summaryLocalized, let enText = localized["en"], !enText.isEmpty {
+        if lang != "en", let localized = item.summaryLocalized, let enText = localized["en"], !enText.isEmpty {
             return enText
         }
         return item.summary ?? item.summaryNative

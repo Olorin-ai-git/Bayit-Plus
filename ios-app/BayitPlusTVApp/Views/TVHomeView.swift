@@ -14,6 +14,7 @@ struct TVHomeView: View {
     @Environment(\.appConfiguration) var appConfiguration
     @State var viewModel: HomeViewModel?
     @State var featuredCollections: [CollectionDetail] = []
+    @State private var lastLanguage: String = ""
 
     var body: some View {
         Group {
@@ -45,12 +46,24 @@ struct TVHomeView: View {
                         ? [] : appConfiguration.hiddenChannelKeywords
                 )
             }
+            viewModel?.contentLanguage = localization.currentLanguage.rawValue
+            lastLanguage = localization.currentLanguage.rawValue
             await viewModel?.loadFeatured()
             await loadFeaturedCollections()
             ShabbatModeService.shared.startPolling(repository: repos.shabbat)
             cacheTopShelfData()
         }
         .onAppear {
+            Task {
+                viewModel?.contentLanguage = localization.currentLanguage.rawValue
+                await viewModel?.refresh()
+            }
+        }
+        .onChange(of: localization.currentLanguage) { _, newLang in
+            let lang = newLang.rawValue
+            guard lang != lastLanguage else { return }
+            lastLanguage = lang
+            viewModel?.contentLanguage = lang
             Task {
                 await viewModel?.refresh()
             }

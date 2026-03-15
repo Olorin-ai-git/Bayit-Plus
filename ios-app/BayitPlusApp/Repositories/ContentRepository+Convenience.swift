@@ -30,23 +30,38 @@ extension APIContentRepository {
         )
     }
 
-    func fetchTelAvivContent() async throws -> CityContentResponse {
+    func fetchTelAvivContent(lang: String? = nil) async throws -> CityContentResponse {
+        var queryItems: [URLQueryItem] = []
+        if let lang, lang != "he" {
+            queryItems.append(URLQueryItem(name: "lang", value: lang))
+        }
         return try await client.get(
             "/api/v1/tel-aviv/content",
+            queryItems: queryItems,
             as: CityContentResponse.self
         )
     }
 
-    func fetchJerusalemContent() async throws -> CityContentResponse {
+    func fetchJerusalemContent(lang: String? = nil) async throws -> CityContentResponse {
+        var queryItems: [URLQueryItem] = []
+        if let lang, lang != "he" {
+            queryItems.append(URLQueryItem(name: "lang", value: lang))
+        }
         return try await client.get(
             "/api/v1/jerusalem/content",
+            queryItems: queryItems,
             as: CityContentResponse.self
         )
     }
 
-    func fetchTrending(cultureId: String) async throws -> [CultureTrendingItem] {
+    func fetchTrending(cultureId: String, lang: String? = nil) async throws -> [CultureTrendingItem] {
+        var queryItems: [URLQueryItem] = []
+        if let lang, lang != "he" {
+            queryItems.append(URLQueryItem(name: "lang", value: lang))
+        }
         return try await client.get(
             "/api/v1/cultures/\(cultureId)/trending",
+            queryItems: queryItems,
             as: [CultureTrendingItem].self
         )
     }

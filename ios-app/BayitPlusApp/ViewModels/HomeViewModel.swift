@@ -39,6 +39,7 @@ final class HomeViewModel {
     let contentRowLimit: Int
     let defaultCultureId: String
     let hiddenChannelKeywords: [String]
+    var contentLanguage: String = "he"
     #if !os(tvOS)
         let widgetSyncService: WidgetDataSyncService?
     #endif
@@ -149,14 +150,15 @@ final class HomeViewModel {
     /// Load additional sections in parallel (non-blocking)
     @MainActor
     private func loadAdditionalSections() async {
+        let lang = contentLanguage
         async let liveTask: Void = loadLiveChannels()
         async let radioTask: Void = loadRadioStations()
         async let continueTask: Void = loadContinueWatching()
         async let collectionsTask: Void = loadFeaturedCollections()
-        async let telAvivTask: Void = loadTelAvivContent()
-        async let jerusalemTask: Void = loadJerusalemContent()
+        async let telAvivTask: Void = loadTelAvivContent(lang: lang)
+        async let jerusalemTask: Void = loadJerusalemContent(lang: lang)
         async let citiesTask: Void = loadCultureCities()
-        async let trendingTask: Void = loadTrending()
+        async let trendingTask: Void = loadTrending(lang: lang)
         async let locationTask: Void = loadLocationContent()
         async let youngstersTask: Void = loadYoungstersTrending()
 

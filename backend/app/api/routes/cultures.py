@@ -172,10 +172,13 @@ async def get_city_content(
 async def get_culture_trending(
     culture_id: str,
     limit: int = Query(10, ge=1, le=20, description="Number of items"),
+    lang: Optional[str] = Query(None, description="Target language code (e.g. en, es)"),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get trending content for a culture across all cities.
+
+    Pass lang= to translate Hebrew headlines to the target language.
     """
     # Validate culture exists
     culture = await culture_content_service.get_culture(culture_id)
@@ -185,10 +188,29 @@ async def get_culture_trending(
             detail=f"Culture not found: {culture_id}",
         )
 
-    return await culture_content_service.get_culture_trending(
+    items = await culture_content_service.get_culture_trending(
         culture_id=culture_id,
         limit=limit,
     )
+
+    if lang and lang != "he" and items:
+        from app.services.headline_translator import translate_headlines
+
+        titles = [item.title for item in items]
+        summaries = [item.summary or "" for item in items if item.summary]
+        all_texts = titles + [s for s in summaries if s]
+        translations = await translate_headlines(all_texts, lang)
+
+        for item in items:
+            existing = dict(item.title_localized) if item.title_localized else {}
+            existing[lang] = translations.get(item.title, item.title)
+            item.title_localized = existing
+            if item.summary:
+                s_existing = dict(item.summary_localized) if item.summary_localized else {}
+                s_existing[lang] = translations.get(item.summary, item.summary)
+                item.summary_localized = s_existing
+
+    return items
 
 
 @router.get("/{culture_id}/featured", response_model=CultureFeaturedResponse)

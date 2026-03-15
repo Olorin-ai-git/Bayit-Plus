@@ -6,6 +6,7 @@ import SwiftUI
 struct TVCityTopicCard: View {
     let item: CityContentItem
     let accentColor: Color
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
@@ -52,7 +53,7 @@ struct TVCityTopicCard: View {
     }
 
     private var titleText: some View {
-        Text(item.title ?? "")
+        Text(localizedTitle)
             .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
             .foregroundColor(DesignTokens.Text.primary)
             .lineLimit(3)
@@ -61,13 +62,35 @@ struct TVCityTopicCard: View {
 
     @ViewBuilder
     private var descriptionText: some View {
-        if let description = item.description, !description.isEmpty {
+        if let description = localizedDescription, !description.isEmpty {
             Text(description)
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundColor(DesignTokens.Text.secondary)
                 .lineLimit(2)
                 .lineSpacing(2)
         }
+    }
+
+    private var localizedTitle: String {
+        let lang = localization.currentLanguage.rawValue
+        if lang == "he" {
+            return item.titleHe ?? item.title ?? ""
+        }
+        if let titleEn = item.titleEn, !titleEn.isEmpty {
+            return titleEn
+        }
+        return item.title ?? ""
+    }
+
+    private var localizedDescription: String? {
+        let lang = localization.currentLanguage.rawValue
+        if lang == "he" {
+            return item.descriptionHe ?? item.description
+        }
+        if let descEn = item.descriptionEn, !descEn.isEmpty {
+            return descEn
+        }
+        return item.description
     }
 
     private var bottomRow: some View {

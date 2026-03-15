@@ -73,21 +73,23 @@ extension TVHomeView {
     }
 
     func dynamicCitySection(cityName: String, items: [CultureItem]) -> some View {
-        TVContentSection(
+        let lang = localization.currentLanguage.rawValue
+        return TVContentSection(
             title: cityName,
             icon: "building.2",
             items: items,
             maxItems: 4
         ) { item in
+            let localizedTitle = localizedCultureItemTitle(item, lang: lang, fallback: cityName)
             TVContentCard(
                 imageURL: item.imageUrl,
-                title: item.title ?? cityName,
+                title: localizedTitle,
                 subtitle: item.category,
                 aspectRatio: 16.0 / 9.0,
                 placeholderIcon: "photo"
             ) {
                 if let urlString = item.contentUrl, let url = URL(string: urlString) {
-                    coordinator.presentWebView(url: url, title: item.title ?? cityName)
+                    coordinator.presentWebView(url: url, title: localizedTitle)
                 }
             }
         }
@@ -173,5 +175,16 @@ extension TVHomeView {
                 navigateToCategoryItem(item, section: section)
             }
         }
+    }
+
+    /// Select the best available localized title for a CultureItem.
+    func localizedCultureItemTitle(_ item: CultureItem, lang: String, fallback: String) -> String {
+        if lang == "he" {
+            return item.titleHe ?? item.title ?? fallback
+        }
+        if let titleEn = item.titleEn, !titleEn.isEmpty {
+            return titleEn
+        }
+        return item.title ?? fallback
     }
 }
