@@ -106,21 +106,27 @@
             }
         }
 
+        // MARK: - Notifications
+
+        var notificationsDetail: some View {
+            settingsGlassNavRow(
+                icon: "bell.badge",
+                title: localization.t("settings.notificationPreferences"),
+                subtitle: localization.t("settings.notificationDescription"),
+                detail: nil
+            ) {
+                TVNotificationSettingsView()
+            }
+        }
+
         // MARK: - Security
 
         @ViewBuilder
         var securityDetail: some View {
             settingsGlassNavRow(
-                icon: "lock.shield",
-                title: localization.t("settings.security.changePassword"),
-                detail: nil
-            ) {
-                TVSecurityView()
-            }
-
-            settingsGlassNavRow(
-                icon: "key",
-                title: localization.t("settings.security.twoFactor"),
+                icon: "shield.lefthalf.filled",
+                title: localization.t("settings.security.accountSecurity"),
+                subtitle: localization.t("settings.security.twoFactorDesc"),
                 detail: nil
             ) {
                 TVSecurityView()
@@ -129,6 +135,7 @@
             settingsGlassNavRow(
                 icon: "hand.raised",
                 title: localization.t("settings.privacy.title"),
+                subtitle: localization.t("settings.privacy.description"),
                 detail: nil
             ) {
                 TVPrivacySettingsView()
@@ -141,6 +148,19 @@
             ) {
                 TVDevicePairingView()
             }
+        }
+
+        // MARK: - Family & Safety
+
+        @ViewBuilder
+        var familyDetail: some View {
+            settingsGlassNavRow(
+                icon: "person.2.circle",
+                title: localization.t("settings.household"),
+                detail: nil
+            ) {
+                TVHouseholdProfilesView(onDismiss: {})
+            }
 
             settingsGlassNavRow(
                 icon: "figure.2.and.child.holdinghands",
@@ -148,19 +168,6 @@
                 detail: nil
             ) {
                 TVFamilyControlsView()
-            }
-        }
-
-        // MARK: - Social
-
-        @ViewBuilder
-        var socialDetail: some View {
-            settingsGlassNavRow(
-                icon: "house",
-                title: localization.t("settings.household"),
-                detail: nil
-            ) {
-                TVHouseholdView()
             }
 
             settingsGlassNavRow(

@@ -9,8 +9,9 @@
     enum SettingsCategory: String, CaseIterable, Identifiable {
         case account
         case playback
+        case notifications
         case security
-        case social
+        case family
         case help
 
         var id: String {
@@ -21,8 +22,9 @@
             switch self {
             case .account: return "person.circle"
             case .playback: return "play.circle"
+            case .notifications: return "bell.badge"
             case .security: return "shield.lefthalf.filled"
-            case .social: return "person.2"
+            case .family: return "person.2.circle"
             case .help: return "questionmark.circle"
             }
         }
@@ -31,8 +33,9 @@
             switch self {
             case .account: return loc.t("settings.account")
             case .playback: return loc.t("settings.playback.title")
+            case .notifications: return loc.t("settings.notifications")
             case .security: return loc.t("settings.security.title")
-            case .social: return loc.t("nav.social")
+            case .family: return loc.t("settings.familyAndSafety")
             case .help: return loc.t("settings.help.title")
             }
         }
@@ -209,10 +212,12 @@
                 accountDetail
             case .playback:
                 playbackDetail
+            case .notifications:
+                notificationsDetail
             case .security:
                 securityDetail
-            case .social:
-                socialDetail
+            case .family:
+                familyDetail
             case .help:
                 helpDetail
             }
