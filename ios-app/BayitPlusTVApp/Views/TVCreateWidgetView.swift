@@ -29,19 +29,34 @@
         ]
 
         var body: some View {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xl) {
-                    header
-                    titleFields
-                    contentTypeSection
-                    contentSection
-                    if let error { errorBanner(error) }
-                    actionButtons
+            ZStack {
+                DesignTokens.Background.primary.ignoresSafeArea()
+
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: TVDesignTokens.Spacing.xl) {
+                        header
+
+                        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xl) {
+                            titleFields
+                            contentTypeSection
+                            contentSection
+                            if let error { errorBanner(error) }
+                        }
+                        .padding(TVDesignTokens.Spacing.xl)
+                        .background(DesignTokens.Glass.bgMedium)
+                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                                .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                        )
+
+                        actionButtons
+                    }
+                    .frame(maxWidth: 720)
+                    .padding(.vertical, TVDesignTokens.Spacing.xl)
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                .padding(.vertical, TVDesignTokens.Spacing.lg)
+                .frame(maxWidth: .infinity)
             }
-            .background(DesignTokens.Background.primary)
             .fullScreenCover(isPresented: $showContentPicker) {
                 TVContentPickerView(viewModel: pickerViewModel, onSelect: { item in
                     selectedContent = item
@@ -55,9 +70,16 @@
         // MARK: - Header
 
         private var header: some View {
-            Text(localization.t("widgets.createWidget"))
-                .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
-                .foregroundStyle(DesignTokens.Text.primary)
+            VStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: "square.grid.2x2.fill")
+                    .font(.system(size: 36, weight: .medium))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+
+                Text(localization.t("widgets.createWidget"))
+                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+            }
+            .frame(maxWidth: .infinity)
         }
 
         // MARK: - Title Fields
@@ -103,7 +125,7 @@
         // MARK: - Actions
 
         var actionButtons: some View {
-            HStack(spacing: TVDesignTokens.Spacing.lg) {
+            HStack(spacing: TVDesignTokens.Spacing.xl) {
                 GlassButton(localization.t("common.cancel"), variant: .secondary, size: .large) {
                     onDismiss()
                 }
@@ -113,7 +135,7 @@
                 }
                 .disabled(!isFormValid || isSaving)
             }
-            .padding(.top, TVDesignTokens.Spacing.lg)
+            .frame(maxWidth: .infinity)
         }
 
         // MARK: - Validation

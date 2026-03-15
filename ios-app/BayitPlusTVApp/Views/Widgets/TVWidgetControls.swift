@@ -21,20 +21,20 @@
         }
 
         var body: some View {
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+            VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: TVDesignTokens.Spacing.sm) {
                     Image(systemName: iconName)
-                        .font(.system(size: 22, weight: .medium))
+                        .font(.system(size: 18, weight: .medium))
                         .foregroundStyle(badgeColor)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 32, height: 32)
                         .background(badgeColor.opacity(0.15))
                         .clipShape(Circle())
 
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(widget.title)
-                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
+                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                             .foregroundStyle(DesignTokens.Text.primary)
-                            .lineLimit(2)
+                            .lineLimit(1)
 
                         if let contentType = widget.content?.contentType {
                             Text(contentType.displayLabel)
@@ -46,13 +46,6 @@
                     Spacer()
                 }
 
-                if let desc = widget.description, !desc.isEmpty {
-                    Text(desc)
-                        .font(.system(size: TVDesignTokens.FontSize.xs))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                        .lineLimit(2)
-                }
-
                 TVWidgetPlaybackControls(
                     widget: widget,
                     playerVM: $playerVM,
@@ -60,7 +53,8 @@
                     badgeColor: badgeColor
                 )
             }
-            .padding(TVDesignTokens.Spacing.lg)
+            .padding(.horizontal, TVDesignTokens.Spacing.md)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
         }
     }
 
@@ -171,7 +165,7 @@
                             .foregroundStyle(.white)
                     }
                 }
-                .frame(width: 52, height: 52)
+                .frame(width: 44, height: 44)
                 .background(tint?.opacity(0.4) ?? Color.white.opacity(0.1))
                 .clipShape(Circle())
                 .overlay(

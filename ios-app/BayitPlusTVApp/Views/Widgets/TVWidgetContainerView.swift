@@ -12,7 +12,6 @@
         @Environment(LocalizationManager.self) private var localization
 
         let widget: WidgetItem
-        let onMinimize: () -> Void
 
         @Environment(TVRepositoryProvider.self) private var repos
         @State private var playerVM: WidgetPlayerViewModel?
@@ -20,12 +19,11 @@
         var body: some View {
             VStack(alignment: .leading, spacing: 0) {
                 if isYnetWidget {
-                    TVWidgetYnetContent(widget: widget, onMinimize: onMinimize)
+                    TVWidgetYnetContent(widget: widget)
                 } else {
                     TVWidgetPosterSection(
                         widget: widget,
-                        playerVM: playerVM,
-                        onMinimize: onMinimize
+                        playerVM: playerVM
                     )
                     TVWidgetInfoSection(
                         widget: widget,
@@ -74,31 +72,6 @@
         }
     }
 
-    // MARK: - Minimize Button (shared)
-
-    struct TVWidgetMinimizeButton: View {
-        let title: String
-        let onMinimize: () -> Void
-
-        var body: some View {
-            Button { onMinimize() } label: {
-                Image(systemName: "arrow.down.right.and.arrow.up.left")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .frame(width: 48, height: 48)
-                    .background(.thinMaterial)
-                    .environment(\.colorScheme, .dark)
-                    .clipShape(Circle())
-                    .overlay(
-                        Circle().stroke(Color.white.opacity(0.2), lineWidth: 1)
-                    )
-            }
-            .buttonStyle(WidgetCompactButtonStyle())
-            .focusEffectDisabled()
-            .accessibilityLabel("Minimize \(title)")
-        }
-    }
-
     // MARK: - Widget Compact Button Style
 
     /// Lightweight focus style for widget sidebar buttons.
@@ -120,7 +93,6 @@
 
         var body: some View {
             configuration.label
-                .focusEffectDisabled()
                 .overlay(
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
                         .stroke(
@@ -128,12 +100,12 @@
                             lineWidth: 2
                         )
                 )
-                .scaleEffect(isFocused ? 1.03 : 1.0)
+                .scaleEffect(isFocused ? 1.05 : 1.0)
                 .scaleEffect(isPressed ? 0.96 : 1.0)
                 .shadow(
                     color: isFocused
                         ? DesignTokens.Glass.purpleGlow : Color.clear,
-                    radius: 8,
+                    radius: 10,
                     x: 0,
                     y: isFocused ? 4 : 0
                 )

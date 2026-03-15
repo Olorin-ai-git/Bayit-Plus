@@ -9,7 +9,6 @@
 
     struct TVWidgetYnetContent: View {
         let widget: WidgetItem
-        let onMinimize: () -> Void
 
         var body: some View {
             VStack(spacing: 0) {
@@ -24,14 +23,12 @@
                         .lineLimit(1)
 
                     Spacer()
-
-                    TVWidgetMinimizeButton(title: widget.title, onMinimize: onMinimize)
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.md)
                 .padding(.vertical, TVDesignTokens.Spacing.sm)
 
                 TVYnetMivzakimContentView()
-                    .frame(maxHeight: 320)
+                    .frame(maxHeight: 250)
             }
         }
     }
@@ -41,7 +38,6 @@
     struct TVWidgetPosterSection: View {
         let widget: WidgetItem
         let playerVM: WidgetPlayerViewModel?
-        let onMinimize: () -> Void
 
         private var isVideoContent: Bool {
             let ct = widget.content?.contentType
@@ -58,9 +54,9 @@
             case .liveChannel, .live, .vod:
                 return 200
             case .radio, .podcast, .audiobook:
-                return 140
+                return 160
             default:
-                return 140
+                return 160
             }
         }
 
@@ -89,12 +85,6 @@
                     .padding(TVDesignTokens.Spacing.md)
 
                     Spacer()
-
-                    HStack {
-                        Spacer()
-                        TVWidgetMinimizeButton(title: widget.title, onMinimize: onMinimize)
-                    }
-                    .padding(TVDesignTokens.Spacing.md)
                 }
             }
             .frame(height: posterHeight)
