@@ -200,13 +200,16 @@ struct BayitPlusApp: App {
                     WidgetCenter.shared.reloadAllTimelines()
                     tooltipManager.updateUserId(authManager.user?.id ?? "anonymous")
                 }
-            #if DEBUG
                 .onChange(of: authManager.isAuthenticated) { _, isAuth in
-                    if !isAuth, BayitPlusApp.hasDebugCredentials {
-                        Task { await loginWithDebugCredentials() }
-                    }
+                    guard !isAuth else { return }
+                    #if DEBUG
+                        if BayitPlusApp.hasDebugCredentials {
+                            Task { await loginWithDebugCredentials() }
+                            return
+                        }
+                    #endif
+                    coordinator.showingAuth = true
                 }
-            #endif
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in
