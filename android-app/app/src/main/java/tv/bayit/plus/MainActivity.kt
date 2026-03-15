@@ -19,12 +19,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import tv.bayit.plus.BuildConfig
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.common.DebugLoginConfig
 import tv.bayit.plus.core.common.NetworkMonitor
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
+import tv.bayit.plus.core.common.result.BayitResult
 import tv.bayit.plus.core.network.SessionEventBus
 import tv.bayit.plus.designsystem.i18n.ProvideBayitStrings
 import tv.bayit.plus.designsystem.theme.BayitTheme
@@ -45,6 +48,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var networkMonitor: NetworkMonitor
     @Inject lateinit var deepLinkHandler: DeepLinkHandler
     @Inject lateinit var lastVisitedRouteManager: LastVisitedRouteManager
+    @Inject lateinit var debugLoginConfig: DebugLoginConfig
 
     private val pendingDeepLink = MutableStateFlow<Route?>(null)
     internal val splashFinished = MutableStateFlow(false)
@@ -100,7 +104,20 @@ class MainActivity : ComponentActivity() {
                     }
 
                     LaunchedEffect(Unit) {
-                        SessionEventBus.sessionExpired.collect { authService.signOut() }
+                        SessionEventBus.sessionExpired.collect {
+                            if (BuildConfig.DEBUG && debugLoginConfig.isEnabled) {
+                                val result = authService.loginWithEmail(
+                                    debugLoginConfig.email,
+                                    debugLoginConfig.password,
+                                )
+                                when (result) {
+                                    is BayitResult.Success -> authService.storeAuthTokens(result.data)
+                                    is BayitResult.Failure -> authService.signOut()
+                                }
+                            } else {
+                                authService.signOut()
+                            }
+                        }
                     }
 
                     LaunchedEffect(Unit) {
