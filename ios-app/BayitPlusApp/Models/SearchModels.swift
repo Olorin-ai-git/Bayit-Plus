@@ -66,10 +66,11 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
         }
     }
 
-    /// Content type strings sent to the API `content_types` query param
+    /// Content type strings sent to the API `content_types` query param.
+    /// An empty array means no filter — the backend returns all content types.
     var apiContentTypes: [String] {
         switch self {
-        case .all: return ["live", "radio", "podcast", "vod", "audiobook", "actor"]
+        case .all: return []
         case .movies: return ["movie"]
         case .series: return ["series"]
         case .collections: return ["collection"]

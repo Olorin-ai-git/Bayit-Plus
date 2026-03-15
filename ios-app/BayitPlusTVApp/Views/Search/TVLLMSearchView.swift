@@ -94,7 +94,7 @@ struct TVLLMSearchView: View {
                 ) {
                     Task { await vm.search(language: nil) }
                 }
-                .tvFocusStyle()
+                .tvCardStyle()
 
                 if !vm.hasSearched {
                     exampleQueries

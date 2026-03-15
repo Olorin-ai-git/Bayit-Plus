@@ -52,7 +52,7 @@
                 ) {
                     onClear()
                 }
-                .tvFocusStyle()
+                .tvCardStyle()
                 .accessibilityLabel(localization.t("search.clear"))
             }
         }

@@ -39,7 +39,8 @@ final class SearchViewModel {
     private let suggestionsLimit = 5
 
     init(searchRepository: any SearchRepository, featureFlags: FeatureFlags,
-         recentSearchesService: RecentSearchesService = RecentSearchesService()) {
+         recentSearchesService: RecentSearchesService = RecentSearchesService())
+    {
         self.searchRepository = searchRepository
         self.featureFlags = featureFlags
         self.recentSearchesService = recentSearchesService
@@ -81,9 +82,17 @@ final class SearchViewModel {
         searchTask = Task { await performSearch() }
     }
 
-    func onSortChanged() { searchTask?.cancel(); searchTask = Task { await performSearch() } }
-    func onFiltersApplied() { searchTask?.cancel(); searchTask = Task { await performSearch() } }
-    func retrySearch() { searchTask?.cancel(); searchTask = Task { await performSearch() } }
+    func onSortChanged() {
+        searchTask?.cancel(); searchTask = Task { await performSearch() }
+    }
+
+    func onFiltersApplied() {
+        searchTask?.cancel(); searchTask = Task { await performSearch() }
+    }
+
+    func retrySearch() {
+        searchTask?.cancel(); searchTask = Task { await performSearch() }
+    }
 
     func selectSuggestion(_ suggestion: String) {
         query = suggestion
@@ -145,10 +154,7 @@ final class SearchViewModel {
         defer { isSearching = false; isLoadingMore = false }
 
         do {
-            var contentTypes = selectedFilter.apiContentTypes
-            if featureFlags.isLegacyFeaturesEnabled && selectedFilter == .all {
-                contentTypes = ["live", "radio", "podcast", "vod"]
-            }
+            let contentTypes = selectedFilter.apiContentTypes
             let response = try await searchRepository.unifiedSearch(
                 query: trimmedQuery, contentTypes: contentTypes,
                 page: page, limit: searchPageSize,
@@ -166,7 +172,7 @@ final class SearchViewModel {
             currentPage = page
             hasMore = response.hasMore
             hasSearched = true
-            if !trimmedQuery.isEmpty && !append {
+            if !trimmedQuery.isEmpty, !append {
                 recentSearches = recentSearchesService.save(trimmedQuery, existing: recentSearches)
                 Task.detached(priority: .utility) { [searchRepository, logger] in
                     do { try await searchRepository.saveSearchHistory(query: trimmedQuery) }

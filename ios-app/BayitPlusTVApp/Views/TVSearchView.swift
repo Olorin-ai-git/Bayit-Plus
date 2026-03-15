@@ -138,9 +138,7 @@ struct TVSearchView: View {
                     query: searchText,
                     currentPage: vm.currentPage,
                     totalPages: vm.totalPages,
-                    hasMore: vm.hasMore,
                     isLoadingMore: vm.isLoadingMore,
-                    onLoadMore: { vm.loadMore() },
                     onGoToPage: { vm.goToPage($0) },
                     onSelect: { handleResultSelection($0) }
                 )
@@ -175,8 +173,7 @@ struct TVSearchView: View {
                             .overlay(Capsule().stroke(.white.opacity(0.20), lineWidth: 1.5))
                             .clipShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                     .accessibilityLabel(query)
                 }
             }

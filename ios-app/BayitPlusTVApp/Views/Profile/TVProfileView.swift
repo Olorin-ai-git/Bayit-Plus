@@ -36,8 +36,9 @@ enum ProfileSheet: Identifiable {
     }
 }
 
-/// Complete production-ready Profile screen for tvOS.
-/// Features: profile editing, stats, account management, quick actions, viewing history.
+/// tvOS Profile screen: 3-column dashboard layout matching Figma design.
+/// Left: avatar + name + badge + stats. Center: My Content 2x2 grid.
+/// Right: Social panel + Settings panel.
 struct TVProfileView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(LocalizationManager.self) var localization
@@ -55,7 +56,7 @@ struct TVProfileView: View {
                     } else if let error = vm.error, vm.profile == nil {
                         errorView(error, viewModel: vm)
                     } else if let profile = vm.profile {
-                        profileContentView(profile: profile, stats: vm.stats, viewModel: vm)
+                        dashboardView(profile: profile, stats: vm.stats)
                     } else {
                         emptyView
                     }
@@ -76,50 +77,11 @@ struct TVProfileView: View {
         }
     }
 
-    // MARK: - Profile Content
-
-    private func profileContentView(profile: ProfileResponse, stats: ProfileStats?, viewModel _: ProfileViewModel) -> some View {
-        List {
-            TVProfileHeaderSection(
-                profile: profile,
-                localization: localization,
-                onEditProfile: { activeSheet = .editProfile },
-                onEditAvatar: { activeSheet = .avatarPicker }
-            )
-
-            if let stats {
-                TVProfileStatsSection(stats: stats, localization: localization)
-            }
-
-            TVProfileMyContentSection(localization: localization, onAction: { activeSheet = $0 })
-            TVProfileSocialSection(localization: localization, onAction: { activeSheet = $0 })
-            TVProfileAccountSection(
-                profile: profile,
-                localization: localization,
-                onAction: { activeSheet = $0 }
-            )
-            TVProfileInfoSection(localization: localization, onAction: { activeSheet = $0 })
-
-            if authManager.user?.role.isAdmin == true {
-                TVProfileAdminSection(authManager: authManager, localization: localization)
-            }
-
-            TVProfileSwitchProfileSection(
-                localization: localization,
-                onSwitchProfile: { switchProfile() }
-            )
-
-            TVProfileSignOutSection(localization: localization, onSignOut: { signOut() })
-        }
-        .listStyle(.grouped)
-    }
-
     // MARK: - States
 
     private var loadingView: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             GlassSpinner(size: .large)
-
             Text(localization.t("profile.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
@@ -132,13 +94,11 @@ struct TVProfileView: View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 72))
                 .foregroundStyle(DesignTokens.Warning.default)
-
             Text(message)
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 600)
-
             GlassButton(
                 localization.t("common.retry"),
                 variant: .primary,
@@ -155,7 +115,6 @@ struct TVProfileView: View {
             Image(systemName: "person.crop.circle")
                 .font(.system(size: 72))
                 .foregroundStyle(DesignTokens.Text.muted)
-
             Text(localization.t("profile.noData"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
@@ -165,12 +124,12 @@ struct TVProfileView: View {
 
     // MARK: - Actions
 
-    private func switchProfile() {
+    func switchProfile() {
         coordinator.selectedProfileId = nil
         coordinator.profileSelected = false
     }
 
-    private func signOut() {
+    func signOut() {
         Task {
             await authManager.signOut()
             coordinator.profileSelected = false

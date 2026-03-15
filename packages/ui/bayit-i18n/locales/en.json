@@ -3896,7 +3896,7 @@
     "clock": "Clock",
     "nowPlaying": "Now Playing Mini-Player",
     "nothingPlaying": "Nothing playing",
-    "selectContent": "Select content to play",
+    "selectContent": "Select Content",
     "empty": "No widgets yet",
     "emptyHint": "Your widgets will appear here",
     "emptyPersonal": "No personal widgets yet",
@@ -4030,9 +4030,13 @@
     "enterTitle": "Enter widget title",
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
-    "selectContent": "Select Content",
     "ynetBreakingNews": "Ynet Breaking News",
-    "iframeUrl": "iFrame URL"
+    "iframeUrl": "iFrame URL",
+    "addWidget": "Add Widget",
+    "activeWidgets": "Active Widgets",
+    "sidebar": {
+      "label": "Widgets sidebar"
+    }
   },
   "liveCategories": {
     "educational": "Educational"
@@ -6790,7 +6794,9 @@
     "info": "Info",
     "premiumPrice": "$6.99/month",
     "familyPrice": "$12.99/month",
-    "watchlist": "Watchlist"
+    "watchlist": "Watchlist",
+    "appSettings": "App Settings",
+    "history": "History"
   },
   "profiles": {
     "addProfile": "Add Profile",

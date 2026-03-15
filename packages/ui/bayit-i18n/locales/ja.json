@@ -4024,7 +4024,12 @@
     "noContentFound": "コンテンツが見つかりません",
     "selectContent": "コンテンツを選択",
     "ynetBreakingNews": "Ynet速報ニュース",
-    "iframeUrl": "iFrame URL"
+    "iframeUrl": "iFrame URL",
+    "addWidget": "ウィジェット追加",
+    "activeWidgets": "アクティブウィジェット",
+    "sidebar": {
+      "label": "ウィジェットサイドバー"
+    }
   },
   "liveCategories": {
     "educational": "[ja] Educational"

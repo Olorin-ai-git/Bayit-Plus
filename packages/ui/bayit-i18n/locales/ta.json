@@ -4024,7 +4024,12 @@
     "noContentFound": "உள்ளடக்கம் இல்லை",
     "selectContent": "உள்ளடக்கத்தைத் தேர்ந்தெடு",
     "ynetBreakingNews": "Ynet முக்கிய செய்திகள்",
-    "iframeUrl": "iFrame URL"
+    "iframeUrl": "iFrame URL",
+    "addWidget": "விஜெட் சேர்க்கவும்",
+    "activeWidgets": "செயலில் உள்ள விஜெட்கள்",
+    "sidebar": {
+      "label": "விஜெட் பட்டி"
+    }
   },
   "liveCategories": {
     "educational": "கல்வி"

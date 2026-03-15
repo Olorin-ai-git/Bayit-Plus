@@ -4024,7 +4024,12 @@
     "noContentFound": "কোনো বিষয়বস্তু পাওয়া যায়নি",
     "selectContent": "কন্টেন্ট নির্বাচন করুন",
     "ynetBreakingNews": "Ynet ব্রেকিং নিউজ",
-    "iframeUrl": "iFrame URL"
+    "iframeUrl": "iFrame URL",
+    "addWidget": "উইজেট যোগ করুন",
+    "activeWidgets": "সক্রিয় উইজেট",
+    "sidebar": {
+      "label": "উইজেট সাইডবার"
+    }
   },
   "liveCategories": {
     "educational": "শিক্ষামূলক"

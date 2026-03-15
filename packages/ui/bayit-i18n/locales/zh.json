@@ -4024,7 +4024,12 @@
     "noContentFound": "未找到内容",
     "selectContent": "选择内容",
     "ynetBreakingNews": "Ynet突发新闻",
-    "iframeUrl": "iFrame 网址"
+    "iframeUrl": "iFrame 网址",
+    "addWidget": "添加小组件",
+    "activeWidgets": "活跃小组件",
+    "sidebar": {
+      "label": "小组件侧栏"
+    }
   },
   "liveCategories": {
     "educational": "教育"

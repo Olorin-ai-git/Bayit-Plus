@@ -20,7 +20,7 @@ struct TVSearchToolbarView: View {
             ) {
                 onSortTap()
             }
-            .tvFocusStyle()
+            .tvCardStyle()
 
             Spacer()
 
@@ -32,7 +32,7 @@ struct TVSearchToolbarView: View {
             ) {
                 onFilterTap()
             }
-            .tvFocusStyle()
+            .tvCardStyle()
         }
         .focusSection()
         .padding(.horizontal, TVDesignTokens.Spacing.xl)

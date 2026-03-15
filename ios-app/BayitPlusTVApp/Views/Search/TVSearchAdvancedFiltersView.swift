@@ -164,18 +164,18 @@ struct TVSearchAdvancedFiltersView: View {
             GlassButton(localization.t("search.filter.reset"), variant: .ghost, size: .medium) {
                 draft.reset()
             }
-            .tvFocusStyle()
+            .tvCardStyle()
 
             GlassButton(applyLabel, variant: .primary, size: .medium) {
                 filters = draft
                 onApply()
             }
-            .tvFocusStyle()
+            .tvCardStyle()
 
             GlassButton(localization.t("common.close"), variant: .secondary, size: .medium) {
                 onDismiss()
             }
-            .tvFocusStyle()
+            .tvCardStyle()
         }
         .focusSection()
         .padding(.horizontal, TVDesignTokens.Spacing.xl)

@@ -116,6 +116,12 @@ final class WidgetDockViewModel {
         minimizeWidget(widgetId: widgetId)
     }
 
+    /// Remove a widget from the sidebar display (tvOS: dismisses without persisting minimize state).
+    @MainActor
+    func dismissFromSidebar(widgetId: String) {
+        widgets.removeAll { $0.id == widgetId }
+    }
+
     /// Toggle dock visibility.
     @MainActor
     func toggleDock() {

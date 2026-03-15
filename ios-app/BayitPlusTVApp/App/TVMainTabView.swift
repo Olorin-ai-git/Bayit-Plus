@@ -18,7 +18,6 @@
         @State var pickerViewModel: ContentPickerViewModel?
         @State var proactiveSuggestionViewModel: TVProactiveSuggestionViewModel?
         @State var showLanguagePicker = false
-        @State var showProfile = false
         @State var showCreateWidget = false
         @State var hasAppeared = false
 
@@ -27,10 +26,10 @@
 
             HStack(spacing: 0) {
                 TVAppSidebarView(
-                    restoredWidgets: dockViewModel?.restoredWidgets ?? [],
-                    onAvatarTap: { showProfile = true },
+                    restoredWidgets: dockViewModel?.widgets ?? [],
+                    onAvatarTap: { coordinator.selectedTab = .profile },
                     onAddWidget: { showCreateWidget = true },
-                    onClose: { dockViewModel?.closeWidget(widgetId: $0) }
+                    onClose: { dockViewModel?.dismissFromSidebar(widgetId: $0) }
                 )
 
                 TabView(selection: $coord.selectedTab) {
@@ -70,6 +69,10 @@
                         .tabItem { Label(localization.t("nav.discover"), systemImage: TVTab.discover.iconName) }
                         .tag(TVTab.discover)
 
+                    TVProfileView()
+                        .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
+                        .tag(TVTab.profile)
+
                     HelpSupportView()
                         .tabItem { Label(localization.t("nav.help"), systemImage: TVTab.help.iconName) }
                         .tag(TVTab.help)
@@ -98,10 +101,6 @@
             }
             .fullScreenCover(isPresented: $showLanguagePicker) {
                 languagePickerSheet
-            }
-            .fullScreenCover(isPresented: $showProfile) {
-                TVProfileView()
-                    .onExitCommand { showProfile = false }
             }
             .fullScreenCover(isPresented: $showCreateWidget) {
                 if let wvm = widgetsViewModel, let pvm = pickerViewModel {

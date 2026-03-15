@@ -66,7 +66,7 @@ struct TVSearchTrendingRow: View {
             .frame(width: width, height: cardHeight)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(TrendingCardButtonStyle())
+        .tvCardStyle()
         .accessibilityLabel(item.title ?? localization.t("common.untitled"))
     }
 
@@ -94,15 +94,5 @@ struct TVSearchTrendingRow: View {
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
-    }
-}
-
-// MARK: - Focus button style
-
-private struct TrendingCardButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }

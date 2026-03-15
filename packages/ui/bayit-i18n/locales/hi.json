@@ -4024,7 +4024,12 @@
     "noContentFound": "कोई सामग्री नहीं मिली",
     "selectContent": "सामग्री चुनें",
     "ynetBreakingNews": "Ynet ब्रेकिंग न्यूज़",
-    "iframeUrl": "iFrame URL"
+    "iframeUrl": "iFrame URL",
+    "addWidget": "विजेट जोड़ें",
+    "activeWidgets": "सक्रिय विजेट",
+    "sidebar": {
+      "label": "विजेट साइडबार"
+    }
   },
   "liveCategories": {
     "educational": "शैक्षिक"

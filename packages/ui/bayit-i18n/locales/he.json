@@ -4024,7 +4024,12 @@
     "noContentFound": "לא נמצא תוכן",
     "selectContent": "בחר תוכן",
     "ynetBreakingNews": "מבזקי Ynet",
-    "iframeUrl": "כתובת iFrame"
+    "iframeUrl": "כתובת iFrame",
+    "addWidget": "הוסף ווידג'ט",
+    "activeWidgets": "ווידג'טים פעילים",
+    "sidebar": {
+      "label": "סרגל ווידג'טים"
+    }
   },
   "liveCategories": {
     "educational": "חינוכי"

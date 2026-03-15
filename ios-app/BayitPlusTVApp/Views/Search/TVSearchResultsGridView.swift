@@ -11,9 +11,7 @@ struct TVSearchResultsGridView: View {
     let query: String
     let currentPage: Int
     let totalPages: Int
-    let hasMore: Bool
     let isLoadingMore: Bool
-    let onLoadMore: () -> Void
     let onGoToPage: (Int) -> Void
     let onSelect: (UnifiedSearchResult) -> Void
 
@@ -38,11 +36,7 @@ struct TVSearchResultsGridView: View {
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
 
-            if totalPages > 1 {
-                paginationControls
-            } else if hasMore {
-                loadMoreTrigger
-            }
+            paginationControls
         }
         .padding(.top, TVDesignTokens.Spacing.lg)
     }
@@ -62,7 +56,7 @@ struct TVSearchResultsGridView: View {
             ) {
                 onGoToPage(currentPage - 1)
             }
-            .tvFocusStyle()
+            .tvCardStyle()
 
             Text(localization.t("search.pageIndicator", [
                 "current": String(currentPage), "total": String(totalPages),
@@ -80,24 +74,11 @@ struct TVSearchResultsGridView: View {
             ) {
                 onGoToPage(currentPage + 1)
             }
-            .tvFocusStyle()
+            .tvCardStyle()
 
             Spacer()
         }
         .padding(.vertical, TVDesignTokens.Spacing.xl)
-    }
-
-    private var loadMoreTrigger: some View {
-        Group {
-            if isLoadingMore {
-                ProgressView()
-                    .tint(DesignTokens.Primary.default)
-                    .frame(maxWidth: .infinity)
-                    .padding(TVDesignTokens.Spacing.xl)
-            } else {
-                Color.clear.frame(height: 1).onAppear { onLoadMore() }
-            }
-        }
     }
 
     // MARK: - Result Card

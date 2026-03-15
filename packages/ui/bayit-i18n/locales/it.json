@@ -4024,7 +4024,12 @@
     "noContentFound": "Nessun contenuto trovato",
     "selectContent": "Seleziona contenuto",
     "ynetBreakingNews": "Ultime notizie Ynet",
-    "iframeUrl": "URL iFrame"
+    "iframeUrl": "URL iFrame",
+    "addWidget": "Aggiungi widget",
+    "activeWidgets": "Widget attivi",
+    "sidebar": {
+      "label": "Barra widget"
+    }
   },
   "liveCategories": {
     "educational": "Educativo"

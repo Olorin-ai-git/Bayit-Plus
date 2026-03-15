@@ -81,7 +81,7 @@ struct TVSearchSuggestionsView: View {
                 ) {
                     onClearRecent()
                 }
-                .tvFocusStyle()
+                .tvCardStyle()
                 .accessibilityLabel("Clear recent searches")
             }
 
