@@ -35,7 +35,7 @@ struct TopNavigationBar: View {
                 .background(DesignTokens.Glass.bgMedium)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
             }
-            .accessibilityLabel("Language")
+            .accessibilityLabel(localization.t("common.language"))
 
             Button {
                 coordinator.navigate(to: .byocSources)
@@ -71,7 +71,7 @@ struct TopNavigationBar: View {
                     .background(DesignTokens.Glass.bgMedium)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
             }
-            .accessibilityLabel("Zeh Ani")
+            .accessibilityLabel(localization.t("nav.zehAni"))
 
             Button {
                 coordinator.navigate(to: .profile)
@@ -80,7 +80,7 @@ struct TopNavigationBar: View {
             }
             .frame(width: 44, height: 44)
             .contentShape(Rectangle())
-            .accessibilityLabel("Profile")
+            .accessibilityLabel(localization.t("nav.profile"))
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.sm)
