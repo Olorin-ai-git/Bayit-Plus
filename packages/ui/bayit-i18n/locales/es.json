@@ -5895,7 +5895,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -10210,7 +10214,8 @@
       "tryDifferent": "Intenta con un termino de busqueda diferente",
       "searching": "Buscando...",
       "searchForContent": "Buscar contenido",
-      "useVoiceOrType": "Usa la busqueda por voz o escribe para encontrar peliculas, programas y mas"
+      "useVoiceOrType": "Usa la busqueda por voz o escribe para encontrar peliculas, programas y mas",
+      "popular": "Popular"
     },
     "profile": {
       "title": "Perfil",
@@ -10939,11 +10944,11 @@
     "subtitle": "Tu identidad interactiva",
     "hub": {
       "magicMirror": "Espejo Magico",
-      "magicMirrorDesc": "Vete como un personaje en la historia",
+      "magicMirrorDesc": "Vete bajo una nueva luz. Descubre tu aura digital y estilo con efectos en tiempo real.",
       "highlights": "Momentos Destacados",
-      "highlightsDesc": "Tus mejores momentos interactivos",
+      "highlightsDesc": "Revive tus mejores momentos con compilaciones de video personalizadas. Curadas por IA y listas para compartir.",
       "movieInteractions": "Interacciones con Peliculas",
-      "movieInteractionsDesc": "Habla con tus personajes favoritos",
+      "movieInteractionsDesc": "Interactua con tus personajes favoritos. Influye en la historia y forma parte de la accion.",
       "contacts": "Contactos",
       "contactsDesc": "Gestiona contactos familiares para compartir",
       "feedback": "Comentarios",
@@ -10952,7 +10957,8 @@
       "chessDesc": "Juega al ajedrez con familia y amigos",
       "title": "Yo en la historia",
       "consent": "Se requiere consentimiento",
-      "consentDesc": "Habilita funciones biometricas para personalizar tu experiencia"
+      "consentDesc": "Habilita funciones biometricas para personalizar tu experiencia",
+      "swipeHint": "Desliza izquierda/derecha para explorar"
     },
     "contacts": {
       "title": "Contactos",

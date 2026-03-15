@@ -54,8 +54,8 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     var localizationKey: String {
         switch self {
         case .all: return "search.filters.all"
-        case .movies: return "vod.movies"
-        case .series: return "vod.series"
+        case .movies: return "search.filters.movies"
+        case .series: return "search.filters.series"
         case .collections: return "vod.collectionsOnly"
         case .actors: return "search.filters.actors"
         case .live: return "search.filters.channels"

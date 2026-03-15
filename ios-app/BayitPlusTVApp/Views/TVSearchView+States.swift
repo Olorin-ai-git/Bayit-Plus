@@ -74,7 +74,7 @@ extension TVSearchView {
         let contentType = result.contentType?.lowercased() ?? ""
         switch contentType {
         case "actor":
-            selectedActorName = result.id
+            coordinator.fullscreenRoute = .actorDetail(actorName: result.id)
         case "live":
             coordinator.presentPlayer(contentId: result.id, contentType: .liveTV)
         case "radio":

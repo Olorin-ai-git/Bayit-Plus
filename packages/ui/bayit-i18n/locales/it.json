@@ -5895,7 +5895,11 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
+      "notIncluded": [
+        "Canali in diretta",
+        "Assistente AI",
+        "Visione offline"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -10210,7 +10214,8 @@
       "tryDifferent": "Prova un termine di ricerca diverso",
       "searching": "Ricerca...",
       "searchForContent": "Cerca contenuto",
-      "useVoiceOrType": "Usa la ricerca vocale o digita per trovare film, serie e altro"
+      "useVoiceOrType": "Usa la ricerca vocale o digita per trovare film, serie e altro",
+      "popular": "Popolare"
     },
     "profile": {
       "title": "Profilo",
@@ -10939,11 +10944,11 @@
     "subtitle": "La tua identita interattiva",
     "hub": {
       "magicMirror": "Specchio Magico",
-      "magicMirrorDesc": "Vediti come un personaggio nella storia",
+      "magicMirrorDesc": "Vedi te stesso sotto una nuova luce. Scopri la tua aura digitale con effetti in tempo reale.",
       "highlights": "Momenti Salienti",
-      "highlightsDesc": "I tuoi migliori momenti interattivi",
+      "highlightsDesc": "Rivivi i tuoi momenti migliori con compilation video personalizzate. Curate dall'IA e pronte da condividere.",
       "movieInteractions": "Interazioni Film",
-      "movieInteractionsDesc": "Parla con i tuoi personaggi preferiti",
+      "movieInteractionsDesc": "Interagisci con i tuoi personaggi preferiti. Influenza la storia e diventa parte dell'azione.",
       "contacts": "Contatti",
       "contactsDesc": "Gestisci i contatti familiari per la condivisione",
       "feedback": "[it] Feedback",
@@ -10952,7 +10957,8 @@
       "chessDesc": "Gioca a scacchi con famiglia e amici",
       "title": "Io nella storia",
       "consent": "Consenso richiesto",
-      "consentDesc": "Abilita le funzioni biometriche per personalizzare la tua esperienza"
+      "consentDesc": "Abilita le funzioni biometriche per personalizzare la tua esperienza",
+      "swipeHint": "Scorri sinistra/destra per esplorare"
     },
     "contacts": {
       "title": "Contatti",

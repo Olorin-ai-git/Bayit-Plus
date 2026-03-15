@@ -3,63 +3,103 @@
     import BayitLocalization
     import SwiftUI
 
-    /// Zeh Ani hub for tvOS - consolidates interactive and social features.
-    /// Sub-sections: Avatar, Watch Party, Trivia, Chess, AI Chat, Rewards, Beta Credits.
+    // MARK: - Feature Card Model
+
+    enum ZehAniFeatureCard: Identifiable, Hashable, CaseIterable {
+        case magicMirror, highlights, movieInteractions
+        var id: Self {
+            self
+        }
+
+        var cardIndex: Int {
+            switch self {
+            case .magicMirror: return 0
+            case .highlights: return 1
+            case .movieInteractions: return 2
+            }
+        }
+    }
+
+    // MARK: - Hub View
+
     struct TVZehAniHubView: View {
-        @Environment(LocalizationManager.self) private var localization
+        @Environment(LocalizationManager.self) var localization
         @Environment(TVNavigationCoordinator.self) private var coordinator
         @Environment(TVRepositoryProvider.self) private var repos
 
-        @State private var profileId: String?
+        @State var profileId: String?
         @State private var isLoading = true
         @State private var error: String?
+        @State var navigationTarget: ZehAniFeatureCard?
+        @FocusState var focusedCard: ZehAniFeatureCard?
 
         var body: some View {
             NavigationStack {
                 ZStack {
-                    DesignTokens.Background.primary.ignoresSafeArea()
+                    TVZehAniBackgroundLayer()
+                    TVZehAniAmbientGlowLayer()
+                    mainContent
+                    TVZehAniStatusBarLayer(localization: localization)
+                }
+                .ignoresSafeArea()
+                .navigationDestination(item: $navigationTarget) { card in
+                    cardDestination(card)
+                }
+            }
+            .task { await loadProfile() }
+        }
 
-                    if isLoading {
-                        ProgressView()
-                            .tint(.white)
-                            .scaleEffect(1.5)
-                    } else if let error = error {
-                        errorView(message: error)
-                    } else if let profileId = profileId {
-                        hubContent(profileId: profileId)
-                    }
-                }
-                .task {
-                    await loadProfile()
-                }
+        @ViewBuilder
+        private var mainContent: some View {
+            if isLoading {
+                ProgressView().tint(.white).scaleEffect(1.5)
+            } else if let message = error {
+                tvZehAniErrorContent(message: message)
+            } else {
+                tvZehAniHeroLayer
+                tvZehAniCarouselLayer
+                tvZehAniNavigationUILayer
             }
         }
 
-        private func hubContent(profileId: String) -> some View {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: TVDesignTokens.Spacing.xl) {
-                    headerSection
-                    featureList(profileId: profileId)
+        @ViewBuilder
+        private func cardDestination(_ card: ZehAniFeatureCard) -> some View {
+            switch card {
+            case .magicMirror:
+                if let id = profileId {
+                    TVMagicMirrorView(profileId: id)
+                        .tvBreadcrumb(
+                            localization.t("zehAni.hub.magicMirror"),
+                            icon: "sparkles.rectangle.stack"
+                        )
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-                .padding(.bottom, TVDesignTokens.Spacing.xxl)
+            case .highlights:
+                if let id = profileId {
+                    TVHighlightsView(profileId: id)
+                        .tvBreadcrumb(
+                            localization.t("zehAni.hub.highlights"),
+                            icon: "play.rectangle.on.rectangle"
+                        )
+                }
+            case .movieInteractions:
+                TVMovieInteractionsView()
+                    .tvBreadcrumb(
+                        localization.t("zehAni.hub.movieInteractions"),
+                        icon: "bubble.left.and.bubble.right"
+                    )
             }
         }
 
-        private func errorView(message: String) -> some View {
+        private func tvZehAniErrorContent(message: String) -> some View {
             VStack(spacing: TVDesignTokens.Spacing.xl) {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 80))
                     .foregroundStyle(DesignTokens.ErrorColor.default)
-
                 Text(message)
                     .font(.system(size: TVDesignTokens.FontSize.xl))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .multilineTextAlignment(.center)
-
-                Button {
-                    Task { await loadProfile() }
-                } label: {
+                Button { Task { await loadProfile() } } label: {
                     Text(localization.t("common.retry"))
                         .padding(.horizontal, TVDesignTokens.Spacing.xl)
                         .padding(.vertical, TVDesignTokens.Spacing.md)
@@ -68,75 +108,8 @@
             }
         }
 
-        private var headerSection: some View {
-            VStack(spacing: TVDesignTokens.Spacing.md) {
-                Image(systemName: "person.fill.viewfinder")
-                    .font(.system(size: 64))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [DesignTokens.Primary.p400, DesignTokens.Secondary.s400],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-
-                Text(localization.t("zehAni.title"))
-                    .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-
-                Text(localization.t("zehAni.subtitle"))
-                    .font(.system(size: TVDesignTokens.FontSize.lg))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-            }
-            .padding(.top, TVDesignTokens.Spacing.xxl)
-        }
-
-        private func featureList(profileId: String) -> some View {
-            VStack(spacing: TVDesignTokens.Spacing.lg) {
-                featureCard(
-                    icon: "wand.and.stars",
-                    title: localization.t("zehAni.hub.magicMirror"),
-                    subtitle: localization.t("zehAni.hub.magicMirrorDesc")
-                ) {
-                    TVMagicMirrorView(profileId: profileId)
-                }
-
-                featureCard(
-                    icon: "film.fill",
-                    title: localization.t("zehAni.hub.highlights"),
-                    subtitle: localization.t("zehAni.hub.highlightsDesc")
-                ) {
-                    TVHighlightsView(profileId: profileId)
-                }
-
-                featureCard(
-                    icon: "film.stack",
-                    title: localization.t("zehAni.hub.movieInteractions"),
-                    subtitle: localization.t("zehAni.hub.movieInteractionsDesc")
-                ) {
-                    TVMovieInteractionsView()
-                }
-
-                featureCard(
-                    icon: "person.2.fill",
-                    title: localization.t("zehAni.hub.contacts"),
-                    subtitle: localization.t("zehAni.hub.contactsDesc")
-                ) {
-                    TVContactsView(profileId: profileId)
-                }
-
-                featureCard(
-                    icon: "tray.full.fill",
-                    title: localization.t("zehAni.hub.feedback"),
-                    subtitle: localization.t("zehAni.hub.feedbackDesc")
-                ) {
-                    TVFeedbackView(profileId: profileId)
-                }
-            }
-        }
-
         @MainActor
-        private func loadProfile() async {
+        func loadProfile() async {
             isLoading = true
             error = nil
             do {
@@ -148,51 +121,5 @@
                 isLoading = false
             }
         }
-
-        private func featureCard<Destination: View>(
-            icon: String,
-            title: String,
-            subtitle: String,
-            @ViewBuilder destination: @escaping () -> Destination
-        ) -> some View {
-            NavigationLink {
-                destination()
-                    .tvBreadcrumb(title, icon: icon)
-            } label: {
-                HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    Image(systemName: icon)
-                        .font(.system(size: TVDesignTokens.FontSize.xxxl))
-                        .foregroundStyle(DesignTokens.Primary.default)
-                        .frame(width: 60)
-
-                    VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                        Text(title)
-                            .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
-                            .foregroundStyle(DesignTokens.Text.primary)
-
-                        Text(subtitle)
-                            .font(.system(size: TVDesignTokens.FontSize.base))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                            .lineLimit(2)
-                    }
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: TVDesignTokens.FontSize.lg))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                }
-                .padding(TVDesignTokens.Spacing.xl)
-                .frame(maxWidth: .infinity)
-                .background(DesignTokens.Glass.bgMedium)
-                .cornerRadius(TVDesignTokens.Radius.lg)
-                .overlay(
-                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
-                )
-            }
-            .tvCardStyle()
-        }
     }
-
 #endif

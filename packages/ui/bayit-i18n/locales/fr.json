@@ -10214,7 +10214,8 @@
       "tryDifferent": "Essayez un autre terme de recherche",
       "searching": "Recherche...",
       "searchForContent": "Rechercher du contenu",
-      "useVoiceOrType": "Utilisez la recherche vocale ou tapez pour trouver des films, des séries et plus"
+      "useVoiceOrType": "Utilisez la recherche vocale ou tapez pour trouver des films, des séries et plus",
+      "popular": "Populaire"
     },
     "profile": {
       "title": "Profil",
@@ -10943,11 +10944,11 @@
     "subtitle": "Votre identite interactive",
     "hub": {
       "magicMirror": "Miroir Magique",
-      "magicMirrorDesc": "Voyez-vous comme un personnage de l'histoire",
+      "magicMirrorDesc": "Voyez-vous sous un nouveau jour. Decouvrez votre aura numerique avec des effets en temps reel.",
       "highlights": "Moments Forts",
-      "highlightsDesc": "Vos meilleurs moments interactifs",
+      "highlightsDesc": "Revivez vos meilleurs moments avec des compilations video personnalisees. Selectionnees par IA et pretes a partager.",
       "movieInteractions": "Interactions Films",
-      "movieInteractionsDesc": "Parlez a vos personnages preferes",
+      "movieInteractionsDesc": "Interagissez avec vos personnages preferes. Influencez le recit et faites partie de l'action.",
       "contacts": "Contacts",
       "contactsDesc": "Gerez les contacts familiaux pour le partage",
       "feedback": "Retours",
@@ -10956,7 +10957,8 @@
       "chessDesc": "Jouez aux échecs avec famille et amis",
       "title": "Moi dans l'histoire",
       "consent": "Consentement requis",
-      "consentDesc": "Activez les fonctions biometriques pour personnaliser votre experience"
+      "consentDesc": "Activez les fonctions biometriques pour personnaliser votre experience",
+      "swipeHint": "Glissez gauche/droite pour explorer"
     },
     "contacts": {
       "title": "Contacts",

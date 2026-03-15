@@ -5889,8 +5889,17 @@
     },
     "basic": {
       "name": "免费",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -10205,7 +10214,8 @@
       "tryDifferent": "尝试其他搜索词",
       "searching": "搜索中...",
       "searchForContent": "搜索内容",
-      "useVoiceOrType": "使用语音搜索或输入查找电影、节目等"
+      "useVoiceOrType": "使用语音搜索或输入查找电影、节目等",
+      "popular": "热门"
     },
     "profile": {
       "title": "个人资料",
@@ -10934,11 +10944,11 @@
     "subtitle": "你的互动身份",
     "hub": {
       "magicMirror": "魔镜",
-      "magicMirrorDesc": "看看自己作为故事中的角色",
+      "magicMirrorDesc": "以全新视角看自己。通过实时效果发现您的数字光环和风格。",
       "highlights": "精彩集锦",
-      "highlightsDesc": "你最好的互动时刻",
+      "highlightsDesc": "通过个性化视频合集重温您的精彩时刻。AI策展，随时分享。",
       "movieInteractions": "电影互动",
-      "movieInteractionsDesc": "与你喜欢的角色对话",
+      "movieInteractionsDesc": "与您喜爱的角色互动。影响故事发展，成为行动的一部分。",
       "contacts": "联系人",
       "contactsDesc": "管理家庭联系人以便分享",
       "feedback": "反馈",
@@ -10947,7 +10957,8 @@
       "chessDesc": "与家人和朋友下象棋",
       "title": "故事中的我",
       "consent": "需要同意",
-      "consentDesc": "启用生物识别功能以个性化您的体验"
+      "consentDesc": "启用生物识别功能以个性化您的体验",
+      "swipeHint": "左右滑动探索"
     },
     "contacts": {
       "title": "联系人",

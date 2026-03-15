@@ -10196,7 +10196,8 @@
       "tryDifferent": "別の検索語を試してください",
       "searching": "検索中...",
       "searchForContent": "コンテンツを検索",
-      "useVoiceOrType": "音声検索またはテキスト入力で映画、番組などを検索"
+      "useVoiceOrType": "音声検索またはテキスト入力で映画、番組などを検索",
+      "popular": "人気"
     },
     "profile": {
       "title": "プロフィール",
@@ -10925,11 +10926,11 @@
     "subtitle": "あなたのインタラクティブアイデンティティ",
     "hub": {
       "magicMirror": "魔法の鏡",
-      "magicMirrorDesc": "物語のキャラクターとして自分を見よう",
+      "magicMirrorDesc": "新しい視点で自分を見つめましょう。リアルタイムエフェクトでデジタルオーラを発見。",
       "highlights": "ハイライト",
-      "highlightsDesc": "最高のインタラクティブな瞬間",
+      "highlightsDesc": "パーソナライズされたビデオコンピレーションで最高の瞬間を追体験。AIキュレーションで共有準備完了。",
       "movieInteractions": "映画インタラクション",
-      "movieInteractionsDesc": "お気に入りのキャラクターと会話",
+      "movieInteractionsDesc": "お気に入りのキャラクターと交流しましょう。ストーリーに影響を与え、アクションの一部になりましょう。",
       "contacts": "連絡先",
       "contactsDesc": "共有用の家族連絡先を管理",
       "feedback": "フィードバック",
@@ -10938,7 +10939,8 @@
       "chessDesc": "家族や友人とチェスを楽しもう",
       "title": "物語の中の私",
       "consent": "同意が必要です",
-      "consentDesc": "体験をパーソナライズするために生体認証機能を有効にする"
+      "consentDesc": "体験をパーソナライズするために生体認証機能を有効にする",
+      "swipeHint": "左右にスワイプして探索"
     },
     "contacts": {
       "title": "連絡先",

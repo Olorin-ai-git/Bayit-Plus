@@ -30,6 +30,7 @@
 		020CDFC9F495619F4E78D324 /* InteractiveMomentOverlayView+Players.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865B0BD3EE013176093321D0 /* InteractiveMomentOverlayView+Players.swift */; };
 		0213C6E77FD41E3E5EA99E7A /* TVCharacterDialogueFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D8939AEEF565F74F8298A8 /* TVCharacterDialogueFlowView.swift */; };
 		021F2C3E072B0B5646F2F24B /* MissionsDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEA624A2190D34B03C930E7 /* MissionsDashboardView.swift */; };
+		022688C699AEF4C863586C09 /* TVSearchPopularRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D24E97A94AC34A59A929BEA /* TVSearchPopularRow.swift */; };
 		02517C5A4B27198EA3FB49F2 /* TVAgeStepperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3DC4A4745C830AC2B0C81C /* TVAgeStepperView.swift */; };
 		027E0EC6D5AB50AB1170F687 /* CatchUpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A6BE0E57EC39C027E17376 /* CatchUpViewModel.swift */; };
 		028A219D8E030EDB89C8BE7B /* OnboardingVoiceSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2172744B16FA3C63A9FB28 /* OnboardingVoiceSetupView.swift */; };
@@ -1366,6 +1367,7 @@
 		B6148E2B85B1299A9492B014 /* TVAudiobookDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F384C0D3AB3F026B5F43919 /* TVAudiobookDetailView.swift */; };
 		B6547634F78A300C605DB461 /* CompanionQuizTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BC0E26C4CE5F26337CB1C5 /* CompanionQuizTab.swift */; };
 		B65A9A17C678846F3852F9AF /* AddProfileSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E3BA7CFC021A80362FA321 /* AddProfileSheetView.swift */; };
+		B692CEF0EBDA2330C443E9D2 /* TVZehAniHubView+CardArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEB79CAD2D0571BFD9C672F /* TVZehAniHubView+CardArt.swift */; };
 		B69CC5D63283B4753B7B4D92 /* CategoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357B9236ED1F00136B627F79 /* CategoryRow.swift */; };
 		B6B1F21FE80BE6F69F397FD3 /* BayitPlusApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069A9B84C1A1325316BBD6B8 /* BayitPlusApp.swift */; };
 		B6B96B1E57701435B558D6D8 /* UserRepository+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0957CB0DED6C709EDD13CD9F /* UserRepository+Convenience.swift */; };
@@ -2640,6 +2642,7 @@
 		6E8C2DB2C985A04D1D993F40 /* onboarding_welcome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = onboarding_welcome.png; sourceTree = "<group>"; };
 		6EC1FD994B554E398657AE81 /* LiveTVRepository+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveTVRepository+Convenience.swift"; sourceTree = "<group>"; };
 		6EDB470CDEEDFB143CF1B37E /* FeedbackInboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackInboxView.swift; sourceTree = "<group>"; };
+		6EEB79CAD2D0571BFD9C672F /* TVZehAniHubView+CardArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVZehAniHubView+CardArt.swift"; sourceTree = "<group>"; };
 		6F1A6DC6DB798E15FA3FB34B /* TVAudiobookBrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAudiobookBrowseView.swift; sourceTree = "<group>"; };
 		6F4BACB2F2557EBE91BE6410 /* TVOnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVOnboardingViewModel.swift; sourceTree = "<group>"; };
 		6F66CCE45DB036A5C50993F4 /* WidgetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsViewModel.swift; sourceTree = "<group>"; };
@@ -2912,6 +2915,7 @@
 		9CBE22C79186FC04E1F08867 /* IPadVODCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadVODCard.swift; sourceTree = "<group>"; };
 		9CC9BA9D68287BCE6CE34277 /* IPadSceneSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadSceneSupport.swift; sourceTree = "<group>"; };
 		9D13E0342CB5D7C12B194A77 /* TVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPlayerView.swift; sourceTree = "<group>"; };
+		9D24E97A94AC34A59A929BEA /* TVSearchPopularRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSearchPopularRow.swift; sourceTree = "<group>"; };
 		9D41A501F7A4AFC1B3E921B5 /* BYOCWatchProgressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCWatchProgressService.swift; sourceTree = "<group>"; };
 		9D47D907652EE218BD5BA042 /* WakeWordSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeWordSettingsView.swift; sourceTree = "<group>"; };
 		9DD875E25DEEDD1670EB3219 /* ChessMoveHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessMoveHistoryView.swift; sourceTree = "<group>"; };
@@ -3951,6 +3955,7 @@
 				6D17BE1FD4D7C1036E43351C /* TVZehAniHighlightsView+ReelCard.swift */,
 				132E9F2A9CBD970A0CBA45CA /* TVZehAniHubView.swift */,
 				89FF8B28D53CE5EF5EA3FF52 /* TVZehAniHubView+Background.swift */,
+				6EEB79CAD2D0571BFD9C672F /* TVZehAniHubView+CardArt.swift */,
 				0D01A5CCDE1445009E489FC0 /* TVZehAniHubView+Carousel.swift */,
 				E363BD31948E072D2E523E85 /* TVZehAniHubView+Hero.swift */,
 				9B8E563FE3F87235334D2E22 /* TVZehAniHubView+Navigation.swift */,
@@ -6079,6 +6084,7 @@
 				8B0870DFFD42C49A8D1D886A /* TVSearchAdvancedFiltersView.swift */,
 				6A0884645298021CBF8067A4 /* TVSearchAutocompleteSuggestions.swift */,
 				6CD942A27CE4B747BB9E7945 /* TVSearchFilterPillsView.swift */,
+				9D24E97A94AC34A59A929BEA /* TVSearchPopularRow.swift */,
 				B133A346F56F9A715C9E70ED /* TVSearchResultsGridView.swift */,
 				02B59E056064BD788C1689C7 /* TVSearchSortView.swift */,
 				993646F2B82D6776CFA80411 /* TVSearchSuggestionsView.swift */,
@@ -7357,6 +7363,7 @@
 				2689ECDAE28D5F8A14629079 /* TVSearchAdvancedFiltersView.swift in Sources */,
 				0389BA1CD2C8579A37EABBE3 /* TVSearchAutocompleteSuggestions.swift in Sources */,
 				9BB66E617225B0B75AB5888B /* TVSearchFilterPillsView.swift in Sources */,
+				022688C699AEF4C863586C09 /* TVSearchPopularRow.swift in Sources */,
 				CD1109739A9294FE92114D57 /* TVSearchResultsGridView.swift in Sources */,
 				D5975A261B40C0958397BF64 /* TVSearchSortView.swift in Sources */,
 				0067C29E218EDD3F0C7D4788 /* TVSearchSuggestionsView.swift in Sources */,
@@ -7485,6 +7492,7 @@
 				5EFFA8D5264F65752DD58242 /* TVZehAniHighlightsView+ReelCard.swift in Sources */,
 				29751533AF4AC62C40A733DA /* TVZehAniHighlightsView.swift in Sources */,
 				18D7003BA72C25BEE679C74B /* TVZehAniHubView+Background.swift in Sources */,
+				B692CEF0EBDA2330C443E9D2 /* TVZehAniHubView+CardArt.swift in Sources */,
 				D5885EEF28FA3F8CD304D633 /* TVZehAniHubView+Carousel.swift in Sources */,
 				658B66755FBF5C309308645A /* TVZehAniHubView+Hero.swift in Sources */,
 				672C9DEF4A08857F57C627E4 /* TVZehAniHubView+Navigation.swift in Sources */,

@@ -5895,7 +5895,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -10210,7 +10214,8 @@
       "tryDifferent": "Try a different search term",
       "searching": "Searching...",
       "searchForContent": "Search for content",
-      "useVoiceOrType": "Use voice search or type to find movies, shows, and more"
+      "useVoiceOrType": "Use voice search or type to find movies, shows, and more",
+      "popular": "Popular"
     },
     "profile": {
       "title": "Profile",
@@ -10939,11 +10944,11 @@
     "subtitle": "Your interactive identity",
     "hub": {
       "magicMirror": "Magic Mirror",
-      "magicMirrorDesc": "See yourself as a character in the story",
+      "magicMirrorDesc": "See yourself in a new light. Discover your digital aura and style with real-time effects.",
       "highlights": "Highlight Reels",
-      "highlightsDesc": "Your best interactive moments compiled",
+      "highlightsDesc": "Relive your best moments with personalized video compilations. AI-curated and ready to share.",
       "movieInteractions": "Movie Interactions",
-      "movieInteractionsDesc": "Talk to your favorite movie characters",
+      "movieInteractionsDesc": "Engage with your favorite characters. Influence the story and become part of the action.",
       "contacts": "Contacts",
       "contactsDesc": "Manage family contacts for sharing",
       "feedback": "Feedback",
@@ -10952,7 +10957,8 @@
       "chessDesc": "Play chess with family and friends",
       "title": "Me in the Story",
       "consent": "Consent Required",
-      "consentDesc": "Enable biometric features to personalize your experience"
+      "consentDesc": "Enable biometric features to personalize your experience",
+      "swipeHint": "Swipe Left/Right to Explore"
     },
     "contacts": {
       "title": "Contacts",
