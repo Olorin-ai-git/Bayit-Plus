@@ -10,24 +10,13 @@
         let thumbnailURL: URL?
         let onSelect: () -> Void
         @Environment(LocalizationManager.self) private var localization
-        @FocusState private var isFocused: Bool
 
         var body: some View {
             Button(action: onSelect) {
                 cardContent
             }
-            .buttonStyle(TVDiscoverCardButtonStyle())
+            .tvCardStyle()
             .accessibilityIdentifier("tv_discover_feature_\(feature.id)")
-            .focused($isFocused)
-            .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
-            .shadow(
-                color: isFocused ? DesignTokens.Primary.default.opacity(0.5) : .clear,
-                radius: isFocused ? 20 : 0
-            )
-            .animation(
-                .easeInOut(duration: TVDesignTokens.Focus.animationDuration),
-                value: isFocused
-            )
         }
 
         private var cardContent: some View {
@@ -41,10 +30,7 @@
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card))
             .overlay(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
-                    .stroke(
-                        isFocused ? DesignTokens.Glass.borderFocus : DesignTokens.Glass.border,
-                        lineWidth: isFocused ? TVDesignTokens.Focus.ringWidth : 1
-                    )
+                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
             )
             .overlay(alignment: .topTrailing) {
                 TVDiscoverAvailabilityBadge(availability: availability)
@@ -93,12 +79,6 @@
                     .lineLimit(4)
                     .multilineTextAlignment(.leading)
             }
-        }
-    }
-
-    struct TVDiscoverCardButtonStyle: ButtonStyle {
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
         }
     }
 #endif

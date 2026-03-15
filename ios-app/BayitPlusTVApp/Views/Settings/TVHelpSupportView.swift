@@ -92,7 +92,6 @@
                         HeaderRow()
                         FeatureCardsSection()
                         BottomSection()
-                        FooterLabel()
                     }
                     .padding(DS.pagePad)
                 }
@@ -365,7 +364,7 @@
                 .padding(.vertical, 28)
                 .frame(maxWidth: .infinity, minHeight: 140)
             }
-            .buttonStyle(.plain)
+            .tvCardStyle()
             .background(
                 RoundedRectangle(cornerRadius: DS.r2xl, style: .continuous)
                     .fill(fillColor)
@@ -475,7 +474,7 @@
                         .fill(DS.rowFill)
                 )
             }
-            .buttonStyle(.plain)
+            .tvCardStyle()
             .scaleEffect(isPressed ? 0.97 : 1.0)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isPressed)
             // Entrance: x offset (whileHover: x 4)
@@ -587,7 +586,7 @@
                     .padding(.horizontal, 24)
                     .padding(.vertical, 18)
                 }
-                .buttonStyle(.plain)
+                .tvCardStyle()
 
                 // Answer (animated expand/collapse)
                 // CommonQuestions.tsx: height auto, opacity, duration 0.3s cubic-bezier(0.4,0,0.2,1)

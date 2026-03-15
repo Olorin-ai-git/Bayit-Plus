@@ -18,21 +18,13 @@
                                 localization: localization
                             )
                         }
-                        .buttonStyle(TVZehAniCardButtonStyle())
+                        .tvCardStyle()
                         .focused($focusedCard, equals: card)
                     }
                 }
                 .padding(.horizontal, 100)
                 .padding(.bottom, 100)
             }
-        }
-    }
-
-    // MARK: - Card Button Style (suppresses default tvOS focus ring)
-
-    struct TVZehAniCardButtonStyle: ButtonStyle {
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
         }
     }
 
@@ -64,21 +56,9 @@
                     .fill(Color.white.opacity(0.08))
                     .overlay(
                         RoundedRectangle(cornerRadius: 20)
-                            .stroke(
-                                isFocused
-                                    ? DesignTokens.Primary.p500.opacity(0.6)
-                                    : Color.white.opacity(0.12),
-                                lineWidth: isFocused ? 2 : 1
-                            )
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
                     )
             )
-            .scaleEffect(isFocused ? 1.05 : 1.0)
-            .shadow(
-                color: isFocused
-                    ? Color(hex: 0x7C3AED).opacity(0.4) : .clear,
-                radius: 30, x: 0, y: 10
-            )
-            .animation(.easeInOut(duration: 0.25), value: isFocused)
         }
 
         private var title: String {
