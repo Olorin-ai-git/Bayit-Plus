@@ -110,6 +110,12 @@ final class WidgetDockViewModel {
         toggleMinimize(widgetId: widgetId)
     }
 
+    /// Close a widget from the sidebar, deactivating it (no longer shown in UI).
+    @MainActor
+    func closeWidget(widgetId: String) {
+        minimizeWidget(widgetId: widgetId)
+    }
+
     /// Toggle dock visibility.
     @MainActor
     func toggleDock() {
