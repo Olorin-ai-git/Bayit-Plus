@@ -157,7 +157,11 @@ struct BayitPlusApp: App {
                     if UITestingSupport.isSkipAuth {
                         coordinator.showingAuth = false
                     } else {
-                        coordinator.showingAuth = !authManager.isAuthenticated
+                        #if DEBUG
+                            await loginWithDebugCredentials()
+                        #else
+                            coordinator.showingAuth = !authManager.isAuthenticated
+                        #endif
                     }
                     if let testRoute = UITestingSupport.navigateToRoute,
                        let url = URL(string: "bayitplus://\(testRoute)")
@@ -196,6 +200,13 @@ struct BayitPlusApp: App {
                     WidgetCenter.shared.reloadAllTimelines()
                     tooltipManager.updateUserId(authManager.user?.id ?? "anonymous")
                 }
+            #if DEBUG
+                .onChange(of: authManager.isAuthenticated) { _, isAuth in
+                    if !isAuth, BayitPlusApp.hasDebugCredentials {
+                        Task { await loginWithDebugCredentials() }
+                    }
+                }
+            #endif
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in
