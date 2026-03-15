@@ -95,15 +95,19 @@
         @ViewBuilder
         private var posterImage: some View {
             if let url = playerVM?.resolvedCoverURL {
-                CachedAsyncImage(url: url) {
-                    posterFallback
-                }
-                .frame(maxWidth: .infinity, maxHeight: posterHeight)
+                Color.clear
+                    .frame(maxWidth: .infinity, maxHeight: posterHeight)
+                    .overlay {
+                        CachedAsyncImage(url: url) { posterFallback }
+                    }
+                    .clipped()
             } else if let urlStr = widget.coverUrl, let url = URL(string: urlStr) {
-                CachedAsyncImage(url: url) {
-                    posterFallback
-                }
-                .frame(maxWidth: .infinity, maxHeight: posterHeight)
+                Color.clear
+                    .frame(maxWidth: .infinity, maxHeight: posterHeight)
+                    .overlay {
+                        CachedAsyncImage(url: url) { posterFallback }
+                    }
+                    .clipped()
             } else {
                 posterFallback
             }
