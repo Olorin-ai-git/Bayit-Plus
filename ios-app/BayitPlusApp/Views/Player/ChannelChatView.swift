@@ -65,7 +65,7 @@
                         .font(.system(size: 24))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
-                .accessibilityLabel("Close chat")
+                .accessibilityLabel(localization?.t("common.close") ?? "Close")
             }
             .padding(.horizontal, DesignTokens.Spacing.base)
             .padding(.vertical, DesignTokens.Spacing.md)

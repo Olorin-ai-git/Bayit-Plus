@@ -71,7 +71,7 @@ struct PodcastEpisodeListView: View {
                     )
             }
             .disabled(isRefreshing)
-            .accessibilityLabel("Refresh latest episodes")
+            .accessibilityLabel(localization.t("podcasts.refreshEpisodes"))
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

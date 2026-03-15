@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Compact glass-styled bar that appears above the tab bar when inline audio is playing.
@@ -8,6 +9,7 @@ import SwiftUI
 struct MiniAudioPlayerBar: View {
     @Environment(AudioPlaybackManager.self) var audioManager
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var showSleepTimerPicker = false
     @State private var showChapterPicker = false
 
@@ -122,7 +124,7 @@ struct MiniAudioPlayerBar: View {
                     .foregroundColor(DesignTokens.Text.muted)
                     .frame(width: 30, height: 30)
             }
-            .accessibilityLabel("Close player")
+            .accessibilityLabel(localization.t("miniPlayer.closePlayer"))
 
             Spacer()
 
@@ -135,7 +137,7 @@ struct MiniAudioPlayerBar: View {
                         .foregroundColor(DesignTokens.Text.muted)
                         .frame(width: 30, height: 30)
                 }
-                .accessibilityLabel("Chapters")
+                .accessibilityLabel(localization.t("audiobooks.chapters"))
             }
 
             if !isLiveContent {
@@ -151,7 +153,7 @@ struct MiniAudioPlayerBar: View {
                         )
                         .frame(width: 30, height: 30)
                 }
-                .accessibilityLabel("Sleep timer")
+                .accessibilityLabel(localization.t("player.sleepTimer.title"))
             }
         }
     }

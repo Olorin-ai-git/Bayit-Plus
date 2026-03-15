@@ -1,5 +1,6 @@
 #if os(iOS)
     import BayitDesignSystem
+    import BayitLocalization
     import SwiftUI
 
     /// Extension on PlayerView providing live toolbar buttons,
@@ -47,7 +48,7 @@
                         )
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Channel chat")
+                .accessibilityLabel(localization.t("player.channelChat"))
             }
         }
 

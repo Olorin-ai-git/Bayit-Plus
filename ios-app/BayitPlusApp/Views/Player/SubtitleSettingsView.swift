@@ -12,8 +12,8 @@ struct SubtitleSettingsView: View {
 
     let onDismiss: () -> Void
 
-    private let fontSizeRange: ClosedRange<Double> = 12...32
-    private let opacityRange: ClosedRange<Double> = 0...1.0
+    private let fontSizeRange: ClosedRange<Double> = 12 ... 32
+    private let opacityRange: ClosedRange<Double> = 0 ... 1.0
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
@@ -48,7 +48,7 @@ struct SubtitleSettingsView: View {
 
                     Slider(value: $fontSize, in: fontSizeRange, step: 1)
                         .tint(DesignTokens.Primary.default)
-                        .accessibilityLabel("Subtitle font size")
+                        .accessibilityLabel(localization.t("subtitles.fontSize"))
                 }
                 .padding(DesignTokens.Spacing.md)
             }
@@ -68,7 +68,7 @@ struct SubtitleSettingsView: View {
 
                     Slider(value: $backgroundOpacity, in: opacityRange, step: 0.05)
                         .tint(DesignTokens.Primary.default)
-                        .accessibilityLabel("Subtitle background opacity")
+                        .accessibilityLabel(localization.t("subtitles.backgroundOpacity"))
                 }
                 .padding(DesignTokens.Spacing.md)
             }
@@ -98,7 +98,7 @@ struct SubtitleSettingsView: View {
         .background(DesignTokens.Background.primary)
     }
 
-    private func positionOption(label: String, value: String, icon: String) -> some View {
+    private func positionOption(label: String, value: String, icon _: String) -> some View {
         let isSelected = position == value
 
         return GlassChip(

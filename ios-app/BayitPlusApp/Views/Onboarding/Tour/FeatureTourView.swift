@@ -48,7 +48,7 @@ struct FeatureTourView: View {
             }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Feature Discovery Tour")
+        .accessibilityLabel(localization.t("onboarding.featureTour"))
     }
 
     // MARK: - Top Bar

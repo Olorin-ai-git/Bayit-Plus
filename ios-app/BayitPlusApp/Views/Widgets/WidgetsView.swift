@@ -51,7 +51,6 @@ struct WidgetsView: View {
 
     // MARK: - Personal Widgets Section
 
-    @ViewBuilder
     private func personalWidgetsSection(_ vm: WidgetsViewModel) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
             HStack {
@@ -62,7 +61,8 @@ struct WidgetsView: View {
                 Spacer()
 
                 GlassButton(localization.t("widgets.create"), variant: .primary, size: .small,
-                             icon: Image(systemName: "plus")) {
+                            icon: Image(systemName: "plus"))
+                {
                     showCreateWidget = true
                 }
             }
@@ -148,12 +148,12 @@ struct WidgetsView: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, DesignTokens.Spacing.lg)
-        .accessibilityLabel("Create personal widget")
+        .accessibilityLabel(localization.t("widgets.createPersonal"))
     }
 
     private var personalWidgetsLoading: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            ForEach(0..<3, id: \.self) { _ in
+            ForEach(0 ..< 3, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .frame(height: 60)

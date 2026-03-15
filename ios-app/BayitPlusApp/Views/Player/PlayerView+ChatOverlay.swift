@@ -94,7 +94,7 @@
                         )
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Channel chat")
+                .accessibilityLabel(localization.t("player.channelChat"))
             }
         }
     }

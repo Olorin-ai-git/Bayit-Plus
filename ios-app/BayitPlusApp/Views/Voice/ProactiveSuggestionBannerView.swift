@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Animated banner that displays proactive AI suggestions.
@@ -7,8 +8,8 @@ import SwiftUI
 /// message with a type label and priority-coded icon, plus execute and
 /// dismiss action buttons. Auto-dismisses after a configurable timeout.
 struct ProactiveSuggestionBannerView: View {
-
     let viewModel: ProactiveVoiceViewModel
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         if viewModel.isVisible, let suggestion = viewModel.suggestion {
@@ -51,7 +52,7 @@ struct ProactiveSuggestionBannerView: View {
                 ) {
                     viewModel.dismiss()
                 }
-                .accessibilityLabel("Dismiss suggestion")
+                .accessibilityLabel(localization.t("proactiveSuggestions.dismiss"))
 
                 GlassButton(
                     "",
@@ -61,7 +62,7 @@ struct ProactiveSuggestionBannerView: View {
                 ) {
                     viewModel.execute()
                 }
-                .accessibilityLabel("Accept suggestion")
+                .accessibilityLabel(localization.t("proactiveSuggestions.accept"))
             }
         }
         .glassCard(radius: DesignTokens.Radius.lg, padding: DesignTokens.Spacing.base)

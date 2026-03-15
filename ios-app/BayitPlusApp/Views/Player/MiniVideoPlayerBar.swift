@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -9,6 +10,7 @@ import SwiftUI
 struct MiniVideoPlayerBar: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(MediaPlayer.self) private var player
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         if coordinator.minimizedRoute != nil, coordinator.fullscreenRoute == nil {
@@ -78,7 +80,8 @@ struct MiniVideoPlayerBar: View {
     private var thumbnail: some View {
         Group {
             if let urlString = coordinator.minimizedThumbnail,
-               let url = URL(string: urlString) {
+               let url = URL(string: urlString)
+            {
                 CachedAsyncImage(url: url) { thumbnailPlaceholder }
             } else {
                 thumbnailPlaceholder
@@ -143,7 +146,7 @@ struct MiniVideoPlayerBar: View {
                     .foregroundColor(DesignTokens.Text.muted)
                     .frame(width: 36, height: 36)
             }
-            .accessibilityLabel("Close player")
+            .accessibilityLabel(localization.t("miniPlayer.closePlayer"))
         }
     }
 

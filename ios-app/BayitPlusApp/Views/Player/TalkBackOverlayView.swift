@@ -126,7 +126,7 @@ struct TalkBackOverlayView: View {
                 .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
-        .accessibilityLabel("Listening for your response")
+        .accessibilityLabel(localization.t("talkBack.listeningForResponse"))
     }
 
     // MARK: - Evaluating State
@@ -139,7 +139,7 @@ struct TalkBackOverlayView: View {
                 .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
-        .accessibilityLabel("Evaluating your response")
+        .accessibilityLabel(localization.t("talkBack.evaluatingResponse"))
     }
 
     // MARK: - Result State

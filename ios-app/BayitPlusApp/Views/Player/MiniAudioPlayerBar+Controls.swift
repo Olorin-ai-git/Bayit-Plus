@@ -66,7 +66,7 @@ extension MiniAudioPlayerBar {
                             .frame(width: 44, height: 44)
                     }
                     .disabled(!audioManager.canGoPreviousChapter)
-                    .accessibilityLabel("Previous chapter")
+                    .accessibilityLabel(localization.t("player.previousChapter"))
                 }
 
                 Button {
@@ -77,7 +77,7 @@ extension MiniAudioPlayerBar {
                         .foregroundColor(DesignTokens.Text.primary)
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Skip backward 15 seconds")
+                .accessibilityLabel(localization.t("player.skipBackward"))
 
                 Button {
                     audioManager.togglePlayPause()
@@ -97,7 +97,7 @@ extension MiniAudioPlayerBar {
                         .foregroundColor(DesignTokens.Text.primary)
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Skip forward 30 seconds")
+                .accessibilityLabel(localization.t("player.skipForward"))
 
                 if audioManager.activeContentType == .audiobook && !audioManager.activeChapters.isEmpty {
                     Button {
@@ -113,7 +113,7 @@ extension MiniAudioPlayerBar {
                             .frame(width: 44, height: 44)
                     }
                     .disabled(!audioManager.canGoNextChapter)
-                    .accessibilityLabel("Next chapter")
+                    .accessibilityLabel(localization.t("player.nextChapter"))
                 }
             }
         }

@@ -79,7 +79,7 @@ struct AvatarModeView: View {
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .frame(width: 44, height: 44)
             }
-            .accessibilityLabel("Avatar preferences")
+            .accessibilityLabel(localization.t("avatar.preferences"))
         }
         .padding(.horizontal, DesignTokens.Spacing.base)
     }

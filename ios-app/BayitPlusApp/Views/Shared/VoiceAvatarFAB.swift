@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Floating action button with animated wizard hat for voice assistant
 struct VoiceAvatarFAB: View {
     let onTap: () -> Void
 
+    @Environment(LocalizationManager.self) private var localization
     @State private var bounceOffset: CGFloat = 0
     @State private var scale: CGFloat = 1.0
 
@@ -13,7 +15,7 @@ struct VoiceAvatarFAB: View {
             ZStack {
                 // Background circle with glow
                 Circle()
-                    .fill(Color(red: 13/255, green: 13/255, blue: 26/255).opacity(0.9))
+                    .fill(Color(red: 13 / 255, green: 13 / 255, blue: 26 / 255).opacity(0.9))
                     .frame(width: 64, height: 64)
                     .overlay(
                         Circle()
@@ -43,7 +45,7 @@ struct VoiceAvatarFAB: View {
             .offset(y: bounceOffset)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Voice Assistant")
+        .accessibilityLabel(localization.t("voiceAssistant.title"))
         .accessibilityHint("Activate voice assistant with wizard")
         .onAppear {
             startBounceAnimation()
@@ -72,7 +74,7 @@ struct VoiceAvatarFAB: View {
     private func startBounceAnimation() {
         withAnimation(
             .easeInOut(duration: 2.0)
-            .repeatForever(autoreverses: true)
+                .repeatForever(autoreverses: true)
         ) {
             bounceOffset = -5
         }
@@ -81,7 +83,8 @@ struct VoiceAvatarFAB: View {
     private func loadWizardHat() -> UIImage? {
         // Try loading from bundle resources
         if let path = Bundle.main.path(forResource: "wizard-hat", ofType: "png"),
-           let image = UIImage(contentsOfFile: path) {
+           let image = UIImage(contentsOfFile: path)
+        {
             return image
         }
 
