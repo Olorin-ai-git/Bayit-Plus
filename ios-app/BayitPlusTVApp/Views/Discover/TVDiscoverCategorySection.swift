@@ -14,7 +14,6 @@
 
         var body: some View {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-                categoryHeader
                 featureList
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -42,16 +41,22 @@
             .padding(.bottom, TVDesignTokens.Spacing.xs)
         }
 
+        private let gridColumns = [
+            GridItem(.flexible(), spacing: TVDesignTokens.Spacing.lg),
+            GridItem(.flexible(), spacing: TVDesignTokens.Spacing.lg),
+        ]
+
         private var featureList: some View {
             Group {
                 if features.isEmpty {
                     emptyState
                 } else {
-                    LazyVStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                    LazyVGrid(columns: gridColumns, spacing: TVDesignTokens.Spacing.lg) {
                         ForEach(features) { feature in
                             TVDiscoverFeatureCard(
                                 feature: feature,
                                 availability: viewModel.availability(for: feature.id),
+                                thumbnailURL: viewModel.demoThumbnailURL(for: feature.id),
                                 onSelect: { selectedFeature = feature }
                             )
                             .focused($focusedFeatureId, equals: feature.id)

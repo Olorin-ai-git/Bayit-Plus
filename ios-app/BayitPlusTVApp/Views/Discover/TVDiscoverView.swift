@@ -21,6 +21,16 @@
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .accessibilityIdentifier("tv_discover_main")
             .background(DesignTokens.Background.primary)
+            .fullScreenCover(isPresented: Binding(
+                get: { viewModel?.pendingDemoVideoURL != nil },
+                set: { if !$0 { viewModel?.pendingDemoVideoURL = nil } }
+            )) {
+                if let url = viewModel?.pendingDemoVideoURL {
+                    TVDemoVideoPlayerView(url: url) {
+                        viewModel?.pendingDemoVideoURL = nil
+                    }
+                }
+            }
             .task {
                 if viewModel == nil {
                     let vm = DiscoverViewModel(
@@ -38,16 +48,16 @@
         }
 
         private var headerSection: some View {
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
                 Text(localization.t("discover.title"))
-                    .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
+                    .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 Text(localization.t("discover.subtitle"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
-            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .frame(maxWidth: .infinity)
         }
 
         private var categoryTabs: some View {
