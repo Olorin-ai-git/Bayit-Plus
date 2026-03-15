@@ -57,6 +57,7 @@
                         withAnimation {
                             coordinator.selectedProfileId = member.stableId
                             coordinator.selectedProfileName = member.displayName
+                            coordinator.selectedProfileAvatar = member.avatar
                             onboardingPrefs.switchProfile(member.stableId)
                             // Use onboarding name if profile has none
                             if coordinator.selectedProfileName == nil {

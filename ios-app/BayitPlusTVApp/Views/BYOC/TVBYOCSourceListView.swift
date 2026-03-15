@@ -12,34 +12,31 @@
         var isEmbedded: Bool = false
         let onDismiss: () -> Void
 
-        @State private var showAddIPTV = false
-        @State private var showAddXtream = false
-        @State private var showPlexAuth = false
-        @State private var showAddYouTube = false
-        @State private var plexAuthToken: String?
-        @State private var sourceToRemove: BYOCSourceConfig?
+        @State var showAddIPTV = false
+        @State var showAddXtream = false
+        @State var showPlexAuth = false
+        @State var showAddYouTube = false
+        @State var plexAuthToken: String?
+        @State var sourceToRemove: BYOCSourceConfig?
+
+        let gridColumns = [
+            GridItem(.flexible(), spacing: TVDesignTokens.Spacing.lg),
+            GridItem(.flexible(), spacing: TVDesignTokens.Spacing.lg),
+        ]
 
         var body: some View {
             ZStack {
                 DesignTokens.Background.primary.ignoresSafeArea()
 
-                VStack(spacing: TVDesignTokens.Spacing.xl) {
-                    headerSection
-                    ScrollView {
-                        VStack(spacing: TVDesignTokens.Spacing.lg) {
-                            youtubeSection
-                            iptvSection
-                            xtreamSection
-                            plexSection
-                            existingSourcesList
-                        }
-                        .padding(TVDesignTokens.Spacing.md)
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: TVDesignTokens.Spacing.xl) {
+                        headerSection
+                        sourceGrid
+                        connectedSourcesSection
                     }
-                    if !isEmbedded {
-                        closeButton
-                    }
+                    .padding(.horizontal, 60)
+                    .padding(.vertical, TVDesignTokens.Spacing.lg)
                 }
-                .padding(TVDesignTokens.Spacing.xl)
             }
             .fullScreenCover(isPresented: $showAddIPTV) {
                 TVAddIPTVSourceSheet(onDismiss: { showAddIPTV = false })
@@ -97,113 +94,16 @@
             }
         }
 
+        // MARK: - Header
+
         private var headerSection: some View {
-            HStack(spacing: TVDesignTokens.Spacing.md) {
-                Image(systemName: "play.tv")
-                    .font(.system(size: 50))
-                    .foregroundStyle(DesignTokens.Primary.p400)
-                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
-                    Text(localization.t("byoc.connectedSources"))
-                        .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
-                        .foregroundStyle(DesignTokens.Text.primary)
-                    Text(localization.t("byoc.connectContentDesc"))
-                        .font(.system(size: TVDesignTokens.FontSize.md))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                }
-                Spacer()
-                if !isEmbedded {
-                    Button { onDismiss() } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 40))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                    }
-                    .tvCardStyle()
-                }
-            }
-        }
-
-        private var iptvSection: some View {
-            addSourceRow(
-                icon: "antenna.radiowaves.left.and.right",
-                title: localization.t("byoc.addIPTV"),
-                subtitle: localization.t("byoc.enterURL"),
-                color: DesignTokens.Primary.p400
-            ) { showAddIPTV = true }
-        }
-
-        @ViewBuilder
-        private var xtreamSection: some View {
-            if byocManager.hasXtream {
-                let count = byocManager.xtreamChannels.count
-                    + byocManager.xtreamVODItems.count
-                connectedRow(
-                    icon: "tv.and.mediabox",
-                    title: localization.t("byoc.addXtream"),
-                    subtitle: "\(count) \(localization.t("byoc.itemsLoaded"))",
-                    color: .purple
-                )
-            } else {
-                addSourceRow(
-                    icon: "tv.and.mediabox",
-                    title: localization.t("byoc.addXtream"),
-                    subtitle: localization.t("byoc.xtreamConnectDesc"),
-                    color: .purple
-                ) { showAddXtream = true }
-            }
-        }
-
-        @ViewBuilder
-        private var plexSection: some View {
-            if byocManager.hasPlex {
-                connectedRow(
-                    icon: "server.rack",
-                    title: localization.t("byoc.addPlex"),
-                    subtitle: "\(byocManager.plexItems.count) \(localization.t("byoc.itemsLoaded"))",
-                    color: .orange
-                )
-            } else {
-                addSourceRow(
-                    icon: "server.rack",
-                    title: localization.t("byoc.addPlex"),
-                    subtitle: localization.t("byoc.plexConnectDesc"),
-                    color: .orange
-                ) { showPlexAuth = true }
-            }
-        }
-
-        @ViewBuilder
-        private var youtubeSection: some View {
-            if byocManager.hasYouTube {
-                connectedRow(
-                    icon: "play.rectangle.fill",
-                    title: localization.t("byoc.addYouTube"),
-                    subtitle: "\(byocManager.youtubeItems.count) \(localization.t("byoc.itemsLoaded"))",
-                    color: .red
-                )
-            } else {
-                addSourceRow(
-                    icon: "play.rectangle.fill",
-                    title: localization.t("byoc.addYouTube"),
-                    subtitle: localization.t("byoc.youtubeConnectDesc"),
-                    color: .red
-                ) { showAddYouTube = true }
-            }
-        }
-
-        @ViewBuilder
-        private var existingSourcesList: some View {
-            if !byocManager.sources.isEmpty {
-                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-                    Text(localization.t("byoc.connectedSources"))
-                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-
-                    ForEach(byocManager.sources) { source in
-                        TVBYOCSourceCard(source: source) {
-                            sourceToRemove = source
-                        }
-                    }
-                }
+            VStack(spacing: TVDesignTokens.Spacing.sm) {
+                Text(localization.t("byoc.connectedSources"))
+                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                Text(localization.t("byoc.connectContentDesc"))
+                    .font(.system(size: TVDesignTokens.FontSize.md))
+                    .foregroundStyle(DesignTokens.Text.secondary)
             }
         }
     }

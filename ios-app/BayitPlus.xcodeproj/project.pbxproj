@@ -1062,6 +1062,7 @@
 		8B957F3A5C968025F561B274 /* MagicMirrorResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1EA74AAF738D2D242C3A76 /* MagicMirrorResult.swift */; };
 		8BA5C9A3E3777EB19F78B3ED /* AvatarDialogueOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77496AEFEF9E61EB1C1FA160 /* AvatarDialogueOverlayView.swift */; };
 		8BC04875BD849991BDFBEC40 /* OfflineCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FA21AB8481260ED9E0CCB1 /* OfflineCacheService.swift */; };
+		8C09E848CFE1784CBA923EE9 /* TVBYOCSourceListView+Connected.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39434D8D8366A38DDEC34EC7 /* TVBYOCSourceListView+Connected.swift */; };
 		8C19F824FF0682BFDDD94421 /* LiveDubbingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21970558CAC96760E4C891F /* LiveDubbingModels.swift */; };
 		8C4A833C08D85CC3BBFECCEC /* ChapterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421E50D2AF2AE2B49BDE09FA /* ChapterListView.swift */; };
 		8C950EA336FAEF141B99E579 /* TransactionRowCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E399D4963D1A0C10D112A65 /* TransactionRowCard.swift */; };
@@ -2315,6 +2316,7 @@
 		38A0072FFCC60FDE5900D0F4 /* TVBillingView+Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVBillingView+Transactions.swift"; sourceTree = "<group>"; };
 		38BF9BE4B082EB475DBC8926 /* SplitSubtitleLanguageGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitSubtitleLanguageGrid.swift; sourceTree = "<group>"; };
 		3910474AD651E7D98B900582 /* HeroCarouselItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroCarouselItem.swift; sourceTree = "<group>"; };
+		39434D8D8366A38DDEC34EC7 /* TVBYOCSourceListView+Connected.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVBYOCSourceListView+Connected.swift"; sourceTree = "<group>"; };
 		39A2574945924EE508843BDE /* MFASetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFASetupView.swift; sourceTree = "<group>"; };
 		39A895DE08A2DC7A81C245AF /* DevicePairingRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicePairingRepository.swift; sourceTree = "<group>"; };
 		39EEFE7892FD8032C732C69E /* TVBreadcrumbBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVBreadcrumbBar.swift; sourceTree = "<group>"; };
@@ -5888,6 +5890,7 @@
 				D49DADCFB8E477FC18A773DE /* TVBYOCOnboardingWizardView.swift */,
 				CE15FC1E01C205FCE2529D5E /* TVBYOCSourceCard.swift */,
 				0F20FB59181CE12AE6EEF5BC /* TVBYOCSourceListView.swift */,
+				39434D8D8366A38DDEC34EC7 /* TVBYOCSourceListView+Connected.swift */,
 				637E339C74410060E0321612 /* TVBYOCSourceListView+Rows.swift */,
 				0117515B151DB6021E55DA20 /* TVIPTVChannelCard.swift */,
 				D0066FE0442903BFB2B52E1B /* TVIPTVChannelsSection.swift */,
@@ -7087,6 +7090,7 @@
 				147AB5936D93169E396A73C5 /* TVBYOCMovieCard.swift in Sources */,
 				69767401ACAD128962A861C0 /* TVBYOCOnboardingWizardView.swift in Sources */,
 				7FA4EF3277B448B1210B650A /* TVBYOCSourceCard.swift in Sources */,
+				8C09E848CFE1784CBA923EE9 /* TVBYOCSourceListView+Connected.swift in Sources */,
 				734161590A942E966866D31C /* TVBYOCSourceListView+Rows.swift in Sources */,
 				655D105EECDC4AC6BBD6CDDA /* TVBYOCSourceListView.swift in Sources */,
 				82ED84E082421B61B8057087 /* TVBetaCreditsView.swift in Sources */,

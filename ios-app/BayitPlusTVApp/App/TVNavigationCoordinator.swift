@@ -116,6 +116,9 @@ final class TVNavigationCoordinator {
     /// The display name of the currently selected profile (for greetings).
     var selectedProfileName: String?
 
+    /// Avatar URL string of the currently selected household profile.
+    var selectedProfileAvatar: String?
+
     /// Whether the onboarding flow should be shown for the current profile.
     var showingOnboarding: Bool = false
 
