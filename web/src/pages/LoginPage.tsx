@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import {
   Link,
@@ -98,6 +98,17 @@ export default function LoginPage() {
       setError(err.message || t("login.errors.googleFailed"));
     }
   };
+
+  // Auto-submit in dev when credentials are pre-configured via VITE_DEV_DEFAULT_EMAIL/PASSWORD.
+  // ProtectedRoute redirects expired sessions back to /login, so this also handles
+  // the persist-indefinitely case without needing a separate isAuthenticated watcher.
+  useEffect(() => {
+    const devEmail = import.meta.env.VITE_DEV_DEFAULT_EMAIL;
+    const devPassword = import.meta.env.VITE_DEV_DEFAULT_PASSWORD;
+    if (!devEmail || !devPassword) return;
+    handleSubmit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={styles.container}>
