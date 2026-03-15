@@ -11690,7 +11690,8 @@
     "alreadyConnected": "כבר מחובר",
     "authExpired": "אישור פג תוקף - נדרשת התחברות מחדש",
     "connectionError": "שגיאת חיבור",
-    "reconnect": "התחבר מחדש"
+    "reconnect": "התחבר מחדש",
+    "manageSource": "ניהול"
   },
   "a11y": {
     "openProfile": "{{name}}, פתח פרופיל",

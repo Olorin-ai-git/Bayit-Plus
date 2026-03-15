@@ -11690,7 +11690,8 @@
     "alreadyConnected": "Déjà connecté",
     "authExpired": "Autorisation expirée - reconnexion requise",
     "connectionError": "Erreur de connexion",
-    "reconnect": "Reconnecter"
+    "reconnect": "Reconnecter",
+    "manageSource": "Gérer"
   },
   "a11y": {
     "openProfile": "{{name}}, ouvrir le profil",

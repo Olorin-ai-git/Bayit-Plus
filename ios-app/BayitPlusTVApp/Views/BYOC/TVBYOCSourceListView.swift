@@ -32,7 +32,6 @@
                     VStack(spacing: TVDesignTokens.Spacing.xl) {
                         headerSection
                         sourceGrid
-                        connectedSourcesSection
                     }
                     .padding(.horizontal, 60)
                     .padding(.vertical, TVDesignTokens.Spacing.lg)

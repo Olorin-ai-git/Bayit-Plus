@@ -11690,7 +11690,8 @@
     "alreadyConnected": "已连接",
     "authExpired": "授权已过期 - 需要重新连接",
     "connectionError": "连接错误",
-    "reconnect": "重新连接"
+    "reconnect": "重新连接",
+    "manageSource": "管理"
   },
   "a11y": {
     "openProfile": "{{name}}, 打开个人资料",

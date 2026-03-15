@@ -11690,7 +11690,8 @@
       "error": "Error",
       "syncing": "Syncing",
       "pending": "Pending"
-    }
+    },
+    "manageSource": "Manage"
   },
   "a11y": {
     "openProfile": "{{name}}, open profile",

@@ -11690,7 +11690,8 @@
     "alreadyConnected": "ইতিমধ্যে সংযুক্ত",
     "authExpired": "অনুমোদন মেয়াদোত্তীর্ণ - পুনরায় সংযোগ প্রয়োজন",
     "connectionError": "সংযোগ ত্রুটি",
-    "reconnect": "পুনরায় সংযোগ করুন"
+    "reconnect": "পুনরায় সংযোগ করুন",
+    "manageSource": "পরিচালনা করুন"
   },
   "a11y": {
     "openProfile": "{{name}}, প্রোফাইল খুলুন",

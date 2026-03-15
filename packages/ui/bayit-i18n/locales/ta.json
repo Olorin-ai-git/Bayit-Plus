@@ -11690,7 +11690,8 @@
     "alreadyConnected": "ஏற்கனவே இணைக்கப்பட்டது",
     "authExpired": "அங்கீகாரம் காலாவதியானது - மீண்டும் இணைக்கவும்",
     "connectionError": "இணைப்பு பிழை",
-    "reconnect": "மீண்டும் இணை"
+    "reconnect": "மீண்டும் இணை",
+    "manageSource": "நிர்வகி"
   },
   "a11y": {
     "openProfile": "{{name}}, சுயவிவரத்தைத் திற",

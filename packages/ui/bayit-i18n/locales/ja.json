@@ -11672,7 +11672,8 @@
     "alreadyConnected": "接続済み",
     "authExpired": "認証の有効期限が切れました - 再接続が必要です",
     "connectionError": "接続エラー",
-    "reconnect": "再接続"
+    "reconnect": "再接続",
+    "manageSource": "管理"
   },
   "a11y": {
     "openProfile": "{{name}}、プロフィールを開く",
