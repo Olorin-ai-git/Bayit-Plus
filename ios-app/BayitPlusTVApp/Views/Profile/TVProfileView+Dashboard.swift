@@ -9,11 +9,11 @@ extension TVProfileView {
     func dashboardView(profile: ProfileResponse, stats: ProfileStats?) -> some View {
         HStack(alignment: .top, spacing: TVDesignTokens.Spacing.lg) {
             leftColumn(profile: profile, stats: stats)
-                .frame(width: 300)
+                .frame(width: 320)
             centerColumn
-                .frame(minWidth: 520, maxWidth: .infinity)
+                .frame(minWidth: 460, maxWidth: .infinity)
             rightColumn
-                .frame(width: 360)
+                .frame(width: 440)
         }
         .padding(.horizontal, 60)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -21,7 +21,7 @@ extension TVProfileView {
 
     // MARK: - Left Column: Avatar + Name + Badge + Stats
 
-    private func leftColumn(profile: ProfileResponse, stats _: ProfileStats?) -> some View {
+    private func leftColumn(profile: ProfileResponse, stats: ProfileStats?) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             profileAvatar(profile)
                 .frame(width: 180, height: 180)
@@ -32,6 +32,10 @@ extension TVProfileView {
                 .lineLimit(1)
 
             premiumBadge
+
+            if let stats {
+                statsRow(stats)
+            }
         }
         .padding(.top, TVDesignTokens.Spacing.lg)
     }
@@ -95,12 +99,12 @@ extension TVProfileView {
     }
 
     private func statsRow(_ stats: ProfileStats) -> some View {
-        HStack(spacing: TVDesignTokens.Spacing.lg) {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
             statItem(
                 icon: "heart.fill",
                 value: "\(stats.totalFavorites ?? 0)",
                 label: localization.t("profile.favorites"),
-                color: DesignTokens.Primary.p400
+                color: DesignTokens.ErrorColor.e400
             )
             statItem(
                 icon: "record.circle",
@@ -121,18 +125,19 @@ extension TVProfileView {
     }
 
     private func statItem(icon: String, value: String, label: String, color: Color) -> some View {
-        VStack(spacing: TVDesignTokens.Spacing.xs) {
-            HStack(spacing: TVDesignTokens.Spacing.xs) {
+        VStack(spacing: 4) {
+            HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .font(.system(size: 16))
                     .foregroundStyle(color)
                 Text(value)
-                    .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
             }
             Text(label)
-                .font(.system(size: TVDesignTokens.FontSize.xs))
+                .font(.system(size: 14))
                 .foregroundStyle(DesignTokens.Text.muted)
+                .lineLimit(1)
         }
     }
 }

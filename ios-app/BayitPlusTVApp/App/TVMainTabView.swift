@@ -74,6 +74,10 @@
                         .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
                         .tag(TVTab.profile)
 
+                    TVPreferencesTabView()
+                        .tabItem { Label(localization.t("settings.preferences"), systemImage: TVTab.preferences.iconName) }
+                        .tag(TVTab.preferences)
+
                     HelpSupportView()
                         .tabItem { Label(localization.t("nav.help"), systemImage: TVTab.help.iconName) }
                         .tag(TVTab.help)

@@ -25,6 +25,12 @@ extension TVProfileView {
                 ) { activeSheet = .favorites }
 
                 contentGridButton(
+                    icon: "play.rectangle.fill",
+                    title: localization.t("profile.recordings"),
+                    color: DesignTokens.Primary.p400
+                ) { activeSheet = .recordings }
+
+                contentGridButton(
                     icon: "list.bullet",
                     title: localization.t("profile.playlists"),
                     color: DesignTokens.Secondary.s400

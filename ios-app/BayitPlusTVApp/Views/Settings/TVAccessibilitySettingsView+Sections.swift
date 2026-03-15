@@ -141,36 +141,48 @@ extension TVAccessibilitySettingsView {
         subtitle: String?,
         isOn: Binding<Bool>
     ) -> some View {
-        HStack(spacing: TVDesignTokens.Spacing.lg) {
-            Image(systemName: icon)
-                .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundStyle(DesignTokens.Primary.p400)
-                .frame(width: 48, height: 48)
+        Button {
+            isOn.wrappedValue.toggle()
+        } label: {
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                Image(systemName: icon)
+                    .font(.system(size: TVDesignTokens.FontSize.lg))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                    .frame(width: 48, height: 48)
 
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
-                Text(title)
-                    .font(.system(
-                        size: TVDesignTokens.FontSize.base,
-                        weight: .semibold
-                    ))
-                    .foregroundStyle(DesignTokens.Text.primary)
+                VStack(
+                    alignment: .leading,
+                    spacing: TVDesignTokens.Spacing.xxs
+                ) {
+                    Text(title)
+                        .font(.system(
+                            size: TVDesignTokens.FontSize.base,
+                            weight: .semibold
+                        ))
+                        .foregroundStyle(DesignTokens.Text.primary)
 
-                if let subtitle {
-                    Text(subtitle)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                        .lineLimit(2)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.system(
+                                size: TVDesignTokens.FontSize.sm
+                            ))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                            .lineLimit(2)
+                    }
                 }
+
+                Spacer()
+
+                TVSettingsPillToggle(isOn: isOn.wrappedValue)
             }
-
-            Spacer()
-
-            Toggle("", isOn: isOn)
-                .tint(DesignTokens.Primary.default)
-                .labelsHidden()
+            .padding(TVDesignTokens.Spacing.lg)
+            .background(DesignTokens.Glass.bgLight)
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: TVDesignTokens.Radius.lg
+                )
+            )
         }
-        .padding(TVDesignTokens.Spacing.lg)
-        .background(DesignTokens.Glass.bgLight)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+        .tvCardStyle()
     }
 }
