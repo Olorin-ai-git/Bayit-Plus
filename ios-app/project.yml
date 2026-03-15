@@ -120,6 +120,7 @@ targets:
       - path: BayitPlusApp/Services/StoreManager.swift
       - path: BayitPlusApp/Services/CatchUpPreferencesService.swift
       - path: BayitPlusApp/Services/PlayerPreferencesService.swift
+      - path: BayitPlusApp/App/BayitPlusApp+DebugAutoLogin.swift
       - path: BayitPlusApp/App/FeatureFlags.swift
       - path: BayitPlusApp/App/UserUIPreferencesStore.swift
       - path: BayitPlusApp/Resources/Bayit_Intro_Hebrew.mp4
