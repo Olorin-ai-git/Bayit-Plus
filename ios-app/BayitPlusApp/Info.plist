@@ -8,6 +8,12 @@
 	<string>$(API_RETRYABLE_STATUS_CODES)</string>
 	<key>AUTH_SERVICE_URL</key>
 	<string>$(AUTH_SERVICE_URL)</string>
+	<key>LOGIN_EMAIL</key>
+	<string>$(LOGIN_EMAIL)</string>
+	<key>LOGIN_PASSWORD</key>
+	<string>$(LOGIN_PASSWORD)</string>
+	<key>SESSION_MAX_AGE_DAYS</key>
+	<string>$(SESSION_MAX_AGE_DAYS)</string>
 	<key>CATCHUP_AUTO_PROMPT_SECONDS</key>
 	<string>15</string>
 	<key>CATCHUP_CREDIT_COST</key>
