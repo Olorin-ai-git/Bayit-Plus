@@ -6,10 +6,6 @@
     import BayitMedia
     import SwiftUI
 
-    /// Main tab navigation for the tvOS app.
-    /// Uses TabView with tvOS-native top shelf styling.
-    /// Overlays the widget dock at the bottom, language picker at the top-right.
-    /// Also overlays the proactive suggestion banner at the top (text-only, no TTS).
     struct TVMainTabView: View {
         @Environment(TVNavigationCoordinator.self) var coordinator
         @Environment(TVRepositoryProvider.self) var repos
@@ -18,69 +14,87 @@
         @Environment(AuthManager.self) var authManager
         @Environment(\.appConfiguration) private var appConfiguration
         @State var dockViewModel: WidgetDockViewModel?
+        @State var widgetsViewModel: WidgetsViewModel?
+        @State var pickerViewModel: ContentPickerViewModel?
         @State var proactiveSuggestionViewModel: TVProactiveSuggestionViewModel?
         @State var showLanguagePicker = false
-        @State var widgetAutoHideTask: Task<Void, Never>?
-        @State var isWidgetAreaFocused = false
-        @State var hasAppeared = false
         @State var showProfile = false
+        @State var showCreateWidget = false
+        @State var hasAppeared = false
 
         var body: some View {
             @Bindable var coord = coordinator
 
-            TabView(selection: $coord.selectedTab) {
-                TVSearchView()
-                    .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
-                    .tag(TVTab.search)
+            HStack(spacing: 0) {
+                TVAppSidebarView(
+                    restoredWidgets: dockViewModel?.restoredWidgets ?? [],
+                    onAvatarTap: { showProfile = true },
+                    onAddWidget: { showCreateWidget = true },
+                    onClose: { dockViewModel?.closeWidget(widgetId: $0) }
+                )
 
-                TVHomeView()
-                    .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
-                    .tag(TVTab.home)
+                TabView(selection: $coord.selectedTab) {
+                    TVSearchView()
+                        .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
+                        .tag(TVTab.search)
 
-                if prefs.showLiveTV {
-                    TVLiveTVView()
-                        .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
-                        .tag(TVTab.liveTV)
+                    TVHomeView()
+                        .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
+                        .tag(TVTab.home)
+
+                    if prefs.showLiveTV {
+                        TVLiveTVView()
+                            .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
+                            .tag(TVTab.liveTV)
+                    }
+
+                    if appConfiguration.ownerMode {
+                        TVVODView()
+                            .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
+                            .tag(TVTab.vod)
+                    }
+
+                    TVZehAniHubView()
+                        .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }
+                        .tag(TVTab.zehAni)
+
+                    TVListenView()
+                        .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
+                        .tag(TVTab.podcasts)
+
+                    TVBYOCSourceListView(isEmbedded: true, onDismiss: {})
+                        .tabItem { Label(localization.t("nav.byoc"), systemImage: TVTab.byoc.iconName) }
+                        .tag(TVTab.byoc)
+
+                    TVDiscoverView()
+                        .tabItem { Label(localization.t("nav.discover"), systemImage: TVTab.discover.iconName) }
+                        .tag(TVTab.discover)
+
+                    HelpSupportView()
+                        .tabItem { Label(localization.t("nav.help"), systemImage: TVTab.help.iconName) }
+                        .tag(TVTab.help)
                 }
-
-                if appConfiguration.ownerMode {
-                    TVVODView()
-                        .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
-                        .tag(TVTab.vod)
+                .overlay(alignment: .bottom) {
+                    TVMiniAudioPlayerBar()
                 }
-
-                TVZehAniHubView()
-                    .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }
-                    .tag(TVTab.zehAni)
-
-                TVListenView()
-                    .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
-                    .tag(TVTab.podcasts)
-
-                TVBYOCSourceListView(isEmbedded: true, onDismiss: {})
-                    .tabItem { Label(localization.t("nav.byoc"), systemImage: TVTab.byoc.iconName) }
-                    .tag(TVTab.byoc)
-
-                TVDiscoverView()
-                    .tabItem { Label(localization.t("nav.discover"), systemImage: TVTab.discover.iconName) }
-                    .tag(TVTab.discover)
-
-                TVWidgetsView()
-                    .tabItem { Label(localization.t("nav.widgets"), systemImage: TVTab.widgets.iconName) }
-                    .tag(TVTab.widgets)
-
-                HelpSupportView()
-                    .tabItem { Label(localization.t("nav.help"), systemImage: TVTab.help.iconName) }
-                    .tag(TVTab.help)
+                .overlay(alignment: .topTrailing) {
+                    languageButton
+                        .padding(.top, TVDesignTokens.Spacing.md)
+                        .padding(.trailing, TVDesignTokens.Spacing.xl)
+                }
+                .overlay(alignment: .top) {
+                    if let vm = proactiveSuggestionViewModel {
+                        TVProactiveSuggestionBannerView(
+                            viewModel: vm,
+                            onExecute: { handleProactiveSuggestion($0) }
+                        )
+                    }
+                }
             }
             .onAppear {
                 guard !hasAppeared else { return }
                 hasAppeared = true
                 coord.selectedTab = .home
-            }
-            // Mini audio player bar overlays at bottom when inline audio is active
-            .overlay(alignment: .bottom) {
-                TVMiniAudioPlayerBar()
             }
             .fullScreenCover(isPresented: $showLanguagePicker) {
                 languagePickerSheet
@@ -89,66 +103,35 @@
                 TVProfileView()
                     .onExitCommand { showProfile = false }
             }
-            // Widget sidebar as overlay so it never compresses the TabView tab bar.
-            .overlay(alignment: .trailing) {
-                if let vm = dockViewModel, vm.isDockVisible, !vm.restoredWidgets.isEmpty {
-                    TVWidgetSidebarView(
-                        widgets: vm.restoredWidgets,
-                        onMinimize: { widgetId in vm.minimizeWidget(widgetId: widgetId) }
-                    )
-                }
-            }
-            .ignoresSafeArea(.all, edges: .trailing)
-            // Top-right pills on outer overlay so tvOS focus engine can reach them.
-            // Overlays nested inside TabView are outside the focus scope and receive no focus.
-            .overlay(alignment: .topTrailing) {
-                HStack(spacing: TVDesignTokens.Spacing.sm) {
-                    if let vm = dockViewModel, !vm.widgets.isEmpty {
-                        widgetsButton(viewModel: vm)
-                    }
-                    languageButton
-                    profileButton
-                }
-                .padding(.top, TVDesignTokens.Spacing.md)
-                .padding(.trailing, TVDesignTokens.Spacing.xl)
-            }
-            // Widget dock also on outer HStack for focus reachability.
-            .overlay(alignment: .bottom) {
-                if let vm = dockViewModel, vm.isDockVisible, !vm.minimizedWidgets.isEmpty {
-                    TVWidgetDockView(
-                        widgets: vm.minimizedWidgets,
-                        isDockVisible: vm.isDockVisible,
-                        onRestore: { widgetId in vm.toggleMinimize(widgetId: widgetId) },
-                        onCloseDock: { vm.hideDock() },
-                        onFocusChanged: { focused in handleWidgetFocusChanged(focused) }
-                    )
-                    .padding(.bottom, TVDesignTokens.Spacing.xs)
-                }
-            }
-            // Proactive suggestion banner at the top, above all chrome.
-            .overlay(alignment: .top) {
-                if let vm = proactiveSuggestionViewModel {
-                    TVProactiveSuggestionBannerView(
-                        viewModel: vm,
-                        onExecute: { suggestion in
-                            handleProactiveSuggestion(suggestion)
+            .fullScreenCover(isPresented: $showCreateWidget) {
+                if let wvm = widgetsViewModel, let pvm = pickerViewModel {
+                    TVCreateWidgetView(
+                        widgetsViewModel: wvm,
+                        pickerViewModel: pvm,
+                        onDismiss: {
+                            showCreateWidget = false
+                            Task { await dockViewModel?.loadWidgets() }
                         }
                     )
                 }
             }
-            // Block Menu/Back from propagating beyond the main tab view.
-            // NavigationStack inside each tab handles its own back navigation;
-            // onExitCommand only fires when the stack is at root, preventing
-            // the Siri Remote from navigating back to the login/profile screen.
             .onExitCommand {}
             .task {
                 if dockViewModel == nil {
-                    dockViewModel = WidgetDockViewModel(
-                        repository: repos.widget,
-                        initiallyVisible: false
+                    dockViewModel = WidgetDockViewModel(repository: repos.widget, initiallyVisible: false)
+                }
+                if widgetsViewModel == nil {
+                    widgetsViewModel = WidgetsViewModel(repository: repos.widget)
+                }
+                if pickerViewModel == nil {
+                    pickerViewModel = ContentPickerViewModel(
+                        liveTV: repos.liveTV, podcasts: repos.podcasts,
+                        radio: repos.radio, audiobook: repos.audiobook
                     )
                 }
-                await dockViewModel?.loadWidgets()
+                async let dock: () = dockViewModel?.loadWidgets() ?? ()
+                async let picker: () = pickerViewModel?.loadAll() ?? ()
+                _ = await (dock, picker)
             }
             .task(id: coordinator.selectedProfileId) {
                 if proactiveSuggestionViewModel == nil {
@@ -158,25 +141,6 @@
                 }
                 proactiveSuggestionViewModel?.stop()
                 proactiveSuggestionViewModel?.start(profileId: coordinator.selectedProfileId)
-            }
-            .onChange(of: dockViewModel?.isDockVisible) { _, isVisible in
-                coordinator.dockIsVisible = isVisible ?? false
-                if isVisible == true {
-                    resetWidgetAutoHideTimer()
-                } else {
-                    widgetAutoHideTask?.cancel()
-                    widgetAutoHideTask = nil
-                }
-            }
-            .onChange(of: coordinator.showWidgetDock) { _, shouldShow in
-                guard shouldShow else { return }
-                coordinator.showWidgetDock = false
-                dockViewModel?.showDock()
-            }
-            .onChange(of: coordinator.requestDockToggle) { _, shouldToggle in
-                guard shouldToggle else { return }
-                coordinator.requestDockToggle = false
-                dockViewModel?.toggleDock()
             }
             .onChange(of: coordinator.selectedTab) { _, newTab in
                 guard let userId = authManager.user?.id else { return }
