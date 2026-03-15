@@ -28,7 +28,7 @@ extension TVPodcastsView {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Image(systemName: "plus.circle")
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
-                        Text(localization.t("podcasts.addPodcast"))
+                        Text(localization.t("podcasts.addPodcast.addPodcast"))
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     }
                     .foregroundStyle(DesignTokens.Primary.default)

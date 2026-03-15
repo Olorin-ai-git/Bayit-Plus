@@ -23,7 +23,7 @@
             VStack(spacing: TVDesignTokens.Spacing.xl) {
                 Spacer()
 
-                Text(localization.t("podcasts.addPodcast"))
+                Text(localization.t("podcasts.addPodcast.title"))
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
