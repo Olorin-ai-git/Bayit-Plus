@@ -15,7 +15,8 @@ struct TVCultureView: View {
                 if vm.isLoading && vm.jerusalemItems.isEmpty && vm.telAvivItems.isEmpty {
                     loadingState
                 } else if let error = vm.error,
-                          vm.jerusalemItems.isEmpty && vm.telAvivItems.isEmpty {
+                          vm.jerusalemItems.isEmpty && vm.telAvivItems.isEmpty
+                {
                     tvErrorState(error) {
                         Task { await vm.refresh() }
                     }
@@ -33,7 +34,6 @@ struct TVCultureView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: CultureContentViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             if !vm.categories.isEmpty {
@@ -41,11 +41,11 @@ struct TVCultureView: View {
             }
 
             if !vm.jerusalemItems.isEmpty {
-                cultureShelf(title: "Jerusalem", items: vm.jerusalemItems)
+                cultureShelf(title: localization.t("cultures.jerusalem.name"), items: vm.jerusalemItems)
             }
 
             if !vm.telAvivItems.isEmpty {
-                cultureShelf(title: "Tel Aviv", items: vm.telAvivItems)
+                cultureShelf(title: localization.t("cultures.telAviv.name"), items: vm.telAvivItems)
             }
         }
     }
@@ -53,7 +53,7 @@ struct TVCultureView: View {
     private func categoryFilters(_ vm: CultureContentViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: TVDesignTokens.Spacing.md) {
-                categoryChip("All", isSelected: vm.selectedCategory == nil) {
+                categoryChip(localization.t("common.all"), isSelected: vm.selectedCategory == nil) {
                     Task { await vm.filterByCategory(nil) }
                 }
 
@@ -89,7 +89,7 @@ struct TVCultureView: View {
         GlassContentShelf(title: title, items: items) { item in
             GlassFocusPoster(
                 thumbnailURL: nil,
-                title: item.title ?? "Content",
+                title: item.title ?? localization.t("common.content"),
                 subtitle: item.sourceName,
                 aspectRatio: 16 / 9
             )

@@ -32,7 +32,6 @@ struct TVJudaismView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: JudaismViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             if !vm.calendarEvents.isEmpty {
@@ -100,20 +99,20 @@ struct TVJudaismView: View {
     }
 
     private func categoryShelf(_ vm: JudaismViewModel) -> some View {
-        GlassContentShelf(title: "Categories", items: vm.categories) { cat in
+        GlassContentShelf(title: localization.t("tvos.judaism.categoriesShelf"), items: vm.categories) { cat in
             GlassFocusPoster(
                 thumbnailURL: cat.thumbnail,
-                title: cat.name ?? "Category",
+                title: cat.name ?? localization.t("tvos.judaism.category"),
                 aspectRatio: 16 / 9
             )
         }
     }
 
     private func contentShelf(_ vm: JudaismViewModel) -> some View {
-        GlassContentShelf(title: "Jewish Content", items: vm.items) { item in
+        GlassContentShelf(title: localization.t("tvos.judaism.contentShelf"), items: vm.items) { item in
             GlassFocusPoster(
                 thumbnailURL: item.thumbnail,
-                title: item.title ?? "Content",
+                title: item.title ?? localization.t("common.content"),
                 subtitle: item.duration,
                 aspectRatio: 16 / 9
             )

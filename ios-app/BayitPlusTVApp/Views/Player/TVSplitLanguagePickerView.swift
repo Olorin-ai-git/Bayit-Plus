@@ -33,8 +33,8 @@ struct TVSplitLanguagePickerView: View {
             layoutToggle
 
             HStack(alignment: .top, spacing: TVDesignTokens.Spacing.xxxxl) {
-                languageColumn(title: "Primary", current: $primaryItem)
-                languageColumn(title: "Secondary", current: $secondaryItem)
+                languageColumn(title: localization.t("tvos.subtitles.splitPicker.primary"), current: $primaryItem)
+                languageColumn(title: localization.t("tvos.subtitles.splitPicker.secondary"), current: $secondaryItem)
             }
             .padding(.vertical, TVDesignTokens.Spacing.md)
 

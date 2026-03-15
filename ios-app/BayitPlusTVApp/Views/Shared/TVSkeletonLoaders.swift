@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Skeleton loading card for tvOS content while data loads.
@@ -16,7 +17,7 @@ struct TVSkeletonCard: View {
                     colors: [
                         DesignTokens.Glass.bgLight,
                         DesignTokens.Glass.bg,
-                        DesignTokens.Glass.bgLight
+                        DesignTokens.Glass.bgLight,
                     ],
                     startPoint: isAnimating ? .leading : .trailing,
                     endPoint: isAnimating ? .trailing : .leading
@@ -26,7 +27,7 @@ struct TVSkeletonCard: View {
             .onAppear {
                 withAnimation(
                     .easeInOut(duration: 1.5)
-                    .repeatForever(autoreverses: true)
+                        .repeatForever(autoreverses: true)
                 ) {
                     isAnimating = true
                 }
@@ -50,7 +51,7 @@ struct TVSkeletonShelf: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    ForEach(0..<cardCount, id: \.self) { index in
+                    ForEach(0 ..< cardCount, id: \.self) { index in
                         TVSkeletonCard(width: cardWidth, height: cardHeight)
                             .opacity(0.6 - (Double(index) * 0.1))
                     }
@@ -63,11 +64,13 @@ struct TVSkeletonShelf: View {
 
 /// Skeleton state showing multiple loading shelves.
 struct TVSkeletonHomeView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     var body: some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xxl) {
-            TVSkeletonShelf(title: "Continue Watching")
-            TVSkeletonShelf(title: "Live TV")
-            TVSkeletonShelf(title: "Trending")
+            TVSkeletonShelf(title: localization.t("tvos.home.continueWatching"))
+            TVSkeletonShelf(title: localization.t("tvos.home.liveTV"))
+            TVSkeletonShelf(title: localization.t("tvos.home.trendingNow"))
         }
         .padding(.top, TVDesignTokens.Spacing.xl)
     }

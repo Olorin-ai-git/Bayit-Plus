@@ -148,7 +148,7 @@
                                                 .foregroundStyle(DesignTokens.Text.primary)
                                                 .lineLimit(1)
                                                 .frame(width: 80)
-                                            Text("Now Playing...")
+                                            Text(localization.t("tvos.radio.nowPlaying"))
                                                 .font(.system(size: 12))
                                                 .foregroundStyle(DesignTokens.Text.muted)
                                                 .lineLimit(1)

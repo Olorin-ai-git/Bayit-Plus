@@ -35,10 +35,10 @@ struct TVFavoritesView: View {
     }
 
     private func contentShelf(_ vm: FavoritesViewModel) -> some View {
-        GlassContentShelf(title: "Favorites", items: vm.items) { item in
+        GlassContentShelf(title: localization.t("tvos.favorites.title"), items: vm.items) { item in
             GlassFocusPoster(
                 thumbnailURL: item.thumbnail,
-                title: item.title ?? "Content",
+                title: item.title ?? localization.t("common.content"),
                 subtitle: item.type?.capitalized,
                 aspectRatio: 16 / 9
             )

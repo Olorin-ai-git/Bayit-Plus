@@ -12,8 +12,8 @@ struct TVSubtitleSettingsView: View {
     @AppStorage("subtitleBackgroundOpacity") private var backgroundOpacity: Double = 0.6
     @AppStorage("subtitlePosition") private var position: String = "bottom"
 
-    private let fontSizeRange: ClosedRange<Double> = 12...32
-    private let opacityRange: ClosedRange<Double> = 0...1.0
+    private let fontSizeRange: ClosedRange<Double> = 12 ... 32
+    private let opacityRange: ClosedRange<Double> = 0 ... 1.0
     private let opacityStep: Double = 0.05
 
     var body: some View {
@@ -109,15 +109,15 @@ struct TVSubtitleSettingsView: View {
                     .foregroundColor(DesignTokens.Text.primary)
 
                 HStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                    GlassChip(title: "Top", isSelected: position == "top") {
+                    GlassChip(title: localization.t("tvos.subtitles.position.top"), isSelected: position == "top") {
                         position = "top"
                     }
-                    .accessibilityLabel("Position subtitles at top")
+                    .accessibilityLabel(localization.t("tvos.subtitles.position.top"))
 
-                    GlassChip(title: "Bottom", isSelected: position == "bottom") {
+                    GlassChip(title: localization.t("tvos.subtitles.position.bottom"), isSelected: position == "bottom") {
                         position = "bottom"
                     }
-                    .accessibilityLabel("Position subtitles at bottom")
+                    .accessibilityLabel(localization.t("tvos.subtitles.position.bottom"))
                 }
             }
             .padding(TVDesignTokens.Spacing.md)
