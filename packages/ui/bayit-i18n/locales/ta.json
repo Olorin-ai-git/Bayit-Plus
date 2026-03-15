@@ -5900,11 +5900,7 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": [
-        "நேரலை சேனல்கள்",
-        "AI உதவியாளர்",
-        "ஆஃப்லைன் பார்வை"
-      ]
+      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
     },
     "premium": {
       "name": "பிளஸ்",
@@ -7607,7 +7603,16 @@
       "subtitle": "பதில்களைக் கண்டறிந்து ஆதரவைப் பெறுங்கள்",
       "title": "உதவி மற்றும் ஆதரவு",
       "replayOnboarding": "அறிமுகப்படுத்தலை மீண்டும் பார்க்க",
-      "replayTour": "அம்ச சுற்றுப்பயணத்தை மீண்டும் இயக்கு"
+      "replayTour": "அம்ச சுற்றுப்பயணத்தை மீண்டும் இயக்கு",
+      "askAnything": "எதையும் கேளுங்கள்",
+      "chatWithAI": "AI உதவியாளருடன் பேசுங்கள்",
+      "guidesCount": "{{count}} வழிகாட்டிகள்",
+      "emailOrQR": "மின்னஞ்சல் அல்லது QR",
+      "quickTips": "விரைவு குறிப்புகள்",
+      "commonQuestions": "பொதுவான கேள்விகள்",
+      "noTipsAvailable": "குறிப்புகள் இல்லை",
+      "noTutorialsAvailable": "டுடோரியல்கள் இல்லை",
+      "scanEmailQR": "உங்கள் தொலைபேசியில் ஸ்கேன் செய்யுங்கள் அல்லது மின்னஞ்சல்:"
     },
     "autoplayDescription": "முடிந்ததும் அடுத்த தொடர் தானியங்கி இயக்கும்",
     "autoplayNextEpisode": "அடுத்த தொடர் தானியங்கி இயக்கு",
@@ -10280,7 +10285,9 @@
       "shiurim": "Shiurim",
       "loading": "உள்ளடக்கம் ஏற்றுகிறது...",
       "empty": "[ta] No content available",
-      "holidayOccasion": "விழா / நிகழ்வு"
+      "holidayOccasion": "விழா / நிகழ்வு",
+      "categoriesShelf": "வகைகள்",
+      "contentShelf": "யூத உள்ளடக்கம்"
     },
     "flows": {
       "title": "உள்ளடக்க ஓட்டங்கள்",
@@ -10381,6 +10388,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "கடவுச்சொல்"
+    },
+    "subtitles": {
+      "position": {
+        "top": "மேலே",
+        "bottom": "கீழே"
+      },
+      "splitPicker": {
+        "primary": "முதன்மை",
+        "secondary": "இரண்டாம்"
+      }
     }
   },
   "missions": {
@@ -11417,7 +11434,7 @@
     "plexLocal": "உள்ளூர்",
     "plexRemote": "தொலைநிலை",
     "plexItemCount": "Plex-இலிருந்து %d உருப்படிகள்",
-    "plexConnectDesc": "உங்கள் Plex Media Server-ஐ இணைக்கவும்",
+    "plexConnectDesc": "உங்கள் தனிப்பட்ட மீடியா நூலகத்தை அணுகுங்கள்",
     "youtubeVisitLink": "கீழே உள்ள இணைப்பைப் பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
     "youtubeEnterCode": "மேலே காட்டப்பட்ட குறியீட்டை உள்ளிடவும்",
     "youtubeWaiting": "அங்கீகாரத்திற்காக காத்திருக்கிறது...",
@@ -11427,7 +11444,7 @@
     "youtubeOpenApp": "YouTube-இல் திறக்கவும்",
     "youtubeAudioAINote": "YouTube உள்ளடக்கத்திற்கு ஆடியோ AI அம்சங்கள் கிடைக்கும்",
     "fromYouTube": "YouTube-இலிருந்து",
-    "youtubeConnectDesc": "உங்கள் YouTube கணக்கை இணைக்கவும்",
+    "youtubeConnectDesc": "உங்கள் விருப்பமான சேனல்கள் மற்றும் வீடியோக்களைப் பாருங்கள்",
     "bannerTitle": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
     "bannerSubtitle": "AI-மேம்படுத்தப்பட்ட பார்வைக்கு உங்கள் ஸ்ட்ரீமிங் மூலங்களை இணைக்கவும்",
     "bannerConnect": "இணைக்க",
@@ -11447,7 +11464,7 @@
     "xtreamServer": "சேவையக URL",
     "xtreamUsername": "பயனர்பெயர்",
     "xtreamPassword": "கடவுச்சொல்",
-    "xtreamConnectDesc": "Xtream Codes வழங்குநரை இணைக்கவும்",
+    "xtreamConnectDesc": "உங்கள் IPTV சான்றுகளைப் பயன்படுத்தி இணையுங்கள்",
     "xtreamAuthFailed": "அங்கீகாரம் தோல்வியடைந்தது",
     "sourceName": "மூலத்தின் பெயர்",
     "selectProvider": "வழங்குநரைத் தேர்ந்தெடுக்கவும்",
@@ -11613,7 +11630,11 @@
       "error": "பிழை",
       "syncing": "ஒத்திசைவு",
       "pending": "நிலுவையில்"
-    }
+    },
+    "iptvConnectDesc": "உங்கள் வழங்குநரிடமிருந்து நேரலை தொலைக்காட்சி ஸ்ட்ரீம் செய்யுங்கள்",
+    "plexLabel": "Plex",
+    "addButton": "சேர்",
+    "alreadyConnected": "ஏற்கனவே இணைக்கப்பட்டது"
   },
   "a11y": {
     "openProfile": "{{name}}, சுயவிவரத்தைத் திற",

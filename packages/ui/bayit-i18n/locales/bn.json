@@ -5900,11 +5900,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্লাস",
@@ -7607,7 +7603,16 @@
       "subtitle": "উত্তর খুঁজুন এবং সাপোর্ট পান",
       "title": "সাহায্য ও সাপোর্ট",
       "replayOnboarding": "অনবোর্ডিং আবার দেখুন",
-      "replayTour": "ফিচার ট্যুর পুনরায় চালান"
+      "replayTour": "ফিচার ট্যুর পুনরায় চালান",
+      "askAnything": "যেকোনো কিছু জিজ্ঞেস করুন",
+      "chatWithAI": "AI সহায়কের সাথে চ্যাট করুন",
+      "guidesCount": "{{count}} গাইড",
+      "emailOrQR": "ইমেইল বা QR",
+      "quickTips": "দ্রুত টিপস",
+      "commonQuestions": "সাধারণ প্রশ্ন",
+      "noTipsAvailable": "কোনো টিপস নেই",
+      "noTutorialsAvailable": "কোনো টিউটোরিয়াল নেই",
+      "scanEmailQR": "ফোনে স্ক্যান করুন বা আমাদের ইমেইল করুন:"
     },
     "autoplayDescription": "শেষ হলে পরবর্তী এপিসোড স্বয়ংক্রিয়ভাবে চালান",
     "autoplayNextEpisode": "পরবর্তী এপিসোড অটোপ্লে",
@@ -10280,7 +10285,9 @@
       "shiurim": "Shiurim",
       "loading": "কন্টেন্ট লোড হচ্ছে...",
       "empty": "[bn] No content available",
-      "holidayOccasion": "ছুটি / উপলক্ষ"
+      "holidayOccasion": "ছুটি / উপলক্ষ",
+      "categoriesShelf": "বিভাগ",
+      "contentShelf": "ইহুদি বিষয়বস্তু"
     },
     "flows": {
       "title": "কন্টেন্ট ফ্লো",
@@ -10381,6 +10388,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "পাসওয়ার্ড"
+    },
+    "subtitles": {
+      "position": {
+        "top": "উপরে",
+        "bottom": "নীচে"
+      },
+      "splitPicker": {
+        "primary": "প্রাথমিক",
+        "secondary": "মাধ্যমিক"
+      }
     }
   },
   "missions": {
@@ -11417,7 +11434,7 @@
     "plexLocal": "স্থানীয়",
     "plexRemote": "দূরবর্তী",
     "plexItemCount": "Plex থেকে %d আইটেম",
-    "plexConnectDesc": "আপনার Plex Media Server সংযুক্ত করুন",
+    "plexConnectDesc": "আপনার ব্যক্তিগত মিডিয়া লাইব্রেরি অ্যাক্সেস করুন",
     "youtubeVisitLink": "নীচের লিঙ্কে যান এবং কোড লিখুন",
     "youtubeEnterCode": "উপরে দেখানো কোডটি লিখুন",
     "youtubeWaiting": "অনুমোদনের জন্য অপেক্ষা...",
@@ -11427,7 +11444,7 @@
     "youtubeOpenApp": "YouTube-এ খুলুন",
     "youtubeAudioAINote": "YouTube কন্টেন্টের জন্য অডিও AI বৈশিষ্ট্য উপলব্ধ",
     "fromYouTube": "YouTube থেকে",
-    "youtubeConnectDesc": "আপনার YouTube অ্যাকাউন্ট সংযুক্ত করুন",
+    "youtubeConnectDesc": "আপনার প্রিয় চ্যানেল এবং ভিডিওগুলি দেখুন",
     "bannerTitle": "আপনার নিজের কন্টেন্ট আনুন",
     "bannerSubtitle": "AI-উন্নত দেখার জন্য আপনার স্ট্রিমিং উৎসগুলি সংযুক্ত করুন",
     "bannerConnect": "সংযুক্ত",
@@ -11447,7 +11464,7 @@
     "xtreamServer": "সার্ভার URL",
     "xtreamUsername": "ব্যবহারকারীর নাম",
     "xtreamPassword": "পাসওয়ার্ড",
-    "xtreamConnectDesc": "Xtream Codes প্রদানকারী সংযুক্ত করুন",
+    "xtreamConnectDesc": "আপনার IPTV শংসাপত্র ব্যবহার করে সংযোগ করুন",
     "xtreamAuthFailed": "প্রমাণীকরণ ব্যর্থ",
     "sourceName": "উৎসের নাম",
     "selectProvider": "প্রদানকারী নির্বাচন করুন",
@@ -11613,7 +11630,11 @@
       "error": "ত্রুটি",
       "syncing": "সিঙ্ক হচ্ছে",
       "pending": "পেন্ডিং"
-    }
+    },
+    "iptvConnectDesc": "আপনার প্রদানকারী থেকে লাইভ টিভি স্ট্রিম করুন",
+    "plexLabel": "Plex",
+    "addButton": "যোগ করুন",
+    "alreadyConnected": "ইতিমধ্যে সংযুক্ত"
   },
   "a11y": {
     "openProfile": "{{name}}, প্রোফাইল খুলুন",

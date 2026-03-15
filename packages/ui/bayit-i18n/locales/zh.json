@@ -5894,17 +5894,8 @@
     },
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -7607,7 +7598,16 @@
       "subtitle": "查找答案并获取支持",
       "title": "帮助与支持",
       "replayOnboarding": "重播引导",
-      "replayTour": "重播功能导览"
+      "replayTour": "重播功能导览",
+      "askAnything": "随便问",
+      "chatWithAI": "与AI助手聊天",
+      "guidesCount": "{{count}} 个指南",
+      "emailOrQR": "邮件或二维码",
+      "quickTips": "快速提示",
+      "commonQuestions": "常见问题",
+      "noTipsAvailable": "暂无提示",
+      "noTutorialsAvailable": "暂无教程",
+      "scanEmailQR": "在手机上扫描或发送邮件至:"
     },
     "autoplayDescription": "当前集结束后自动播放下一集",
     "autoplayNextEpisode": "自动播放下一集",
@@ -10280,7 +10280,9 @@
       "shiurim": "Shiurim",
       "loading": "加载内容中...",
       "empty": "[zh] No content available",
-      "holidayOccasion": "节日 / 场合"
+      "holidayOccasion": "节日 / 场合",
+      "categoriesShelf": "分类",
+      "contentShelf": "犹太内容"
     },
     "flows": {
       "title": "内容流",
@@ -10381,6 +10383,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "密码"
+    },
+    "subtitles": {
+      "position": {
+        "top": "顶部",
+        "bottom": "底部"
+      },
+      "splitPicker": {
+        "primary": "主要",
+        "secondary": "次要"
+      }
     }
   },
   "missions": {
@@ -11417,7 +11429,7 @@
     "plexLocal": "本地",
     "plexRemote": "远程",
     "plexItemCount": "来自Plex的%d个项目",
-    "plexConnectDesc": "连接您的Plex Media Server",
+    "plexConnectDesc": "访问您的个人媒体库",
     "youtubeVisitLink": "访问下方链接并输入代码",
     "youtubeEnterCode": "输入上方显示的代码",
     "youtubeWaiting": "等待授权...",
@@ -11427,7 +11439,7 @@
     "youtubeOpenApp": "在YouTube中打开",
     "youtubeAudioAINote": "YouTube内容可使用音频AI功能",
     "fromYouTube": "来自YouTube",
-    "youtubeConnectDesc": "连接您的YouTube账户",
+    "youtubeConnectDesc": "观看你喜爱的频道和视频",
     "bannerTitle": "自带内容",
     "bannerSubtitle": "连接您的流媒体来源以获得AI增强观看体验",
     "bannerConnect": "连接",
@@ -11447,7 +11459,7 @@
     "xtreamServer": "服务器URL",
     "xtreamUsername": "用户名",
     "xtreamPassword": "密码",
-    "xtreamConnectDesc": "连接Xtream Codes提供商",
+    "xtreamConnectDesc": "使用您的IPTV凭据连接",
     "xtreamAuthFailed": "认证失败",
     "sourceName": "来源名称",
     "selectProvider": "选择提供商",
@@ -11613,7 +11625,11 @@
       "error": "错误",
       "syncing": "同步中",
       "pending": "等待中"
-    }
+    },
+    "iptvConnectDesc": "从您的提供商流式传输直播电视",
+    "plexLabel": "Plex",
+    "addButton": "添加",
+    "alreadyConnected": "已连接"
   },
   "a11y": {
     "openProfile": "{{name}}, 打开个人资料",

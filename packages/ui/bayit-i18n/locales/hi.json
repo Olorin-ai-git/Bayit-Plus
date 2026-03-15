@@ -5900,11 +5900,7 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
-      ]
+      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
     },
     "premium": {
       "name": "प्लस",
@@ -7607,7 +7603,16 @@
       "subtitle": "उत्तर खोजें और सहायता प्राप्त करें",
       "title": "सहायता और समर्थन",
       "replayOnboarding": "ऑनबोर्डिंग दोबारा देखें",
-      "replayTour": "फीचर टूर दोबारा चलाएं"
+      "replayTour": "फीचर टूर दोबारा चलाएं",
+      "askAnything": "कुछ भी पूछें",
+      "chatWithAI": "AI सहायक से बात करें",
+      "guidesCount": "{{count}} गाइड",
+      "emailOrQR": "ईमेल या QR",
+      "quickTips": "त्वरित सुझाव",
+      "commonQuestions": "सामान्य प्रश्न",
+      "noTipsAvailable": "कोई सुझाव उपलब्ध नहीं",
+      "noTutorialsAvailable": "कोई ट्यूटोरियल उपलब्ध नहीं",
+      "scanEmailQR": "फोन पर स्कैन करें या हमें ईमेल करें:"
     },
     "autoplayDescription": "समाप्त होने पर अगला एपिसोड स्वचालित चलाएं",
     "autoplayNextEpisode": "अगला एपिसोड ऑटोप्ले",
@@ -10280,7 +10285,9 @@
       "shiurim": "Shiurim",
       "loading": "सामग्री लोड हो रही है...",
       "empty": "[hi] No content available",
-      "holidayOccasion": "छुट्टी / अवसर"
+      "holidayOccasion": "छुट्टी / अवसर",
+      "categoriesShelf": "श्रेणियाँ",
+      "contentShelf": "यहूदी सामग्री"
     },
     "flows": {
       "title": "कॉन्टेंट फ्लो",
@@ -10381,6 +10388,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "पासवर्ड"
+    },
+    "subtitles": {
+      "position": {
+        "top": "ऊपर",
+        "bottom": "नीचे"
+      },
+      "splitPicker": {
+        "primary": "प्राथमिक",
+        "secondary": "माध्यमिक"
+      }
     }
   },
   "missions": {
@@ -11417,7 +11434,7 @@
     "plexLocal": "स्थानीय",
     "plexRemote": "रिमोट",
     "plexItemCount": "Plex से %d आइटम",
-    "plexConnectDesc": "अपना Plex Media Server कनेक्ट करें",
+    "plexConnectDesc": "अपनी व्यक्तिगत मीडिया लाइब्रेरी तक पहुंचें",
     "youtubeVisitLink": "नीचे दिए गए लिंक पर जाएं और कोड दर्ज करें",
     "youtubeEnterCode": "ऊपर दिखाया गया कोड दर्ज करें",
     "youtubeWaiting": "प्राधिकरण की प्रतीक्षा...",
@@ -11427,7 +11444,7 @@
     "youtubeOpenApp": "YouTube में खोलें",
     "youtubeAudioAINote": "YouTube सामग्री के लिए ऑडियो AI सुविधाएं उपलब्ध",
     "fromYouTube": "YouTube से",
-    "youtubeConnectDesc": "अपना YouTube खाता कनेक्ट करें",
+    "youtubeConnectDesc": "अपने पसंदीदा चैनल और वीडियो देखें",
     "bannerTitle": "अपनी सामग्री लाएं",
     "bannerSubtitle": "AI-संवर्धित देखने के लिए अपने स्ट्रीमिंग स्रोत कनेक्ट करें",
     "bannerConnect": "कनेक्ट",
@@ -11447,7 +11464,7 @@
     "xtreamServer": "सर्वर URL",
     "xtreamUsername": "उपयोगकर्ता नाम",
     "xtreamPassword": "पासवर्ड",
-    "xtreamConnectDesc": "Xtream Codes प्रदाता कनेक्ट करें",
+    "xtreamConnectDesc": "अपने IPTV क्रेडेंशियल्स का उपयोग करके कनेक्ट करें",
     "xtreamAuthFailed": "प्रमाणीकरण विफल",
     "sourceName": "स्रोत का नाम",
     "selectProvider": "प्रदाता चुनें",
@@ -11613,7 +11630,11 @@
       "error": "त्रुटि",
       "syncing": "सिंक हो रहा",
       "pending": "लंबित"
-    }
+    },
+    "iptvConnectDesc": "अपने प्रदाता से लाइव टीवी स्ट्रीम करें",
+    "plexLabel": "Plex",
+    "addButton": "जोड़ें",
+    "alreadyConnected": "पहले से जुड़ा हुआ"
   },
   "a11y": {
     "openProfile": "{{name}}, प्रोफ़ाइल खोलें",

@@ -7589,7 +7589,16 @@
       "subtitle": "回答を見つけてサポートを受ける",
       "title": "ヘルプとサポート",
       "replayOnboarding": "オンボーディングを再生",
-      "replayTour": "機能ツアーを再生"
+      "replayTour": "機能ツアーを再生",
+      "askAnything": "何でも聞いてください",
+      "chatWithAI": "AIアシスタントとチャット",
+      "guidesCount": "{{count}} ガイド",
+      "emailOrQR": "メールまたはQR",
+      "quickTips": "クイックヒント",
+      "commonQuestions": "よくある質問",
+      "noTipsAvailable": "ヒントはありません",
+      "noTutorialsAvailable": "チュートリアルはありません",
+      "scanEmailQR": "スマホでスキャンするかメールしてください:"
     },
     "autoplayDescription": "終了時に次のエピソードを自動的に再生",
     "autoplayNextEpisode": "次のエピソードを自動再生",
@@ -10262,7 +10271,9 @@
       "shiurim": "Shiurim",
       "loading": "[ja] Loading content...",
       "empty": "[ja] No content available",
-      "holidayOccasion": "祝日 / イベント"
+      "holidayOccasion": "祝日 / イベント",
+      "categoriesShelf": "カテゴリー",
+      "contentShelf": "ユダヤコンテンツ"
     },
     "flows": {
       "title": "コンテンツフロー",
@@ -10363,6 +10374,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "パスワード"
+    },
+    "subtitles": {
+      "position": {
+        "top": "上",
+        "bottom": "下"
+      },
+      "splitPicker": {
+        "primary": "プライマリ",
+        "secondary": "セカンダリ"
+      }
     }
   },
   "missions": {
@@ -11399,7 +11420,7 @@
     "plexLocal": "ローカル",
     "plexRemote": "リモート",
     "plexItemCount": "Plexから%dアイテム",
-    "plexConnectDesc": "Plex Media Serverを接続",
+    "plexConnectDesc": "パーソナルメディアライブラリにアクセス",
     "youtubeVisitLink": "下のリンクにアクセスしてコードを入力",
     "youtubeEnterCode": "上に表示されたコードを入力",
     "youtubeWaiting": "承認を待っています...",
@@ -11409,7 +11430,7 @@
     "youtubeOpenApp": "YouTubeで開く",
     "youtubeAudioAINote": "YouTubeコンテンツでオーディオAI機能が利用可能",
     "fromYouTube": "YouTubeから",
-    "youtubeConnectDesc": "YouTubeアカウントを接続",
+    "youtubeConnectDesc": "お気に入りのチャンネルと動画を視聴",
     "bannerTitle": "自分のコンテンツを持ち込む",
     "bannerSubtitle": "AI強化視聴のためにストリーミングソースを接続",
     "bannerConnect": "接続",
@@ -11429,7 +11450,7 @@
     "xtreamServer": "サーバーURL",
     "xtreamUsername": "ユーザー名",
     "xtreamPassword": "パスワード",
-    "xtreamConnectDesc": "Xtream Codesプロバイダーを接続",
+    "xtreamConnectDesc": "IPTVの認証情報を使用して接続",
     "xtreamAuthFailed": "認証に失敗",
     "sourceName": "ソース名",
     "selectProvider": "プロバイダーを選択",
@@ -11595,7 +11616,11 @@
       "error": "エラー",
       "syncing": "同期中",
       "pending": "保留中"
-    }
+    },
+    "iptvConnectDesc": "プロバイダーからライブTVをストリーミング",
+    "plexLabel": "Plex",
+    "addButton": "追加",
+    "alreadyConnected": "接続済み"
   },
   "a11y": {
     "openProfile": "{{name}}、プロフィールを開く",

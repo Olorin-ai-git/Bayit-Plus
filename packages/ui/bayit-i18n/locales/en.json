@@ -7612,7 +7612,17 @@
       "subtitle": "Find answers and get support",
       "title": "Help & Support",
       "replayOnboarding": "Replay Onboarding",
-      "replayTour": "Replay Feature Tour"
+      "replayTour": "Replay Feature Tour",
+      "askAnything": "Ask anything",
+      "chatWithAI": "Chat with AI Assistant",
+      "guidesCount": "{{count}} guides",
+      "emailOrQR": "Email or QR",
+      "quickTips": "Quick Tips",
+      "commonQuestions": "Common Questions",
+      "noTipsAvailable": "No tips available",
+      "noTutorialsAvailable": "No tutorials available",
+      "scanEmailQR": "Scan on your phone or email us at:",
+      "videoTutorials": "Video Tutorials"
     },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
@@ -10285,7 +10295,9 @@
       "shiurim": "Shiurim",
       "loading": "Loading content...",
       "empty": "No content available",
-      "holidayOccasion": "Holiday / Occasion"
+      "holidayOccasion": "Holiday / Occasion",
+      "categoriesShelf": "Categories",
+      "contentShelf": "Jewish Content"
     },
     "flows": {
       "title": "Content Flows",
@@ -10386,6 +10398,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "PASSWORD"
+    },
+    "subtitles": {
+      "position": {
+        "top": "Top",
+        "bottom": "Bottom"
+      },
+      "splitPicker": {
+        "primary": "Primary",
+        "secondary": "Secondary"
+      }
     }
   },
   "missions": {
@@ -11387,7 +11409,7 @@
     "youtube": "YouTube",
     "addIPTV": "Add IPTV",
     "addPlex": "Add Plex",
-    "plex": "Plex",
+    "plexLabel": "Plex",
     "addYouTube": "Add YouTube",
     "playlistURL": "Playlist URL",
     "playlistName": "Playlist Name",

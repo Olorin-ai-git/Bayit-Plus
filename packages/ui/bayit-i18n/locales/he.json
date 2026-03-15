@@ -5900,11 +5900,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -7607,7 +7603,16 @@
       "subtitle": "מצא תשובות וקבל תמיכה",
       "title": "עזרה ותמיכה",
       "replayOnboarding": "הצג שוב את ההדרכה",
-      "replayTour": "הפעל מחדש סיור תכונות"
+      "replayTour": "הפעל מחדש סיור תכונות",
+      "askAnything": "שאל הכל",
+      "chatWithAI": "שוחח עם עוזר AI",
+      "guidesCount": "{{count}} מדריכים",
+      "emailOrQR": "אימייל או QR",
+      "quickTips": "טיפים מהירים",
+      "commonQuestions": "שאלות נפוצות",
+      "noTipsAvailable": "אין טיפים זמינים",
+      "noTutorialsAvailable": "אין הדרכות זמינות",
+      "scanEmailQR": "סרוק בטלפון או שלח אלינו אימייל:"
     },
     "autoplayDescription": "נגן אוטומטית את הפרק הבא כשאחד מסתיים",
     "autoplayNextEpisode": "ניגון אוטומטי של הפרק הבא",
@@ -10280,7 +10285,9 @@
       "shiurim": "שיעורים",
       "loading": "טוען תוכן...",
       "empty": "אין תוכן זמין",
-      "holidayOccasion": "חג / אירוע"
+      "holidayOccasion": "חג / אירוע",
+      "categoriesShelf": "קטגוריות",
+      "contentShelf": "תוכן יהודי"
     },
     "flows": {
       "title": "זרמי תוכן",
@@ -10381,6 +10388,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "סיסמה"
+    },
+    "subtitles": {
+      "position": {
+        "top": "למעלה",
+        "bottom": "למטה"
+      },
+      "splitPicker": {
+        "primary": "ראשי",
+        "secondary": "משני"
+      }
     }
   },
   "missions": {
@@ -11417,7 +11434,7 @@
     "plexLocal": "מקומי",
     "plexRemote": "מרוחק",
     "plexItemCount": "%d פריטים מ-Plex",
-    "plexConnectDesc": "חבר את שרת Plex Media שלך",
+    "plexConnectDesc": "גש לספריית המדיה האישית שלך",
     "youtubeVisitLink": "בקר בקישור למטה והזן את הקוד",
     "youtubeEnterCode": "הזן את הקוד המוצג למעלה",
     "youtubeWaiting": "ממתין לאישור...",
@@ -11427,7 +11444,7 @@
     "youtubeOpenApp": "פתח ב-YouTube",
     "youtubeAudioAINote": "תכונות AI לאודיו זמינות עבור תוכן YouTube",
     "fromYouTube": "מ-YouTube",
-    "youtubeConnectDesc": "חבר את חשבון YouTube שלך",
+    "youtubeConnectDesc": "צפה בערוצים ובסרטונים האהובים עליך",
     "bannerTitle": "הבא תוכן משלך",
     "bannerSubtitle": "חבר את מקורות הסטרימינג שלך לצפייה משופרת ב-AI",
     "bannerConnect": "חבר",
@@ -11447,7 +11464,7 @@
     "xtreamServer": "כתובת שרת",
     "xtreamUsername": "שם משתמש",
     "xtreamPassword": "סיסמה",
-    "xtreamConnectDesc": "חבר ספק Xtream Codes",
+    "xtreamConnectDesc": "התחבר באמצעות פרטי ה-IPTV שלך",
     "xtreamAuthFailed": "האימות נכשל",
     "sourceName": "שם המקור",
     "selectProvider": "בחר ספק",
@@ -11613,7 +11630,11 @@
       "error": "שגיאה",
       "syncing": "מסנכרן",
       "pending": "ממתין"
-    }
+    },
+    "iptvConnectDesc": "צפה בשידורי טלוויזיה חיים מהספק שלך",
+    "plexLabel": "Plex",
+    "addButton": "הוסף",
+    "alreadyConnected": "כבר מחובר"
   },
   "a11y": {
     "openProfile": "{{name}}, פתח פרופיל",

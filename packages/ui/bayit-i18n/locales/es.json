@@ -5900,11 +5900,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -7607,7 +7603,16 @@
       "subtitle": "Encuentra respuestas y obten soporte",
       "title": "Ayuda y soporte",
       "replayOnboarding": "Repetir introducción",
-      "replayTour": "Repetir Tour de Funciones"
+      "replayTour": "Repetir Tour de Funciones",
+      "askAnything": "Pregunta lo que quieras",
+      "chatWithAI": "Chat con asistente IA",
+      "guidesCount": "{{count}} guías",
+      "emailOrQR": "Email o QR",
+      "quickTips": "Consejos rápidos",
+      "commonQuestions": "Preguntas frecuentes",
+      "noTipsAvailable": "Sin consejos disponibles",
+      "noTutorialsAvailable": "Sin tutoriales disponibles",
+      "scanEmailQR": "Escanea en tu teléfono o envíanos un email a:"
     },
     "autoplayDescription": "Reproducir automaticamente el siguiente episodio al terminar",
     "autoplayNextEpisode": "Reproducir Siguiente Episodio",
@@ -10280,7 +10285,9 @@
       "shiurim": "Shiurim",
       "loading": "Cargando contenido...",
       "empty": "No hay contenido disponible",
-      "holidayOccasion": "Festividad / Ocasion"
+      "holidayOccasion": "Festividad / Ocasion",
+      "categoriesShelf": "Categorías",
+      "contentShelf": "Contenido judío"
     },
     "flows": {
       "title": "Flujos de contenido",
@@ -10381,6 +10388,16 @@
       "email": "EMAIL",
       "emailPlaceholder": "your@email.com",
       "password": "CONTRASEÑA"
+    },
+    "subtitles": {
+      "position": {
+        "top": "Arriba",
+        "bottom": "Abajo"
+      },
+      "splitPicker": {
+        "primary": "Principal",
+        "secondary": "Secundario"
+      }
     }
   },
   "missions": {
@@ -11417,7 +11434,7 @@
     "plexLocal": "Local",
     "plexRemote": "Remoto",
     "plexItemCount": "%d elementos de Plex",
-    "plexConnectDesc": "Conecta tu Plex Media Server",
+    "plexConnectDesc": "Accede a tu biblioteca multimedia personal",
     "youtubeVisitLink": "Visita el enlace de abajo e ingresa el codigo",
     "youtubeEnterCode": "Ingresa el codigo mostrado arriba",
     "youtubeWaiting": "Esperando autorizacion...",
@@ -11427,7 +11444,7 @@
     "youtubeOpenApp": "Abrir en YouTube",
     "youtubeAudioAINote": "Funciones de audio IA disponibles para contenido de YouTube",
     "fromYouTube": "Desde YouTube",
-    "youtubeConnectDesc": "Conecta tu cuenta de YouTube",
+    "youtubeConnectDesc": "Mira tus canales y videos favoritos",
     "bannerTitle": "Trae Tu Propio Contenido",
     "bannerSubtitle": "Conecta tus fuentes de streaming para una experiencia mejorada con IA",
     "bannerConnect": "Conectar",
@@ -11447,7 +11464,7 @@
     "xtreamServer": "URL del Servidor",
     "xtreamUsername": "Usuario",
     "xtreamPassword": "Contrasena",
-    "xtreamConnectDesc": "Conectar proveedor de Xtream Codes",
+    "xtreamConnectDesc": "Conéctate usando tus credenciales IPTV",
     "xtreamAuthFailed": "Error de autenticacion",
     "sourceName": "Nombre de Fuente",
     "selectProvider": "Seleccionar Proveedor",
@@ -11613,7 +11630,11 @@
       "error": "Error",
       "syncing": "Sincronizando",
       "pending": "Pendiente"
-    }
+    },
+    "iptvConnectDesc": "Transmite TV en vivo desde tu proveedor",
+    "plexLabel": "Plex",
+    "addButton": "AGREGAR",
+    "alreadyConnected": "Ya conectado"
   },
   "a11y": {
     "openProfile": "{{name}}, abrir perfil",
