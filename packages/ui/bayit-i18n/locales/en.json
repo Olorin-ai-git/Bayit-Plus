@@ -7722,6 +7722,13 @@
       "allowCellular": "Download over cellular",
       "wifiOnly": "WiFi Only",
       "wifiOnlyHint": "Only download when connected to WiFi"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "Manage your linked social accounts",
+      "googleDesc": "Sync watch history and preferences",
+      "appleDesc": "Sign in with Apple",
+      "facebookDesc": "Connect social features",
+      "connect": "Connect"
     }
   },
   "familyControls": {

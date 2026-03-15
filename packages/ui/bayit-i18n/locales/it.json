@@ -7261,7 +7261,7 @@
     },
     "privacyPolicy": "Informativa sulla Privacy",
     "termsOfService": "Termini di Servizio",
-    "connectedAccounts": "Account Collegati",
+    "connectedAccounts": "Account collegati",
     "connectedAccountsDescription": "Gestisci come accedi a Bayit+. Puoi collegare più account per un accesso più facile.",
     "linkedAccounts": "Account Collegati",
     "linkNewAccount": "Collega Nuovo Account",
@@ -7722,6 +7722,13 @@
       "allowCellular": "Scarica con dati mobili",
       "wifiOnly": "Solo WiFi",
       "wifiOnlyHint": "Scarica solo quando connesso al WiFi"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "Gestisci i tuoi account collegati",
+      "googleDesc": "Sincronizza cronologia e preferenze",
+      "appleDesc": "Accedi con Apple",
+      "facebookDesc": "Connetti funzioni social",
+      "connect": "Collega"
     }
   },
   "familyControls": {

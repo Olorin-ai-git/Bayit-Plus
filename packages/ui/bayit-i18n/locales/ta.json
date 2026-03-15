@@ -7722,6 +7722,13 @@
       "allowCellular": "செல்லுலார் மூலம் பதிவிறக்கம்",
       "wifiOnly": "WiFi மட்டும்",
       "wifiOnlyHint": "WiFi-யில் இணைக்கப்பட்டிருக்கும்போது மட்டும் பதிவிறக்கம்"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "இணைக்கப்பட்ட கணக்குகளை நிர்வகிக்கவும்",
+      "googleDesc": "பார்வை வரலாற்றை ஒத்திசை செய்யவும்",
+      "appleDesc": "Apple மூலம் உள்நுழைக",
+      "facebookDesc": "சமூக அம்சங்களை இணைக்கவும்",
+      "connect": "இணை"
     }
   },
   "familyControls": {

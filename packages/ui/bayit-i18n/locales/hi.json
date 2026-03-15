@@ -7261,7 +7261,7 @@
     },
     "privacyPolicy": "गोपनीयता नीति",
     "termsOfService": "सेवा की शर्तें",
-    "connectedAccounts": "कनेक्टेड खाते",
+    "connectedAccounts": "जुड़े हुए खाते",
     "connectedAccountsDescription": "Bayit+ में अपने साइन इन करने के तरीके को प्रबंधित करें। आसान पहुंच के लिए आप कई खाते लिंक कर सकते हैं।",
     "linkedAccounts": "लिंक किए गए खाते",
     "linkNewAccount": "नया खाता लिंक करें",
@@ -7722,6 +7722,13 @@
       "allowCellular": "सेलुलर पर डाउनलोड करें",
       "wifiOnly": "केवल WiFi",
       "wifiOnlyHint": "केवल WiFi से जुड़े होने पर डाउनलोड करें"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "अपने लिंक किए गए खाते प्रबंधित करें",
+      "googleDesc": "देखने का इतिहास और प्राथमिकताएं सिंक करें",
+      "appleDesc": "Apple से साइन इन करें",
+      "facebookDesc": "सोशल सुविधाएं कनेक्ट करें",
+      "connect": "कनेक्ट करें"
     }
   },
   "familyControls": {

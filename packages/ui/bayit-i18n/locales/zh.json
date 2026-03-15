@@ -7261,7 +7261,7 @@
     },
     "privacyPolicy": "隐私政策",
     "termsOfService": "服务条款",
-    "connectedAccounts": "关联账户",
+    "connectedAccounts": "已连接账户",
     "connectedAccountsDescription": "管理您登录 Bayit+ 的方式。您可以关联多个账户以便更轻松地访问。",
     "linkedAccounts": "已关联账户",
     "linkNewAccount": "关联新账户",
@@ -7722,6 +7722,13 @@
       "allowCellular": "使用移动数据下载",
       "wifiOnly": "仅WiFi",
       "wifiOnlyHint": "仅在连接WiFi时下载"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "管理您的关联账户",
+      "googleDesc": "同步观看历史和偏好设置",
+      "appleDesc": "使用 Apple 登录",
+      "facebookDesc": "连接社交功能",
+      "connect": "连接"
     }
   },
   "familyControls": {

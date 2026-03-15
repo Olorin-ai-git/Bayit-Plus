@@ -7261,7 +7261,7 @@
     },
     "privacyPolicy": "מדיניות פרטיות",
     "termsOfService": "תנאי שימוש",
-    "connectedAccounts": "חשבונות מקושרים",
+    "connectedAccounts": "חשבונות מחוברים",
     "connectedAccountsDescription": "נהל את דרכי ההתחברות שלך ל-Bayit+. ניתן לקשר מספר חשבונות לגישה קלה יותר.",
     "linkedAccounts": "חשבונות מקושרים",
     "linkNewAccount": "קשר חשבון חדש",
@@ -7722,6 +7722,13 @@
       "allowCellular": "הורדה בסלולר",
       "wifiOnly": "WiFi בלבד",
       "wifiOnlyHint": "הורדה רק כשמחובר ל-WiFi"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "נהל את החשבונות המחוברים שלך",
+      "googleDesc": "סנכרן היסטוריית צפייה והעדפות",
+      "appleDesc": "התחבר עם Apple",
+      "facebookDesc": "חבר תכונות חברתיות",
+      "connect": "חיבור"
     }
   },
   "familyControls": {

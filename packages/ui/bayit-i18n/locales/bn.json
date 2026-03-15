@@ -7722,6 +7722,13 @@
       "allowCellular": "সেলুলারে ডাউনলোড করুন",
       "wifiOnly": "শুধুমাত্র WiFi",
       "wifiOnlyHint": "শুধুমাত্র WiFi সংযুক্ত থাকলে ডাউনলোড করুন"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "আপনার সংযুক্ত অ্যাকাউন্ট পরিচালনা করুন",
+      "googleDesc": "দেখার ইতিহাস ও পছন্দ সিঙ্ক করুন",
+      "appleDesc": "Apple দিয়ে সাইন ইন করুন",
+      "facebookDesc": "সোশ্যাল ফিচার সংযুক্ত করুন",
+      "connect": "সংযুক্ত করুন"
     }
   },
   "familyControls": {

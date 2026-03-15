@@ -7243,7 +7243,7 @@
     },
     "privacyPolicy": "プライバシーポリシー",
     "termsOfService": "利用規約",
-    "connectedAccounts": "接続されたアカウント",
+    "connectedAccounts": "接続済みアカウント",
     "connectedAccountsDescription": "Bayit+へのサインイン方法を管理します。簡単にアクセスするために複数のアカウントをリンクできます。",
     "linkedAccounts": "リンクされたアカウント",
     "linkNewAccount": "新しいアカウントをリンク",
@@ -7704,6 +7704,13 @@
       "allowCellular": "モバイルデータでダウンロード",
       "wifiOnly": "WiFiのみ",
       "wifiOnlyHint": "WiFi接続時のみダウンロード"
+    },
+    "connectedAccountsPage": {
+      "subtitle": "リンクされたアカウントを管理",
+      "googleDesc": "視聴履歴と設定を同期",
+      "appleDesc": "Appleでサインイン",
+      "facebookDesc": "ソーシャル機能を接続",
+      "connect": "接続"
     }
   },
   "familyControls": {
