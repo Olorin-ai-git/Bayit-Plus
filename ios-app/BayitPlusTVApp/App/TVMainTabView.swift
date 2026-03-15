@@ -28,7 +28,7 @@
                 TVAppSidebarView(
                     avatarURL: coordinator.selectedProfileAvatar.flatMap { URL(string: $0) },
                     restoredWidgets: dockViewModel?.widgets ?? [],
-                    onAvatarTap: { showProfile = true },
+                    onAvatarTap: { coordinator.selectedTab = .profile },
                     onAddWidget: { showCreateWidget = true },
                     onClose: { dockViewModel?.dismissFromSidebar(widgetId: $0) }
                 )
@@ -98,7 +98,7 @@
             .onAppear {
                 guard !hasAppeared else { return }
                 hasAppeared = true
-                coord.selectedTab = .byoc
+                coord.selectedTab = .home
             }
             .fullScreenCover(isPresented: $showLanguagePicker) {
                 languagePickerSheet

@@ -1,0 +1,18 @@
+{
+  "images": [
+    {
+      "filename": "byoc-plex@1x.png",
+      "idiom": "tv",
+      "scale": "1x"
+    },
+    {
+      "filename": "byoc-plex@2x.png",
+      "idiom": "tv",
+      "scale": "2x"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  }
+}

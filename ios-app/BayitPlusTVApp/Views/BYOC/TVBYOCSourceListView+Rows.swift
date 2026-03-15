@@ -11,30 +11,26 @@
         var sourceGrid: some View {
             LazyVGrid(columns: gridColumns, spacing: TVDesignTokens.Spacing.lg) {
                 sourceCard(
-                    icon: "play.fill",
-                    iconColor: .red,
+                    assetName: "byoc-youtube",
                     title: localization.t("byoc.youtube"),
                     subtitle: localization.t("byoc.youtubeConnectDesc")
                 ) { showAddYouTube = true }
 
                 sourceCard(
-                    icon: "wifi",
-                    iconColor: DesignTokens.Primary.p400,
+                    assetName: "byoc-iptv",
                     title: localization.t("byoc.iptv"),
                     subtitle: localization.t("byoc.iptvConnectDesc")
                 ) { showAddIPTV = true }
 
                 sourceCard(
-                    icon: "tv",
-                    iconColor: DesignTokens.Primary.p400,
+                    assetName: "byoc-xtream",
                     title: localization.t("byoc.addXtream"),
                     subtitle: localization.t("byoc.xtreamConnectDesc")
                 ) { showAddXtream = true }
 
                 sourceCard(
-                    icon: "arrowtriangle.right.fill",
-                    iconColor: .orange,
-                    title: localization.t("byoc.plex"),
+                    assetName: "byoc-plex",
+                    title: localization.t("byoc.plex.label"),
                     subtitle: localization.t("byoc.plexConnectDesc")
                 ) { showPlexAuth = true }
             }
@@ -45,18 +41,25 @@
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                     .stroke(Color.white.opacity(0.1), lineWidth: 1)
             )
+            .shadow(
+                color: DesignTokens.Primary.p600.opacity(0.15),
+                radius: 40, x: 0, y: 8
+            )
         }
 
         private func sourceCard(
-            icon: String,
-            iconColor: Color,
+            assetName: String,
             title: String,
             subtitle: String,
             action: @escaping () -> Void
         ) -> some View {
             Button(action: action) {
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    sourceIcon(icon, color: iconColor)
+                    Image(assetName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 140, height: 140)
+                        .clipShape(Circle())
                     VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
                         Text(title)
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
@@ -78,17 +81,6 @@
                 )
             }
             .tvCardStyle()
-        }
-
-        private func sourceIcon(_ name: String, color: Color) -> some View {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.15))
-                    .frame(width: 140, height: 140)
-                Image(systemName: name)
-                    .font(.system(size: 56))
-                    .foregroundStyle(color)
-            }
         }
 
         private var addButton: some View {

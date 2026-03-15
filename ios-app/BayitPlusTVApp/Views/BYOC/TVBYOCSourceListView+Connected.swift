@@ -30,14 +30,11 @@
                 sourceToRemove = source
             } label: {
                 HStack(spacing: TVDesignTokens.Spacing.sm) {
-                    ZStack {
-                        Circle()
-                            .fill(sourceTypeColor(source).opacity(0.15))
-                            .frame(width: 44, height: 44)
-                        Image(systemName: sourceTypeIcon(source))
-                            .font(.system(size: 20))
-                            .foregroundStyle(sourceTypeColor(source))
-                    }
+                    Image(sourceTypeAsset(source))
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 44, height: 44)
+                        .clipShape(Circle())
                     Text(source.name)
                         .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                         .foregroundStyle(DesignTokens.Text.primary)
@@ -61,21 +58,12 @@
             .tvCardStyle()
         }
 
-        func sourceTypeIcon(_ source: BYOCSourceConfig) -> String {
+        func sourceTypeAsset(_ source: BYOCSourceConfig) -> String {
             switch source.type {
-            case .youtube: return "play.fill"
-            case .iptv: return "wifi"
-            case .xtream: return "tv"
-            case .plex: return "arrowtriangle.right.fill"
-            }
-        }
-
-        func sourceTypeColor(_ source: BYOCSourceConfig) -> Color {
-            switch source.type {
-            case .youtube: return .red
-            case .iptv: return DesignTokens.Primary.p400
-            case .xtream: return .purple
-            case .plex: return .orange
+            case .youtube: return "byoc-youtube"
+            case .iptv: return "byoc-iptv"
+            case .xtream: return "byoc-xtream"
+            case .plex: return "byoc-plex"
             }
         }
     }
