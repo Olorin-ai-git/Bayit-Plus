@@ -81,19 +81,9 @@ struct TVSearchView: View {
 
     @ViewBuilder
     private func idleSections(_ vm: SearchViewModel) -> some View {
-        // Actors are excluded from idle shelves — they're irrelevant without a query context
-        let shelfItems = vm.results.filter { $0.contentType?.lowercased() != "actor" }
-
         if vm.isSearching {
             searchingState
                 .padding(.top, TVDesignTokens.Spacing.xxxxl)
-        } else if !shelfItems.isEmpty {
-            // Trending Now — landscape cards (first 4, featured first)
-            TVSearchTrendingRow(
-                items: Array(shelfItems.prefix(4)),
-                onSelect: { handleResultSelection($0) }
-            )
-            .padding(.top, TVDesignTokens.Spacing.xxl)
         }
 
         // Recent Searches — inline wrapping chips, no section header hierarchy
@@ -102,10 +92,14 @@ struct TVSearchView: View {
                 .padding(.top, TVDesignTokens.Spacing.xl)
         }
 
-        // Popular — portrait card shelf (items 5–10)
-        if shelfItems.count > 4 {
-            TVSearchPopularRow(
-                items: Array(shelfItems.dropFirst(4).prefix(6)),
+        if !vm.results.isEmpty {
+            TVSearchResultsGridView(
+                results: vm.results,
+                totalResults: vm.totalResults,
+                query: "",
+                hasMore: vm.hasMore,
+                isLoadingMore: vm.isLoadingMore,
+                onLoadMore: { vm.loadMore() },
                 onSelect: { handleResultSelection($0) }
             )
             .padding(.top, TVDesignTokens.Spacing.xxl)
@@ -136,10 +130,9 @@ struct TVSearchView: View {
                     results: vm.results,
                     totalResults: vm.totalResults,
                     query: searchText,
-                    currentPage: vm.currentPage,
-                    totalPages: vm.totalPages,
+                    hasMore: vm.hasMore,
                     isLoadingMore: vm.isLoadingMore,
-                    onGoToPage: { vm.goToPage($0) },
+                    onLoadMore: { vm.loadMore() },
                     onSelect: { handleResultSelection($0) }
                 )
             } else {

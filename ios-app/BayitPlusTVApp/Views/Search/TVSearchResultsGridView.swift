@@ -3,19 +3,19 @@ import BayitLocalization
 import BayitMedia
 import SwiftUI
 
-/// Grid of search results with subtitle flag overlays and page navigation for tvOS.
+/// Grid of search results with subtitle flag overlays and infinite scroll for tvOS.
 struct TVSearchResultsGridView: View {
     @Environment(LocalizationManager.self) private var localization
     let results: [UnifiedSearchResult]
     let totalResults: Int
     let query: String
-    let currentPage: Int
-    let totalPages: Int
+    let hasMore: Bool
     let isLoadingMore: Bool
-    let onGoToPage: (Int) -> Void
+    let onLoadMore: () -> Void
     let onSelect: (UnifiedSearchResult) -> Void
 
     private let columns = [
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
@@ -30,55 +30,26 @@ struct TVSearchResultsGridView: View {
                 .padding(.leading, TVDesignTokens.Spacing.xl)
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
-                ForEach(results) { result in
+                ForEach(Array(results.enumerated()), id: \.element.id) { index, result in
                     resultPoster(result)
+                        .onAppear {
+                            if index == results.count - 1, hasMore {
+                                onLoadMore()
+                            }
+                        }
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
 
-            paginationControls
+            if isLoadingMore {
+                ProgressView()
+                    .tint(DesignTokens.Primary.default)
+                    .scaleEffect(1.2)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, TVDesignTokens.Spacing.xl)
+            }
         }
         .padding(.top, TVDesignTokens.Spacing.lg)
-    }
-
-    // MARK: - Pagination
-
-    private var paginationControls: some View {
-        HStack(spacing: TVDesignTokens.Spacing.xl) {
-            Spacer()
-
-            GlassButton(
-                localization.t("search.previousPage"),
-                variant: .secondary,
-                size: .medium,
-                isDisabled: currentPage <= 1 || isLoadingMore,
-                icon: Image(systemName: "chevron.left")
-            ) {
-                onGoToPage(currentPage - 1)
-            }
-            .tvCardStyle()
-
-            Text(localization.t("search.pageIndicator", [
-                "current": String(currentPage), "total": String(totalPages),
-            ]))
-            .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
-            .foregroundStyle(DesignTokens.Text.secondary)
-            .frame(minWidth: 120)
-
-            GlassButton(
-                localization.t("search.nextPage"),
-                variant: .secondary,
-                size: .medium,
-                isDisabled: currentPage >= totalPages || isLoadingMore,
-                icon: Image(systemName: "chevron.right")
-            ) {
-                onGoToPage(currentPage + 1)
-            }
-            .tvCardStyle()
-
-            Spacer()
-        }
-        .padding(.vertical, TVDesignTokens.Spacing.xl)
     }
 
     // MARK: - Result Card
