@@ -29,7 +29,8 @@ from app.schemas.support import (ConversationRatingRequest,
                                  TicketAdminResponse, TicketCreateRequest,
                                  TicketListResponse, TicketMessageRequest,
                                  TicketNoteRequest, TicketResponse,
-                                 TicketUpdateRequest)
+                                 TicketUpdateRequest, VideoTutorialItem,
+                                 VideoTutorialListResponse)
 from app.services.docs_search_service import docs_search_service
 from app.services.support_service import support_service
 from app.services.voice_pipeline_service import VoicePipelineService
@@ -513,6 +514,16 @@ async def list_faq(
 
     return FAQListResponse(
         items=[FAQItem(**item) for item in items],
+        total=len(items),
+    )
+
+
+@router.get("/tutorials", response_model=VideoTutorialListResponse)
+async def list_tutorials(language: str = "en"):
+    """Get video tutorials for the Help & Support page."""
+    items = await support_service.get_tutorials(language=language)
+    return VideoTutorialListResponse(
+        items=[VideoTutorialItem(**item) for item in items],
         total=len(items),
     )
 

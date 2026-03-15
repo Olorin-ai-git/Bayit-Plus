@@ -158,6 +158,30 @@ class FAQFeedbackRequest(BaseModel):
 
 
 # ============================================================================
+# Video Tutorial Schemas
+# ============================================================================
+
+
+class VideoTutorialItem(BaseModel):
+    """Video tutorial item"""
+
+    id: str
+    title: str
+    description: str
+    video_url: str
+    thumbnail_asset_name: str
+    duration_seconds: int
+    order: int
+
+
+class VideoTutorialListResponse(BaseModel):
+    """Response for listing video tutorials"""
+
+    items: List[VideoTutorialItem]
+    total: int
+
+
+# ============================================================================
 # Ticket Schemas
 # ============================================================================
 

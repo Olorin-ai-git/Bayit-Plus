@@ -55,6 +55,9 @@ protocol SettingsRepository: Sendable {
     /// Fetch FAQ entries.
     func fetchFAQ(language: String) async throws -> FAQResponse
 
+    /// Fetch video tutorials.
+    func fetchTutorials(language: String) async throws -> VideoTutorialListResponse
+
     /// Fetch the user's support tickets.
     func fetchTickets(
         page: Int, limit: Int

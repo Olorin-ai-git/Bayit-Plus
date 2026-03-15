@@ -1,12 +1,12 @@
 """
 FAQ Manager
-Handles FAQ entry retrieval and feedback recording.
+Handles FAQ entry retrieval, feedback recording, and video tutorial retrieval.
 """
 
 import logging
 from typing import List, Optional
 
-from app.models.support import FAQEntry
+from app.models.support import FAQEntry, VideoTutorial
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,31 @@ async def get_faq_by_category(
         )
 
     return result
+
+
+async def get_tutorials(language: str = "en") -> List[dict]:
+    """Get published video tutorials ordered by display order."""
+    entries = await VideoTutorial.find(
+        {"is_published": True, "language": language}  # noqa: E712
+    ).sort(VideoTutorial.order).to_list()
+
+    if not entries:
+        entries = await VideoTutorial.find(
+            {"is_published": True}  # noqa: E712
+        ).sort(VideoTutorial.order).to_list()
+
+    return [
+        {
+            "id": str(e.id),
+            "title": e.title,
+            "description": e.description,
+            "video_url": e.video_url,
+            "thumbnail_asset_name": e.thumbnail_asset_name,
+            "duration_seconds": e.duration_seconds,
+            "order": e.order,
+        }
+        for e in entries
+    ]
 
 
 async def record_faq_view(faq_id: str) -> None:

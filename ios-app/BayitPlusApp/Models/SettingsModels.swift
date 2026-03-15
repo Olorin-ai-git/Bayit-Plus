@@ -98,6 +98,23 @@ struct FAQResponse: Decodable, Sendable {
     let total: Int?
 }
 
+/// Response from GET /api/v1/support/tutorials
+struct VideoTutorialListResponse: Decodable, Sendable {
+    let items: [VideoTutorial]
+    let total: Int?
+}
+
+/// A video tutorial entry with playable MP4 and bundled thumbnail.
+struct VideoTutorial: Decodable, Sendable, Identifiable {
+    let id: String
+    let title: String
+    let description: String
+    let videoUrl: String
+    let thumbnailAssetName: String
+    let durationSeconds: Int
+    let order: Int
+}
+
 /// A frequently asked question entry.
 struct FAQItem: Decodable, Sendable, Identifiable {
     let id: String

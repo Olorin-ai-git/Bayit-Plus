@@ -6,6 +6,7 @@ import Observation
 @Observable
 final class HelpViewModel {
     private(set) var faqs: [FAQItem] = []
+    private(set) var tutorials: [VideoTutorial] = []
     private(set) var isLoading = false
     private(set) var error: String?
 
@@ -24,8 +25,11 @@ final class HelpViewModel {
         error = nil
 
         do {
-            let response = try await repository.fetchFAQ(language: language)
-            faqs = response.items
+            async let faqLoad = repository.fetchFAQ(language: language)
+            async let tutorialsLoad = repository.fetchTutorials(language: language)
+            let (faqResponse, tutorialsResponse) = try await (faqLoad, tutorialsLoad)
+            faqs = faqResponse.items
+            tutorials = tutorialsResponse.items.sorted { $0.order < $1.order }
         } catch {
             if let message = error.userFriendlyMessage {
                 self.error = message

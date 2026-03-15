@@ -13,6 +13,15 @@ extension APISettingsRepository {
         )
     }
 
+    func fetchTutorials(language: String) async throws -> VideoTutorialListResponse {
+        let queryItems = [URLQueryItem(name: "language", value: language)]
+        return try await client.get(
+            "/api/v1/support/tutorials",
+            queryItems: queryItems,
+            as: VideoTutorialListResponse.self
+        )
+    }
+
     func fetchTickets(
         page: Int, limit: Int
     ) async throws -> TicketsResponse {

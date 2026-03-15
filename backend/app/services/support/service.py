@@ -201,6 +201,10 @@ class SupportService:
         """Get FAQ entries, optionally filtered by category."""
         return await faq_manager.get_faq_by_category(category, language)
 
+    async def get_tutorials(self, language: str = "en") -> List[dict]:
+        """Get published video tutorials."""
+        return await faq_manager.get_tutorials(language)
+
     async def record_faq_view(self, faq_id: str) -> None:
         """Record a view for an FAQ entry."""
         await faq_manager.record_faq_view(faq_id)

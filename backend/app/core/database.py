@@ -82,7 +82,8 @@ from app.models.subtitles import (SubtitleQuotaTrackerDoc,
                                   SubtitleSearchCacheDoc, SubtitleTrackDoc,
                                   TranslationCacheDoc)
 from app.models.support import (FAQEntry, SupportAnalytics,
-                                SupportConversation, SupportTicket)
+                                SupportConversation, SupportTicket,
+                                VideoTutorial)
 from app.models.tel_aviv_content import (TelAvivContentItem,
                                          TelAvivContentSource)
 from app.models.trending import ContentTrendMatch, TrendingSnapshot
@@ -384,6 +385,7 @@ async def connect_to_mongo():
         SupportConversation,
         SupportAnalytics,
         FAQEntry,
+        VideoTutorial,
         # Documentation models
         DocumentationArticle,
         DocumentationCategory,

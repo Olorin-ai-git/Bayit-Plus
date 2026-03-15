@@ -63,6 +63,7 @@
         @State private var viewModel: HelpViewModel?
         @State private var showingContact = false
         @State private var showingTutorials = false
+        @State private var showingChat = false
 
         var body: some View {
             ZStack {
@@ -72,8 +73,8 @@
                     VStack(spacing: DS.gap) {
                         HeaderRow(title: localization.t("settings.help.title"))
                         FeatureCardsSection(
-                            tutorialCount: tutorialFAQs.count,
-                            onChatWithAI: { coordinator.selectedTab = .zehAni },
+                            tutorialCount: viewModel?.tutorials.count ?? 0,
+                            onChatWithAI: { showingChat = true },
                             onVideoTutorials: { showingTutorials = true },
                             onContactSupport: { showingContact = true }
                         )
@@ -98,10 +99,13 @@
                 )
             }
             .fullScreenCover(isPresented: $showingTutorials) {
-                TutorialsSheet(
-                    faqs: tutorialFAQs,
+                TVHelpTutorialsSheet(
+                    tutorials: viewModel?.tutorials ?? [],
                     onDismiss: { showingTutorials = false }
                 )
+            }
+            .fullScreenCover(isPresented: $showingChat) {
+                TVHelpChatView(onDismiss: { showingChat = false })
             }
         }
 
@@ -110,10 +114,6 @@
             let tips = vm.faqs.filter { $0.category == "tip" }
             let source = tips.isEmpty ? vm.faqs.filter { $0.isFeatured == true } : tips
             return Array(source.prefix(3))
-        }
-
-        private var tutorialFAQs: [FAQItem] {
-            viewModel?.faqs.filter { $0.category == "tutorial" } ?? []
         }
 
         private var commonFAQs: [FAQItem] {
@@ -636,55 +636,6 @@
                             .multilineTextAlignment(.center)
                     }
                     Spacer()
-                }
-            }
-            .preferredColorScheme(.dark)
-            .onExitCommand { onDismiss() }
-        }
-    }
-
-    // MARK: - Tutorials Sheet
-
-    private struct TutorialsSheet: View {
-        let faqs: [FAQItem]
-        let onDismiss: () -> Void
-        @Environment(LocalizationManager.self) private var localization
-        @State private var openId: String?
-
-        var body: some View {
-            ZStack {
-                DS.backgroundGradient.ignoresSafeArea()
-                VStack(spacing: 0) {
-                    TVProfileSheetHeader(
-                        title: localization.t("settings.help.videoTutorials"),
-                        onDismiss: onDismiss
-                    )
-                    if faqs.isEmpty {
-                        Spacer()
-                        Text(localization.t("settings.help.noTutorialsAvailable"))
-                            .font(.system(size: 28))
-                            .foregroundColor(.white.opacity(0.4))
-                        Spacer()
-                    } else {
-                        ScrollView(.vertical, showsIndicators: false) {
-                            VStack(spacing: 8) {
-                                ForEach(Array(faqs.enumerated()), id: \.element.id) { i, faq in
-                                    AccordionRow(
-                                        question: faq.question ?? "",
-                                        answer: faq.answer ?? "",
-                                        isOpen: openId == faq.id,
-                                        delay: Double(i) * 0.06,
-                                        onToggle: {
-                                            withAnimation(.easeInOut(duration: 0.3)) {
-                                                openId = openId == faq.id ? nil : faq.id
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                            .padding(DS.pagePad)
-                        }
-                    }
                 }
             }
             .preferredColorScheme(.dark)

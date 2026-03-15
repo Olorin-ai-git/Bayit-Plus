@@ -198,3 +198,27 @@ class FAQEntry(Document):
             "is_active",
             "order",
         ]
+
+
+class VideoTutorial(Document):
+    """Video tutorial entry for the Help & Support page."""
+
+    title: str
+    description: str
+    video_url: str
+    thumbnail_asset_name: str  # xcassets key in the iOS/tvOS app bundle
+    duration_seconds: int
+    order: int
+    language: str = "en"
+    is_published: bool = True
+
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    class Settings:
+        name = "video_tutorials"
+        indexes = [
+            "language",
+            "is_published",
+            "order",
+        ]
