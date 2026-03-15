@@ -1,7 +1,8 @@
+import BayitAuth
+import BayitCore
+import Foundation
+
 #if DEBUG
-    import BayitAuth
-    import BayitCore
-    import Foundation
 
     // MARK: - Debug Auto-Login
 
@@ -18,6 +19,9 @@
         /// Must NOT use APIClient — its auth layer requires a token to already exist.
         func loginWithDebugCredentials() async {
             guard let (email, password) = BayitPlusApp.resolvedDebugCredentials() else {
+                // No debug credentials configured — preserve any existing session rather than
+                // unconditionally showing auth (unlike tvOS which always shows the login screen,
+                // iOS may have a valid session from a prior biometric or manual login).
                 coordinator.showingAuth = !authManager.isAuthenticated
                 return
             }
