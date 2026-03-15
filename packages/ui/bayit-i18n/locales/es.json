@@ -5920,7 +5920,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6811,7 +6815,8 @@
     "familyPrice": "$12.99/mes",
     "watchlist": "Mi Lista",
     "appSettings": "Configuración de la app",
-    "history": "Historial"
+    "history": "Historial",
+    "changePasswordDesc": "Actualiza la contraseña de tu cuenta"
   },
   "profiles": {
     "addProfile": "Añadir perfil",
@@ -7349,7 +7354,11 @@
       "lastActive": "Ultima actividad {{time}}",
       "passwordEmpty": "La contraseña no puede estar vacía",
       "passwordMismatch": "Las contraseñas no coinciden",
-      "passwordChanged": "Contraseña cambiada correctamente"
+      "passwordChanged": "Contraseña cambiada correctamente",
+      "accountSecurity": "Seguridad de cuenta",
+      "devices": "Dispositivos",
+      "noDevices": "Sin dispositivos activos",
+      "unknownDevice": "Dispositivo desconocido"
     },
     "aiFeatures": {
       "title": "Funciones de IA",

@@ -5920,7 +5920,11 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
     },
     "premium": {
       "name": "பிளஸ்",
@@ -6811,7 +6815,8 @@
     "familyPrice": "[ta] $12.99/month",
     "watchlist": "[ta] Watchlist",
     "appSettings": "ஆப் அமைப்புகள்",
-    "history": "வரலாறு"
+    "history": "வரலாறு",
+    "changePasswordDesc": "உங்கள் கடவுச்சொல்லை புதுப்பிக்கவும்"
   },
   "profiles": {
     "addProfile": "சுயவிவரத்தைச் சேர்",
@@ -7349,7 +7354,11 @@
       "lastActive": "கடைசியாக செயலில் {{time}}",
       "passwordEmpty": "கடவுச்சொல் காலியாக இருக்க முடியாது",
       "passwordMismatch": "[ta] Passwords do not match",
-      "passwordChanged": "கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டது"
+      "passwordChanged": "கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டது",
+      "accountSecurity": "கணக்கு பாதுகாப்பு",
+      "devices": "சாதனங்கள்",
+      "noDevices": "செயலில் உள்ள சாதனங்கள் இல்லை",
+      "unknownDevice": "தெரியாத சாதனம்"
     },
     "aiFeatures": {
       "title": "AI அம்சங்கள்",

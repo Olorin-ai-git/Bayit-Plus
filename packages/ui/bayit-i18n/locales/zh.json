@@ -5914,8 +5914,17 @@
     },
     "basic": {
       "name": "免费",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6806,7 +6815,8 @@
     "familyPrice": "$12.99/月",
     "watchlist": "观看列表",
     "appSettings": "应用设置",
-    "history": "历史"
+    "history": "历史",
+    "changePasswordDesc": "更新您的密码"
   },
   "profiles": {
     "addProfile": "添加档案",
@@ -7344,7 +7354,11 @@
       "lastActive": "最后活跃 {{time}}",
       "passwordEmpty": "密码不能为空",
       "passwordMismatch": "密码不匹配",
-      "passwordChanged": "密码修改成功"
+      "passwordChanged": "密码修改成功",
+      "accountSecurity": "账户安全",
+      "devices": "设备",
+      "noDevices": "没有活动设备",
+      "unknownDevice": "未知设备"
     },
     "aiFeatures": {
       "title": "AI功能",

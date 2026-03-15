@@ -5920,7 +5920,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6811,7 +6815,8 @@
     "familyPrice": "$12.99/month",
     "watchlist": "Watchlist",
     "appSettings": "App Settings",
-    "history": "History"
+    "history": "History",
+    "changePasswordDesc": "Update your account password"
   },
   "profiles": {
     "addProfile": "Add Profile",
@@ -7349,7 +7354,11 @@
       "lastActive": "Last active {{time}}",
       "passwordEmpty": "Password cannot be empty",
       "passwordMismatch": "Passwords do not match",
-      "passwordChanged": "Password changed successfully"
+      "passwordChanged": "Password changed successfully",
+      "accountSecurity": "Account Security",
+      "devices": "Devices",
+      "noDevices": "No active devices",
+      "unknownDevice": "Unknown Device"
     },
     "aiFeatures": {
       "title": "AI Features",

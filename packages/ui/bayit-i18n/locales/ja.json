@@ -6797,7 +6797,8 @@
     "familyPrice": "[ja] $12.99/month",
     "watchlist": "[ja] Watchlist",
     "appSettings": "アプリ設定",
-    "history": "履歴"
+    "history": "履歴",
+    "changePasswordDesc": "パスワードを更新する"
   },
   "profiles": {
     "addProfile": "プロフィールを追加",
@@ -7335,7 +7336,11 @@
       "lastActive": "最終アクティブ {{time}}",
       "passwordEmpty": "パスワードは空にできません",
       "passwordMismatch": "[ja] Passwords do not match",
-      "passwordChanged": "パスワードが正常に変更されました"
+      "passwordChanged": "パスワードが正常に変更されました",
+      "accountSecurity": "アカウントセキュリティ",
+      "devices": "デバイス",
+      "noDevices": "アクティブなデバイスなし",
+      "unknownDevice": "不明なデバイス"
     },
     "aiFeatures": {
       "title": "AI機能",

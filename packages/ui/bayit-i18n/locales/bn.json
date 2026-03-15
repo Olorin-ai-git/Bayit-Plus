@@ -5920,7 +5920,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্লাস",
@@ -6811,7 +6815,8 @@
     "familyPrice": "[bn] $12.99/month",
     "watchlist": "[bn] Watchlist",
     "appSettings": "অ্যাপ সেটিংস",
-    "history": "ইতিহাস"
+    "history": "ইতিহাস",
+    "changePasswordDesc": "আপনার পাসওয়ার্ড আপডেট করুন"
   },
   "profiles": {
     "addProfile": "প্রোফাইল যোগ করুন",
@@ -7349,7 +7354,11 @@
       "lastActive": "সর্বশেষ সক্রিয় {{time}}",
       "passwordEmpty": "পাসওয়ার্ড খালি রাখা যাবে না",
       "passwordMismatch": "[bn] Passwords do not match",
-      "passwordChanged": "পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে"
+      "passwordChanged": "পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে",
+      "accountSecurity": "অ্যাকাউন্ট নিরাপত্তা",
+      "devices": "ডিভাইস",
+      "noDevices": "কোনো সক্রিয় ডিভাইস নেই",
+      "unknownDevice": "অজানা ডিভাইস"
     },
     "aiFeatures": {
       "title": "AI বৈশিষ্ট্য",

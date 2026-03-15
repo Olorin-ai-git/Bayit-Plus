@@ -6815,7 +6815,8 @@
     "familyPrice": "12,99 $/mois",
     "watchlist": "Liste de visionnage",
     "appSettings": "Paramètres de l'app",
-    "history": "Historique"
+    "history": "Historique",
+    "changePasswordDesc": "Mettre à jour votre mot de passe"
   },
   "profiles": {
     "addProfile": "Ajouter un profil",
@@ -7353,7 +7354,11 @@
       "lastActive": "Derniere activite {{time}}",
       "passwordEmpty": "Le mot de passe ne peut pas être vide",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
-      "passwordChanged": "Mot de passe modifié avec succès"
+      "passwordChanged": "Mot de passe modifié avec succès",
+      "accountSecurity": "Sécurité du compte",
+      "devices": "Appareils",
+      "noDevices": "Aucun appareil actif",
+      "unknownDevice": "Appareil inconnu"
     },
     "aiFeatures": {
       "title": "Fonctionnalites IA",

@@ -5920,7 +5920,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פלוס",
@@ -6811,7 +6815,8 @@
     "familyPrice": "₪49.90/חודש",
     "watchlist": "רשימת צפייה",
     "appSettings": "הגדרות אפליקציה",
-    "history": "היסטוריה"
+    "history": "היסטוריה",
+    "changePasswordDesc": "עדכן את סיסמת חשבונך"
   },
   "profiles": {
     "addProfile": "הוסף פרופיל",
@@ -7349,7 +7354,11 @@
       "lastActive": "פעיל לאחרונה {{time}}",
       "passwordEmpty": "הסיסמה לא יכולה להיות ריקה",
       "passwordMismatch": "הסיסמאות אינן תואמות",
-      "passwordChanged": "הסיסמה שונתה בהצלחה"
+      "passwordChanged": "הסיסמה שונתה בהצלחה",
+      "accountSecurity": "אבטחת חשבון",
+      "devices": "מכשירים",
+      "noDevices": "אין מכשירים פעילים",
+      "unknownDevice": "מכשיר לא ידוע"
     },
     "aiFeatures": {
       "title": "תכונות AI",

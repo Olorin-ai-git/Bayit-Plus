@@ -1,145 +1,130 @@
-import BayitDesignSystem
-import BayitLocalization
-import SwiftUI
+#if os(tvOS)
+    import BayitDesignSystem
+    import BayitLocalization
+    import SwiftUI
 
-/// tvOS security settings screen with password management and device list.
-/// Reuses SecurityViewModel from shared ViewModels.
-struct TVSecurityView: View {
-    @Environment(LocalizationManager.self) var localization
-    @Environment(TVRepositoryProvider.self) private var repos
-    @State private var viewModel: SecurityViewModel?
+    // MARK: - Section
 
-    var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            if let vm = viewModel {
-                LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
-                    if vm.isLoading && vm.devices.isEmpty {
-                        loadingState
-                    } else if let error = vm.error, vm.devices.isEmpty {
-                        errorState(error, vm: vm)
-                    } else {
-                        passwordSection(vm)
-                        devicesSection(vm)
+    enum SecuritySection: CaseIterable, Identifiable {
+        case accountSecurity, connectedAccounts, devices, privacy
+        var id: Self {
+            self
+        }
+
+        func label(_ l: LocalizationManager) -> String {
+            switch self {
+            case .accountSecurity: return l.t("settings.security.accountSecurity")
+            case .connectedAccounts: return l.t("settings.connectedAccounts")
+            case .devices: return l.t("settings.security.devices")
+            case .privacy: return l.t("settings.privacy.title")
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .accountSecurity: return "shield.fill"
+            case .connectedAccounts: return "link"
+            case .devices: return "display"
+            case .privacy: return "eye.fill"
+            }
+        }
+    }
+
+    // MARK: - Root View
+
+    struct TVSecurityView: View {
+        @Environment(LocalizationManager.self) var localization
+        @Environment(TVRepositoryProvider.self) private var repos
+        @State var viewModel: SecurityViewModel?
+        @State private var profileViewModel: ProfileViewModel?
+        @State private var selected: SecuritySection = .accountSecurity
+        @State private var showingChangePassword = false
+        @FocusState private var sidebarFocus: SecuritySection?
+
+        var body: some View {
+            HStack(spacing: 0) {
+                sidebar
+                    .frame(width: 320)
+                Divider()
+                    .background(Color.white.opacity(0.08))
+                contentPanel
+                    .frame(maxWidth: .infinity)
+            }
+            .background(DesignTokens.Background.primary)
+            .task {
+                if viewModel == nil {
+                    viewModel = SecurityViewModel(repository: repos.settings, localization: localization)
+                    profileViewModel = ProfileViewModel(repository: repos.user)
+                }
+                async let devLoad: () = viewModel?.load() ?? ()
+                async let profLoad: () = profileViewModel?.load() ?? ()
+                _ = await (devLoad, profLoad)
+            }
+            .fullScreenCover(isPresented: $showingChangePassword) {
+                TVChangePasswordSheet(viewModel: viewModel, onDismiss: { showingChangePassword = false })
+            }
+        }
+
+        // MARK: - Sidebar
+
+        private var sidebar: some View {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 8) {
+                    ForEach(SecuritySection.allCases) { section in
+                        sidebarItem(section)
                     }
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                .padding(.vertical, TVDesignTokens.Spacing.lg)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 48)
             }
         }
-        .background(DesignTokens.Background.primary)
-        .task {
-            if viewModel == nil {
-                viewModel = SecurityViewModel(repository: repos.settings, localization: localization)
-            }
-            await viewModel?.load()
-        }
-    }
 
-    // MARK: - Loading
-
-    private var loadingState: some View {
-        VStack(spacing: TVDesignTokens.Spacing.xl) {
-            ProgressView()
-                .tint(DesignTokens.Primary.default)
-                .scaleEffect(1.5)
-            Text(localization.t("common.loading"))
-                .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundStyle(DesignTokens.Text.muted)
-        }
-        .frame(maxWidth: .infinity, minHeight: 400)
-    }
-
-    // MARK: - Error
-
-    private func errorState(_ message: String, vm: SecurityViewModel) -> some View {
-        VStack(spacing: TVDesignTokens.Spacing.xl) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: TVDesignTokens.FontSize.hero))
-                .foregroundStyle(DesignTokens.Warning.default)
-
-            Text(message)
-                .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundStyle(DesignTokens.Text.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 600)
-
-            GlassButton(localization.t("common.retry"), variant: .secondary, size: .large) {
-                Task { await vm.load() }
-            }
-            .frame(maxWidth: 300)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.top, TVDesignTokens.Spacing.xxxxl)
-    }
-
-    // MARK: - Password
-
-    private func passwordSection(_ vm: SecurityViewModel) -> some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            sectionHeader(localization.t("security.changePassword"))
-
-            VStack(spacing: TVDesignTokens.Spacing.md) {
-                secureField(
-                    placeholder: localization.t("security.currentPassword"),
-                    text: Bindable(vm).currentPassword
-                )
-                secureField(
-                    placeholder: localization.t("security.newPassword"),
-                    text: Bindable(vm).newPassword
-                )
-                secureField(
-                    placeholder: localization.t("security.confirmPassword"),
-                    text: Bindable(vm).confirmPassword
-                )
-
-                if let success = vm.successMessage {
-                    Text(success)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Success.default)
+        private func sidebarItem(_ section: SecuritySection) -> some View {
+            let isSelected = selected == section
+            return Button { selected = section } label: {
+                HStack(spacing: 16) {
+                    Image(systemName: section.icon)
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundStyle(isSelected ? DesignTokens.Primary.p400 : DesignTokens.Text.secondary)
+                        .frame(width: 28)
+                    Text(section.label(localization))
+                        .font(.system(size: 26, weight: isSelected ? .semibold : .regular))
+                        .foregroundStyle(isSelected ? DesignTokens.Text.primary : DesignTokens.Text.secondary)
+                    Spacer(minLength: 0)
                 }
-
-                if let error = vm.error {
-                    Text(error)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.ErrorColor.default)
-                }
-
-                GlassButton(
-                    localization.t("security.updatePassword"),
-                    variant: .primary,
-                    isDisabled: !vm.passwordsValid,
-                    isLoading: vm.isProcessing
-                ) {
-                    Task { await vm.changePassword() }
-                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 20)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(isSelected ? DesignTokens.Primary.p400.opacity(0.12) : Color.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(isSelected ? DesignTokens.Primary.p400.opacity(0.5) : Color.clear, lineWidth: 1.5)
+                        )
+                )
             }
-            .padding(TVDesignTokens.Spacing.lg)
-            .background(DesignTokens.Glass.bgLight)
-            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+            .tvCardStyle()
+            .focused($sidebarFocus, equals: section)
+        }
+
+        // MARK: - Content Panel
+
+        @ViewBuilder
+        private var contentPanel: some View {
+            switch selected {
+            case .accountSecurity:
+                TVSecurityAccountPanel(
+                    viewModel: viewModel,
+                    profileViewModel: profileViewModel,
+                    onChangePassword: { showingChangePassword = true }
+                )
+            case .connectedAccounts:
+                TVConnectedAccountsView(onDismiss: {})
+            case .devices:
+                TVSecurityDevicesPanel(viewModel: viewModel)
+            case .privacy:
+                TVPrivacySettingsView()
+            }
         }
     }
-
-    private func secureField(
-        placeholder: String, text: Binding<String>
-    ) -> some View {
-        SecureField(placeholder, text: text)
-            .textContentType(.password)
-            .padding(TVDesignTokens.Spacing.md)
-            .background(DesignTokens.Glass.bgMedium)
-            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
-            .overlay(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
-                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
-            )
-            .foregroundStyle(DesignTokens.Text.primary)
-    }
-
-    // MARK: - Helpers
-
-    func sectionHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
-            .foregroundStyle(DesignTokens.Text.muted)
-            .textCase(.uppercase)
-    }
-}
+#endif
