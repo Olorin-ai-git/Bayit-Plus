@@ -2,7 +2,7 @@ import BayitAuth
 import BayitCore
 import Foundation
 
-#if DEBUG
+#if DEBUG && os(iOS)
 
     // MARK: - Debug Auto-Login
 
