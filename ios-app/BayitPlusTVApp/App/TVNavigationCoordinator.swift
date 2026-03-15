@@ -22,6 +22,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case search
     case discover
     case profile
+    case preferences
     case widgets
     case help
 
@@ -40,6 +41,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .search: return "Search"
         case .discover: return "Discover"
         case .profile: return "Profile"
+        case .preferences: return "Preferences"
         case .widgets: return "Widgets"
         case .help: return "Help"
         }
@@ -56,6 +58,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .search: return localization.t("nav.search")
         case .discover: return localization.t("nav.discover")
         case .profile: return localization.t("nav.profile")
+        case .preferences: return localization.t("settings.preferences")
         case .widgets: return localization.t("nav.widgets")
         case .help: return localization.t("nav.help")
         }
@@ -72,6 +75,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .search: return "magnifyingglass"
         case .discover: return "sparkles"
         case .profile: return "person.crop.circle"
+        case .preferences: return "slider.horizontal.3"
         case .widgets: return "square.grid.2x2"
         case .help: return "questionmark.circle"
         }
