@@ -3889,6 +3889,14 @@
     "attribution": "Streaming content provided by Kan - Israeli Public Broadcasting Corp."
   },
   "widgets": {
+    "liveTV": "Live TV Channels",
+    "radio": "Radio Stations",
+    "podcast": "Podcast Player",
+    "weather": "Weather",
+    "clock": "Clock",
+    "nowPlaying": "Now Playing Mini-Player",
+    "nothingPlaying": "Nothing playing",
+    "selectContent": "Select content to play",
     "empty": "No widgets yet",
     "emptyHint": "Your widgets will appear here",
     "emptyPersonal": "No personal widgets yet",
