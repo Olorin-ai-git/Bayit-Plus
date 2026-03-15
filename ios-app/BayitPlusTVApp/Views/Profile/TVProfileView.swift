@@ -14,7 +14,6 @@ enum ProfileSheet: Identifiable {
     case favorites
     case recordings
     case watchlist
-    case downloads
     case friends
     case messages
     case settings
@@ -46,6 +45,8 @@ struct TVProfileView: View {
     @Environment(TVNavigationCoordinator.self) var coordinator
     @State var viewModel: ProfileViewModel?
     @State var activeSheet: ProfileSheet?
+    @State var friendsVM: FriendsViewModel?
+    @State var messagesVM: DirectMessagesViewModel?
 
     var body: some View {
         NavigationStack {
@@ -69,7 +70,19 @@ struct TVProfileView: View {
                 if viewModel == nil {
                     viewModel = ProfileViewModel(repository: repos.user)
                 }
-                await viewModel?.load()
+                if friendsVM == nil {
+                    friendsVM = FriendsViewModel(repository: repos.friends)
+                }
+                if messagesVM == nil {
+                    messagesVM = DirectMessagesViewModel(
+                        repository: repos.directMessages,
+                        authTokenProvider: repos.authTokenProvider
+                    )
+                }
+                async let profileLoad: Void = viewModel?.load() ?? ()
+                async let friendsLoad: Void = friendsVM?.loadRequests() ?? ()
+                async let messagesLoad: Void = messagesVM?.loadConversations() ?? ()
+                _ = await (profileLoad, friendsLoad, messagesLoad)
             }
             .fullScreenCover(item: $activeSheet) { sheet in
                 sheetContent(for: sheet)

@@ -25,12 +25,6 @@ extension TVProfileView {
                 ) { activeSheet = .favorites }
 
                 contentGridButton(
-                    icon: "record.circle",
-                    title: localization.t("profile.recordings"),
-                    color: DesignTokens.Warning.default
-                ) { activeSheet = .recordings }
-
-                contentGridButton(
                     icon: "list.bullet",
                     title: localization.t("profile.playlists"),
                     color: DesignTokens.Secondary.s400
@@ -99,14 +93,14 @@ extension TVProfileView {
                 icon: "person.2.fill",
                 title: localization.t("nav.friends"),
                 color: DesignTokens.Primary.p400,
-                badge: 1
+                badge: friendsVM?.incomingRequests.count
             ) { activeSheet = .friends }
 
             panelRow(
                 icon: "bubble.left.and.bubble.right",
                 title: localization.t("profile.messages"),
                 color: DesignTokens.Info.default,
-                badge: 2
+                badge: messagesVM?.totalUnreadCount
             ) { activeSheet = .messages }
         }
         .padding(TVDesignTokens.Spacing.lg)

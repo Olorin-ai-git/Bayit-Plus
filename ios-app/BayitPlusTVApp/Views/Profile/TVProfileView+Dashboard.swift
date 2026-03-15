@@ -9,11 +9,11 @@ extension TVProfileView {
     func dashboardView(profile: ProfileResponse, stats: ProfileStats?) -> some View {
         HStack(alignment: .top, spacing: TVDesignTokens.Spacing.lg) {
             leftColumn(profile: profile, stats: stats)
-                .frame(width: 340)
+                .frame(width: 300)
             centerColumn
-                .frame(maxWidth: .infinity)
+                .frame(minWidth: 520, maxWidth: .infinity)
             rightColumn
-                .frame(width: 420)
+                .frame(width: 360)
         }
         .padding(.horizontal, 60)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -21,7 +21,7 @@ extension TVProfileView {
 
     // MARK: - Left Column: Avatar + Name + Badge + Stats
 
-    private func leftColumn(profile: ProfileResponse, stats: ProfileStats?) -> some View {
+    private func leftColumn(profile: ProfileResponse, stats _: ProfileStats?) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             profileAvatar(profile)
                 .frame(width: 180, height: 180)
@@ -32,10 +32,6 @@ extension TVProfileView {
                 .lineLimit(1)
 
             premiumBadge
-
-            if let stats {
-                statsRow(stats)
-            }
         }
         .padding(.top, TVDesignTokens.Spacing.lg)
     }

@@ -1,137 +1,31 @@
-import BayitAuth
-import BayitDesignSystem
-import BayitLocalization
-import SwiftUI
+#if os(tvOS)
+    import BayitAuth
+    import BayitDesignSystem
+    import BayitLocalization
+    import SwiftUI
 
-// MARK: - TVSettingsView + Sections
+    // MARK: - TVSettingsView + Detail Sections
 
-extension TVSettingsView {
-    // MARK: - Preferences
+    extension TVSettingsView {
+        // MARK: - Account
 
-    var preferencesSection: some View {
-        Section {
-            settingsNavRow(
-                icon: "globe",
-                title: localization.t("settings.language"),
-                detail: localization.currentLanguage.displayName
-            ) {
-                TVLanguageSettingsView()
+        @ViewBuilder
+        var accountDetail: some View {
+            if let user = authManager.user {
+                settingsGlassRow(
+                    title: localization.t("settings.account"),
+                    detail: user.email
+                )
             }
 
-            settingsNavRow(
-                icon: "bell.badge",
-                title: localization.t("settings.notificationSettings.title"),
-                detail: nil
-            ) {
-                TVNotificationSettingsView()
+            if let profile = authManager.activeProfile {
+                settingsGlassRow(
+                    title: localization.t("settings.profile.title"),
+                    detail: profile.name
+                )
             }
 
-            settingsNavRow(
-                icon: "speaker.wave.3",
-                title: localization.t("settings.audio.title"),
-                detail: nil
-            ) {
-                TVAudioSettingsView()
-            }
-
-            settingsNavRow(
-                icon: "accessibility",
-                title: localization.t("settings.accessibility.title"),
-                detail: nil
-            ) {
-                TVAccessibilitySettingsView()
-            }
-
-            if let vm = viewModel {
-                Toggle(isOn: Bindable(vm).subtitles) {
-                    HStack {
-                        Image(systemName: "captions.bubble")
-                            .foregroundStyle(DesignTokens.Primary.p400)
-                            .frame(width: 32)
-                        Text(localization.t("settings.subtitles"))
-                            .foregroundStyle(DesignTokens.Text.primary)
-                    }
-                }
-                .tint(DesignTokens.Primary.default)
-                .onChange(of: vm.subtitles) { _, newValue in
-                    Task { await vm.updateSubtitles(newValue) }
-                }
-                .accessibilityLabel(localization.t("settings.subtitles"))
-
-                Toggle(isOn: Bindable(vm).autoplay) {
-                    HStack {
-                        Image(systemName: "play.circle")
-                            .foregroundStyle(DesignTokens.Primary.p400)
-                            .frame(width: 32)
-                        Text(localization.t("settings.autoplay"))
-                            .foregroundStyle(DesignTokens.Text.primary)
-                    }
-                }
-                .tint(DesignTokens.Primary.default)
-                .onChange(of: vm.autoplay) { _, newValue in
-                    Task { await vm.updateAutoplay(newValue) }
-                }
-                .accessibilityLabel(localization.t("settings.autoplay"))
-            }
-
-            settingsNavRow(
-                icon: "lightbulb.fill",
-                title: localization.t("trivia.settings.title"),
-                detail: nil
-            ) {
-                TVTriviaSettingsView()
-            }
-
-            if let vm = viewModel {
-                Toggle(isOn: Bindable(vm).interactiveMoments) {
-                    HStack {
-                        Image(systemName: "person.2.wave.2")
-                            .foregroundStyle(DesignTokens.Primary.p400)
-                            .frame(width: 32)
-                        Text(localization.t("settings.interactiveMoments"))
-                            .foregroundStyle(DesignTokens.Text.primary)
-                    }
-                }
-                .tint(DesignTokens.Primary.default)
-                .onChange(of: vm.interactiveMoments) { _, newValue in
-                    Task { await vm.updateInteractiveMoments(newValue) }
-                }
-
-                if vm.interactiveMomentsBlocked,
-                   let msgKey = vm.interactiveMomentsBlockedMessage
-                {
-                    Text(localization.t(msgKey))
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Warning.default)
-                        .padding(.leading, 44)
-                }
-            }
-
-            settingsNavRow(
-                icon: "flame",
-                title: localization.t("judaism.shabbat.title"),
-                detail: nil
-            ) {
-                TVZmanimView()
-            }
-
-            settingsNavRow(
-                icon: "sunrise",
-                title: localization.t("ritual.title"),
-                detail: nil
-            ) {
-                TVMorningRitualView()
-            }
-        } header: {
-            sectionHeader(localization.t("settings.preferences"))
-        }
-    }
-
-    // MARK: - Subscription
-
-    var subscriptionSection: some View {
-        Section {
-            settingsNavRow(
+            settingsGlassNavRow(
                 icon: "crown",
                 title: localization.t("settings.subscription.title"),
                 detail: nil
@@ -139,23 +33,100 @@ extension TVSettingsView {
                 TVSubscriptionView()
             }
 
-            settingsNavRow(
+            settingsGlassNavRow(
                 icon: "creditcard",
                 title: localization.t("settings.billing"),
                 detail: nil
             ) {
                 TVBillingView()
             }
-        } header: {
-            sectionHeader(localization.t("settings.subscription.title"))
+
+            settingsGlassNavRow(
+                icon: "link.circle",
+                title: localization.t("settings.connectedAccounts"),
+                detail: nil
+            ) {
+                TVConnectedAccountsView(onDismiss: {})
+            }
+
+            Spacer().frame(height: TVDesignTokens.Spacing.md)
+
+            signOutButton
         }
-    }
 
-    // MARK: - Security
+        // MARK: - Playback
 
-    var securitySection: some View {
-        Section {
-            settingsNavRow(
+        @ViewBuilder
+        var playbackDetail: some View {
+            settingsGlassNavRow(
+                icon: "film",
+                title: localization.t("settings.playback.videoQuality"),
+                detail: localization.t("settings.playback.qualityAuto")
+            ) {
+                TVSubtitleSettingsView()
+            }
+
+            if let vm = viewModel {
+                settingsGlassToggleRow(
+                    title: localization.t(
+                        "settings.playback.autoplayNext"
+                    ),
+                    isOn: Bindable(vm).autoplay
+                ) { newValue in
+                    Task { await vm.updateAutoplay(newValue) }
+                }
+
+                settingsGlassToggleRow(
+                    title: localization.t("settings.playback.pip"),
+                    isOn: Bindable(vm).subtitles
+                ) { _ in }
+
+                settingsGlassToggleRow(
+                    title: localization.t(
+                        "settings.playback.backgroundAudio"
+                    ),
+                    isOn: Bindable(vm).subtitles
+                ) { _ in }
+            }
+
+            settingsGlassNavRow(
+                icon: "captions.bubble",
+                title: localization.t("settings.subtitleSettings.title"),
+                detail: nil
+            ) {
+                TVSubtitleSettingsView()
+            }
+
+            settingsGlassNavRow(
+                icon: "gauge.with.needle",
+                title: localization.t("settings.playback.playbackSpeed"),
+                detail: "1.0x"
+            ) {
+                TVSubtitleSettingsView()
+            }
+        }
+
+        // MARK: - Security
+
+        @ViewBuilder
+        var securityDetail: some View {
+            settingsGlassNavRow(
+                icon: "lock.shield",
+                title: localization.t("settings.security.changePassword"),
+                detail: nil
+            ) {
+                TVSecurityView()
+            }
+
+            settingsGlassNavRow(
+                icon: "key",
+                title: localization.t("settings.security.twoFactor"),
+                detail: nil
+            ) {
+                TVSecurityView()
+            }
+
+            settingsGlassNavRow(
                 icon: "hand.raised",
                 title: localization.t("settings.privacy.title"),
                 detail: nil
@@ -163,15 +134,7 @@ extension TVSettingsView {
                 TVPrivacySettingsView()
             }
 
-            settingsNavRow(
-                icon: "lock.shield",
-                title: localization.t("settings.security.title"),
-                detail: nil
-            ) {
-                TVSecurityView()
-            }
-
-            settingsNavRow(
+            settingsGlassNavRow(
                 icon: "link",
                 title: localization.t("settings.devicePairing"),
                 detail: nil
@@ -179,15 +142,131 @@ extension TVSettingsView {
                 TVDevicePairingView()
             }
 
-            settingsNavRow(
+            settingsGlassNavRow(
                 icon: "figure.2.and.child.holdinghands",
                 title: localization.t("settings.familyControls"),
                 detail: nil
             ) {
                 TVFamilyControlsView()
             }
-        } header: {
-            sectionHeader(localization.t("settings.privacySecurity"))
+        }
+
+        // MARK: - Social
+
+        @ViewBuilder
+        var socialDetail: some View {
+            settingsGlassNavRow(
+                icon: "house",
+                title: localization.t("settings.household"),
+                detail: nil
+            ) {
+                TVHouseholdView()
+            }
+
+            settingsGlassNavRow(
+                icon: "flame",
+                title: localization.t("judaism.shabbat.title"),
+                detail: nil
+            ) {
+                TVZmanimView()
+            }
+
+            settingsGlassNavRow(
+                icon: "sunrise",
+                title: localization.t("ritual.title"),
+                detail: nil
+            ) {
+                TVMorningRitualView()
+            }
+        }
+
+        // MARK: - Help
+
+        @ViewBuilder
+        var helpDetail: some View {
+            settingsGlassNavRow(
+                icon: "info.circle",
+                title: localization.t("settings.about.title"),
+                detail: Bundle.main.object(
+                    forInfoDictionaryKey: "CFBundleShortVersionString"
+                ) as? String
+            ) {
+                TVAboutView()
+            }
+
+            settingsGlassNavRow(
+                icon: "questionmark.circle",
+                title: localization.t("settings.help.contactSupport"),
+                detail: nil
+            ) {
+                TVHelpView()
+            }
+
+            replayOnboardingGlassRow
+
+            settingsGlassNavRow(
+                icon: "doc.text",
+                title: localization.t("settings.privacyPolicy"),
+                detail: nil
+            ) {
+                TVAboutView()
+            }
+
+            settingsGlassNavRow(
+                icon: "doc.plaintext",
+                title: localization.t("settings.termsOfService"),
+                detail: nil
+            ) {
+                TVAboutView()
+            }
+        }
+
+        // MARK: - Replay Onboarding
+
+        private var replayOnboardingGlassRow: some View {
+            Button {
+                replayOnboarding()
+            } label: {
+                glassRowContent(
+                    title: localization.t(
+                        "settings.help.replayOnboarding"
+                    ),
+                    icon: "sparkles",
+                    detail: nil,
+                    showChevron: true
+                )
+            }
+            .tvCardStyle()
+        }
+
+        private func replayOnboarding() {
+            guard let profileId = authManager.activeProfile?.id
+            else { return }
+            let key = "tv.bayit.plus.onboarding.\(profileId).completed"
+            UserDefaults.standard.set(false, forKey: key)
+            coordinator.showingOnboarding = true
+        }
+
+        // MARK: - Sign Out Button
+
+        private var signOutButton: some View {
+            Button { signOut() } label: {
+                HStack(spacing: 16) {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.system(size: 26, weight: .medium))
+                        .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                    Text(localization.t("settings.signOut"))
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                    Spacer()
+                }
+                .padding(.horizontal, 28)
+                .frame(minHeight: 76)
+                .background(settingsRowBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .overlay(settingsRowBorder)
+            }
+            .tvCardStyle()
         }
     }
-}
+#endif

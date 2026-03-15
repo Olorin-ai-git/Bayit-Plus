@@ -58,10 +58,6 @@ extension TVProfileView {
             profileSheetWrapper(title: localization.t("profile.myPlaylists")) {
                 TVWatchlistView()
             }
-        case .downloads:
-            profileSheetWrapper(title: localization.t("profile.myDownloads")) {
-                TVDownloadsView()
-            }
         case .friends:
             profileSheetWrapper(title: localization.t("nav.friends")) {
                 TVFriendsView()

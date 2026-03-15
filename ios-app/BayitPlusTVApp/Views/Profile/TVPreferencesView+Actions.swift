@@ -1,157 +1,121 @@
-import BayitCore
-import BayitDesignSystem
-import BayitLocalization
-import SwiftUI
+#if os(tvOS)
+    import BayitCore
+    import BayitDesignSystem
+    import BayitLocalization
+    import SwiftUI
 
-// MARK: - Actions & UI Helpers
+    // MARK: - Actions & Glass Row Components
 
-extension TVPreferencesView {
-    func applyLanguage() {
-        if let language = Language(rawValue: selectedLanguage) {
-            localization.setLanguage(language)
+    extension TVPreferencesView {
+        func applyLanguage() {
+            if let language = Language(rawValue: selectedLanguage) {
+                localization.setLanguage(language)
+            }
+            persistPreferences()
         }
-        persistPreferences()
-    }
 
-    func persistPreferences() {
-        let update = ProfilePreferencesUpdate(
-            language: selectedLanguage,
-            subtitleLanguage: selectedSubtitleLanguage,
-            autoplay: autoplay,
-            notifications: notifications,
-            contentRating: contentRating,
-            quality: quality
-        )
-        Task { await viewModel.updatePreferences(update) }
-    }
+        func persistPreferences() {
+            let update = ProfilePreferencesUpdate(
+                language: selectedLanguage,
+                subtitleLanguage: selectedSubtitleLanguage,
+                autoplay: autoplay,
+                notifications: notifications,
+                contentRating: contentRating,
+                quality: quality
+            )
+            Task { await viewModel.updatePreferences(update) }
+        }
 
-    // MARK: - Row Components
+        // MARK: - Glass Row
 
-    func sectionHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
-            .foregroundStyle(DesignTokens.Text.primary)
-            .padding(.leading, TVDesignTokens.Spacing.sm)
-    }
-
-    func toggleRow(
-        icon: String,
-        title: String,
-        subtitle: String,
-        isOn: Binding<Bool>,
-        color: Color
-    ) -> some View {
-        Button {
-            isOn.wrappedValue.toggle()
-        } label: {
-            HStack(spacing: TVDesignTokens.Spacing.md) {
-                Image(systemName: icon)
-                    .font(.system(size: 28))
-                    .foregroundStyle(color)
-                    .frame(width: 44)
-
+        func prefGlassRow(
+            title: String,
+            subtitle: String? = nil,
+            detail: String? = nil,
+            showToggle: Bool = false,
+            toggleOn: Bool = false
+        ) -> some View {
+            HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                        .font(.system(size: 28, weight: .medium))
                         .foregroundStyle(DesignTokens.Text.primary)
+                        .lineLimit(1)
 
-                    Text(subtitle)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                }
-
-                Spacer()
-
-                Text(isOn.wrappedValue
-                    ? localization.t("common.on")
-                    : localization.t("common.off"))
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
-                    .foregroundStyle(isOn.wrappedValue
-                        ? DesignTokens.Primary.p400
-                        : DesignTokens.Text.muted)
-                    .frame(width: 60, alignment: .trailing)
-
-                Circle()
-                    .fill(isOn.wrappedValue
-                        ? DesignTokens.Primary.p400
-                        : DesignTokens.Text.muted.opacity(0.3))
-                    .frame(width: 20, height: 20)
-            }
-            .padding(TVDesignTokens.Spacing.lg)
-            .background(DesignTokens.Glass.bg)
-            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
-        }
-        .buttonStyle(TVInlineButtonStyle())
-    }
-
-    func pickerRow(
-        icon: String,
-        title: String,
-        selection: Binding<String>,
-        options: [(String, String)]
-    ) -> some View {
-        VStack(spacing: 0) {
-            HStack(spacing: TVDesignTokens.Spacing.md) {
-                Image(systemName: icon)
-                    .font(.system(size: 28))
-                    .foregroundStyle(DesignTokens.Primary.p400)
-                    .frame(width: 44)
-
-                Text(title)
-                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-
-                Spacer()
-            }
-            .padding(.horizontal, TVDesignTokens.Spacing.lg)
-            .padding(.top, TVDesignTokens.Spacing.lg)
-            .padding(.bottom, TVDesignTokens.Spacing.sm)
-
-            ForEach(options, id: \.0) { value, label in
-                Button {
-                    selection.wrappedValue = value
-                } label: {
-                    HStack {
-                        Text(label)
-                            .font(.system(size: TVDesignTokens.FontSize.md))
-                            .foregroundStyle(selection.wrappedValue == value
-                                ? DesignTokens.Primary.p400
-                                : DesignTokens.Text.secondary)
-
-                        Spacer()
-
-                        if selection.wrappedValue == value {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(DesignTokens.Primary.p400)
-                        }
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.system(size: 22))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                            .lineLimit(1)
                     }
-                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                    .padding(.vertical, TVDesignTokens.Spacing.sm)
                 }
-                .buttonStyle(TVInlineButtonStyle())
+
+                Spacer()
+
+                if let detail {
+                    Text(detail)
+                        .font(.system(size: 24, weight: .regular))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+
+                if showToggle {
+                    TVSettingsPillToggle(isOn: toggleOn)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
             }
-
-            Spacer().frame(height: TVDesignTokens.Spacing.sm)
+            .padding(.horizontal, 36)
+            .padding(.vertical, 8)
+            .frame(minHeight: subtitle != nil ? 90 : 76)
+            .background(prefRowBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(prefRowBorder)
         }
-        .background(DesignTokens.Glass.bg)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
+
+        // MARK: - Row Chrome
+
+        private var prefRowBackground: some View {
+            ZStack {
+                Color.white.opacity(0.06)
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+                    .environment(\.colorScheme, .dark)
+            }
+        }
+
+        private var prefRowBorder: some View {
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(
+                    Color.white.opacity(0.12),
+                    lineWidth: 1.5
+                )
+        }
+
+        // MARK: - Data
+
+        var languageOptions: [(String, String)] {
+            Language.allCases.map { ($0.rawValue, $0.displayName) }
+        }
+
+        var qualityOptions: [(String, String)] {
+            [
+                ("auto", localization.t("settings.qualityAuto")),
+                ("high", localization.t("settings.qualityHigh")),
+                ("medium", localization.t("settings.qualityMedium")),
+                ("low", localization.t("settings.qualityLow")),
+            ]
+        }
+
+        var ratingOptions: [(String, String)] {
+            [
+                ("g", localization.t("settings.ratingAllAges")),
+                ("pg", localization.t("settings.ratingPG")),
+                ("pg13", localization.t("settings.ratingPG13")),
+                ("r", localization.t("settings.ratingMature")),
+                ("nc17", localization.t("settings.ratingAdultsOnly")),
+            ]
+        }
     }
-}
-
-// MARK: - Inline Button Style (no scale/lift on focus)
-
-private struct TVInlineButtonStyle: ButtonStyle {
-    @Environment(\.isFocused) var isFocused
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .background(
-                isFocused
-                    ? DesignTokens.Glass.bgMedium
-                    : Color.clear
-            )
-            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
-            .opacity(configuration.isPressed ? 0.8 : 1.0)
-    }
-}
+#endif
