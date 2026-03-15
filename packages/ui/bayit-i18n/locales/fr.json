@@ -4029,7 +4029,14 @@
     "activeWidgets": "Widgets actifs",
     "sidebar": {
       "label": "Barre de widgets"
-    }
+    },
+    "clock": "Horloge",
+    "liveTV": "Chaînes TV en direct",
+    "nothingPlaying": "Rien en lecture",
+    "nowPlaying": "Mini-lecteur",
+    "podcast": "Lecteur de podcast",
+    "radio": "Stations de radio",
+    "weather": "Météo"
   },
   "liveCategories": {
     "educational": "Éducatif"
@@ -6791,7 +6798,9 @@
     "info": "Info",
     "premiumPrice": "$6.99/month",
     "familyPrice": "12,99 $/mois",
-    "watchlist": "Liste de visionnage"
+    "watchlist": "Liste de visionnage",
+    "appSettings": "Paramètres de l'app",
+    "history": "Historique"
   },
   "profiles": {
     "addProfile": "Ajouter un profil",
@@ -7616,7 +7625,8 @@
       "commonQuestions": "Questions fréquentes",
       "noTipsAvailable": "Aucun conseil disponible",
       "noTutorialsAvailable": "Aucun tutoriel disponible",
-      "scanEmailQR": "Scannez sur votre téléphone ou envoyez-nous un email à:"
+      "scanEmailQR": "Scannez sur votre téléphone ou envoyez-nous un email à:",
+      "videoTutorials": "Tutoriels vidéo"
     },
     "autoplayDescription": "Lire automatiquement l'episode suivant a la fin",
     "autoplayNextEpisode": "Lecture Automatique",
@@ -11638,7 +11648,10 @@
     "iptvConnectDesc": "Diffusez la TV en direct depuis votre fournisseur",
     "plexLabel": "Plex",
     "addButton": "AJOUTER",
-    "alreadyConnected": "Déjà connecté"
+    "alreadyConnected": "Déjà connecté",
+    "authExpired": "Autorisation expirée - reconnexion requise",
+    "connectionError": "Erreur de connexion",
+    "reconnect": "Reconnecter"
   },
   "a11y": {
     "openProfile": "{{name}}, ouvrir le profil",

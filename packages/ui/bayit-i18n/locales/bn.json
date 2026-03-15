@@ -4029,7 +4029,14 @@
     "activeWidgets": "সক্রিয় উইজেট",
     "sidebar": {
       "label": "উইজেট সাইডবার"
-    }
+    },
+    "clock": "ঘড়ি",
+    "liveTV": "লাইভ টিভি চ্যানেল",
+    "nothingPlaying": "কিছু চলছে না",
+    "nowPlaying": "নাউ প্লেয়িং মিনি-প্লেয়ার",
+    "podcast": "পডকাস্ট প্লেয়ার",
+    "radio": "রেডিও স্টেশন",
+    "weather": "আবহাওয়া"
   },
   "liveCategories": {
     "educational": "শিক্ষামূলক"
@@ -5900,7 +5907,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্লাস",
@@ -6787,7 +6798,9 @@
     "info": "তথ্য",
     "premiumPrice": "[bn] $6.99/month",
     "familyPrice": "[bn] $12.99/month",
-    "watchlist": "[bn] Watchlist"
+    "watchlist": "[bn] Watchlist",
+    "appSettings": "অ্যাপ সেটিংস",
+    "history": "ইতিহাস"
   },
   "profiles": {
     "addProfile": "প্রোফাইল যোগ করুন",
@@ -7612,7 +7625,8 @@
       "commonQuestions": "সাধারণ প্রশ্ন",
       "noTipsAvailable": "কোনো টিপস নেই",
       "noTutorialsAvailable": "কোনো টিউটোরিয়াল নেই",
-      "scanEmailQR": "ফোনে স্ক্যান করুন বা আমাদের ইমেইল করুন:"
+      "scanEmailQR": "ফোনে স্ক্যান করুন বা আমাদের ইমেইল করুন:",
+      "videoTutorials": "ভিডিও টিউটোরিয়াল"
     },
     "autoplayDescription": "শেষ হলে পরবর্তী এপিসোড স্বয়ংক্রিয়ভাবে চালান",
     "autoplayNextEpisode": "পরবর্তী এপিসোড অটোপ্লে",
@@ -11634,7 +11648,10 @@
     "iptvConnectDesc": "আপনার প্রদানকারী থেকে লাইভ টিভি স্ট্রিম করুন",
     "plexLabel": "Plex",
     "addButton": "যোগ করুন",
-    "alreadyConnected": "ইতিমধ্যে সংযুক্ত"
+    "alreadyConnected": "ইতিমধ্যে সংযুক্ত",
+    "authExpired": "অনুমোদন মেয়াদোত্তীর্ণ - পুনরায় সংযোগ প্রয়োজন",
+    "connectionError": "সংযোগ ত্রুটি",
+    "reconnect": "পুনরায় সংযোগ করুন"
   },
   "a11y": {
     "openProfile": "{{name}}, প্রোফাইল খুলুন",

@@ -4029,7 +4029,14 @@
     "activeWidgets": "アクティブウィジェット",
     "sidebar": {
       "label": "ウィジェットサイドバー"
-    }
+    },
+    "clock": "時計",
+    "liveTV": "ライブTVチャンネル",
+    "nothingPlaying": "再生中なし",
+    "nowPlaying": "再生中ミニプレーヤー",
+    "podcast": "ポッドキャストプレーヤー",
+    "radio": "ラジオ局",
+    "weather": "天気"
   },
   "liveCategories": {
     "educational": "[ja] Educational"
@@ -6773,7 +6780,9 @@
     "info": "情報",
     "premiumPrice": "[ja] $6.99/month",
     "familyPrice": "[ja] $12.99/month",
-    "watchlist": "[ja] Watchlist"
+    "watchlist": "[ja] Watchlist",
+    "appSettings": "アプリ設定",
+    "history": "履歴"
   },
   "profiles": {
     "addProfile": "プロフィールを追加",
@@ -7598,7 +7607,8 @@
       "commonQuestions": "よくある質問",
       "noTipsAvailable": "ヒントはありません",
       "noTutorialsAvailable": "チュートリアルはありません",
-      "scanEmailQR": "スマホでスキャンするかメールしてください:"
+      "scanEmailQR": "スマホでスキャンするかメールしてください:",
+      "videoTutorials": "動画チュートリアル"
     },
     "autoplayDescription": "終了時に次のエピソードを自動的に再生",
     "autoplayNextEpisode": "次のエピソードを自動再生",
@@ -11620,7 +11630,10 @@
     "iptvConnectDesc": "プロバイダーからライブTVをストリーミング",
     "plexLabel": "Plex",
     "addButton": "追加",
-    "alreadyConnected": "接続済み"
+    "alreadyConnected": "接続済み",
+    "authExpired": "認証の有効期限が切れました - 再接続が必要です",
+    "connectionError": "接続エラー",
+    "reconnect": "再接続"
   },
   "a11y": {
     "openProfile": "{{name}}、プロフィールを開く",

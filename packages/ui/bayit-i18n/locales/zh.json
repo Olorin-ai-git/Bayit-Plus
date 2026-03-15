@@ -4029,7 +4029,14 @@
     "activeWidgets": "活跃小组件",
     "sidebar": {
       "label": "小组件侧栏"
-    }
+    },
+    "clock": "时钟",
+    "liveTV": "直播电视频道",
+    "nothingPlaying": "无内容播放",
+    "nowPlaying": "正在播放迷你播放器",
+    "podcast": "播客播放器",
+    "radio": "广播电台",
+    "weather": "天气"
   },
   "liveCategories": {
     "educational": "教育"
@@ -5894,8 +5901,17 @@
     },
     "basic": {
       "name": "免费",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -6782,7 +6798,9 @@
     "info": "信息",
     "premiumPrice": "$6.99/月",
     "familyPrice": "$12.99/月",
-    "watchlist": "观看列表"
+    "watchlist": "观看列表",
+    "appSettings": "应用设置",
+    "history": "历史"
   },
   "profiles": {
     "addProfile": "添加档案",
@@ -7607,7 +7625,8 @@
       "commonQuestions": "常见问题",
       "noTipsAvailable": "暂无提示",
       "noTutorialsAvailable": "暂无教程",
-      "scanEmailQR": "在手机上扫描或发送邮件至:"
+      "scanEmailQR": "在手机上扫描或发送邮件至:",
+      "videoTutorials": "视频教程"
     },
     "autoplayDescription": "当前集结束后自动播放下一集",
     "autoplayNextEpisode": "自动播放下一集",
@@ -11629,7 +11648,10 @@
     "iptvConnectDesc": "从您的提供商流式传输直播电视",
     "plexLabel": "Plex",
     "addButton": "添加",
-    "alreadyConnected": "已连接"
+    "alreadyConnected": "已连接",
+    "authExpired": "授权已过期 - 需要重新连接",
+    "connectionError": "连接错误",
+    "reconnect": "重新连接"
   },
   "a11y": {
     "openProfile": "{{name}}, 打开个人资料",

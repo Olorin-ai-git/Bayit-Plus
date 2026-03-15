@@ -4029,7 +4029,14 @@
     "activeWidgets": "सक्रिय विजेट",
     "sidebar": {
       "label": "विजेट साइडबार"
-    }
+    },
+    "clock": "घड़ी",
+    "liveTV": "लाइव टीवी चैनल",
+    "nothingPlaying": "कुछ नहीं चल रहा",
+    "nowPlaying": "नाउ प्लेइंग मिनी-प्लेयर",
+    "podcast": "पॉडकास्ट प्लेयर",
+    "radio": "रेडियो स्टेशन",
+    "weather": "मौसम"
   },
   "liveCategories": {
     "educational": "शैक्षिक"
@@ -5900,7 +5907,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्लस",
@@ -6787,7 +6798,9 @@
     "info": "जानकारी",
     "premiumPrice": "[hi] $6.99/month",
     "familyPrice": "[hi] $12.99/month",
-    "watchlist": "[hi] Watchlist"
+    "watchlist": "[hi] Watchlist",
+    "appSettings": "ऐप सेटिंग्स",
+    "history": "इतिहास"
   },
   "profiles": {
     "addProfile": "प्रोफ़ाइल जोड़ें",
@@ -7612,7 +7625,8 @@
       "commonQuestions": "सामान्य प्रश्न",
       "noTipsAvailable": "कोई सुझाव उपलब्ध नहीं",
       "noTutorialsAvailable": "कोई ट्यूटोरियल उपलब्ध नहीं",
-      "scanEmailQR": "फोन पर स्कैन करें या हमें ईमेल करें:"
+      "scanEmailQR": "फोन पर स्कैन करें या हमें ईमेल करें:",
+      "videoTutorials": "वीडियो ट्यूटोरियल"
     },
     "autoplayDescription": "समाप्त होने पर अगला एपिसोड स्वचालित चलाएं",
     "autoplayNextEpisode": "अगला एपिसोड ऑटोप्ले",
@@ -11634,7 +11648,10 @@
     "iptvConnectDesc": "अपने प्रदाता से लाइव टीवी स्ट्रीम करें",
     "plexLabel": "Plex",
     "addButton": "जोड़ें",
-    "alreadyConnected": "पहले से जुड़ा हुआ"
+    "alreadyConnected": "पहले से जुड़ा हुआ",
+    "authExpired": "प्राधिकरण समाप्त - पुनः कनेक्ट करें",
+    "connectionError": "कनेक्शन त्रुटि",
+    "reconnect": "पुनः कनेक्ट करें"
   },
   "a11y": {
     "openProfile": "{{name}}, प्रोफ़ाइल खोलें",
