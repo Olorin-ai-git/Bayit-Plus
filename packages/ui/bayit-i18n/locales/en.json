@@ -5895,11 +5895,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",
@@ -10941,7 +10937,7 @@
       "askQuestion": "Ask a question...",
       "sendQuestion": "Send question"
     },
-    "subtitle": "Your interactive identity",
+    "subtitle": "Your Interactive Identity",
     "hub": {
       "magicMirror": "Magic Mirror",
       "magicMirrorDesc": "See yourself in a new light. Discover your digital aura and style with real-time effects.",

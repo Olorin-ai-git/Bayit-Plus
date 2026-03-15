@@ -18,13 +18,21 @@
                                 localization: localization
                             )
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(TVZehAniCardButtonStyle())
                         .focused($focusedCard, equals: card)
                     }
                 }
                 .padding(.horizontal, 100)
                 .padding(.bottom, 100)
             }
+        }
+    }
+
+    // MARK: - Card Button Style (suppresses default tvOS focus ring)
+
+    struct TVZehAniCardButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
         }
     }
 

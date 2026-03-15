@@ -39,7 +39,6 @@
                     TVZehAniBackgroundLayer()
                     TVZehAniAmbientGlowLayer()
                     mainContent
-                    TVZehAniStatusBarLayer(localization: localization)
                 }
                 .ignoresSafeArea()
                 .navigationDestination(item: $navigationTarget) { card in

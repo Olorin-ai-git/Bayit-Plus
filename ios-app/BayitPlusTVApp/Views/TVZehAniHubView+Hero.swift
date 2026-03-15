@@ -7,11 +7,11 @@
 
     extension TVZehAniHubView {
         var tvZehAniHeroLayer: some View {
-            VStack(spacing: 20) {
+            VStack(spacing: 8) {
                 TVZehAniHolographicAvatar()
-                    .frame(width: 300, height: 320)
+                    .frame(width: 500, height: 460)
                 Text(localization.t("zehAni.subtitle"))
-                    .font(.system(size: 42, weight: .semibold))
+                    .font(.system(size: 36, weight: .semibold))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.white, Color.white.opacity(0.85)],
@@ -52,8 +52,8 @@
                         ),
                         lineWidth: 4
                     )
-                    .frame(width: 280, height: 300)
-                    .blur(radius: 8)
+                    .frame(width: 440, height: 440)
+                    .blur(radius: 12)
                 Ellipse()
                     .stroke(
                         AngularGradient(
@@ -69,21 +69,11 @@
                         ),
                         lineWidth: 2
                     )
-                    .frame(width: 260, height: 280)
-                Image(systemName: "person.fill")
+                    .frame(width: 420, height: 420)
+                Image("zehani-avatar")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 140, height: 170)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                DesignTokens.Primary.p400.opacity(0.6),
-                                Color(hex: 0x7C3AED).opacity(0.4),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .frame(width: 400, height: 400)
             }
             .onAppear {
                 withAnimation(.linear(duration: 8).repeatForever(autoreverses: false)) {

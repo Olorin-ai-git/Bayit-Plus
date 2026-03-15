@@ -9,27 +9,14 @@
         var tvZehAniNavigationUILayer: some View {
             VStack {
                 Spacer()
-                HStack(alignment: .bottom) {
-                    TVZehAniSelectButton(localization: localization) {
-                        if let card = focusedCard {
-                            navigationTarget = card
-                        }
-                    }
-                    .padding(.leading, 80)
-                    Spacer()
-                    VStack(spacing: 12) {
-                        Text(localization.t("zehAni.hub.swipeHint"))
-                            .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(Color.white.opacity(0.5))
-                        TVZehAniProgressIndicator(
-                            count: ZehAniFeatureCard.allCases.count,
-                            activeIndex: focusedCard?.cardIndex ?? 0
-                        )
-                    }
-                    Spacer()
-                    Color.clear
-                        .frame(width: 180, height: 1)
-                        .padding(.trailing, 80)
+                VStack(spacing: 12) {
+                    Text(localization.t("zehAni.hub.swipeHint"))
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(Color.white.opacity(0.5))
+                    TVZehAniProgressIndicator(
+                        count: ZehAniFeatureCard.allCases.count,
+                        activeIndex: focusedCard?.cardIndex ?? 0
+                    )
                 }
                 .padding(.bottom, 50)
             }
@@ -83,12 +70,23 @@
                     Capsule()
                         .fill(
                             index == activeIndex
-                                ? Color(hex: 0x3B82F6)
-                                : Color.white.opacity(0.25)
+                                ? LinearGradient(
+                                    colors: [
+                                        Color(hex: 0x7C3AED),
+                                        Color(hex: 0xA855F7),
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                                : LinearGradient(
+                                    colors: [Color.white.opacity(0.25)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
                         )
                         .frame(
-                            width: index == activeIndex ? 32 : 8,
-                            height: 4
+                            width: index == activeIndex ? 40 : 8,
+                            height: 5
                         )
                         .animation(.easeInOut(duration: 0.3), value: activeIndex)
                 }
