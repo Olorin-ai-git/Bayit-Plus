@@ -5920,11 +5920,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",
@@ -10148,6 +10144,9 @@
     "invitationSent": "Invitation sent successfully!",
     "addButton": "Add",
     "addMember": "Add Member",
+    "addProfile": "Add Profile",
+    "profiles": "Household Profiles",
+    "profileCount": "{{name}} — {{current}} of {{max}} profiles",
     "membersTitle": "Members",
     "unknown": "Unknown",
     "userIdPlaceholder": "Enter user email or ID",

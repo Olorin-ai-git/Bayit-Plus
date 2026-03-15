@@ -5920,11 +5920,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -10148,6 +10144,9 @@
     "invitationSent": "ההזמנה נשלחה בהצלחה!",
     "addButton": "הוסף",
     "addMember": "הוסף חבר",
+    "addProfile": "הוסף פרופיל",
+    "profiles": "פרופילי משק הבית",
+    "profileCount": "{{name}} — {{current}} מתוך {{max}} פרופילים",
     "membersTitle": "חברים",
     "unknown": "לא ידוע",
     "userIdPlaceholder": "הכנס אימייל או מזהה משתמש",

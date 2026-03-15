@@ -5920,11 +5920,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -10148,6 +10144,9 @@
     "invitationSent": "Invitacion enviada con exito!",
     "addButton": "Agregar",
     "addMember": "Agregar miembro",
+    "addProfile": "Agregar perfil",
+    "profiles": "Perfiles del hogar",
+    "profileCount": "{{name}} — {{current}} de {{max}} perfiles",
     "membersTitle": "Miembros",
     "unknown": "Desconocido",
     "userIdPlaceholder": "Ingresa email o ID",
