@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, Request, Header
 
 from app.api.routes.content.utils import is_series_content
 from app.api.routes.content_taxonomy import _get_legacy_category_mapping
+from app.core.redis_client import get_redis_client
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
@@ -19,6 +20,156 @@ from app.services.location_content_service import LocationContentService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+# Category filter definitions for content sections
+_CATEGORY_FILTERS = {
+    "movies": {
+        "$and": [
+            {"category_name": "Movies"},
+            {"genres": {"$nin": ["Kids", "Children", "Family", "Animation",
+                                  "Documentary", "Music", "Judaism", "Jewish", "Israeli"]}}
+        ]
+    },
+    "israeli-movies": {
+        "$and": [
+            {"category_name": "Israeli Movies"},
+            {"genres": {"$nin": ["Kids", "Children", "Family", "Animation", "Documentary", "Music", "Judaism"]}}
+        ]
+    },
+    "series": {
+        "$and": [
+            {"category_name": "Series"},
+            {"genres": {"$nin": ["Kids", "Children", "Family", "Animation",
+                                  "Documentary", "Music", "Judaism", "Jewish", "Israeli"]}}
+        ]
+    },
+    "israeli-series": {
+        "$and": [
+            {"category_name": "Israeli Series"},
+            {"genres": {"$nin": ["Kids", "Children", "Family", "Animation", "Documentary", "Music", "Judaism"]}}
+        ]
+    },
+    "kids": {
+        "$or": [
+            {"category_name": {"$in": ["Kids", "Children", "Family", "ילדים", "משפחה"]}},
+            {"genres": {"$in": ["Kids", "Children", "Family", "Animation"]}}
+        ]
+    },
+    "judaism": {
+        "$or": [
+            {"category_name": {"$in": ["Judaism", "Jewish", "יהדות"]}},
+            {"genres": {"$in": ["Judaism", "Jewish"]}}
+        ]
+    },
+    "documentaries": {
+        "$or": [
+            {"category_name": {"$in": ["Documentary", "דוקומנטרי"]}},
+            {"genres": {"$in": ["Documentary"]}}
+        ]
+    },
+    "music": {
+        "$or": [
+            {"category_name": {"$in": ["Music", "מוזיקה"]}},
+            {"genres": {"$in": ["Music"]}}
+        ]
+    },
+}
+
+_CONTENT_PROJECT = {
+    "_id": 1, "title": 1, "thumbnail": 1, "thumbnail_data": 1,
+    "poster_url": 1, "duration": 1, "year": 1, "series_id": 1,
+    "total_episodes": 1, "season_number": 1, "episode_number": 1,
+    "available_subtitle_languages": 1, "category_name": 1, "genres": 1, "created_at": 1,
+}
+
+
+async def _fetch_section_items(slug, all_section_ids, collection, visibility_match):
+    """Fetch content items for a regular (non-podcast/audiobook) section."""
+    category_filter = _CATEGORY_FILTERS.get(slug, {})
+
+    match_conditions = [
+        {"is_featured": True, "is_published": True, "is_quality_variant": {"$ne": True}},
+        {"$or": [{"series_id": None}, {"series_id": {"$exists": False}}, {"series_id": ""}]},
+        {"$or": [
+            {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},
+            {"total_episodes": {"$gt": 0}},
+        ]},
+        visibility_match,
+    ]
+    if category_filter:
+        match_conditions.append(category_filter)
+
+    pipeline = [
+        {"$match": {"$and": match_conditions}},
+        {"$project": _CONTENT_PROJECT},
+        {"$sort": {"created_at": -1}},
+        {"$limit": 10},
+    ]
+    cursor = collection.aggregate(pipeline)
+    items = await cursor.to_list(length=None)
+
+    if not items:
+        logger.info(f"No explicitly featured content for section '{slug}', using recently published fallback")
+        legacy_map = _get_legacy_category_mapping()
+        section_or_conditions = [
+            {"section_ids": {"$in": all_section_ids}},
+            {"primary_section_id": {"$in": all_section_ids}},
+        ]
+        if slug in legacy_map:
+            section_or_conditions.append({"category_name": {"$in": legacy_map[slug]}})
+
+        fallback_pipeline = [
+            {"$match": {"$and": [
+                {"is_published": True, "is_quality_variant": {"$ne": True}},
+                {"$or": section_or_conditions},
+                {"$or": [{"series_id": None}, {"series_id": {"$exists": False}}, {"series_id": ""}]},
+                {"$or": [
+                    {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},
+                    {"total_episodes": {"$gt": 0}},
+                ]},
+                visibility_match,
+            ]}},
+            {"$sort": {"created_at": -1}},
+            {"$project": _CONTENT_PROJECT},
+            {"$limit": 10},
+        ]
+        cursor = collection.aggregate(fallback_pipeline)
+        items = await cursor.to_list(length=None)
+
+    return items
+
+
+def _format_section_items(items, slug):
+    """Deduplicate and format raw MongoDB items into category carousel entries."""
+    category_items = []
+    seen_titles = set()
+
+    for item in items:
+        title = item.get("title", "")
+        title_lower = title.lower()
+        if title_lower in seen_titles:
+            continue
+        seen_titles.add(title_lower)
+
+        is_series = is_series_content(item)
+        thumbnail = item.get("thumbnail_data") or item.get("thumbnail") or item.get("poster_url")
+        subtitle_langs = item.get("available_subtitle_languages") or []
+
+        item_data = {
+            "id": str(item["_id"]), "title": item.get("title"),
+            "thumbnail": thumbnail, "duration": item.get("duration"),
+            "year": item.get("year"), "category": slug,
+            "category_name_en": slug, "category_name_es": slug,
+            "type": "series" if is_series else "movie",
+            "is_series": is_series,
+            "available_subtitle_languages": subtitle_langs,
+            "has_subtitles": len(subtitle_langs) > 0,
+        }
+        if is_series:
+            item_data["total_episodes"] = item.get("total_episodes") or 0
+        category_items.append(item_data)
+
+    return category_items
 
 
 def get_content_type_priority(item: dict) -> int:
@@ -101,11 +252,19 @@ async def get_featured(
     """
     start_time = time.time()
 
+    # Redis cache: return cached response if available (120s TTL)
+    user_id = str(current_user.id) if current_user else "anon"
+    cache_key = f"content:featured:v1:{user_id}:{x_user_city or ''}:{x_user_state or ''}"
+    redis = await get_redis_client()
+    cached = await redis.get(cache_key)
+    if cached:
+        logger.info(f"Featured cache HIT for {user_id} ({time.time() - start_time:.3f}s)")
+        return cached
+
     # Check if user has passkey access for protected content
     passkey_session = await get_passkey_session(request)
     has_passkey = passkey_session is not None
     visibility_match = build_visibility_match(has_passkey)
-    # No content access filtering needed (beta gating removed)
 
     async def get_hero():
         """Get hero content, with fallback to recently published if none marked as featured."""
@@ -390,7 +549,7 @@ async def get_featured(
     hero_content, featured_content, categories, podcasts, audiobooks, location_content = await asyncio.gather(
         get_hero(), get_featured_content(), get_categories(), get_podcasts(), get_audiobooks(), get_location_content()
     )
-    logger.info(f"⏱️ Featured: Initial queries took {time.time() - start_time:.2f}s")
+    logger.info(f"Featured: Initial queries took {time.time() - start_time:.2f}s")
 
     spotlight_items = []
     for item in featured_content:
@@ -434,297 +593,65 @@ async def get_featured(
     category_data = []
     collection = Content.get_settings().pymongo_collection
 
-    for slug, slug_sections in sections_by_slug.items():
+    async def _build_section_data(slug, slug_sections):
+        """Build category data for a single section. Runs concurrently via gather."""
         primary_section = slug_sections[0]
         all_section_ids = [str(s.id) for s in slug_sections]
 
         if slug == "podcasts":
-            # Podcasts from Podcast collection
             podcast_items = [
                 {
-                    "id": str(podcast.id),
-                    "title": podcast.title,
-                    "thumbnail": podcast.cover,
-                    "category": "podcasts",
-                    "type": "podcast",
-                    "is_series": False,
-                    "author": podcast.author,
+                    "id": str(podcast.id), "title": podcast.title,
+                    "thumbnail": podcast.cover, "category": "podcasts",
+                    "type": "podcast", "is_series": False, "author": podcast.author,
                 }
                 for podcast in podcasts
             ] if podcasts else []
-            category_data.append({
-                "id": str(primary_section.id),
-                "name": slug,
+            return {
+                "id": str(primary_section.id), "name": slug,
                 "name_key": primary_section.name_key or "home.podcasts",
-                "name_en": "Podcasts",
-                "name_es": "Podcasts",
-                "items": podcast_items,
-            })
-        elif slug == "audiobooks":
-            # Audiobooks from Content collection
+                "name_en": "Podcasts", "name_es": "Podcasts", "items": podcast_items,
+            }
+
+        if slug == "audiobooks":
             audiobook_items = [
                 {
-                    "id": str(item["_id"]),
-                    "title": item.get("title"),
+                    "id": str(item["_id"]), "title": item.get("title"),
                     "thumbnail": item.get("thumbnail_data") or item.get("thumbnail") or item.get("poster_url"),
-                    "duration": item.get("duration"),
-                    "year": item.get("year"),
-                    "category": "audiobooks",
-                    "type": "audiobook",
-                    "is_series": False,
-                    "author": item.get("author"),
-                    "narrator": item.get("narrator"),
+                    "duration": item.get("duration"), "year": item.get("year"),
+                    "category": "audiobooks", "type": "audiobook", "is_series": False,
+                    "author": item.get("author"), "narrator": item.get("narrator"),
                 }
                 for item in audiobooks
             ] if audiobooks else []
-            category_data.append({
-                "id": str(primary_section.id),
-                "name": slug,
+            return {
+                "id": str(primary_section.id), "name": slug,
                 "name_key": primary_section.name_key or "home.audiobooks",
-                "name_en": "Audiobooks",
-                "name_es": "Audiolibros",
-                "items": audiobook_items,
-            })
-        else:
-            # Regular content sections - filter by category/genre match
-            # Define category filters for each section
-            category_filters = {
-                "movies": {
-                    # Movies category only
-                    "$and": [
-                        {"category_name": "Movies"},
-                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation",
-                                              "Documentary", "Music", "Judaism", "Jewish", "Israeli"]}}
-                    ]
-                },
-                "israeli-movies": {
-                    "$and": [
-                        {"category_name": "Israeli Movies"},
-                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation", "Documentary", "Music", "Judaism"]}}
-                    ]
-                },
-                "series": {
-                    "$and": [
-                        {"category_name": "Series"},
-                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation",
-                                              "Documentary", "Music", "Judaism", "Jewish", "Israeli"]}}
-                    ]
-                },
-                "israeli-series": {
-                    "$and": [
-                        {"category_name": "Israeli Series"},
-                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation", "Documentary", "Music", "Judaism"]}}
-                    ]
-                },
-                "kids": {
-                    "$or": [
-                        {"category_name": {"$in": ["Kids", "Children", "Family", "ילדים", "משפחה"]}},
-                        {"genres": {"$in": ["Kids", "Children", "Family", "Animation"]}}
-                    ]
-                },
-                "judaism": {
-                    "$or": [
-                        {"category_name": {"$in": ["Judaism", "Jewish", "יהדות"]}},
-                        {"genres": {"$in": ["Judaism", "Jewish"]}}
-                    ]
-                },
-                "documentaries": {
-                    "$or": [
-                        {"category_name": {"$in": ["Documentary", "דוקומנטרי"]}},
-                        {"genres": {"$in": ["Documentary"]}}
-                    ]
-                },
-                "music": {
-                    "$or": [
-                        {"category_name": {"$in": ["Music", "מוזיקה"]}},
-                        {"genres": {"$in": ["Music"]}}
-                    ]
-                },
+                "name_en": "Audiobooks", "name_es": "Audiolibros", "items": audiobook_items,
             }
 
-            # Get category filter for this section
-            category_filter = category_filters.get(slug, {})
+        # Regular content sections - filter by category/genre match
+        items = await _fetch_section_items(slug, all_section_ids, collection, visibility_match)
 
-            # Build match conditions
-            match_conditions = [
-                {
-                    "is_featured": True,
-                    "is_published": True,
-                    "is_quality_variant": {"$ne": True},
-                },
-                {
-                    "$or": [
-                        {"series_id": None},
-                        {"series_id": {"$exists": False}},
-                        {"series_id": ""},
-                    ]
-                },
-                # Exclude series without episodes from category carousels
-                {
-                    "$or": [
-                        {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},  # Not a series category
-                        {"total_episodes": {"$gt": 0}},  # Or has episodes
-                    ]
-                },
-                visibility_match,
-            ]
+        # Process items: deduplicate and format
+        category_items = _format_section_items(items, slug)
 
-            # Add category filter if defined
-            if category_filter:
-                match_conditions.append(category_filter)
+        if category_items:
+            return {
+                "id": str(primary_section.id), "name": slug,
+                "name_key": primary_section.name_key,
+                "name_en": slug, "name_es": slug, "items": category_items,
+            }
+        return None
 
-            # Get featured content matching category/genre
-            pipeline = [
-                {"$match": {"$and": match_conditions}},
-                {
-                    "$project": {
-                        "_id": 1,
-                        "title": 1,
-                        "thumbnail": 1,
-                        "thumbnail_data": 1,
-                        "poster_url": 1,
-                        "duration": 1,
-                        "year": 1,
-                        "series_id": 1,  # For is_series_content() helper
-                        "total_episodes": 1,  # For is_series_content() helper
-                        "season_number": 1,  # For is_series_content() helper
-                        "episode_number": 1,  # For is_series_content() helper
-                        "available_subtitle_languages": 1,
-                        "category_name": 1,
-                        "genres": 1,
-                        "created_at": 1,
-                    }
-                },
-                {"$sort": {"created_at": -1}},  # Most recent first
-                {"$limit": 10},
-            ]
-
-            cursor = collection.aggregate(pipeline)
-            items = await cursor.to_list(length=None)
-
-            # If no explicitly featured content for this section, use recently published fallback
-            if not items:
-                logger.info(f"No explicitly featured content for section '{slug}', using recently published fallback")
-                # Build section filter for fallback (same as browse endpoint)
-                legacy_map = _get_legacy_category_mapping()
-                section_or_conditions = [
-                    {"section_ids": {"$in": all_section_ids}},
-                    {"primary_section_id": {"$in": all_section_ids}},
-                ]
-                if slug in legacy_map:
-                    section_or_conditions.append(
-                        {"category_name": {"$in": legacy_map[slug]}}
-                    )
-
-                fallback_pipeline = [
-                    {
-                        "$match": {
-                            "$and": [
-                                {
-                                    "is_published": True,
-                                    "is_quality_variant": {"$ne": True},
-                                },
-                                {"$or": section_or_conditions},
-                                {
-                                    "$or": [
-                                        {"series_id": None},
-                                        {"series_id": {"$exists": False}},
-                                        {"series_id": ""},
-                                    ]
-                                },
-                                {
-                                    "$or": [
-                                        {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},  # Not a series category
-                                        {"total_episodes": {"$gt": 0}},  # Or has episodes
-                                    ]
-                                },
-                                visibility_match,
-                                    ]
-                        }
-                    },
-                    {"$sort": {"created_at": -1}},
-                    {
-                        "$project": {
-                            "_id": 1,
-                            "title": 1,
-                            "thumbnail": 1,
-                            "thumbnail_data": 1,
-                            "poster_url": 1,
-                            "duration": 1,
-                            "year": 1,
-                            "series_id": 1,  # For is_series_content() helper
-                            "total_episodes": 1,  # For is_series_content() helper
-                            "season_number": 1,  # For is_series_content() helper
-                            "episode_number": 1,  # For is_series_content() helper
-                            "available_subtitle_languages": 1,
-                            "category_name": 1,
-                            "genres": 1,
-                        }
-                    },
-                    {"$limit": 10},
-                ]
-                cursor = collection.aggregate(fallback_pipeline)
-                items = await cursor.to_list(length=None)
-
-            # Process items (already sorted by created_at)
-            category_items = []
-            seen_titles = set()  # Track titles to prevent duplicates
-
-            for item in items:
-                item_id = str(item["_id"])
-                title = item.get("title", "")
-                title_lower = title.lower()
-
-                # Skip duplicates (prefer first occurrence)
-                if title_lower in seen_titles:
-                    continue
-                seen_titles.add(title_lower)
-
-                # Determine if series based on comprehensive check (NOT is_series flag)
-                is_series = is_series_content(item)
-                thumbnail = (
-                    item.get("thumbnail_data")
-                    or item.get("thumbnail")
-                    or item.get("poster_url")
-                )
-                subtitle_langs = item.get("available_subtitle_languages") or []
-
-                item_data = {
-                    "id": item_id,
-                    "title": item.get("title"),
-                    "thumbnail": thumbnail,
-                    "duration": item.get("duration"),
-                    "year": item.get("year"),
-                    "category": slug,
-                    "category_name_en": slug,
-                    "category_name_es": slug,
-                    "type": "series" if is_series else "movie",
-                    "is_series": is_series,  # Computed from category/structure
-                    "available_subtitle_languages": subtitle_langs,
-                    "has_subtitles": len(subtitle_langs) > 0,
-                }
-                if is_series:
-                    item_data["total_episodes"] = item.get("total_episodes") or 0
-
-                category_items.append(item_data)
-
-            # Items already sorted by created_at (most recent first)
-            # Items are already sorted by created_at from MongoDB query
-            # Limit already applied in pipeline ($limit: 10)
-
-            # Only include sections that have content
-            if category_items:
-                category_data.append({
-                    "id": str(primary_section.id),
-                    "name": slug,
-                    "name_key": primary_section.name_key,
-                    "name_en": slug,
-                    "name_es": slug,
-                    "items": category_items,
-                })
+    # Run all section builds concurrently instead of sequentially
+    section_results = await asyncio.gather(
+        *[_build_section_data(slug, sects) for slug, sects in sections_by_slug.items()]
+    )
+    category_data = [r for r in section_results if r is not None]
 
     logger.info(
-        f"⏱️ Featured: Category content query took {time.time() - cat_query_start:.2f}s"
+        f"Featured: Category content query took {time.time() - cat_query_start:.2f}s"
     )
 
     # Track existing slugs to avoid duplicates
@@ -845,9 +772,9 @@ async def get_featured(
 
     category_data.sort(key=get_sort_priority)
 
-    logger.info(f"⏱️ Featured: TOTAL took {time.time() - start_time:.2f}s")
+    logger.info(f"Featured: TOTAL took {time.time() - start_time:.2f}s")
 
-    return {
+    response = {
         "hero": (
             {
                 "id": str(hero_content.get("_id")) if hero_content else None,
@@ -868,3 +795,8 @@ async def get_featured(
         "spotlight": spotlight_items,
         "categories": category_data,
     }
+
+    # Cache the full response in Redis (120s TTL)
+    await redis.set_with_ttl(cache_key, response, 120)
+
+    return response
