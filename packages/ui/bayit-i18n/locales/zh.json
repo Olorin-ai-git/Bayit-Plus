@@ -10457,6 +10457,7 @@
       "voice": "语音",
       "nowPlaying": "正在播放",
       "autoFill": "自动填充",
+      "audioEQ": "音频均衡",
       "close": "关闭"
     }
   },

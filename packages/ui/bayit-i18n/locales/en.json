@@ -10462,6 +10462,7 @@
       "voice": "Voice",
       "nowPlaying": "Now Playing",
       "autoFill": "Auto Fill",
+      "audioEQ": "Audio EQ",
       "close": "Close"
     }
   },

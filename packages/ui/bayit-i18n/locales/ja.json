@@ -10448,6 +10448,7 @@
       "voice": "音声",
       "nowPlaying": "再生中",
       "autoFill": "自動入力",
+      "audioEQ": "オーディオEQ",
       "close": "閉じる"
     }
   },

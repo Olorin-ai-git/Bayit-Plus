@@ -10462,6 +10462,7 @@
       "voice": "Voz",
       "nowPlaying": "Reproduciendo",
       "autoFill": "Autocompletar",
+      "audioEQ": "Ecualizador",
       "close": "Cerrar"
     }
   },
