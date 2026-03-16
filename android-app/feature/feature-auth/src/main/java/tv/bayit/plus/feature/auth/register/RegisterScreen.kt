@@ -93,6 +93,7 @@ internal fun RegisterScreen(
                 value = input?.password.orEmpty(),
                 onValueChange = { if (uiState is RegisterUiState.Error) onDismissError(); onPasswordChange(it) },
                 label = bayitString("auth.register.password"), enabled = !isLoading,
+                isPassword = true,
             )
             FieldErrorText(input?.fieldError, "password")
             if ((input?.password?.length ?: 0) > 0) {
@@ -105,6 +106,7 @@ internal fun RegisterScreen(
                 value = input?.confirmPassword.orEmpty(),
                 onValueChange = { if (uiState is RegisterUiState.Error) onDismissError(); onConfirmPasswordChange(it) },
                 label = bayitString("auth.register.confirmPassword"), enabled = !isLoading,
+                isPassword = true,
             )
             FieldErrorText(input?.fieldError, "confirmPassword")
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.base))
