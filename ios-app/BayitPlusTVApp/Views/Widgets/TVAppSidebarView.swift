@@ -12,6 +12,7 @@
         let avatarURL: URL?
         let restoredWidgets: [WidgetItem]
         let onAvatarTap: () -> Void
+        let onLanguageTap: () -> Void
         let onAddWidget: () -> Void
         let onClose: (String) -> Void
         var onShowQuickDock: (() -> Void)? = nil
@@ -56,6 +57,8 @@
                 Spacer()
 
                 avatarButton
+
+                languageFlagButton
 
                 if hasWidgets {
                     widgetCountBadge
@@ -130,7 +133,7 @@
             .frame(maxHeight: .infinity)
         }
 
-        /// Header row: collapse chevron | avatar + Profile label | spacer
+        /// Header row: collapse chevron | avatar + Profile label | language flag
         private var expandedHeader: some View {
             HStack(alignment: .center, spacing: 0) {
                 collapseToggleButton
@@ -148,8 +151,7 @@
 
                 Spacer()
 
-                // Balance the chevron on the left
-                Color.clear.frame(width: 40, height: 1)
+                languageFlagButton
                     .padding(.trailing, 12)
             }
         }
@@ -230,6 +232,25 @@
                         )
                     )
             }
+        }
+
+        // MARK: - Language Flag
+
+        private var languageFlagButton: some View {
+            Button { onLanguageTap() } label: {
+                Text(localization.currentLanguage.flagEmoji)
+                    .font(.system(size: 28))
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Primary.p600.opacity(0.12))
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle().strokeBorder(
+                            DesignTokens.Primary.p400.opacity(0.3), lineWidth: 1
+                        )
+                    )
+            }
+            .tvCardStyle()
+            .accessibilityLabel(localization.t("settings.chooseLanguage"))
         }
 
         // MARK: - Toggle buttons

@@ -29,6 +29,7 @@
                     avatarURL: coordinator.selectedProfileAvatar.flatMap { URL(string: $0) },
                     restoredWidgets: dockViewModel?.widgets ?? [],
                     onAvatarTap: { coordinator.selectedTab = .profile },
+                    onLanguageTap: { showLanguagePicker = true },
                     onAddWidget: { showCreateWidget = true },
                     onClose: { dockViewModel?.dismissFromSidebar(widgetId: $0) },
                     onShowQuickDock: { coordinator.showQuickDock = true }
@@ -92,11 +93,6 @@
                         .zIndex(100)
                         .animation(.spring(duration: 0.35, bounce: 0.1), value: coordinator.showQuickDock)
                     }
-                }
-                .overlay(alignment: .topTrailing) {
-                    languageButton
-                        .padding(.top, TVDesignTokens.Spacing.md)
-                        .padding(.trailing, TVDesignTokens.Spacing.xl)
                 }
                 .overlay(alignment: .top) {
                     if let vm = proactiveSuggestionViewModel {
