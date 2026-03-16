@@ -157,7 +157,7 @@ class SearchViewModel @Inject constructor(
     }
 
     companion object {
-        private const val DEBOUNCE_DELAY_MS = 500L
+        private const val DEBOUNCE_DELAY_MS = 300L
         private val OWNER_ONLY_CONTENT_TYPES = listOf("movie", "series", "film", "vod", "collection")
     }
 }

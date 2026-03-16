@@ -2,8 +2,10 @@ package tv.bayit.plus.feature.home
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -11,8 +13,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.NoOpBayitLogger
+import tv.bayit.plus.core.data.download.BayitDownloadManager
+import tv.bayit.plus.core.data.repository.BetaCreditsRepository
 import tv.bayit.plus.core.data.repository.LocationRepository
 import tv.bayit.plus.core.data.repository.ShabbatRepository
+import tv.bayit.plus.core.data.repository.SubscriptionRepository
+import tv.bayit.plus.core.model.LocalDownload
 import tv.bayit.plus.core.location.LocationManager
 import tv.bayit.plus.core.model.FeaturedResponse
 import tv.bayit.plus.core.model.LiveChannelItem
@@ -45,6 +51,15 @@ class HomeViewModelTest {
     }
     private val sourceManager: BYOCSourceManager = mockk(relaxed = true)
     private val tourDataStore: TourDataStore = mockk(relaxed = true)
+    private val subscriptionRepository: SubscriptionRepository = mockk(relaxed = true) {
+        coEvery { getCurrentSubscription() } returns BayitResult.Error(Exception("No subscription"))
+    }
+    private val betaCreditsRepository: BetaCreditsRepository = mockk(relaxed = true) {
+        coEvery { getBalance() } returns BayitResult.Success(0)
+    }
+    private val downloadManager: BayitDownloadManager = mockk(relaxed = true) {
+        every { downloads } returns MutableStateFlow(emptyList<LocalDownload>())
+    }
     private val logger = NoOpBayitLogger()
 
     private lateinit var viewModel: HomeViewModel
@@ -80,6 +95,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )
@@ -120,6 +138,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )
@@ -153,6 +174,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )
@@ -185,6 +209,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )
@@ -229,6 +256,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )
@@ -259,6 +289,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )
@@ -291,6 +324,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )
@@ -328,6 +364,9 @@ class HomeViewModelTest {
             locationManager,
             sourceManager,
             tourDataStore,
+            subscriptionRepository,
+            betaCreditsRepository,
+            downloadManager,
             logger,
             ownerMode = false,
         )

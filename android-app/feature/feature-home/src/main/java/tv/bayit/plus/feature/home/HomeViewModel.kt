@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.OwnerMode
@@ -159,29 +161,32 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun loadCreditBadgeData() {
-        val subResult = subscriptionRepository.getCurrentSubscription()
-        val isPlus = subResult is BayitResult.Success
-
-        when (val creditResult = betaCreditsRepository.getBalance()) {
-            is BayitResult.Success -> {
-                val balance = creditResult.data
-                updateState {
-                    copy(
-                        remainingCredits = balance,
-                        totalCredits = BETA_CREDITS_TOTAL,
-                        isPlusSubscriber = isPlus,
-                    )
+        coroutineScope {
+            val subDeferred = async { subscriptionRepository.getCurrentSubscription() }
+            val creditDeferred = async { betaCreditsRepository.getBalance() }
+            val subResult = subDeferred.await()
+            val isPlus = subResult is BayitResult.Success
+            when (val creditResult = creditDeferred.await()) {
+                is BayitResult.Success -> {
+                    val balance = creditResult.data
+                    updateState {
+                        copy(
+                            remainingCredits = balance,
+                            totalCredits = BETA_CREDITS_TOTAL,
+                            isPlusSubscriber = isPlus,
+                        )
+                    }
                 }
+                is BayitResult.Error -> {
+                    logger.error(
+                        "Failed to load credit balance for badge",
+                        creditResult.exception,
+                        emptyMap(),
+                    )
+                    updateState { copy(isPlusSubscriber = isPlus) }
+                }
+                is BayitResult.Loading -> Unit
             }
-            is BayitResult.Error -> {
-                logger.error(
-                    "Failed to load credit balance for badge",
-                    creditResult.exception,
-                    emptyMap(),
-                )
-                updateState { copy(isPlusSubscriber = isPlus) }
-            }
-            is BayitResult.Loading -> Unit
         }
     }
 
