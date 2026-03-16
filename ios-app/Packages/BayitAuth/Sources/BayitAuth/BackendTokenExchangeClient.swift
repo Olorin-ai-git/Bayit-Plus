@@ -176,7 +176,7 @@ enum BackendTokenExchangeClient {
         let config = AppConfiguration()
         let request = try buildRequest(
             path: "api/v1/token/refresh",
-            body: ["refresh_token": refreshToken],
+            body: ["refresh_token": refreshToken, "tenant_id": tenantId],
             config: config
         )
 

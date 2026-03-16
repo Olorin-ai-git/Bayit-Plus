@@ -157,6 +157,7 @@ targets:
         TVOS_DEPLOYMENT_TARGET: "17.0"
         DEVELOPMENT_TEAM: 963B7732N5
         CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: BayitPlusTVApp/BayitPlusTVApp.entitlements
         GENERATE_INFOPLIST_FILE: true
     info:
       path: BayitPlusTVApp/Info.plist

@@ -7,13 +7,12 @@ import Security
 /// All operations are synchronous at the Security framework level but
 /// wrapped in throwing functions for ergonomic Swift usage.
 public struct KeychainService: Sendable {
-
     private let serviceName: String
     private let accessGroup: String?
 
     public init(configuration: AuthConfiguration) {
-        self.serviceName = configuration.keychainServiceName
-        self.accessGroup = configuration.keychainAccessGroup
+        serviceName = configuration.keychainServiceName
+        accessGroup = configuration.keychainAccessGroup
     }
 
     // MARK: - Public API
@@ -29,7 +28,7 @@ public struct KeychainService: Sendable {
         // Attempt to update first; if not found, add a new item.
         let existingQuery = baseQuery(for: key)
         let updateAttributes: [String: Any] = [
-            kSecValueData as String: data
+            kSecValueData as String: data,
         ]
 
         let updateStatus = SecItemUpdate(existingQuery as CFDictionary, updateAttributes as CFDictionary)
@@ -69,7 +68,8 @@ public struct KeychainService: Sendable {
         }
 
         guard let data = result as? Data,
-              let token = String(data: data, encoding: .utf8) else {
+              let token = String(data: data, encoding: .utf8)
+        else {
             throw AuthError.keychainLoadFailed(status: errSecDecode)
         }
 
