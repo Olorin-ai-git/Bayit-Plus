@@ -27,7 +27,7 @@
         }
 
         private let collapsedWidth: CGFloat = 80
-        private let expandedWidth: CGFloat = 240
+        private let expandedWidth: CGFloat = 480
         private let avatarSize: CGFloat = 56
         private let cornerRadius: CGFloat = 24
 
@@ -111,13 +111,13 @@
                 sectionHeader
 
                 ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(spacing: 10) {
+                    LazyVStack(spacing: 16) {
                         ForEach(restoredWidgets) { widget in
-                            TVSidebarWidgetCompactCard(
+                            TVSidebarWidgetCard(
                                 widget: widget,
                                 onClose: { onClose(widget.id) }
                             )
-                            .padding(.horizontal, 12)
+                            .padding(.horizontal, 24)
                         }
                     }
                     .padding(.vertical, 10)
@@ -292,11 +292,9 @@
                 Spacer()
                 Text("\(restoredWidgets.count)")
                     .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 18, height: 18)
-                    .background(Circle().fill(DesignTokens.Primary.p500))
+                    .foregroundStyle(DesignTokens.Primary.p400)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 12)
             .padding(.bottom, 6)
         }
@@ -372,81 +370,54 @@
         }
     }
 
-    // MARK: - Sidebar Widget Compact Card
+    // MARK: - Sidebar Widget Card
 
-    struct TVSidebarWidgetCompactCard: View {
+    struct TVSidebarWidgetCard: View {
         let widget: WidgetItem
         let onClose: () -> Void
 
+        private let cardRadius: CGFloat = 18
+
         var body: some View {
-            HStack(spacing: 10) {
-                widgetIcon
-                    .frame(width: 40, height: 40)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            ZStack(alignment: .topTrailing) {
+                TVWidgetContainerView(widget: widget)
+                    .frame(maxHeight: 400)
 
-                Text(widget.title)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .lineLimit(2)
-
-                Spacer()
-
-                Button { onClose() } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.6))
-                        .frame(width: 20, height: 20)
-                        .background(Circle().fill(Color.white.opacity(0.08)))
-                        .overlay(Circle().strokeBorder(Color.white.opacity(0.12), lineWidth: 0.5))
-                }
-                .buttonStyle(WidgetCompactButtonStyle())
-                .accessibilityLabel("Close widget")
+                closeButton
+                    .padding(.top, 6)
+                    .padding(.trailing, 6)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(DesignTokens.Glass.bgMedium)
-            )
+            .clipShape(RoundedRectangle(cornerRadius: cardRadius))
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: cardRadius)
                     .strokeBorder(
                         LinearGradient(
                             colors: [
-                                DesignTokens.Primary.p400.opacity(0.4),
-                                DesignTokens.Primary.p600.opacity(0.15),
+                                DesignTokens.Primary.p400.opacity(0.6),
+                                DesignTokens.Primary.p600.opacity(0.25),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 1
+                        lineWidth: 1.5
                     )
             )
+            .shadow(color: DesignTokens.Primary.p500.opacity(0.15), radius: 8, x: 0, y: 2)
         }
 
-        @ViewBuilder
-        private var widgetIcon: some View {
-            if let iconStr = widget.icon, let url = URL(string: iconStr) {
-                CachedAsyncImage(url: url) { phase in
-                    if case let .success(img) = phase {
-                        img.resizable().aspectRatio(contentMode: .fill)
-                    } else {
-                        fallbackIcon
-                    }
-                }
-            } else {
-                fallbackIcon
+        private var closeButton: some View {
+            Button { onClose() } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .frame(width: 24, height: 24)
+                    .background(Circle().fill(Color.black.opacity(0.6)))
+                    .overlay(
+                        Circle().strokeBorder(Color.white.opacity(0.2), lineWidth: 0.5)
+                    )
             }
-        }
-
-        private var fallbackIcon: some View {
-            ZStack {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(DesignTokens.Primary.p700.opacity(0.4))
-                Image(systemName: widget.type == .system ? "star.fill" : "square.grid.2x2")
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(DesignTokens.Primary.p300)
-            }
+            .buttonStyle(WidgetCompactButtonStyle())
+            .accessibilityLabel("Close widget")
         }
     }
 #endif

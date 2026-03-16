@@ -20,7 +20,7 @@
         @FocusState private var focusedItem: DockItem?
 
         private enum DockItem: Hashable {
-            case widgets, voice, nowPlaying, audioEQ, close
+            case widgets, voice, nowPlaying, autoFill, close
         }
 
         private var isNowPlaying: Bool {
@@ -53,15 +53,14 @@
                     item: .nowPlaying,
                     icon: "play.fill",
                     label: localization.t("tvos.dock.nowPlaying"),
-                    isActive: isNowPlaying,
-                    isCenter: true
+                    isActive: isNowPlaying
                 ) { coordinator.selectedTab = .podcasts }
 
                 dockButton(
-                    item: .audioEQ,
-                    icon: "slider.horizontal.3",
-                    label: localization.t("tvos.dock.audioEQ")
-                ) { coordinator.selectedTab = .podcasts }
+                    item: .autoFill,
+                    icon: "wand.and.sparkles",
+                    label: localization.t("tvos.dock.autoFill")
+                ) { coordinator.selectedTab = .discover }
 
                 dockButton(
                     item: .close,
@@ -85,13 +84,10 @@
             icon: String,
             label: String,
             isActive: Bool = false,
-            isCenter: Bool = false,
             isDestructive: Bool = false,
             action: @escaping () -> Void
         ) -> some View {
             let isFocused = focusedItem == item
-            let circleSize: CGFloat = isCenter ? 90 : 68
-            let iconSize: CGFloat = isCenter ? 32 : 24
             return Button {
                 action()
                 if item != .close { onDismiss() }
@@ -100,33 +96,33 @@
                     ZStack {
                         Circle()
                             .fill(
-                                isCenter || isActive
+                                isActive
                                     ? DesignTokens.Primary.default.opacity(0.85)
                                     : (isFocused
                                         ? Color.white.opacity(0.18)
                                         : Color.white.opacity(0.08))
                             )
-                            .frame(width: circleSize, height: circleSize)
+                            .frame(width: 72, height: 72)
                             .overlay(
                                 Circle().strokeBorder(
-                                    isCenter || isActive
+                                    isActive
                                         ? DesignTokens.Primary.p400.opacity(0.6)
                                         : Color.white.opacity(0.12),
-                                    lineWidth: isCenter ? 2 : 1.5
+                                    lineWidth: 1.5
                                 )
                             )
 
                         Image(systemName: icon)
-                            .font(.system(size: iconSize, weight: .medium))
+                            .font(.system(size: 28, weight: .medium))
                             .foregroundStyle(
                                 isDestructive
                                     ? DesignTokens.ErrorColor.e400
-                                    : (isCenter || isActive ? .white : DesignTokens.Text.primary)
+                                    : (isActive ? .white : DesignTokens.Text.primary)
                             )
                     }
 
                     Text(label)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(
                             isDestructive
                                 ? DesignTokens.ErrorColor.e400.opacity(0.85)
@@ -138,7 +134,7 @@
             }
             .buttonStyle(.plain)
             .focused($focusedItem, equals: item)
-            .scaleEffect(isFocused ? 1.06 : 1.0)
+            .scaleEffect(isFocused ? 1.08 : 1.0)
             .animation(.spring(duration: 0.2, bounce: 0.3), value: isFocused)
         }
 
