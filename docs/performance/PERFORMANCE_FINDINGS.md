@@ -95,28 +95,27 @@ All three frontend platforms achieve meaningful parallelism on Home and VOD, but
 
 ---
 
-## Fix Plan
+## Fix Plan and Implementation Status
 
-1. **featured.py N+1 fix — `backend/app/api/featured.py`**
-   Batch the per-category aggregate queries using a single `$facet` pipeline stage or parallelise them with `asyncio.gather`. Then wrap the entire endpoint response in a Redis cache (TTL: 5 minutes). Impact: removes 8-16 sequential MongoDB round-trips per request; first-load Home latency drops from ~800-1600ms to ~100-200ms.
+| #   | Fix                                                                                                | Commit      | Status |
+| --- | -------------------------------------------------------------------------------------------------- | ----------- | ------ |
+| 1   | featured.py N+1: parallelize category queries with `asyncio.gather` + Redis cache (TTL: 5 min)     | `2934a8235` | Done   |
+| 2   | search.py: replace process-local dict cache with Redis (`search:{query}` key, TTL: 120s)           | `1354b1711` | Done   |
+| 3   | movies.py + series.py: replace double-scan with single `$facet` aggregation                        | `4e320f758` | Done   |
+| 4   | featured.py: move cache TTL to config; guard Redis `get()` against None client                     | `8e0e87672` | Done   |
+| 5   | iOS: run `loadAdditionalSections()` concurrently with `fetchFeatured()` using `async let`          | `3b4d0520f` | Done   |
+| 6   | Android: parallelize subscription + credits in `loadCreditBadgeData()` with `coroutineScope/async` | `62a47a8b5` | Done   |
+| 7   | Web: migrate Home data-fetching from `useState+useEffect` to `useQueries` (staleTime: 5 min)       | `e5d2547f6` | Done   |
+| 8   | Android: reduce search debounce 500ms → 300ms to match iOS and Web                                 | `62a47a8b5` | Done   |
 
-2. **search.py Redis cache — `backend/app/api/search.py`**
-   Replace the process-local `dict` cache with calls to `get_redis_client()` using a `search:{query}` key pattern with a short TTL (60-120 seconds). Impact: cache hits become effective across all Cloud Run instances in production.
+## Expected Impact
 
-3. **movies.py and series.py double-scan — `backend/app/api/movies.py`, `backend/app/api/series.py`**
-   Replace the two-query pattern (`find().skip().limit()` + `find().count()`) with a single aggregation using `$facet: { data: [...], total: [{ $count: "n" }] }`. Impact: halves MongoDB read operations for all list calls.
-
-4. **series.py episode count — `backend/app/api/series.py`**
-   Replace the in-memory episode load with a `$group` + `$sum` aggregation query scoped to the series ID. Impact: constant memory usage regardless of episode count; faster for long-running series.
-
-5. **iOS fetchFeatured() decomposition — `HomeViewModel.swift`, `HomeViewModel+Sections.swift`**
-   Break `fetchFeatured()` into three independent `async let` bindings so hero, spotlight, and categories can resolve concurrently. Begin loading the 10 parallel sections as soon as the hero resolves (progressive display). Impact: time-to-hero-content drops from sum(hero + spotlight + categories) to max(hero, spotlight, categories).
-
-6. **Android loadCreditBadgeData() parallelisation — `HomeViewModel+Content.kt`**
-   Wrap the subscription and credits fetches in `coroutineScope { val sub = async { }; val credits = async { }; }` so they execute concurrently. Impact: removes one full network round-trip (~100-300ms) from Home load time.
-
-7. **Web Home migration to useQueries — `HomePage.tsx`**
-   Replace manual `useState+useEffect` data-fetching with `useQueries` from TanStack Query. Define one query per data source (featured, sections, credits, etc.). Impact: automatic request deduplication, stale-while-revalidate, and background refresh with no latency regression.
-
-8. **Android search debounce alignment — `SearchViewModel.kt`**
-   Change the debounce window from 500ms to 300ms to match iOS and Web. Impact: minor UX consistency improvement; backend load increase is negligible at current query volume.
+| Area                    | Before                                                                    | After                                                                              |
+| ----------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Home (backend)          | 8-16 sequential MongoDB aggregates per cold request (~800-1600ms)         | Single `asyncio.gather` pass + Redis cache warm path (~100-200ms)                  |
+| Search (backend)        | Process-local cache — effectively no cache in multi-instance prod         | Redis fleet-wide cache — cache hits effective across all Cloud Run instances       |
+| Movies/Series (backend) | Two full collection scans per list call (data + count)                    | Single `$facet` aggregation — halves MongoDB reads on these endpoints              |
+| iOS Home                | 10 additional sections blocked until featured API returns                 | Sections start loading concurrently with featured call                             |
+| Android Home            | Credit badge: subscription + balance fetched sequentially                 | Credit badge: subscription + balance fetched in parallel (saves ~100-300ms)        |
+| Web Home                | Manual `useState+useEffect` — no deduplication, no stale-while-revalidate | `useQueries` with 5-min staleTime — automatic deduplication and background refresh |
+| Android Search          | 500ms debounce delay before query fires                                   | 300ms debounce — consistent with iOS and Web                                       |
