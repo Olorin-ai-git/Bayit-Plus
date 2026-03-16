@@ -38,7 +38,6 @@ dependencies {
     // Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-    implementation("androidx.compose.material:material-icons-extended")
 
     // Lifecycle
     implementation(libs.bundles.lifecycle)
