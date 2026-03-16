@@ -54,7 +54,7 @@ extension TVTriviaSettingsView {
             }
 
         } catch {
-            self.error = "Failed to load preferences: \(error.localizedDescription)"
+            self.error = localization.t("error.settings.loadFailed")
         }
 
         isLoading = false
@@ -75,7 +75,7 @@ extension TVTriviaSettingsView {
             _ = try await repos.trivia.updatePreferences(update)
             error = nil
         } catch {
-            self.error = "Failed to save preferences: \(error.localizedDescription)"
+            self.error = localization.t("error.settings.saveFailed")
         }
     }
 }
@@ -88,10 +88,21 @@ enum TriviaFrequency: String, CaseIterable, Sendable {
     case frequent
 
     var displayName: String {
+        localizedName(nil)
+    }
+
+    func localizedName(_ localization: LocalizationManager?) -> String {
+        guard let loc = localization else {
+            switch self {
+            case .rare: return "Rare"
+            case .normal: return "Normal"
+            case .frequent: return "Frequent"
+            }
+        }
         switch self {
-        case .rare: return "Rare"
-        case .normal: return "Normal"
-        case .frequent: return "Frequent"
+        case .rare: return loc.t("settings.trivia.frequencyRare")
+        case .normal: return loc.t("settings.trivia.frequencyNormal")
+        case .frequent: return loc.t("settings.trivia.frequencyFrequent")
         }
     }
 }
@@ -104,12 +115,25 @@ enum TriviaCategory: String, CaseIterable, Sendable {
     case fun
 
     var displayName: String {
+        localizedName(nil)
+    }
+
+    func localizedName(_ localization: LocalizationManager?) -> String {
+        guard let loc = localization else {
+            switch self {
+            case .cast: return "Cast"
+            case .production: return "Production"
+            case .historical: return "Historical"
+            case .cultural: return "Cultural"
+            case .fun: return "Fun Facts"
+            }
+        }
         switch self {
-        case .cast: return "Cast"
-        case .production: return "Production"
-        case .historical: return "Historical"
-        case .cultural: return "Cultural"
-        case .fun: return "Fun Facts"
+        case .cast: return loc.t("settings.trivia.categoryCast")
+        case .production: return loc.t("settings.trivia.categoryProduction")
+        case .historical: return loc.t("settings.trivia.categoryHistorical")
+        case .cultural: return loc.t("settings.trivia.categoryCultural")
+        case .fun: return loc.t("settings.trivia.categoryFun")
         }
     }
 }

@@ -38,7 +38,7 @@ extension TVAudioSettingsView {
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 ForEach(AudioQuality.allCases) { quality in
                     GlassButton(
-                        quality.displayName,
+                        localization.t(quality.i18nKey),
                         variant: vm.quality == quality ? .primary : .ghost,
                         size: .medium
                     ) {
@@ -78,17 +78,12 @@ extension TVAudioSettingsView {
 
                 Spacer()
 
-                Toggle("", isOn: Binding(
-                    get: { vm.volumeNormalization },
-                    set: { vm.volumeNormalization = $0 }
-                ))
-                .tint(DesignTokens.Primary.default)
-                .labelsHidden()
-                .focused($focusedField, equals: .normalization)
+                TVSettingsPillToggle(isOn: vm.volumeNormalization)
             }
             .padding(TVDesignTokens.Spacing.lg)
             .background(DesignTokens.Glass.bgLight)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+            .onTapGesture { vm.volumeNormalization.toggle() }
         }
     }
 
@@ -113,17 +108,12 @@ extension TVAudioSettingsView {
 
                 Spacer()
 
-                Toggle("", isOn: Binding(
-                    get: { vm.preferDubbed },
-                    set: { vm.preferDubbed = $0 }
-                ))
-                .tint(DesignTokens.Primary.default)
-                .labelsHidden()
-                .focused($focusedField, equals: .preferDubbed)
+                TVSettingsPillToggle(isOn: vm.preferDubbed)
             }
             .padding(TVDesignTokens.Spacing.lg)
             .background(DesignTokens.Glass.bgLight)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+            .onTapGesture { vm.preferDubbed.toggle() }
 
             if vm.preferDubbed {
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {

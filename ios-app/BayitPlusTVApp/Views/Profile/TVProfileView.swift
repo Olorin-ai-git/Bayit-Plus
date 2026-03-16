@@ -4,37 +4,6 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Enum-driven sheet presentation replacing 15 individual boolean states.
-enum ProfileSheet: Identifiable {
-    case editProfile
-    case avatarPicker
-    case preferences
-    case accountSettings
-    case viewingHistory
-    case favorites
-    case recordings
-    case watchlist
-    case friends
-    case messages
-    case settings
-    case help
-    case connectedAccounts
-    case contentSources
-    case widgets
-    case householdProfiles
-    case about
-    case changePassword
-    case activeSessions
-    case passkeys
-    case linkAccount
-    case phoneVerification
-    case deleteAccount
-
-    var id: String {
-        String(describing: self)
-    }
-}
-
 /// tvOS Profile screen: 3-column dashboard layout matching Figma design.
 /// Left: avatar + name + badge + stats. Center: My Content 2x2 grid.
 /// Right: Social panel + Settings panel.
@@ -44,12 +13,12 @@ struct TVProfileView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) var coordinator
     @State var viewModel: ProfileViewModel?
-    @State var activeSheet: ProfileSheet?
+    @State var navigationPath: [TVProfileDestination] = []
     @State var friendsVM: FriendsViewModel?
     @State var messagesVM: DirectMessagesViewModel?
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             Group {
                 if let vm = viewModel {
                     if vm.isLoading && vm.profile == nil {
@@ -66,6 +35,14 @@ struct TVProfileView: View {
                 }
             }
             .background(DesignTokens.Background.primary)
+            .navigationDestination(for: TVProfileDestination.self) { dest in
+                TVProfileChildContainer(
+                    navigationPath: $navigationPath,
+                    destination: dest
+                ) {
+                    destinationContent(dest)
+                }
+            }
             .task {
                 if viewModel == nil {
                     viewModel = ProfileViewModel(repository: repos.user)
@@ -84,10 +61,100 @@ struct TVProfileView: View {
                 async let messagesLoad: Void = messagesVM?.loadConversations() ?? ()
                 _ = await (profileLoad, friendsLoad, messagesLoad)
             }
-            .fullScreenCover(item: $activeSheet) { sheet in
-                sheetContent(for: sheet)
-            }
         }
+    }
+
+    // MARK: - Navigation Destination Router
+
+    @ViewBuilder
+    private func destinationContent(
+        _ destination: TVProfileDestination
+    ) -> some View {
+        switch destination {
+        case let .settingsHub(category):
+            TVSettingsHubView(
+                navigationPath: $navigationPath,
+                initialCategory: category
+            )
+        case .favorites:
+            TVFavoritesView()
+        case .recordings:
+            TVRecordingsView()
+        case .playlists:
+            TVWatchlistView()
+        case .history:
+            TVViewingHistoryView(onDismiss: { navigationPath.removeAll() })
+        case .friends:
+            TVFriendsView()
+        case .messages:
+            TVDirectMessagesView()
+        case .editProfile:
+            if let vm = viewModel, let profile = vm.profile {
+                TVEditProfileView(
+                    profile: profile,
+                    viewModel: vm,
+                    onDismiss: { navigationPath.removeLast() }
+                )
+            }
+        case .avatarPicker:
+            if let vm = viewModel, let profile = vm.profile {
+                TVAvatarPickerView(
+                    currentAvatar: profile.avatar,
+                    viewModel: vm,
+                    onDismiss: { navigationPath.removeLast() }
+                )
+            }
+        case .household:
+            TVHouseholdProfilesView(onDismiss: { navigationPath.removeLast() })
+        case .connectedAccounts:
+            TVConnectedAccountsView(onDismiss: { navigationPath.removeLast() })
+        case .contentSources:
+            TVBYOCSourceListView(
+                isEmbedded: true,
+                onDismiss: { navigationPath.removeLast() }
+            )
+        case .widgets:
+            TVWidgetsView()
+        case .changePassword:
+            if let profile = viewModel?.profile {
+                TVChangePasswordView(
+                    hasPassword: profile.hasPassword == true,
+                    onDismiss: { navigationPath.removeLast() }
+                )
+            }
+        case .phoneVerification:
+            if let profile = viewModel?.profile {
+                TVPhoneVerificationView(
+                    existingPhone: profile.phoneNumber,
+                    onDismiss: { navigationPath.removeLast() },
+                    onVerified: { Task { await viewModel?.load() } }
+                )
+            }
+        case .deleteAccount:
+            TVDeleteAccountView(onDismiss: { navigationPath.removeLast() })
+        case .passkeys:
+            TVPasskeysView(onDismiss: { navigationPath.removeLast() })
+        case .linkAccount:
+            if let profile = viewModel?.profile {
+                TVLinkAccountView(
+                    currentProvider: profile.authProvider,
+                    onDismiss: { navigationPath.removeLast() }
+                )
+            }
+        case .activeSessions:
+            TVActiveSessionsView(onDismiss: { navigationPath.removeLast() })
+        case .helpChat:
+            placeholderView(localization.t("settings.help.chatWithAI"))
+        case .helpTutorials:
+            placeholderView(localization.t("settings.help.videoTutorials"))
+        }
+    }
+
+    private func placeholderView(_ title: String) -> some View {
+        Text(title)
+            .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+            .foregroundStyle(DesignTokens.Text.primary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - States

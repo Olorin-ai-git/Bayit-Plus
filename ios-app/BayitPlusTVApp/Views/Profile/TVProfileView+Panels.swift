@@ -22,25 +22,25 @@ extension TVProfileView {
                     icon: "heart.fill",
                     title: localization.t("profile.favorites"),
                     color: DesignTokens.ErrorColor.e400
-                ) { activeSheet = .favorites }
+                ) { navigationPath.append(.favorites) }
 
                 contentGridButton(
                     icon: "play.rectangle.fill",
                     title: localization.t("profile.recordings"),
                     color: DesignTokens.Primary.p400
-                ) { activeSheet = .recordings }
+                ) { navigationPath.append(.recordings) }
 
                 contentGridButton(
                     icon: "list.bullet",
                     title: localization.t("profile.playlists"),
                     color: DesignTokens.Secondary.s400
-                ) { activeSheet = .watchlist }
+                ) { navigationPath.append(.playlists) }
 
                 contentGridButton(
                     icon: "clock.arrow.circlepath",
                     title: localization.t("profile.history"),
                     color: DesignTokens.Info.default
-                ) { activeSheet = .viewingHistory }
+                ) { navigationPath.append(.history) }
             }
         }
         .padding(TVDesignTokens.Spacing.lg)
@@ -100,14 +100,14 @@ extension TVProfileView {
                 title: localization.t("nav.friends"),
                 color: DesignTokens.Primary.p400,
                 badge: friendsVM?.incomingRequests.count
-            ) { activeSheet = .friends }
+            ) { navigationPath.append(.friends) }
 
             panelRow(
                 icon: "bubble.left.and.bubble.right",
                 title: localization.t("profile.messages"),
                 color: DesignTokens.Info.default,
                 badge: messagesVM?.totalUnreadCount
-            ) { activeSheet = .messages }
+            ) { navigationPath.append(.messages) }
         }
         .padding(TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Glass.bgMedium)
@@ -128,19 +128,19 @@ extension TVProfileView {
                 icon: "gearshape.fill",
                 title: localization.t("profile.preferences"),
                 color: DesignTokens.Primary.p400
-            ) { activeSheet = .preferences }
+            ) { navigationPath.append(.settingsHub(category: .preferences)) }
 
             panelRow(
                 icon: "lock.fill",
                 title: localization.t("profile.accountSecurity"),
                 color: DesignTokens.Warning.default
-            ) { activeSheet = .accountSettings }
+            ) { navigationPath.append(.settingsHub(category: .security)) }
 
             panelRow(
                 icon: "gear",
                 title: localization.t("profile.appSettings"),
                 color: DesignTokens.Text.secondary
-            ) { activeSheet = .settings }
+            ) { navigationPath.append(.settingsHub(category: .account)) }
         }
         .padding(TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Glass.bgMedium)

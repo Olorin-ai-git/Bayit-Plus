@@ -11957,7 +11957,11 @@
     "plan": "Forfait",
     "renewsOn": "Renouvellement le",
     "status": "Statut",
-    "transactions": "Historique des transactions"
+    "transactions": "Historique des transactions",
+    "title": "Facturation et abonnements",
+    "subtitle": "Gérez votre plan et vos moyens de paiement.",
+    "paymentMethod": "Moyen de paiement",
+    "managedVia": "Géré via"
   },
   "biometric": {
     "authenticate": "Authentifier",

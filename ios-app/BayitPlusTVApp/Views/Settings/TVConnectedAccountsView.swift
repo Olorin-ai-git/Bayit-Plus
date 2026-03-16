@@ -11,52 +11,41 @@
         @State private var viewModel: ProfileViewModel?
 
         var body: some View {
-            ZStack {
-                DesignTokens.Background.primary.ignoresSafeArea()
-                VStack(spacing: 0) {
-                    headerSection
-                        .padding(.horizontal, 60)
-                        .padding(.top, 40)
-                        .padding(.bottom, 28)
-
-                    ScrollView(.vertical, showsIndicators: false) {
-                        VStack(spacing: TVDesignTokens.Spacing.lg) {
-                            if let vm = viewModel {
-                                providerCard(
-                                    icon: "g.circle.fill",
-                                    iconColor: Color(hex: 0x4285F4),
-                                    name: "Google",
-                                    description: localization.t("settings.connectedAccountsPage.googleDesc"),
-                                    isConnected: vm.profile?.authProvider?.lowercased() == "google",
-                                    onConnect: {}
-                                )
-                                providerCard(
-                                    icon: "applelogo",
-                                    iconColor: .white,
-                                    name: "Apple",
-                                    description: localization.t("settings.connectedAccountsPage.appleDesc"),
-                                    isConnected: vm.profile?.authProvider?.lowercased() == "apple",
-                                    onConnect: {}
-                                )
-                                providerCard(
-                                    icon: "f.circle.fill",
-                                    iconColor: Color(hex: 0x1877F2),
-                                    name: "Facebook",
-                                    description: localization.t("settings.connectedAccountsPage.facebookDesc"),
-                                    isConnected: vm.profile?.authProvider?.lowercased() == "facebook",
-                                    onConnect: {}
-                                )
-                            } else {
-                                ProgressView().tint(DesignTokens.Primary.default).scaleEffect(1.5)
-                                    .frame(maxWidth: .infinity, minHeight: 200)
-                            }
-                        }
-                        .padding(.horizontal, 60)
-                        .padding(.bottom, TVDesignTokens.Spacing.xxxl)
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: TVDesignTokens.Spacing.lg) {
+                    if let vm = viewModel {
+                        providerCard(
+                            icon: "g.circle.fill",
+                            iconColor: Color(hex: 0x4285F4),
+                            name: "Google",
+                            description: localization.t("settings.connectedAccountsPage.googleDesc"),
+                            isConnected: vm.profile?.authProvider?.lowercased() == "google",
+                            onConnect: {}
+                        )
+                        providerCard(
+                            icon: "applelogo",
+                            iconColor: .white,
+                            name: "Apple",
+                            description: localization.t("settings.connectedAccountsPage.appleDesc"),
+                            isConnected: vm.profile?.authProvider?.lowercased() == "apple",
+                            onConnect: {}
+                        )
+                        providerCard(
+                            icon: "f.circle.fill",
+                            iconColor: Color(hex: 0x1877F2),
+                            name: "Facebook",
+                            description: localization.t("settings.connectedAccountsPage.facebookDesc"),
+                            isConnected: vm.profile?.authProvider?.lowercased() == "facebook",
+                            onConnect: {}
+                        )
+                    } else {
+                        ProgressView().tint(DesignTokens.Primary.default).scaleEffect(1.5)
+                            .frame(maxWidth: .infinity, minHeight: 200)
                     }
                 }
+                .padding(.horizontal, 60)
+                .padding(.bottom, TVDesignTokens.Spacing.xxxl)
             }
-            .onExitCommand { onDismiss() }
             .task { await initializeViewModel() }
         }
 

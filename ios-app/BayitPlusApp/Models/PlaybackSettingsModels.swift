@@ -124,7 +124,9 @@ enum VideoQuality: String, CaseIterable, Identifiable {
     case hd = "720p"
     case sd = "480p"
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     var displayName: String {
         switch self {
@@ -146,14 +148,25 @@ enum AudioQuality: String, CaseIterable, Identifiable {
     case medium
     case low
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     var displayName: String {
         switch self {
-        case .auto: return String(localized: "settings.audio.qualityAuto")
-        case .high: return String(localized: "settings.audio.qualityHigh")
-        case .medium: return String(localized: "settings.audio.qualityMedium")
-        case .low: return String(localized: "settings.audio.qualityLow")
+        case .auto: return "Auto"
+        case .high: return "High"
+        case .medium: return "Medium"
+        case .low: return "Low"
+        }
+    }
+
+    var i18nKey: String {
+        switch self {
+        case .auto: return "settings.audio.qualityAuto"
+        case .high: return "settings.audio.qualityHigh"
+        case .medium: return "settings.audio.qualityMedium"
+        case .low: return "settings.audio.qualityLow"
         }
     }
 }
@@ -167,14 +180,25 @@ enum ColorBlindMode: String, CaseIterable, Identifiable {
     case deuteranopia
     case tritanopia
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     var displayName: String {
         switch self {
-        case .none: return String(localized: "settings.accessibility.colorBlindNone")
-        case .protanopia: return String(localized: "settings.accessibility.protanopia")
-        case .deuteranopia: return String(localized: "settings.accessibility.deuteranopia")
-        case .tritanopia: return String(localized: "settings.accessibility.tritanopia")
+        case .none: return "None"
+        case .protanopia: return "Protanopia"
+        case .deuteranopia: return "Deuteranopia"
+        case .tritanopia: return "Tritanopia"
+        }
+    }
+
+    var i18nKey: String {
+        switch self {
+        case .none: return "settings.accessibility.colorBlindNone"
+        case .protanopia: return "settings.accessibility.protanopia"
+        case .deuteranopia: return "settings.accessibility.deuteranopia"
+        case .tritanopia: return "settings.accessibility.tritanopia"
         }
     }
 }

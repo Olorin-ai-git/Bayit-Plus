@@ -11,7 +11,7 @@ struct TVProfileAccountSection: View {
     @Environment(BYOCSourceManager.self) private var byocManager
     let profile: ProfileResponse
     let localization: LocalizationManager
-    let onAction: (ProfileSheet) -> Void
+    let onAction: (TVProfileDestination) -> Void
 
     var body: some View {
         Section {
@@ -20,21 +20,21 @@ struct TVProfileAccountSection: View {
                 title: localization.t("profile.preferences"),
                 subtitle: localization.t("profile.preferencesDesc"),
                 color: DesignTokens.Primary.p400
-            ) { onAction(.preferences) }
+            ) { onAction(.settingsHub(category: .preferences)) }
 
             profileActionRow(
                 icon: "gear",
                 title: localization.t("nav.settings"),
                 subtitle: localization.t("profile.settingsDesc"),
                 color: DesignTokens.Text.secondary
-            ) { onAction(.settings) }
+            ) { onAction(.settingsHub(category: .account)) }
 
             profileActionRow(
                 icon: "lock.fill",
                 title: localization.t("profile.accountSecurity"),
                 subtitle: localization.t("profile.accountSecurityDesc"),
                 color: DesignTokens.Warning.default
-            ) { onAction(.accountSettings) }
+            ) { onAction(.settingsHub(category: .security)) }
 
             if !(profile.emailVerified ?? false) {
                 profileActionRow(
@@ -42,7 +42,7 @@ struct TVProfileAccountSection: View {
                     title: localization.t("profile.verifyEmail"),
                     subtitle: localization.t("profile.verifyEmailDesc"),
                     color: DesignTokens.ErrorColor.e400
-                ) { onAction(.accountSettings) }
+                ) { onAction(.settingsHub(category: .security)) }
             }
 
             if !(profile.phoneVerified ?? false) {
@@ -68,7 +68,7 @@ struct TVProfileAccountSection: View {
                 title: localization.t("profile.householdProfiles"),
                 subtitle: localization.t("profile.householdProfilesDesc"),
                 color: DesignTokens.Secondary.s400
-            ) { onAction(.householdProfiles) }
+            ) { onAction(.household) }
         } header: {
             profileSectionHeader(localization.t("profile.accountSettings"))
         }
@@ -79,7 +79,7 @@ struct TVProfileAccountSection: View {
 
 struct TVProfileInfoSection: View {
     let localization: LocalizationManager
-    let onAction: (ProfileSheet) -> Void
+    let onAction: (TVProfileDestination) -> Void
 
     var body: some View {
         Section {
@@ -88,14 +88,14 @@ struct TVProfileInfoSection: View {
                 title: localization.t("settings.help.title"),
                 subtitle: localization.t("settings.help.subtitle"),
                 color: DesignTokens.Info.default
-            ) { onAction(.help) }
+            ) { onAction(.settingsHub(category: .help)) }
 
             profileActionRow(
                 icon: "info.circle.fill",
                 title: localization.t("settings.about.title"),
                 subtitle: localization.t("profile.aboutDesc"),
                 color: DesignTokens.Info.default
-            ) { onAction(.about) }
+            ) { onAction(.settingsHub(category: .help)) }
         } header: {
             profileSectionHeader(localization.t("profile.info"))
         }

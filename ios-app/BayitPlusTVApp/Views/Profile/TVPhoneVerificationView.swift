@@ -48,8 +48,6 @@ struct TVPhoneVerificationView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
     }
 
     // MARK: - Phone Entry

@@ -182,7 +182,7 @@ extension TVAccountSettingsView {
                     title: localization.t("settings.exportData"),
                     subtitle: localization.t("settings.exportDataDesc"),
                     color: DesignTokens.Info.default
-                ) { navigateTo(.help) }
+                ) { navigateTo(.settingsHub(category: .help)) }
 
                 settingsRow(
                     icon: "trash.fill",

@@ -7,7 +7,7 @@ import SwiftUI
 
 struct TVProfileMyContentSection: View {
     let localization: LocalizationManager
-    let onAction: (ProfileSheet) -> Void
+    let onAction: (TVProfileDestination) -> Void
 
     var body: some View {
         Section {
@@ -21,11 +21,11 @@ struct TVProfileMyContentSection: View {
 
             profileActionRow(icon: "list.bullet", title: localization.t("profile.myPlaylists"),
                              subtitle: localization.t("profile.organizeContent"),
-                             color: DesignTokens.Secondary.s400) { onAction(.watchlist) }
+                             color: DesignTokens.Secondary.s400) { onAction(.playlists) }
 
             profileActionRow(icon: "clock.arrow.circlepath", title: localization.t("profile.viewingHistory"),
                              subtitle: localization.t("profile.seeWhatYouWatched"),
-                             color: DesignTokens.Info.default) { onAction(.viewingHistory) }
+                             color: DesignTokens.Info.default) { onAction(.history) }
 
             profileActionRow(icon: "square.grid.2x2", title: localization.t("nav.widgets"),
                              subtitle: localization.t("profile.widgetsDesc"),
@@ -40,7 +40,7 @@ struct TVProfileMyContentSection: View {
 
 struct TVProfileSocialSection: View {
     let localization: LocalizationManager
-    let onAction: (ProfileSheet) -> Void
+    let onAction: (TVProfileDestination) -> Void
 
     var body: some View {
         Section {

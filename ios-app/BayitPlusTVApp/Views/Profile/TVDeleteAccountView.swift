@@ -91,8 +91,6 @@ struct TVDeleteAccountView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
     }
 
     private func deleteAccount() async {

@@ -7322,6 +7322,10 @@
       "boldText": "Bold Text",
       "closedCaptions": "Closed Captions",
       "colorBlind": "Color Blind Mode",
+      "colorBlindNone": "None",
+      "protanopia": "Protanopia (Red-Green)",
+      "deuteranopia": "Deuteranopia (Green-Red)",
+      "tritanopia": "Tritanopia (Blue-Yellow)",
       "description": "Customize your viewing experience",
       "display": "Display",
       "highContrast": "High Contrast",
@@ -7354,8 +7358,10 @@
       "passwordChanged": "Password changed successfully",
       "accountSecurity": "Account Security",
       "devices": "Devices",
+      "deviceCount": "%d devices",
       "noDevices": "No active devices",
-      "unknownDevice": "Unknown Device"
+      "unknownDevice": "Unknown Device",
+      "changePasswordDesc": "Update your password"
     },
     "aiFeatures": {
       "title": "AI Features",
@@ -7384,7 +7390,15 @@
         "hard": "Hard",
         "mixed": "Mixed",
         "categories": "Categories",
-        "stats": "Your Stats"
+        "stats": "Your Stats",
+        "frequencyRare": "Rare",
+        "frequencyNormal": "Normal",
+        "frequencyFrequent": "Frequent",
+        "categoryCast": "Cast",
+        "categoryProduction": "Production",
+        "categoryHistorical": "Historical",
+        "categoryCultural": "Cultural",
+        "categoryFun": "Fun Facts"
       },
       "betaToggles": "Beta Feature Toggles",
       "betaEnrolled": "Enrolled in Beta Program",
@@ -7436,6 +7450,10 @@
       "dubbing": "Dubbing",
       "processing": "Processing",
       "quality": "Audio Quality",
+      "qualityAuto": "Auto",
+      "qualityHigh": "High",
+      "qualityMedium": "Medium",
+      "qualityLow": "Low",
       "volumeNormDesc": "Normalize volume across content"
     },
     "notificationSettings": {
@@ -11953,7 +11971,11 @@
     "plan": "Plan",
     "renewsOn": "Renews on",
     "status": "Status",
-    "transactions": "Transaction History"
+    "transactions": "Transaction History",
+    "title": "Billing & Subscriptions",
+    "subtitle": "Manage your plan and payment methods.",
+    "paymentMethod": "Payment Method",
+    "managedVia": "Managed via"
   },
   "biometric": {
     "authenticate": "Authenticate",

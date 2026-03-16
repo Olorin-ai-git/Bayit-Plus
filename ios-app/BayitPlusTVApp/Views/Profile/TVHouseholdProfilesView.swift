@@ -22,22 +22,17 @@ struct TVHouseholdProfilesView: View {
     let maxSlots = 5
 
     var body: some View {
-        ZStack {
-            DesignTokens.Background.primary.ignoresSafeArea()
-
-            Group {
-                if isLoading {
-                    loadingView
-                } else if let error {
-                    errorView(error)
-                } else if let household {
-                    householdContentView(household)
-                } else {
-                    noHouseholdView
-                }
+        Group {
+            if isLoading {
+                loadingView
+            } else if let error {
+                errorView(error)
+            } else if let household {
+                householdContentView(household)
+            } else {
+                noHouseholdView
             }
         }
-        .onExitCommand { onDismiss() }
         .task { await loadHousehold() }
         .fullScreenCover(isPresented: $showingInvite) {
             inviteSheet

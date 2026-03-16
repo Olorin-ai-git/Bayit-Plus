@@ -88,8 +88,6 @@ struct TVEditProfileView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
         .task {
             nameFieldFocused = true
         }

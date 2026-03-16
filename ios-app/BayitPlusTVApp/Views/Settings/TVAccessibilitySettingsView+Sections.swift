@@ -98,7 +98,7 @@ extension TVAccessibilitySettingsView {
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 ForEach(ColorBlindMode.allCases) { mode in
                     GlassButton(
-                        mode.displayName,
+                        localization.t(mode.i18nKey),
                         variant: vm.colorBlindMode == mode
                             ? .primary : .ghost,
                         size: .medium

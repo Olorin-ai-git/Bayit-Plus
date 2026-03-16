@@ -8,6 +8,7 @@
     /// Users navigate back via the Siri Remote Menu button.
     struct TVBreadcrumbBar: View {
         @Environment(TVNavigationCoordinator.self) private var coordinator
+        @Environment(\.dismiss) private var dismiss
 
         var body: some View {
             let trail = coordinator.currentBreadcrumbs
@@ -15,6 +16,8 @@
             let tabIcon = coordinator.selectedTab.iconName
 
             HStack(spacing: TVDesignTokens.Spacing.sm) {
+                backButton
+
                 tabRootLabel(title: tabTitle, icon: tabIcon)
 
                 ForEach(Array(trail.enumerated()), id: \.element.id) { index, entry in
@@ -34,7 +37,18 @@
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
             .padding(.vertical, TVDesignTokens.Spacing.md)
             .background(DesignTokens.Glass.bg)
-            .focusable(false)
+        }
+
+        private var backButton: some View {
+            Button { dismiss() } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(Circle())
+            }
+            .tvCardStyle()
         }
 
         private func tabRootLabel(title: String, icon: String) -> some View {

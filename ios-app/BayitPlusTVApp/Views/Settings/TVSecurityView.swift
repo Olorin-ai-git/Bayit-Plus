@@ -42,15 +42,25 @@
         @FocusState private var sidebarFocus: SecuritySection?
 
         var body: some View {
-            HStack(spacing: 0) {
-                sidebar
-                    .frame(width: 320)
-                Divider()
-                    .background(Color.white.opacity(0.08))
-                contentPanel
-                    .frame(maxWidth: .infinity)
+            ZStack {
+                DesignTokens.Background.primary.ignoresSafeArea()
+                RadialGradient(
+                    colors: [DesignTokens.Primary.p600.opacity(0.65), Color.clear],
+                    center: UnitPoint(x: 0.05, y: 0.2),
+                    startRadius: 0,
+                    endRadius: 920
+                )
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+                HStack(spacing: 0) {
+                    sidebar
+                        .frame(width: 340)
+                    Divider()
+                        .background(Color.white.opacity(0.08))
+                    contentPanel
+                        .frame(maxWidth: .infinity)
+                }
             }
-            .background(DesignTokens.Background.primary)
             .task {
                 if viewModel == nil {
                     viewModel = SecurityViewModel(repository: repos.settings, localization: localization)
@@ -69,13 +79,13 @@
 
         private var sidebar: some View {
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 8) {
+                VStack(spacing: 10) {
                     ForEach(SecuritySection.allCases) { section in
                         sidebarItem(section)
                     }
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, 48)
+                .padding(.vertical, 56)
             }
         }
 
@@ -86,20 +96,23 @@
                     Image(systemName: section.icon)
                         .font(.system(size: 22, weight: .medium))
                         .foregroundStyle(isSelected ? DesignTokens.Primary.p400 : DesignTokens.Text.secondary)
-                        .frame(width: 28)
+                        .frame(width: 30)
                     Text(section.label(localization))
                         .font(.system(size: 26, weight: isSelected ? .semibold : .regular))
                         .foregroundStyle(isSelected ? DesignTokens.Text.primary : DesignTokens.Text.secondary)
                     Spacer(minLength: 0)
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, 20)
+                .padding(.vertical, 22)
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(isSelected ? DesignTokens.Primary.p400.opacity(0.12) : Color.clear)
+                        .fill(isSelected ? DesignTokens.Primary.p700.opacity(0.18) : DesignTokens.Glass.bgLight)
                         .overlay(
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .stroke(isSelected ? DesignTokens.Primary.p400.opacity(0.5) : Color.clear, lineWidth: 1.5)
+                                .stroke(
+                                    isSelected ? DesignTokens.Primary.p400.opacity(0.6) : Color.white.opacity(0.07),
+                                    lineWidth: 1.5
+                                )
                         )
                 )
             }

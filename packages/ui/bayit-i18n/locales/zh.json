@@ -5914,8 +5914,17 @@
     },
     "basic": {
       "name": "免费",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -11948,7 +11957,11 @@
     "plan": "计划",
     "renewsOn": "续订日期",
     "status": "状态",
-    "transactions": "交易记录"
+    "transactions": "交易记录",
+    "title": "账单与订阅",
+    "subtitle": "管理您的套餐和付款方式。",
+    "paymentMethod": "付款方式",
+    "managedVia": "通过以下方式管理"
   },
   "biometric": {
     "authenticate": "认证",

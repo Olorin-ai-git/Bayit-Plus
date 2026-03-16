@@ -15,26 +15,17 @@ struct TVActiveSessionsView: View {
     @State private var error: String?
 
     var body: some View {
-        VStack(spacing: 0) {
-            TVProfileSheetHeader(
-                title: localization.t("profile.connectedDevices"),
-                onDismiss: onDismiss
-            )
-
-            Group {
-                if isLoading {
-                    loadingView
-                } else if let error {
-                    errorView(error)
-                } else if devices.isEmpty {
-                    emptyView
-                } else {
-                    deviceListView
-                }
+        Group {
+            if isLoading {
+                loadingView
+            } else if let error {
+                errorView(error)
+            } else if devices.isEmpty {
+                emptyView
+            } else {
+                deviceListView
             }
         }
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
         .task { await loadDevices() }
     }
 

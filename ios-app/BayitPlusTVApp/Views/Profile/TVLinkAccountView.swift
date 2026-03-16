@@ -22,23 +22,13 @@ struct TVLinkAccountView: View {
     @State private var error: String?
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if isLoading {
-                    loadingView
-                } else {
-                    contentView
-                }
-            }
-            .navigationTitle(localization.t("settings.linkedAccounts"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(localization.t("common.done")) { onDismiss() }
-                }
+        Group {
+            if isLoading {
+                loadingView
+            } else {
+                contentView
             }
         }
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
         .task { await loadLinkedProviders() }
     }
 

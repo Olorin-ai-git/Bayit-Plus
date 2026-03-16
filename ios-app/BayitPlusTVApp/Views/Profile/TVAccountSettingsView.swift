@@ -10,7 +10,7 @@ struct TVAccountSettingsView: View {
     let profile: ProfileResponse
     let viewModel: ProfileViewModel
     let onDismiss: () -> Void
-    let onNavigate: (ProfileSheet) -> Void
+    let onNavigate: (TVProfileDestination) -> Void
 
     @State var emailVerificationSent = false
 
@@ -78,7 +78,7 @@ struct TVAccountSettingsView: View {
 
     // MARK: - Helpers
 
-    func navigateTo(_ sheet: ProfileSheet) {
+    func navigateTo(_ sheet: TVProfileDestination) {
         onDismiss()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             onNavigate(sheet)

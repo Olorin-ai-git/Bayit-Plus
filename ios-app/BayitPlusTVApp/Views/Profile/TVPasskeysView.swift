@@ -16,24 +16,14 @@ struct TVPasskeysView: View {
     @State private var error: String?
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: TVDesignTokens.Spacing.xxxl) {
-                    headerSection
-                    infoSection
-                    devicesSection
-                }
-                .padding(TVDesignTokens.Spacing.xl)
+        ScrollView {
+            VStack(spacing: TVDesignTokens.Spacing.xxxl) {
+                headerSection
+                infoSection
+                devicesSection
             }
-            .navigationTitle(localization.t("profile.twoFactorAuth"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(localization.t("common.done")) { onDismiss() }
-                }
-            }
+            .padding(TVDesignTokens.Spacing.xl)
         }
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
         .task { await loadDevices() }
     }
 

@@ -5920,7 +5920,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Plus",
@@ -11953,7 +11957,11 @@
     "plan": "Plan",
     "renewsOn": "Se renueva el",
     "status": "Estado",
-    "transactions": "Historial de transacciones"
+    "transactions": "Historial de transacciones",
+    "title": "Facturación y suscripciones",
+    "subtitle": "Gestiona tu plan y métodos de pago.",
+    "paymentMethod": "Método de pago",
+    "managedVia": "Gestionado a través de"
   },
   "biometric": {
     "authenticate": "Autenticar",

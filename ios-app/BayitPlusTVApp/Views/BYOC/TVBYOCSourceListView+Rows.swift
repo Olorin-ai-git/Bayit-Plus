@@ -15,28 +15,36 @@
         var sourceGrid: some View {
             LazyVGrid(columns: gridColumns, spacing: TVDesignTokens.Spacing.lg) {
                 sourceCard(
-                    assetName: "byoc-youtube",
+                    icon: "play.fill",
+                    iconColor: .white,
+                    iconBg: Color(red: 0.8, green: 0, blue: 0),
                     title: localization.t("byoc.youtube"),
                     subtitle: localization.t("byoc.youtubeConnectDesc"),
                     type: .youtube
                 ) { showAddYouTube = true }
 
                 sourceCard(
-                    assetName: "byoc-iptv",
+                    icon: "wifi",
+                    iconColor: DesignTokens.Primary.p400,
+                    iconBg: DesignTokens.Primary.p700.opacity(0.35),
                     title: localization.t("byoc.iptv"),
                     subtitle: localization.t("byoc.iptvConnectDesc"),
                     type: .iptv
                 ) { showAddIPTV = true }
 
                 sourceCard(
-                    assetName: "byoc-xtream",
+                    icon: "display",
+                    iconColor: DesignTokens.Primary.p400,
+                    iconBg: DesignTokens.Primary.p700.opacity(0.35),
                     title: localization.t("byoc.addXtream"),
                     subtitle: localization.t("byoc.xtreamConnectDesc"),
                     type: .xtream
                 ) { showAddXtream = true }
 
                 sourceCard(
-                    assetName: "byoc-plex",
+                    icon: "chevron.right",
+                    iconColor: Color(red: 0.9, green: 0.63, blue: 0.05),
+                    iconBg: Color(white: 0.12),
                     title: localization.t("byoc.plex.label"),
                     subtitle: localization.t("byoc.plexConnectDesc"),
                     type: .plex
@@ -45,7 +53,9 @@
         }
 
         private func sourceCard(
-            assetName: String,
+            icon: String,
+            iconColor: Color,
+            iconBg: Color,
             title: String,
             subtitle: String,
             type: BYOCSourceType,
@@ -53,72 +63,55 @@
         ) -> some View {
             let isConnected = connectedTypes.contains(type)
             return Button(action: action) {
-                VStack(alignment: .leading, spacing: 0) {
-                    ZStack(alignment: .topTrailing) {
-                        Image(assetName)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 160)
-                            .clipped()
-                            .overlay(
-                                LinearGradient(
-                                    stops: [
-                                        .init(color: .clear, location: 0.4),
-                                        .init(color: Color.black.opacity(0.55), location: 1.0),
-                                    ],
-                                    startPoint: .top, endPoint: .bottom
-                                )
-                            )
-
-                        if isConnected {
-                            connectedBadge
-                                .padding(14)
-                        }
+                HStack(spacing: TVDesignTokens.Spacing.lg) {
+                    ZStack {
+                        Circle()
+                            .fill(iconBg)
+                            .frame(width: 80, height: 80)
+                        Image(systemName: icon)
+                            .font(.system(size: 30, weight: .semibold))
+                            .foregroundStyle(iconColor)
                     }
-                    .clipShape(UnevenRoundedRectangle(
-                        topLeadingRadius: 16, bottomLeadingRadius: 0,
-                        bottomTrailingRadius: 0, topTrailingRadius: 16
-                    ))
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text(title)
-                            .font(.system(size: 26, weight: .bold))
+                            .font(.system(size: 28, weight: .bold))
                             .foregroundStyle(DesignTokens.Text.primary)
                         Text(subtitle)
                             .font(.system(size: 20))
                             .foregroundStyle(DesignTokens.Text.secondary)
                             .lineLimit(2)
-                        Spacer(minLength: 8)
+                        Spacer(minLength: 4)
                         if isConnected {
                             manageLabel
                         } else {
                             addLabel
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Spacer(minLength: 0)
+
+                    if isConnected {
+                        connectedBadge
+                    }
                 }
+                .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                .padding(.vertical, TVDesignTokens.Spacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
                     isConnected
                         ? DesignTokens.Success.default.opacity(0.07)
                         : DesignTokens.Glass.bg
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                         .stroke(
                             isConnected
                                 ? DesignTokens.Success.default.opacity(0.4)
                                 : Color.white.opacity(0.08),
                             lineWidth: isConnected ? 1.5 : 1
                         )
-                )
-                .shadow(
-                    color: isConnected
-                        ? DesignTokens.Success.default.opacity(0.12)
-                        : Color.clear,
-                    radius: 16, x: 0, y: 4
                 )
             }
             .tvCardStyle()
@@ -141,9 +134,9 @@
         private var addLabel: some View {
             HStack(spacing: 5) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                 Text(localization.t("byoc.addButton"))
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold))
             }
             .foregroundStyle(DesignTokens.Primary.p400)
         }
@@ -151,9 +144,9 @@
         private var manageLabel: some View {
             HStack(spacing: 5) {
                 Image(systemName: "slider.horizontal.3")
-                    .font(.system(size: 16))
+                    .font(.system(size: 18))
                 Text(localization.t("byoc.manageSource"))
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold))
             }
             .foregroundStyle(DesignTokens.Success.default)
         }

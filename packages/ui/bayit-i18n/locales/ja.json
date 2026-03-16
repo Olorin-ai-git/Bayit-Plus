@@ -11939,7 +11939,11 @@
     "plan": "プラン",
     "renewsOn": "更新日",
     "status": "ステータス",
-    "transactions": "取引履歴"
+    "transactions": "取引履歴",
+    "title": "請求とサブスクリプション",
+    "subtitle": "プランとお支払い方法を管理します。",
+    "paymentMethod": "支払い方法",
+    "managedVia": "経由で管理"
   },
   "biometric": {
     "authenticate": "認証",

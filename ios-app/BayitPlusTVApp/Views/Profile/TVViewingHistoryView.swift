@@ -17,12 +17,12 @@ struct TVViewingHistoryView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TVProfileSheetHeader(
-                title: localization.t("profile.viewingHistory"),
-                onDismiss: onDismiss
-            ) {
+            HStack {
+                Spacer()
                 filterPicker
             }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
 
             Group {
                 if isLoading {
@@ -36,8 +36,6 @@ struct TVViewingHistoryView: View {
                 }
             }
         }
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
         .task { await loadHistory() }
     }
 

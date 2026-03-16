@@ -87,8 +87,6 @@ struct TVAvatarPickerView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(DesignTokens.Background.primary)
-        .onExitCommand { onDismiss() }
     }
 
     private var gradientPicker: some View {
