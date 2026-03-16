@@ -145,6 +145,8 @@
                 accountPanel
             case .preferences:
                 preferencesPanel
+            case .playback:
+                playbackPanel
             case .security:
                 securityPanel
             case .social:
@@ -162,6 +164,7 @@
             switch self {
             case .account: return "person.circle"
             case .preferences: return "slider.horizontal.3"
+            case .playback: return "play.circle"
             case .security: return "shield.lefthalf.filled"
             case .social: return "person.2.circle"
             case .help: return "questionmark.circle"
@@ -172,6 +175,7 @@
             switch self {
             case .account: return loc.t("settings.account")
             case .preferences: return loc.t("settings.preferences")
+            case .playback: return loc.t("settings.playback.title")
             case .security: return loc.t("settings.security.title")
             case .social: return loc.t("settings.social")
             case .help: return loc.t("settings.help.title")

@@ -49,28 +49,33 @@
             signOutButton
         }
 
-        // MARK: - Preferences (includes Playback)
+        // MARK: - Preferences
 
         @ViewBuilder
         var preferencesPanel: some View {
             hubGlassNavRow(
                 icon: "globe",
-                title: localization.t("settings.language")
+                title: localization.t("settings.language"),
+                detail: localization.currentLanguage.displayName
             ) { TVLanguageSettingsView() }
 
             hubGlassNavRow(
                 icon: "bell.badge",
-                title: localization.t("settings.notifications")
+                title: localization.t("settings.notifications"),
+                detail: localization.t("common.on")
             ) { TVNotificationSettingsView() }
 
             hubGlassNavRow(
                 icon: "speaker.wave.2",
-                title: localization.t("settings.audio.title")
+                title: localization.t("settings.audio.title"),
+                subtitle: localization.t("settings.audio.description"),
+                detail: localization.currentLanguage.displayName
             ) { TVAudioSettingsView() }
 
             hubGlassNavRow(
                 icon: "accessibility",
-                title: localization.t("settings.accessibility.title")
+                title: localization.t("settings.accessibility.title"),
+                detail: localization.t("common.off")
             ) { TVAccessibilitySettingsView() }
 
             if let vm = viewModel {
@@ -86,10 +91,73 @@
                     Task { await vm.updateAutoplay(newValue) }
                 }
 
+                hubGlassNavRow(
+                    icon: "sparkles",
+                    title: localization.t("settings.trivia.title"),
+                    subtitle: localization.t(
+                        "settings.aiFeatures.trivia.autoShow"
+                    ),
+                    detail: localization.t("common.on")
+                ) { TVTriviaSettingsView() }
+
                 hubGlassToggleRow(
                     title: localization.t("settings.interactiveMoments"),
+                    subtitle: localization.t(
+                        "settings.interactiveMomentsDesc"
+                    ),
                     isOn: Bindable(vm).subtitles
                 ) { _ in }
+            }
+        }
+
+        // MARK: - Playback
+
+        @ViewBuilder
+        var playbackPanel: some View {
+            if let vm = viewModel {
+                hubGlassNavRow(
+                    icon: "film",
+                    title: localization.t("settings.playback.videoQuality"),
+                    detail: localization.t(
+                        "settings.playback.qualityAuto"
+                    )
+                ) { TVSubtitleSettingsView() }
+
+                hubGlassToggleRow(
+                    title: localization.t(
+                        "settings.playback.autoplayNext"
+                    ),
+                    isOn: Bindable(vm).autoplay
+                ) { newValue in
+                    Task { await vm.updateAutoplay(newValue) }
+                }
+
+                hubGlassToggleRow(
+                    title: localization.t("settings.playback.pip"),
+                    isOn: Bindable(vm).subtitles
+                ) { _ in }
+
+                hubGlassToggleRow(
+                    title: localization.t(
+                        "settings.playback.backgroundAudio"
+                    ),
+                    isOn: Bindable(vm).subtitles
+                ) { _ in }
+
+                hubGlassNavRow(
+                    icon: "captions.bubble",
+                    title: localization.t(
+                        "settings.subtitleSettings.title"
+                    )
+                ) { TVSubtitleSettingsView() }
+
+                hubGlassNavRow(
+                    icon: "gauge.with.needle",
+                    title: localization.t(
+                        "settings.playback.playbackSpeed"
+                    ),
+                    detail: "1.0x"
+                ) { TVSubtitleSettingsView() }
             }
         }
 
@@ -97,6 +165,8 @@
 
         @ViewBuilder
         var securityPanel: some View {
+            securitySectionHeader(localization.t("settings.security.title"))
+
             hubGlassActionRow(
                 icon: "key",
                 title: localization.t("profile.changePassword"),
@@ -105,14 +175,11 @@
                 )
             ) { navigationPath.append(.changePassword) }
 
-            hubGlassNavRow(
+            hubGlassNavRowWithBadge(
                 icon: "shield.lefthalf.filled",
-                title: localization.t(
-                    "settings.security.twoFactorAuth"
-                ),
-                subtitle: localization.t(
-                    "settings.security.twoFactorDesc"
-                )
+                title: localization.t("profile.twoFactorAuth"),
+                badgeText: localization.t("settings.enabled"),
+                badgeColor: DesignTokens.Success.default
             ) { TVSecurityView() }
 
             hubGlassActionRow(
@@ -121,23 +188,128 @@
                 subtitle: nil
             ) { navigationPath.append(.activeSessions) }
 
-            hubGlassNavRow(
-                icon: "hand.raised",
-                title: localization.t("settings.privacy.title"),
-                subtitle: localization.t("settings.privacy.description")
-            ) { TVPrivacySettingsView() }
+            securitySectionHeader(localization.t("settings.linkedAccounts"))
+
+            if let email = authManager.user?.email {
+                hubGlassRowWithStatus(
+                    icon: "envelope.fill",
+                    title: localization.t("settings.email"),
+                    subtitle: email,
+                    isConnected: true
+                )
+            }
+
+            hubGlassRowWithStatus(
+                icon: "g.circle.fill",
+                title: "Google",
+                subtitle: localization.t("settings.notConnected"),
+                isConnected: false
+            )
+
+            hubGlassRowWithStatus(
+                icon: "apple.logo",
+                title: "Apple",
+                subtitle: localization.t("settings.notConnected"),
+                isConnected: false
+            )
 
             hubGlassActionRow(
                 icon: "link.circle",
-                title: localization.t("settings.connectedAccounts"),
+                title: localization.t("profile.linkAccount"),
                 subtitle: nil
-            ) { navigationPath.append(.connectedAccounts) }
+            ) { navigationPath.append(.linkAccount) }
+        }
 
-            hubGlassActionRow(
-                icon: "person.badge.key",
-                title: localization.t("profile.passkeys"),
-                subtitle: nil
-            ) { navigationPath.append(.passkeys) }
+        private func securitySectionHeader(_ title: String) -> some View {
+            Text(title.uppercased())
+                .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
+                .foregroundStyle(DesignTokens.Primary.p400)
+                .kerning(1.2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, TVDesignTokens.Spacing.md)
+        }
+
+        func hubGlassNavRowWithBadge<Dest: View>(
+            icon: String,
+            title: String,
+            badgeText: String,
+            badgeColor: Color,
+            @ViewBuilder destination: () -> Dest
+        ) -> some View {
+            NavigationLink {
+                destination().tvBreadcrumb(title, icon: icon)
+            } label: {
+                HStack(spacing: 16) {
+                    Image(systemName: icon)
+                        .font(.system(size: 26, weight: .medium))
+                        .foregroundStyle(DesignTokens.Primary.p400)
+                        .frame(width: 36)
+                    Text(title)
+                        .font(.system(size: 28, weight: .medium))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                    Spacer()
+                    Text(badgeText)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 4)
+                        .background(badgeColor)
+                        .clipShape(Capsule())
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                .padding(.horizontal, 28)
+                .frame(minHeight: 76)
+                .background(hubRowBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .overlay(hubRowBorder)
+            }
+            .tvCardStyle()
+        }
+
+        func hubGlassRowWithStatus(
+            icon: String,
+            title: String,
+            subtitle: String,
+            isConnected: Bool
+        ) -> some View {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.system(size: 26, weight: .medium))
+                    .foregroundStyle(
+                        isConnected
+                            ? DesignTokens.Text.primary
+                            : DesignTokens.Text.muted
+                    )
+                    .frame(width: 36)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 28, weight: .medium))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                    Text(subtitle)
+                        .font(.system(size: 22))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                Spacer()
+                if isConnected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(DesignTokens.Success.default)
+                } else {
+                    Text(localization.t("settings.notConnected"))
+                        .font(.system(size: 22))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+            }
+            .padding(.horizontal, 28)
+            .frame(minHeight: 76)
+            .background(hubRowBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(hubRowBorder)
         }
 
         // MARK: - Social

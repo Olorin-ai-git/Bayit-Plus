@@ -7,6 +7,7 @@
     enum TVSettingsCategory: String, CaseIterable, Hashable {
         case account
         case preferences
+        case playback
         case security
         case social
         case help

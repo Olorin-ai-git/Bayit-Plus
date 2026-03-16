@@ -3733,6 +3733,8 @@
     "add": "Add",
     "enabled": "Enabled",
     "disabled": "Disabled",
+    "on": "On",
+    "off": "Off",
     "invalidDate": "Invalid Date",
     "appName": "Bayit+",
     "appVersion": "🏠 Bayit+ v1.0.0",
@@ -7338,6 +7340,14 @@
       "title": "Accessibility"
     },
     "signOut": "Sign Out",
+    "trivia": {
+      "title": "Trivia & Fun Facts"
+    },
+    "enabled": "Enabled",
+    "email": "Email",
+    "notConnected": "Not connected",
+    "linkedAccounts": "Linked Accounts",
+    "interactiveMomentsDesc": "Enable interactive features",
     "security": {
       "title": "Security",
       "changePassword": "Change Password",
