@@ -104,6 +104,7 @@ internal fun LoginScreen(
                 },
                 label = bayitString("login.password"),
                 enabled = !isLoading,
+                isPassword = true,
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.base))
