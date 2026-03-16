@@ -202,12 +202,12 @@ async def get_filter_options():
 async def clear_search_cache(
     current_user: User = Depends(get_current_admin_user),
 ):
-    """Clear the in-memory search cache. Admin only."""
+    """Clear the search cache. Admin only."""
     cache = get_cache()
     stats = cache.get_stats()
-    cache.invalidate()
+    await cache.invalidate()
     logger.info(
         "Search cache cleared by admin",
-        extra={"admin_id": str(current_user.id), "entries_cleared": stats["total_entries"]},
+        extra={"admin_id": str(current_user.id)},
     )
     return {"cleared": stats["total_entries"]}

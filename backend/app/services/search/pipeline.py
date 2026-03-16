@@ -79,7 +79,7 @@ class SearchPipelineService:
         )
 
         if not no_cache:
-            cached = self._cache.get_cached_results(query, cache_key_data)
+            cached = await self._cache.get_cached_results(query, cache_key_data)
             if cached:
                 cached["cache_hit"] = True
                 return SearchResults(**cached)
@@ -122,7 +122,7 @@ class SearchPipelineService:
         )
 
         # Cache
-        self._cache.cache_results(query, cache_key_data, result.model_dump())
+        await self._cache.cache_results(query, cache_key_data, result.model_dump())
 
         logger.info(
             "Search pipeline completed",
