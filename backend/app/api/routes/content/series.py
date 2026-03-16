@@ -95,30 +95,41 @@ async def list_all_series(
             }
         ]
 
-    items = await Content.find(filters).skip(skip).limit(limit).to_list()
-    total = await Content.find(filters).count()
+    # Single $facet aggregation for both data and count (avoids double collection scan)
+    collection = Content.get_settings().pymongo_collection
+    pipeline = [
+        {"$match": filters},
+        {"$facet": {
+            "items": [{"$skip": skip}, {"$limit": limit}],
+            "count": [{"$count": "total"}],
+        }},
+    ]
+    cursor = collection.aggregate(pipeline)
+    facet_result = await cursor.to_list(length=1)
+    raw_items = facet_result[0]["items"] if facet_result else []
+    total = facet_result[0]["count"][0]["total"] if facet_result and facet_result[0]["count"] else 0
 
     return {
         "items": [
             {
-                "id": str(item.id),
-                "title": item.title,
-                "description": item.description,
-                "thumbnail": item.thumbnail or item.poster_url,
-                "backdrop": item.backdrop,
-                "category": item.category_name,
-                "year": item.year,
-                "total_episodes": item.total_episodes,
-                "total_seasons": item.total_seasons,
+                "id": str(item["_id"]),
+                "title": item.get("title"),
+                "description": item.get("description"),
+                "thumbnail": item.get("thumbnail") or item.get("poster_url"),
+                "backdrop": item.get("backdrop"),
+                "category": item.get("category_name"),
+                "year": item.get("year"),
+                "total_episodes": item.get("total_episodes"),
+                "total_seasons": item.get("total_seasons"),
                 "type": "series",
                 "is_series": True,
-                "available_subtitle_languages": item.available_subtitle_languages or [],
+                "available_subtitle_languages": item.get("available_subtitle_languages") or [],
                 "has_subtitles": bool(
-                    item.available_subtitle_languages
-                    and len(item.available_subtitle_languages) > 0
+                    item.get("available_subtitle_languages")
+                    and len(item.get("available_subtitle_languages", [])) > 0
                 ),
             }
-            for item in items
+            for item in raw_items
         ],
         "total": total,
         "page": page,
