@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, Request, Header
 
 from app.api.routes.content.utils import is_series_content
 from app.api.routes.content_taxonomy import _get_legacy_category_mapping
+from app.core.config import settings
 from app.core.redis_client import get_redis_client
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content, Podcast
@@ -252,7 +253,7 @@ async def get_featured(
     """
     start_time = time.time()
 
-    # Redis cache: return cached response if available (120s TTL)
+    # Redis cache: return cached response if available
     user_id = str(current_user.id) if current_user else "anon"
     cache_key = f"content:featured:v1:{user_id}:{x_user_city or ''}:{x_user_state or ''}"
     redis = await get_redis_client()
@@ -796,7 +797,7 @@ async def get_featured(
         "categories": category_data,
     }
 
-    # Cache the full response in Redis (120s TTL)
-    await redis.set_with_ttl(cache_key, response, 120)
+    # Cache the full response in Redis
+    await redis.set_with_ttl(cache_key, response, settings.FEATURED_CACHE_TTL_SECONDS)
 
     return response

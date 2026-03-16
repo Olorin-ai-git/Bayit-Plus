@@ -113,6 +113,10 @@ class AsyncRedisClient:
         if not self._client:
             await self.connect()
 
+        # Return None if Redis is unavailable (non-blocking)
+        if not self._client:
+            return None
+
         try:
             value = await self._client.get(key)
             return json.loads(value) if value else None

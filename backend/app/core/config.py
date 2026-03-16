@@ -1291,6 +1291,9 @@ class Settings(BaseSettings):
     SEARCH_TRENDING_LIMIT: int = 10  # Default trending searches count
     SEARCH_TRENDING_DAYS: int = 7  # Days window for trending computation
 
+    # Featured content cache TTL (seconds) - used by Redis cache service
+    FEATURED_CACHE_TTL_SECONDS: int = 120
+
     # Audiobook cache TTL (seconds) - used by Redis cache service
     AUDIOBOOK_LIST_CACHE_TTL_SECONDS: int = 120
     AUDIOBOOK_AUTHORS_CACHE_TTL_SECONDS: int = 300
