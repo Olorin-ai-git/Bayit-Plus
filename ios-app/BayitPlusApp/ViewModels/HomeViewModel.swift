@@ -102,8 +102,11 @@ final class HomeViewModel {
         isLoading = true
         error = nil
 
+        async let featuredTask = contentRepo.fetchFeatured()
+        async let sectionsTask: Void = loadAdditionalSections()
+
         do {
-            let response = try await contentRepo.fetchFeatured()
+            let response = try await featuredTask
             hero = response.hero
             spotlight = response.spotlight
             categories = response.categories
@@ -115,8 +118,8 @@ final class HomeViewModel {
             }
         }
 
+        await sectionsTask
         isLoading = false
-        await loadAdditionalSections()
     }
 
     @MainActor
@@ -124,8 +127,11 @@ final class HomeViewModel {
         error = nil
         isLoading = true
 
+        async let featuredTask = contentRepo.fetchFeatured()
+        async let sectionsTask: Void = loadAdditionalSections()
+
         do {
-            let response = try await contentRepo.fetchFeatured()
+            let response = try await featuredTask
             hero = response.hero
             spotlight = response.spotlight
             categories = response.categories
@@ -137,8 +143,8 @@ final class HomeViewModel {
             }
         }
 
+        await sectionsTask
         isLoading = false
-        await loadAdditionalSections()
     }
 
     /// Refresh only the continue watching section (called when player is dismissed)
