@@ -36,13 +36,13 @@
                 )
 
                 TabView(selection: $coord.selectedTab) {
-                    TVSearchView()
-                        .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
-                        .tag(TVTab.search)
-
                     TVHomeView()
                         .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
                         .tag(TVTab.home)
+
+                    TVSearchView()
+                        .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
+                        .tag(TVTab.search)
 
                     if prefs.showLiveTV {
                         TVLiveTVView()

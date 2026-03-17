@@ -40,6 +40,15 @@ final class TVOnboardingPreferences {
         set { UserDefaults.standard.set(newValue, forKey: key(for: .byocBannerDismissed)) }
     }
 
+    var homepageStyle: String {
+        get { string(for: .homepageStyle) ?? "classic" }
+        set { set(newValue, for: .homepageStyle) }
+    }
+
+    var isCinematicHome: Bool {
+        homepageStyle == "cinematic"
+    }
+
     var isOnboarded: Bool {
         UserDefaults.standard.bool(forKey: key(for: .completed))
     }
@@ -122,6 +131,7 @@ final class TVOnboardingPreferences {
     private enum PrefKey: String {
         case completed, userName, culture, interests
         case contentLanguages, primaryLanguage, byocBannerDismissed
+        case homepageStyle
     }
 
     private func key(for pref: PrefKey) -> String {

@@ -5232,6 +5232,20 @@
     "israeli-movies": "Israeli Movies",
     "israeli-series": "Israeli Series"
   },
+  "cinematic": {
+    "explore": "Explore",
+    "aiBadge": "AI Powered",
+    "aiShowcase": {
+      "title": "Back to the Future",
+      "subtitle": "Experience 19 AI features on your favorite content"
+    },
+    "culture": {
+      "whatsHotSubtitle": "Trending stories and moments from Israel",
+      "jerusalemSubtitle": "Stay connected to the heart of Israel",
+      "telAvivSubtitle": "The pulse of Israeli innovation and culture",
+      "nearMeSubtitle": "Israeli community and businesses near you"
+    }
+  },
   "jerusalem": {
     "title": "Jerusalem Connection",
     "subtitle": "Stay connected to the heart of Israel",
@@ -7605,6 +7619,14 @@
     },
     "chooseLanguage": "Choose Your Language",
     "languageDescription": "Select your preferred language for the app interface",
+    "display": {
+      "title": "Display",
+      "homepageStyle": "Homepage Style",
+      "cinematic": "Cinematic",
+      "cinematicDescription": "Full-screen hero with AI showcase and culture highlights",
+      "classic": "Classic",
+      "classicDescription": "Traditional layout with content rows and categories"
+    },
     "showWidgetsDock": "Widget Dock",
     "showVoiceControlFAB": "Voice Control Button",
     "showFeatureTips": "Show Feature Tips",

@@ -5230,6 +5230,20 @@
     "israeli-movies": "[bn] Israeli Movies",
     "israeli-series": "[bn] Israeli Series"
   },
+  "cinematic": {
+    "explore": "অন্বেষণ করুন",
+    "aiBadge": "AI চালিত",
+    "aiShowcase": {
+      "title": "Back to the Future",
+      "subtitle": "আপনার প্রিয় বিষয়বস্তুতে 19টি AI বৈশিষ্ট্য অনুভব করুন"
+    },
+    "culture": {
+      "whatsHotSubtitle": "ইসরায়েল থেকে ট্রেন্ডিং গল্প এবং মুহূর্ত",
+      "jerusalemSubtitle": "ইসরায়েলের হৃদয়ের সাথে সংযুক্ত থাকুন",
+      "telAvivSubtitle": "ইসরায়েলি উদ্ভাবন এবং সংস্কৃতির স্পন্দন",
+      "nearMeSubtitle": "আপনার কাছে ইসরায়েলি সম্প্রদায় এবং ব্যবসা"
+    }
+  },
   "jerusalem": {
     "title": "জেরুজালেম সংযোগ",
     "subtitle": "ইসরায়েলের হৃদয়ের সাথে সংযুক্ত থাকুন",
@@ -5920,11 +5934,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্লাস",
@@ -7581,6 +7591,14 @@
     },
     "chooseLanguage": "আপনার ভাষা বেছে নিন",
     "languageDescription": "অ্যাপ ইন্টারফেসের জন্য আপনার পছন্দের ভাষা নির্বাচন করুন",
+    "display": {
+      "title": "প্রদর্শন",
+      "homepageStyle": "হোমপেজ স্টাইল",
+      "cinematic": "সিনেমাটিক",
+      "cinematicDescription": "AI শোকেস এবং সাংস্কৃতিক হাইলাইটস সহ ফুল-স্ক্রিন",
+      "classic": "ক্লাসিক",
+      "classicDescription": "বিষয়বস্তু সারি এবং বিভাগ সহ ঐতিহ্যবাহী লেআউট"
+    },
     "showWidgetsDock": "উইজেট ডক",
     "showVoiceControlFAB": "ভয়েস কন্ট্রোল বাটন",
     "showFeatureTips": "ফিচার টিপস দেখান",

@@ -5230,6 +5230,20 @@
     "israeli-movies": "Películas Israelíes",
     "israeli-series": "Series Israelíes"
   },
+  "cinematic": {
+    "explore": "Explorar",
+    "aiBadge": "Potenciado por IA",
+    "aiShowcase": {
+      "title": "Back to the Future",
+      "subtitle": "Experimenta 19 funciones de IA en tu contenido favorito"
+    },
+    "culture": {
+      "whatsHotSubtitle": "Historias y momentos de tendencia de Israel",
+      "jerusalemSubtitle": "Mantente conectado con el corazon de Israel",
+      "telAvivSubtitle": "El pulso de la innovacion y cultura israeli",
+      "nearMeSubtitle": "Comunidad y negocios israelies cerca de ti"
+    }
+  },
   "jerusalem": {
     "title": "Conexión con Jerusalén",
     "subtitle": "Mantente conectado al corazón de Israel",
@@ -5920,11 +5934,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -7581,6 +7591,14 @@
     },
     "chooseLanguage": "Elige tu idioma",
     "languageDescription": "Selecciona tu idioma preferido para la interfaz de la aplicación",
+    "display": {
+      "title": "Pantalla",
+      "homepageStyle": "Estilo de inicio",
+      "cinematic": "Cinematico",
+      "cinematicDescription": "Pantalla completa con IA y cultura",
+      "classic": "Clasico",
+      "classicDescription": "Diseno tradicional con filas de contenido y categorias"
+    },
     "showWidgetsDock": "Barra de widgets",
     "showVoiceControlFAB": "Botón de control de voz",
     "showFeatureTips": "Mostrar consejos",

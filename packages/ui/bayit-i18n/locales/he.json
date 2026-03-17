@@ -5230,6 +5230,20 @@
     "israeli-movies": "סרטים ישראליים",
     "israeli-series": "סדרות ישראליות"
   },
+  "cinematic": {
+    "explore": "גלה",
+    "aiBadge": "מופעל בינה מלאכותית",
+    "aiShowcase": {
+      "title": "Back to the Future",
+      "subtitle": "חווה 19 תכונות AI על התוכן האהוב עליך"
+    },
+    "culture": {
+      "whatsHotSubtitle": "סיפורים ורגעים מובילים מישראל",
+      "jerusalemSubtitle": "הישאר מחובר ללב של ישראל",
+      "telAvivSubtitle": "הדופק של החדשנות והתרבות הישראלית",
+      "nearMeSubtitle": "קהילה ועסקים ישראליים ליד"
+    }
+  },
   "jerusalem": {
     "title": "חיבור לירושלים",
     "subtitle": "הישארו מחוברים ללב של ישראל",
@@ -5920,11 +5934,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -7581,6 +7591,14 @@
     },
     "chooseLanguage": "בחר את השפה שלך",
     "languageDescription": "בחר את השפה המועדפת עליך עבור ממשק האפליקציה",
+    "display": {
+      "title": "תצוגה",
+      "homepageStyle": "סגנון דף הבית",
+      "cinematic": "קולנועי",
+      "cinematicDescription": "מסך מלא עם תצוגת AI ותרבות ישראלית",
+      "classic": "קלאסי",
+      "classicDescription": "תצוגה מסורתית עם שורות תוכן וקטגוריות"
+    },
     "showWidgetsDock": "עגינת ווידג'טים",
     "showVoiceControlFAB": "כפתור שליטה קולית",
     "showFeatureTips": "הצג טיפים לתכונות",

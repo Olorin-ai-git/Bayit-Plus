@@ -5230,6 +5230,20 @@
     "israeli-movies": "Films israéliens",
     "israeli-series": "Séries israéliennes"
   },
+  "cinematic": {
+    "explore": "Explorer",
+    "aiBadge": "Propulse par l'IA",
+    "aiShowcase": {
+      "title": "Back to the Future",
+      "subtitle": "Decouvrez 19 fonctionnalites IA sur votre contenu prefere"
+    },
+    "culture": {
+      "whatsHotSubtitle": "Histoires et moments tendance d'Israel",
+      "jerusalemSubtitle": "Restez connecte au coeur d'Israel",
+      "telAvivSubtitle": "Le pouls de l'innovation et de la culture israelienne",
+      "nearMeSubtitle": "Communaute et entreprises israeliennes pres de chez vous"
+    }
+  },
   "jerusalem": {
     "title": "Connexion Jérusalem",
     "subtitle": "Actualités et culture de la ville sainte",
@@ -7581,6 +7595,14 @@
     },
     "chooseLanguage": "Choisissez votre langue",
     "languageDescription": "Sélectionnez votre langue préférée pour l'interface de l'application",
+    "display": {
+      "title": "Affichage",
+      "homepageStyle": "Style de la page d'accueil",
+      "cinematic": "Cinematique",
+      "cinematicDescription": "Plein ecran avec IA et culture",
+      "classic": "Classique",
+      "classicDescription": "Mise en page traditionnelle avec rangees de contenu"
+    },
     "showWidgetsDock": "Barre de widgets",
     "showVoiceControlFAB": "Bouton de commande vocale",
     "showFeatureTips": "Afficher les conseils",

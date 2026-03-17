@@ -76,7 +76,7 @@ struct TVHomeView: View {
     }
 
     private var homeScrollView: some View {
-        ScrollView(.vertical, showsIndicators: false) {
+        Group {
             if let vm = viewModel {
                 if vm.isLoading && vm.categories.isEmpty {
                     TVSkeletonHomeView()
@@ -84,10 +84,18 @@ struct TVHomeView: View {
                     tvErrorState(error, retryLabel: localization.t("common.retry")) {
                         Task { await vm.refresh() }
                     }
+                } else if prefs.isCinematicHome {
+                    TVCinematicHomeView(viewModel: vm)
                 } else {
-                    contentSections(vm)
+                    classicScrollView(vm)
                 }
             }
+        }
+    }
+
+    private func classicScrollView(_ vm: HomeViewModel) -> some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            contentSections(vm)
         }
     }
 

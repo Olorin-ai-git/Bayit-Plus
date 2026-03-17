@@ -5230,6 +5230,20 @@
     "israeli-movies": "以色列电影",
     "israeli-series": "以色列剧集"
   },
+  "cinematic": {
+    "explore": "探索",
+    "aiBadge": "AI驱动",
+    "aiShowcase": {
+      "title": "Back to the Future",
+      "subtitle": "在您喜爱的内容上体验19项AI功能"
+    },
+    "culture": {
+      "whatsHotSubtitle": "来自以色列的热门故事和时刻",
+      "jerusalemSubtitle": "与以色列的心脏保持连接",
+      "telAvivSubtitle": "以色列创新与文化的脉搏",
+      "nearMeSubtitle": "您身边的以色列社区和企业"
+    }
+  },
   "jerusalem": {
     "title": "耶路撒冷连接",
     "subtitle": "与以色列的心脏保持联系",
@@ -5914,17 +5928,8 @@
     },
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -7581,6 +7586,14 @@
     },
     "chooseLanguage": "选择您的语言",
     "languageDescription": "选择您偏好的应用界面语言",
+    "display": {
+      "title": "显示",
+      "homepageStyle": "主页风格",
+      "cinematic": "影院式",
+      "cinematicDescription": "全屏展示AI功能和文化亮点",
+      "classic": "经典",
+      "classicDescription": "传统布局，包含内容行和分类"
+    },
     "showWidgetsDock": "小组件栏",
     "showVoiceControlFAB": "语音控制按钮",
     "showFeatureTips": "显示功能提示",

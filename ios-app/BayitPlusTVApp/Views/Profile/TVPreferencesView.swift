@@ -8,6 +8,7 @@
 
     private enum PreferencesCategory: String, CaseIterable {
         case language
+        case display
         case playback
         case notifications
         case audioSubtitles
@@ -16,6 +17,7 @@
         var icon: String {
             switch self {
             case .language: return "globe"
+            case .display: return "rectangle.on.rectangle"
             case .playback: return "play.rectangle"
             case .notifications: return "bell"
             case .audioSubtitles: return "speaker.wave.2"
@@ -26,6 +28,7 @@
         func title(_ localization: LocalizationManager) -> String {
             switch self {
             case .language: return localization.t("settings.language")
+            case .display: return localization.t("settings.display.title")
             case .playback: return localization.t("settings.playback.title")
             case .notifications: return localization.t("settings.notificationSettings.title")
             case .audioSubtitles: return localization.t("settings.audio.title")
@@ -38,6 +41,7 @@
 
     struct TVPreferencesView: View {
         @Environment(LocalizationManager.self) var localization
+        @Environment(TVOnboardingPreferences.self) var onboardingPrefs
 
         let preferences: ProfilePreferences?
         let viewModel: ProfileViewModel
@@ -161,6 +165,8 @@
                 switch selectedCategory {
                 case .language:
                     languagePanel
+                case .display:
+                    displayPanel
                 case .playback:
                     playbackPanel
                 case .notifications:
@@ -214,6 +220,96 @@
                                 ? DesignTokens.Text.primary
                                 : DesignTokens.Text.secondary
                         )
+
+                    Spacer()
+
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(
+                    isSelected
+                        ? DesignTokens.Primary.p600.opacity(0.2)
+                        : Color.white.opacity(0.04)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .strokeBorder(
+                            isSelected
+                                ? DesignTokens.Primary.p400.opacity(0.4)
+                                : Color.clear,
+                            lineWidth: 1
+                        )
+                )
+            }
+            .buttonStyle(.plain)
+            .tvCardStyle()
+        }
+
+        // MARK: - Display Panel
+
+        private var displayPanel: some View {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(localization.t("settings.display.homepageStyle"))
+                        .font(.system(
+                            size: TVDesignTokens.FontSize.lg,
+                            weight: .semibold
+                        ))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                        .padding(.bottom, 8)
+
+                    homepageStyleRow(
+                        style: "cinematic",
+                        title: localization.t("settings.display.cinematic"),
+                        subtitle: localization.t("settings.display.cinematicDescription")
+                    )
+
+                    homepageStyleRow(
+                        style: "classic",
+                        title: localization.t("settings.display.classic"),
+                        subtitle: localization.t("settings.display.classicDescription")
+                    )
+                }
+                .padding(.horizontal, 48)
+                .padding(.vertical, 32)
+            }
+        }
+
+        private func homepageStyleRow(
+            style: String,
+            title: String,
+            subtitle: String
+        ) -> some View {
+            let isSelected = onboardingPrefs.homepageStyle == style
+            return Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    onboardingPrefs.homepageStyle = style
+                }
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(title)
+                            .font(.system(
+                                size: TVDesignTokens.FontSize.lg,
+                                weight: isSelected ? .semibold : .regular
+                            ))
+                            .foregroundStyle(
+                                isSelected
+                                    ? DesignTokens.Text.primary
+                                    : DesignTokens.Text.secondary
+                            )
+
+                        Text(subtitle)
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                            .lineLimit(2)
+                    }
 
                     Spacer()
 
