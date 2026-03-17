@@ -169,9 +169,11 @@
                 guard isSelected, !didRestoreLastVisit, let userId = authManager.user?.id else { return }
                 didRestoreLastVisit = true
                 if let saved = coordinator.lastVisitedRouteManager.restore(userId: userId) {
-                    withAnimation {
-                        coordinator.selectedTab = saved.tab
-                        if let route = saved.route {
+                    // Only restore tab + route when there's an active deep link route.
+                    // Without a route, always land on Home so users see the homepage first.
+                    if let route = saved.route {
+                        withAnimation {
+                            coordinator.selectedTab = saved.tab
                             coordinator.fullscreenRoute = route
                         }
                     }
