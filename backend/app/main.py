@@ -5,7 +5,9 @@ This is the main entry point for the FastAPI application.
 All initialization logic is delegated to specialized modules.
 """
 
+import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -144,23 +146,31 @@ async def lifespan(app: FastAPI):
         logger.error(f"Configuration validation failed: {e}", exc_info=True)
         # Continue anyway - configuration warnings are non-fatal
 
-    # Connect to MongoDB (CRITICAL - will retry on failure)
-    try:
-        await connect_to_mongo()
-        # Warm up the connection pool with a ping to pre-establish TCP connections.
-        # Motor creates connections lazily; without this, the first real requests
-        # suffer 7-18s cold-start latency while the pool spins up.
-        database = get_database()
-        await database.command("ping")
-        logger.info("✅ MongoDB connection established (pool warmed)")
-    except Exception as e:
-        logger.error(f"❌ MongoDB connection failed: {e}", exc_info=True)
-        logger.error("Server will start in DEGRADED mode - database operations will fail")
-        # Continue anyway - exception handlers will catch database errors in requests
+    # Connect to MongoDB (CRITICAL - retry with backoff, fail hard if exhausted)
+    max_retries = int(os.getenv("MONGODB_CONNECT_RETRIES", "3"))
+    for attempt in range(1, max_retries + 1):
+        try:
+            await connect_to_mongo()
+            database = get_database()
+            await database.command("ping")
+            logger.info("MongoDB connection established (pool warmed)")
+            break
+        except Exception as e:
+            if attempt < max_retries:
+                wait = 2 ** attempt
+                logger.warning(
+                    "MongoDB connection attempt %d/%d failed, retrying in %ds: %s",
+                    attempt, max_retries, wait, e,
+                )
+                await asyncio.sleep(wait)
+            else:
+                logger.critical(
+                    "MongoDB connection failed after %d attempts: %s",
+                    max_retries, e, exc_info=True,
+                )
+                raise
 
     # Parallelize independent initializations for faster startup
-    import asyncio
-
     async def init_olorin_database():
         """Initialize Olorin database (Phase 2 - separate database if enabled)."""
         try:
@@ -205,8 +215,6 @@ async def lifespan(app: FastAPI):
 
     # Initialize default data (widgets and cultures) in background
     # Don't block server startup - these can initialize after server is ready
-    import asyncio
-
     async def _warm_content_caches():
         """
         Pre-warm slow external-data caches so first mobile clients never hit cold latency.

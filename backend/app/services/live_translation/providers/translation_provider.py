@@ -30,55 +30,71 @@ class TranslationProviderManager:
         self._init_provider()
 
     def _init_provider(self) -> None:
-        """Initialize the translation provider."""
-        if self.provider == "google":
-            if not GOOGLE_AVAILABLE:
-                raise ImportError(
-                    "Google Cloud Translate not installed. "
-                    "Install: pip install google-cloud-translate"
-                )
+        """Initialize translation providers (primary + fallbacks)."""
+        valid_providers = {"google", "openai", "claude"}
+        if self.provider not in valid_providers:
+            raise ValueError(
+                f"Invalid translation provider: {self.provider}. "
+                f"Must be one of {valid_providers}"
+            )
 
-            logger.info("📡 Initializing Google Cloud Translate client...")
+        self._init_google()
+        self._init_openai()
+        self._init_anthropic()
+
+        if self.provider == "google" and not self.translate_client:
+            raise ImportError("Primary provider google failed to initialize")
+        elif self.provider == "openai" and not self.openai_client:
+            raise ImportError("Primary provider openai failed to initialize")
+        elif self.provider == "claude" and not self.anthropic_client:
+            raise ImportError("Primary provider claude failed to initialize")
+
+    def _init_google(self) -> None:
+        """Initialize Google Cloud Translate (best-effort for fallback)."""
+        if not GOOGLE_AVAILABLE:
+            logger.debug("Google Cloud Translate not installed, skipping")
+            return
+        try:
             from google.cloud import translate_v2 as translate
 
             self.translate_client = translate.Client()
-            logger.info("✅ Google Cloud Translate initialized")
+            logger.info("Google Cloud Translate initialized")
+        except Exception as e:
+            logger.warning("Google Cloud Translate init failed: %s", e)
 
-        elif self.provider == "openai":
-            if not OPENAI_AVAILABLE:
-                raise ImportError(
-                    "OpenAI library not installed. Install: pip install openai"
-                )
-
-            if not settings.OPENAI_API_KEY:
-                raise ValueError("OPENAI_API_KEY not configured")
-
-            logger.info("📡 Initializing OpenAI client for translation...")
+    def _init_openai(self) -> None:
+        """Initialize OpenAI client (best-effort for fallback)."""
+        if not OPENAI_AVAILABLE:
+            logger.debug("OpenAI library not installed, skipping")
+            return
+        if not settings.OPENAI_API_KEY:
+            logger.debug("OPENAI_API_KEY not configured, skipping")
+            return
+        try:
             from openai import AsyncOpenAI
 
             self.openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-            logger.info("✅ OpenAI translation initialized (GPT-4o-mini)")
+            logger.info("OpenAI translation initialized")
+        except Exception as e:
+            logger.warning("OpenAI client init failed: %s", e)
 
-        elif self.provider == "claude":
-            if not ANTHROPIC_AVAILABLE:
-                raise ImportError(
-                    "Anthropic library not installed. Install: pip install anthropic"
-                )
-
-            if not settings.ANTHROPIC_API_KEY:
-                raise ValueError("ANTHROPIC_API_KEY not configured")
-
-            logger.info("📡 Initializing Anthropic client for translation...")
+    def _init_anthropic(self) -> None:
+        """Initialize Anthropic client (best-effort for fallback)."""
+        if not ANTHROPIC_AVAILABLE:
+            logger.debug("Anthropic library not installed, skipping")
+            return
+        if not settings.ANTHROPIC_API_KEY:
+            logger.debug("ANTHROPIC_API_KEY not configured, skipping")
+            return
+        try:
             from anthropic import AsyncAnthropic
 
-            self.anthropic_client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
-            logger.info("✅ Claude translation initialized")
-
-        else:
-            raise ValueError(
-                f"Invalid translation provider: {self.provider}. "
-                "Must be 'google', 'openai', or 'claude'"
+            self.anthropic_client = AsyncAnthropic(
+                api_key=settings.ANTHROPIC_API_KEY
             )
+            logger.info("Claude translation initialized")
+        except Exception as e:
+            logger.warning("Anthropic client init failed: %s", e)
 
     def verify_availability(self) -> bool:
         """
