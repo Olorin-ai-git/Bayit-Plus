@@ -9,7 +9,7 @@ import SwiftUI
 struct MiniAudioPlayerBar: View {
     @Environment(AudioPlaybackManager.self) var audioManager
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @State private var showSleepTimerPicker = false
     @State private var showChapterPicker = false
 

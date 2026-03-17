@@ -102,11 +102,11 @@ final class HomeViewModel {
         isLoading = true
         error = nil
 
-        async let featuredTask = contentRepo.fetchFeatured()
-        async let sectionsTask: Void = loadAdditionalSections()
+        // Launch additional sections in background - don't block on them
+        let sectionsTask = Task { await loadAdditionalSections() }
 
         do {
-            let response = try await featuredTask
+            let response = try await contentRepo.fetchFeatured()
             hero = response.hero
             spotlight = response.spotlight
             categories = response.categories
@@ -118,8 +118,12 @@ final class HomeViewModel {
             }
         }
 
-        await sectionsTask
+        // Featured content is ready - stop blocking the UI
         isLoading = false
+
+        // Let additional sections finish in the background (they update their
+        // own published properties individually, so rows appear progressively)
+        await sectionsTask.value
     }
 
     @MainActor
@@ -127,11 +131,10 @@ final class HomeViewModel {
         error = nil
         isLoading = true
 
-        async let featuredTask = contentRepo.fetchFeatured()
-        async let sectionsTask: Void = loadAdditionalSections()
+        let sectionsTask = Task { await loadAdditionalSections() }
 
         do {
-            let response = try await featuredTask
+            let response = try await contentRepo.fetchFeatured()
             hero = response.hero
             spotlight = response.spotlight
             categories = response.categories
@@ -143,8 +146,8 @@ final class HomeViewModel {
             }
         }
 
-        await sectionsTask
         isLoading = false
+        await sectionsTask.value
     }
 
     /// Refresh only the continue watching section (called when player is dismissed)
