@@ -52,7 +52,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>239</string>
+	<string>240</string>
 	<key>DEFAULT_CULTURE_ID</key>
 	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>FEATURE_CARPLAY</key>
