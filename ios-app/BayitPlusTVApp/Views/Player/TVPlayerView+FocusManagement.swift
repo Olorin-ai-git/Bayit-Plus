@@ -195,6 +195,32 @@ extension TVPlayerView {
 
     // MARK: - Split Subtitle Availability
 
+    // MARK: - Walkthrough Auto-Enable
+
+    func autoEnableLiveAIFeatures() async {
+        let cid = channelId ?? contentId
+        let targetLang = "en"
+        state.selectedAILanguage = targetLang
+
+        for _ in 0 ..< 10 {
+            if state.liveSubtitlesVM != nil { break }
+            try? await Task.sleep(for: .milliseconds(300))
+        }
+
+        if let subtitleVM = state.liveSubtitlesVM, !subtitleVM.isEnabled {
+            subtitleVM.selectLanguage(targetLang, channelId: cid)
+            subtitleVM.toggleSubtitles(channelId: cid)
+        }
+
+        state.splitModeEnabled = true
+        state.splitLanguages = [targetLang, "he"]
+        state.splitLayout = .sideBySide
+
+        toggleLiveTrivia()
+
+        state.showControlButtons = false
+    }
+
     func loadSplitSubtitleAvailability() async {
         guard !contentId.isEmpty, !isLive else { return }
         let repo = repos.subtitle

@@ -41,7 +41,7 @@ final class TVOnboardingPreferences {
     }
 
     var homepageStyle: String {
-        get { string(for: .homepageStyle) ?? "classic" }
+        get { string(for: .homepageStyle) ?? "cinematic" }
         set { set(newValue, for: .homepageStyle) }
     }
 

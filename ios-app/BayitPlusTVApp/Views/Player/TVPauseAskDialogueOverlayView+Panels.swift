@@ -132,9 +132,32 @@
                         variant: .secondary, size: .large
                     ) { onDismiss() }
                 }
-                .padding(.bottom, TVDesignTokens.Spacing.xxl)
-                .onAppear { idleFocus = lastResponse != nil ? .replay : nil }
+
+                if isWalkthroughMode {
+                    HStack(spacing: TVDesignTokens.Spacing.sm) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(
+                                size: TVDesignTokens.FontSize.sm,
+                                weight: .bold
+                            ))
+                            .foregroundStyle(DesignTokens.Primary.p300)
+                        Text(localization.t("player.pauseAsk.worksOnAnyContent"))
+                            .font(.system(
+                                size: TVDesignTokens.FontSize.sm,
+                                weight: .medium
+                            ))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                    }
+                    .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                    .padding(.vertical, TVDesignTokens.Spacing.sm)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(Capsule())
+                }
+
+                Spacer()
+                    .frame(height: TVDesignTokens.Spacing.xxl)
             }
+            .onAppear { idleFocus = lastResponse != nil ? .replay : nil }
         }
 
         func replayLastExchange() {

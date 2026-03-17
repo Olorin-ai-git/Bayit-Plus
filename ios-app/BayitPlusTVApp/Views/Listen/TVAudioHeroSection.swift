@@ -49,7 +49,7 @@
             if heroItems.isEmpty {
                 EmptyView()
             } else {
-                GlassHeroCarousel(items: heroItems, autoAdvanceInterval: 7) { item in
+                GlassHeroCarousel(items: heroItems, autoAdvanceInterval: 7) { item, _ in
                     heroSlide(item)
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)

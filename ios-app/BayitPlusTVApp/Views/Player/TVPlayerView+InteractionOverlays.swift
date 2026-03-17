@@ -1,5 +1,7 @@
 import BayitAuth
 import BayitCore
+import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -8,6 +10,34 @@ import SwiftUI
 /// Free-form dialogue is handled inline by TVCharacterDialogueFlowView
 /// within the showCharacterSelection fullScreenCover.
 extension TVPlayerView {
+    // MARK: - Walkthrough Coach Mark
+
+    func walkthroughCoachMark(forLiveTV: Bool) -> some View {
+        let icon = forLiveTV ? "captions.bubble" : "playpause.fill"
+        let key = forLiveTV
+            ? "player.walkthrough.liveSubtitleHint"
+            : "player.walkthrough.coachMark"
+        return HStack(spacing: TVDesignTokens.Spacing.md) {
+            Image(systemName: icon)
+                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
+                .foregroundStyle(DesignTokens.Primary.p300)
+            Text(localization.t(key))
+                .font(.system(
+                    size: TVDesignTokens.FontSize.md,
+                    weight: .semibold
+                ))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.vertical, TVDesignTokens.Spacing.md)
+        .background(DesignTokens.Glass.bgStrong)
+        .clipShape(Capsule())
+        .overlay(
+            Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1)
+        )
+        .padding(.top, TVDesignTokens.Spacing.xxl)
+    }
+
     // MARK: - Free-Form Dialogue Entry
 
     func openCharacterSelection() async {
@@ -42,7 +72,8 @@ extension TVPlayerView {
                 onPausePlayback: { mediaPlayer.avPlayer.pause() },
                 onDismiss: {
                     Task { await dismissPauseAsk() }
-                }
+                },
+                isWalkthroughMode: state.isWalkthroughMode
             )
         }
     }

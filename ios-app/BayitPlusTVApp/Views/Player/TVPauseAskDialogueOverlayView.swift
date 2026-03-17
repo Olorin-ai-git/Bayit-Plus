@@ -23,6 +23,7 @@
         let onResumePlayback: () -> Void
         let onPausePlayback: () -> Void
         let onDismiss: () -> Void
+        var isWalkthroughMode: Bool = false
 
         @State var phase: PauseAskPhase = .selecting
         @State var messageText = ""
@@ -48,6 +49,11 @@
             .animation(.easeInOut(duration: 0.3), value: phase)
             .accessibilityElement(children: .contain)
             .accessibilityLabel(localization.t("player.pauseAsk.title"))
+            .onChange(of: phase) { _, newPhase in
+                if newPhase == .input, isWalkthroughMode, messageText.isEmpty {
+                    messageText = localization.t("player.walkthrough.suggestion")
+                }
+            }
         }
 
         // MARK: - Phase Router

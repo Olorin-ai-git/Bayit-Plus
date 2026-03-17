@@ -198,14 +198,16 @@ final class TVNavigationCoordinator {
         contentId: String,
         contentType: MediaContentType,
         channelId: String? = nil,
-        directUrl: String? = nil
+        directUrl: String? = nil,
+        isWalkthrough: Bool = false
     ) {
         logger.info("Presenting player: \(contentId), type: \(contentType.rawValue)")
         fullscreenRoute = .player(
             contentId: contentId,
             contentType: contentType,
             channelId: channelId,
-            directUrl: directUrl
+            directUrl: directUrl,
+            isWalkthrough: isWalkthrough
         )
     }
 

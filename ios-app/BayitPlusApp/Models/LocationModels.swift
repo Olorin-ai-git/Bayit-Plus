@@ -83,6 +83,24 @@ struct CityContentItem: Decodable, Sendable, Identifiable {
     let sourceName: String?
     let publishedAt: String?
     let category: String?
+
+    func toContentItem() -> ContentItem {
+        ContentItem(
+            id: id,
+            title: title ?? titleEn ?? titleHe,
+            description: description ?? descriptionEn ?? descriptionHe,
+            thumbnail: imageUrl,
+            backdrop: imageUrl,
+            duration: nil, year: nil,
+            category: category, categorySlug: nil,
+            categoryNameKey: nil, categoryNameEn: nil, categoryNameEs: nil,
+            type: nil, totalEpisodes: nil,
+            availableSubtitleLanguages: nil, hasSubtitles: nil,
+            author: sourceName, narrator: nil,
+            isCollectionParent: nil, availableMovies: nil, totalMovies: nil,
+            contentRating: nil, genre: nil, genreIds: nil
+        )
+    }
 }
 
 // MARK: - Trending Content (Culture News Topics)

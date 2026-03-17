@@ -8,7 +8,8 @@
     public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
         let items: [Item]
         let autoAdvanceInterval: TimeInterval
-        let itemBuilder: (Item) -> ItemView
+        let showPageIndicator: Bool
+        let itemBuilder: (Item, Bool) -> ItemView
 
         @State private var currentIndex = 0
         @State private var autoAdvanceTask: Task<Void, Never>?
@@ -16,20 +17,22 @@
         public init(
             items: [Item],
             autoAdvanceInterval: TimeInterval = 6,
-            @ViewBuilder itemBuilder: @escaping (Item) -> ItemView
+            showPageIndicator: Bool = true,
+            @ViewBuilder itemBuilder: @escaping (Item, Bool) -> ItemView
         ) {
             self.items = items
             self.autoAdvanceInterval = autoAdvanceInterval
+            self.showPageIndicator = showPageIndicator
             self.itemBuilder = itemBuilder
         }
 
         public var body: some View {
-            VStack(spacing: TVDesignTokens.Spacing.md) {
+            ZStack(alignment: .bottom) {
                 GeometryReader { geo in
                     ZStack {
                         ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                             if index == currentIndex {
-                                itemBuilder(item)
+                                itemBuilder(item, index == currentIndex)
                                     .frame(width: geo.size.width, height: geo.size.height)
                                     .transition(.opacity)
                             }
@@ -40,10 +43,22 @@
                 .clipped()
                 .animation(.easeInOut(duration: 0.6), value: currentIndex)
 
-                pageIndicator
+                if showPageIndicator {
+                    pageIndicator
+                        .padding(.bottom, TVDesignTokens.Spacing.md)
+                }
             }
             .onAppear { startAutoAdvance() }
             .onDisappear { stopAutoAdvance() }
+            .onChange(of: items.count) { oldCount, newCount in
+                if oldCount <= 1, newCount > 1 {
+                    stopAutoAdvance()
+                    startAutoAdvance()
+                }
+                if currentIndex >= newCount, newCount > 0 {
+                    currentIndex = 0
+                }
+            }
         }
 
         // MARK: - Page Indicator (display-only, not focusable)

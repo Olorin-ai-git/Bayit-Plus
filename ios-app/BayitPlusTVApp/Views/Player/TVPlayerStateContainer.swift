@@ -32,6 +32,7 @@ final class TVPlayerStateContainer {
 
     var showPauseAskOverlay = false
     var hasVoiceClone = false
+    var isWalkthroughMode = false
 
     // MARK: - Interactive Subtitles
 

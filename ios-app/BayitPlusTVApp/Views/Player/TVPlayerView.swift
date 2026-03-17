@@ -26,8 +26,11 @@ struct TVPlayerView: View {
     let channelId: String?
     let directUrl: String?
     let byocSubtitleLanguages: [String]
+    let isWalkthrough: Bool
 
     @State var state = TVPlayerStateContainer()
+    @State private var walkthroughCoachMarkVisible = false
+    @State private var walkthroughAutoPauseTask: Task<Void, Never>?
 
     @Namespace var playerFocus
 
@@ -44,13 +47,15 @@ struct TVPlayerView: View {
         contentType: MediaContentType,
         channelId: String?,
         directUrl: String? = nil,
-        byocSubtitleLanguages: [String] = []
+        byocSubtitleLanguages: [String] = [],
+        isWalkthrough: Bool = false
     ) {
         self.contentId = contentId
         self.contentType = contentType
         self.channelId = channelId
         self.directUrl = directUrl
         self.byocSubtitleLanguages = byocSubtitleLanguages
+        self.isWalkthrough = isWalkthrough
     }
 
     var body: some View {
@@ -101,8 +106,37 @@ struct TVPlayerView: View {
         .onPlayPauseCommand {
             mediaPlayer.togglePlayPause()
             resetOverlayTimer()
+            walkthroughAutoPauseTask?.cancel()
         }
         .task { resetOverlayTimer() }
+        .task {
+            guard isWalkthrough else { return }
+            state.isWalkthroughMode = true
+            walkthroughCoachMarkVisible = true
+            try? await Task.sleep(for: .seconds(8))
+            walkthroughCoachMarkVisible = false
+        }
+        .task {
+            guard isWalkthrough, !isLive else { return }
+            walkthroughAutoPauseTask = Task {
+                try? await Task.sleep(for: .seconds(15))
+                guard !Task.isCancelled else { return }
+                await startPauseAskInteraction()
+            }
+        }
+        .task {
+            guard isWalkthrough, isLive else { return }
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
+            await autoEnableLiveAIFeatures()
+        }
+        .overlay(alignment: .top) {
+            if walkthroughCoachMarkVisible {
+                walkthroughCoachMark(forLiveTV: isLive)
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.4), value: walkthroughCoachMarkVisible)
+            }
+        }
         .onExitCommand {
             if state.showControlButtons {
                 withAnimation(.easeInOut(duration: 0.25)) {

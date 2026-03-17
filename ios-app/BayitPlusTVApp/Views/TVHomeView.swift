@@ -23,7 +23,8 @@ struct TVHomeView: View {
                     title: coordinator.categoryBrowseTitle,
                     icon: coordinator.categoryBrowseIcon,
                     categoryName: coordinator.categoryBrowseCategoryName,
-                    repository: repos.content
+                    repository: repos.content,
+                    preloadedItems: categoryItems(for: coordinator.categoryBrowseCategoryName)
                 )
             } else {
                 homeScrollView
@@ -75,8 +76,27 @@ struct TVHomeView: View {
         }
     }
 
+    private func categoryItems(for name: String) -> [ContentItem]? {
+        guard let vm = viewModel else { return nil }
+        switch name {
+        case "whatsHot":
+            return vm.categories.first { $0.name == "trending" }?.items
+        case "Jerusalem":
+            return vm.jerusalemContent?.items.map { $0.toContentItem() }
+        case "Tel Aviv":
+            return vm.telAvivContent?.items.map { $0.toContentItem() }
+        case "nearMe":
+            return vm.categories.first { $0.name == "nearMe" }?.items
+        default:
+            return nil
+        }
+    }
+
     private var homeScrollView: some View {
-        ScrollView(.vertical, showsIndicators: false) {
+        // ZStack ensures the tab always has intrinsic size (Group does not,
+        // which causes tvOS TabView to skip this tab during focus resolution).
+        ZStack {
+            Color.clear
             if let vm = viewModel {
                 if vm.isLoading && vm.categories.isEmpty {
                     TVSkeletonHomeView()
@@ -87,9 +107,15 @@ struct TVHomeView: View {
                 } else if prefs.isCinematicHome {
                     TVCinematicHomeView(viewModel: vm)
                 } else {
-                    contentSections(vm)
+                    classicScrollView(vm)
                 }
             }
+        }
+    }
+
+    private func classicScrollView(_ vm: HomeViewModel) -> some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            contentSections(vm)
         }
     }
 
@@ -104,7 +130,7 @@ struct TVHomeView: View {
 
             // Hero carousel (owner mode only — spotlight is from private library)
             if appConfiguration.ownerMode, !vm.spotlight.isEmpty {
-                GlassHeroCarousel(items: vm.spotlight) { item in
+                GlassHeroCarousel(items: vm.spotlight) { item, _ in
                     TVHeroItem(
                         item: item,
                         onWatchNow: {

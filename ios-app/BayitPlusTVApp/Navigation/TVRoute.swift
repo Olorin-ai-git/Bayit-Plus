@@ -10,7 +10,7 @@ enum TVRoute: Hashable, Identifiable {
     }
 
     /// Present the fullscreen player.
-    case player(contentId: String, contentType: MediaContentType, channelId: String?, directUrl: String? = nil)
+    case player(contentId: String, contentType: MediaContentType, channelId: String?, directUrl: String? = nil, isWalkthrough: Bool = false)
     /// Navigate to podcast detail screen.
     case podcastDetail(showId: String)
     /// Navigate to series detail screen.
@@ -66,12 +66,13 @@ enum TVRoute: Hashable, Identifiable {
 
     func hash(into hasher: inout Hasher) {
         switch self {
-        case let .player(contentId, contentType, channelId, directUrl):
+        case let .player(contentId, contentType, channelId, directUrl, isWalkthrough):
             hasher.combine("player")
             hasher.combine(contentId)
             hasher.combine(contentType.rawValue)
             hasher.combine(channelId)
             hasher.combine(directUrl)
+            hasher.combine(isWalkthrough)
         case let .podcastDetail(showId):
             hasher.combine("podcastDetail")
             hasher.combine(showId)
@@ -139,8 +140,8 @@ enum TVRoute: Hashable, Identifiable {
 
     static func == (lhs: TVRoute, rhs: TVRoute) -> Bool {
         switch (lhs, rhs) {
-        case let (.player(lId, lType, lCh, lUrl), .player(rId, rType, rCh, rUrl)):
-            return lId == rId && lType == rType && lCh == rCh && lUrl == rUrl
+        case let (.player(lId, lType, lCh, lUrl, lWalk), .player(rId, rType, rCh, rUrl, rWalk)):
+            return lId == rId && lType == rType && lCh == rCh && lUrl == rUrl && lWalk == rWalk
         case let (.podcastDetail(lId), .podcastDetail(rId)):
             return lId == rId
         case let (.seriesDetail(lId), .seriesDetail(rId)):

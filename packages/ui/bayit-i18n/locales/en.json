@@ -5239,12 +5239,70 @@
       "title": "Back to the Future",
       "subtitle": "Experience 19 AI features on your favorite content"
     },
+    "liveTV": {
+      "title": "Live Now",
+      "subtitle": "Watch Israeli TV dubbed into your language with AI",
+      "dubbedIn": "AI Dubbed in {{language}}",
+      "watchDubbed": "Watch Dubbed"
+    },
+    "byoc": {
+      "title": "Your Content, Enhanced",
+      "subtitle": "Pause and ask AI about any scene in your library",
+      "watchWithAI": "Watch with AI"
+    },
+    "pauseAsk": {
+      "title": "Pause & Ask",
+      "subtitle": "Talk to characters and ask about any scene",
+      "tryItNow": "Try It Now"
+    },
+    "continueWatching": {
+      "subtitle": "Resume where you left off with AI features",
+      "resume": "Resume"
+    },
+    "overlay": {
+      "aiDubbed": "AI Dubbed",
+      "pauseAskReady": "Pause & Ask Ready",
+      "aiEnhanced": "AI Enhanced",
+      "liveSubtitles": "Live Subtitles in 10 Languages",
+      "sampleSubtitle1": "Welcome to the world of Israeli entertainment",
+      "sampleSubtitle2": "Experience stories from the heart of Israel",
+      "sampleSubtitle3": "Dubbed live by AI into your language",
+      "sampleSubtitle4": "Ask questions about any scene",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "\u05d1\u05e8\u05d5\u05db\u05d9\u05dd \u05d4\u05d1\u05d0\u05d9\u05dd \u05dc\u05de\u05d4\u05d3\u05d5\u05e8\u05ea \u05d4\u05e2\u05e8\u05d1",
+      "splitHe2": "\u05d4\u05d9\u05d5\u05dd \u05d0\u05e0\u05d7\u05e0\u05d5 \u05de\u05d1\u05d9\u05d0\u05d9\u05dd \u05dc\u05db\u05dd \u05db\u05ea\u05d1\u05d4 \u05de\u05d9\u05d5\u05d7\u05d3\u05ea",
+      "splitHe3": "\u05ea\u05d7\u05d6\u05d9\u05ea \u05de\u05d6\u05d2 \u05d4\u05d0\u05d5\u05d5\u05d9\u05e8 \u05dc\u05de\u05d7\u05e8",
+      "splitHe4": "\u05d4\u05d9\u05e9\u05d0\u05e8\u05d5 \u05d0\u05d9\u05ea\u05e0\u05d5 \u05dc\u05e2\u05d3\u05db\u05d5\u05e0\u05d9\u05dd \u05e0\u05d5\u05e1\u05e4\u05d9\u05dd"
+    },
+    "liveAI": {
+      "groupLabel": "LIVE AI",
+      "feature": {
+        "subtitles": "Live Subtitles",
+        "dubbing": "AI Dubbing",
+        "trivia": "Live Trivia",
+        "catchUp": "Catch Up"
+      }
+    },
+    "movieAI": {
+      "groupLabel": "MOVIE AI",
+      "feature": {
+        "pauseAsk": "Pause & Ask",
+        "interactive": "Interactive Moments"
+      }
+    },
     "culture": {
       "whatsHotSubtitle": "Trending stories and moments from Israel",
       "jerusalemSubtitle": "Stay connected to the heart of Israel",
       "telAvivSubtitle": "The pulse of Israeli innovation and culture",
       "nearMeSubtitle": "Israeli community and businesses near you"
     }
+  },
+  "dock": {
+    "liveAI": "Live AI",
+    "movieAI": "Movie AI"
   },
   "jerusalem": {
     "title": "Jerusalem Connection",
@@ -6141,7 +6199,13 @@
       },
       "askAgain": "Ask Again",
       "placeholder": "Ask about this scene...",
-      "resume": "Resume"
+      "resume": "Resume",
+      "worksOnAnyContent": "This works on any content you watch"
+    },
+    "walkthrough": {
+      "coachMark": "Press Play/Pause to talk to a character",
+      "liveSubtitleHint": "Tap Translate, then select Split mode for EN | HE subtitles",
+      "suggestion": "Tell me about this scene"
     },
     "multiCharacter": {
       "selectCharacter": "Select Character to Address",

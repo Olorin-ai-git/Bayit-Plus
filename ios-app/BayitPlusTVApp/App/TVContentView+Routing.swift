@@ -17,12 +17,13 @@
         @ViewBuilder
         func fullscreenView(for route: TVRoute) -> some View {
             switch route {
-            case let .player(contentId, contentType, channelId, directUrl):
+            case let .player(contentId, contentType, channelId, directUrl, isWalkthrough):
                 TVPlayerView(
                     contentId: contentId,
                     contentType: contentType,
                     channelId: channelId,
-                    directUrl: directUrl
+                    directUrl: directUrl,
+                    isWalkthrough: isWalkthrough
                 )
             case let .movieDetail(movieId):
                 TVMovieDetailView(movieId: movieId)

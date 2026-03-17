@@ -73,7 +73,10 @@ extension TVPlayerView {
             TVLiveSubtitleOverlayView(
                 translatedText: vm.activeCueText,
                 originalText: vm.originalCueText ?? "",
-                isVisible: vm.showOverlay
+                isVisible: vm.showOverlay,
+                layout: state.splitModeEnabled ? state.splitLayout : .stacked,
+                targetLang: vm.selectedLanguage,
+                sourceLang: vm.sourceLang
             )
         }
     }

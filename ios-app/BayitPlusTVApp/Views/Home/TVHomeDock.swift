@@ -4,10 +4,14 @@
     import SwiftUI
 
     /// Navigation destinations for the homepage dock buttons.
-    enum HomeDockDestination {
-        case discover
-        case liveTV
-        case listen
+    enum HomeDockDestination: Identifiable {
+        var id: String {
+            String(describing: self)
+        }
+
+        case liveAI
+        case movieAI
+        case zehAni
         case continueWatching
         case plex
         case youtube
@@ -26,7 +30,9 @@
         @FocusState private var focusedItem: HomeDockDestination?
 
         private var visibleItems: [HomeDockDestination] {
-            var items: [HomeDockDestination] = [.discover, .liveTV, .listen]
+            var items: [HomeDockDestination] = [
+                .liveAI, .movieAI, .zehAni,
+            ]
             if showContinueWatching { items.append(.continueWatching) }
             if showPlex { items.append(.plex) }
             if showYouTube { items.append(.youtube) }
@@ -35,6 +41,7 @@
 
         var body: some View {
             dockPill
+                .focusSection()
         }
 
         // MARK: - Pill Shell
@@ -72,10 +79,15 @@
                             .overlay(
                                 Circle().strokeBorder(
                                     isFocused
-                                        ? DesignTokens.Primary.p400.opacity(0.6)
-                                        : Color.white.opacity(0.12),
-                                    lineWidth: 1.5
+                                        ? DesignTokens.Primary.p400
+                                        : restRingColor(for: item),
+                                    lineWidth: isFocused ? 2.5 : 1.5
                                 )
+                            )
+                            .shadow(
+                                color: isFocused
+                                    ? DesignTokens.Glass.purpleGlow : .clear,
+                                radius: 12, x: 0, y: 4
                             )
 
                         Image(systemName: iconName(for: item))
@@ -90,22 +102,19 @@
                         .frame(width: 90)
                 }
             }
-            .buttonStyle(.plain)
+            .buttonStyle(DockItemButtonStyle())
             .focused($focusedItem, equals: item)
-            .scaleEffect(isFocused ? 1.08 : 1.0)
-            .animation(
-                .spring(duration: 0.2, bounce: 0.3),
-                value: isFocused
-            )
+            .scaleEffect(isFocused ? 1.1 : 1.0)
+            .animation(.spring(duration: 0.2), value: isFocused)
         }
 
         // MARK: - Item Config
 
         private func iconName(for item: HomeDockDestination) -> String {
             switch item {
-            case .discover: return "sparkles"
-            case .liveTV: return "play.tv"
-            case .listen: return "headphones"
+            case .liveAI: return "waveform.badge.mic"
+            case .movieAI: return "sparkles.rectangle.stack"
+            case .zehAni: return "person.crop.rectangle.stack"
             case .continueWatching: return "play.circle"
             case .plex: return "server.rack"
             case .youtube: return "play.rectangle.fill"
@@ -114,18 +123,26 @@
 
         private func label(for item: HomeDockDestination) -> String {
             switch item {
-            case .discover:
-                return localization.t("nav.discover")
-            case .liveTV:
-                return localization.t("nav.liveTV")
-            case .listen:
-                return localization.t("nav.listen")
+            case .liveAI:
+                return localization.t("dock.liveAI")
+            case .movieAI:
+                return localization.t("dock.movieAI")
+            case .zehAni:
+                return localization.t("nav.zehAni")
             case .continueWatching:
                 return localization.t("home.continueWatching")
             case .plex:
                 return localization.t("byoc.plex")
             case .youtube:
                 return localization.t("byoc.youtube")
+            }
+        }
+
+        private func restRingColor(for item: HomeDockDestination) -> Color {
+            switch item {
+            case .liveAI: return Color.red.opacity(0.6)
+            case .movieAI: return DesignTokens.Primary.p400.opacity(0.6)
+            default: return Color.white.opacity(0.12)
             }
         }
 
@@ -163,4 +180,14 @@
                 )
         }
     }
+
+    private struct DockItemButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .focusEffectDisabled()
+                .opacity(configuration.isPressed ? 0.8 : 1.0)
+                .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+        }
+    }
+
 #endif

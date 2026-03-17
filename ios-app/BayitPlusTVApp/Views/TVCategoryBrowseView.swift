@@ -15,6 +15,7 @@
         let icon: String
         let categoryName: String
         let repository: any ContentRepository
+        var preloadedItems: [ContentItem]?
 
         @State private var items: [ContentItem] = []
         @State private var isLoading = true
@@ -49,11 +50,33 @@
                 .padding(.vertical, TVDesignTokens.Spacing.xl)
             }
             .background(DesignTokens.Background.primary)
-            .task { await loadContent() }
+            .onExitCommand { coordinator.dismissCategoryBrowse() }
+            .task {
+                if let preloaded = preloadedItems, !preloaded.isEmpty {
+                    items = preloaded
+                    isLoading = false
+                    hasMore = false
+                } else {
+                    await loadContent()
+                }
+            }
         }
 
         private var header: some View {
             HStack(spacing: TVDesignTokens.Spacing.md) {
+                Button {
+                    coordinator.dismissCategoryBrowse()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                        .frame(width: 48, height: 48)
+                        .background(DesignTokens.Glass.bgMedium)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(DesignTokens.Glass.border, lineWidth: 1))
+                }
+                .tvCardStyle()
+
                 Image(systemName: icon)
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                     .foregroundStyle(DesignTokens.Primary.default)
@@ -131,7 +154,6 @@
                 logger.info("Category browse loaded", context: [
                     "category": categoryName,
                     "matched": String(items.count),
-                    "total": String(response.total),
                 ])
             } catch {
                 self.error = error.userFriendlyMessage

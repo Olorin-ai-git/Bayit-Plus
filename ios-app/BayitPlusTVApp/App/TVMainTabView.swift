@@ -44,11 +44,13 @@
                         .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
                         .tag(TVTab.search)
 
-                    if prefs.showLiveTV {
-                        TVLiveTVView()
-                            .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
-                            .tag(TVTab.liveTV)
-                    }
+                    TVLiveTVView()
+                        .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
+                        .tag(TVTab.liveTV)
+
+                    TVDiscoverView()
+                        .tabItem { Label(localization.t("nav.discover"), systemImage: TVTab.discover.iconName) }
+                        .tag(TVTab.discover)
 
                     if appConfiguration.ownerMode {
                         TVVODView()
@@ -56,21 +58,9 @@
                             .tag(TVTab.vod)
                     }
 
-                    TVZehAniHubView()
-                        .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }
-                        .tag(TVTab.zehAni)
-
-                    TVListenView()
-                        .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
-                        .tag(TVTab.podcasts)
-
                     TVBYOCSourceListView(isEmbedded: true, onDismiss: {})
                         .tabItem { Label(localization.t("nav.byoc"), systemImage: TVTab.byoc.iconName) }
                         .tag(TVTab.byoc)
-
-                    TVDiscoverView()
-                        .tabItem { Label(localization.t("nav.discover"), systemImage: TVTab.discover.iconName) }
-                        .tag(TVTab.discover)
 
                     TVProfileView()
                         .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
