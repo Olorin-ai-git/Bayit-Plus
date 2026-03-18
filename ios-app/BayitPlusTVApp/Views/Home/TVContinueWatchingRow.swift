@@ -115,8 +115,15 @@ struct TVContinueWatchingBrowseView: View {
         .background(DesignTokens.Background.primary)
         .onExitCommand { coordinator.dismissFullscreen() }
         .task { await loadData() }
-        .fullScreenCover(item: $selectedMovieId) { movieId in
-            TVMovieDetailView(movieId: movieId)
+        .fullScreenCover(
+            isPresented: Binding(
+                get: { selectedMovieId != nil },
+                set: { if !$0 { selectedMovieId = nil } }
+            )
+        ) {
+            if let movieId = selectedMovieId {
+                TVMovieDetailView(movieId: movieId)
+            }
         }
     }
 
