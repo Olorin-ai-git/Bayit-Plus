@@ -31,6 +31,8 @@ struct TVPlayerView: View {
     @State var state = TVPlayerStateContainer()
     @State private var walkthroughCoachMarkVisible = false
     @State private var walkthroughAutoPauseTask: Task<Void, Never>?
+    @State var creditCoordinator = CreditConfirmationCoordinator()
+    @State var creditsVM: BetaCreditsViewModel?
 
     @Namespace var playerFocus
 
@@ -137,8 +139,16 @@ struct TVPlayerView: View {
                     .animation(.easeInOut(duration: 0.4), value: walkthroughCoachMarkVisible)
             }
         }
+        .onChange(of: mediaPlayer.state) { _, newState in
+            if case let .failed(message) = newState {
+                state.streamError = message
+            }
+        }
         .onExitCommand {
-            if state.showControlButtons {
+            if state.streamError != nil {
+                mediaPlayer.stop()
+                dismiss()
+            } else if state.showControlButtons {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     state.showControlButtons = false
                 }
@@ -193,6 +203,11 @@ struct TVPlayerView: View {
                 savedWords: state.interactiveSubtitleVM?.savedWords ?? [],
                 onDismiss: { state.showVocabulary = false }
             )
+        }
+        .overlay {
+            if creditCoordinator.isShowing {
+                TVAICreditConfirmDialog(coordinator: creditCoordinator)
+            }
         }
     }
 

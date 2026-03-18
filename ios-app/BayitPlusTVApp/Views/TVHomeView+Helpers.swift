@@ -15,6 +15,16 @@ extension TVHomeView {
                         .foregroundStyle(DesignTokens.Text.primary)
 
                     Spacer()
+
+                    TVHomeStyleToggle(
+                        isCinematic: prefs.isCinematicHome,
+                        onToggle: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                prefs.homepageStyle = prefs.isCinematicHome
+                                    ? "classic" : "cinematic"
+                            }
+                        }
+                    )
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
                 .padding(.top, TVDesignTokens.Spacing.md)

@@ -33,6 +33,14 @@
                         .animation(
                             .easeInOut(duration: 0.4), value: polishingStageIndex
                         )
+                    Text(localization.t("player.pauseAsk.stages.enjoyMovie"))
+                        .font(.system(
+                            size: TVDesignTokens.FontSize.sm,
+                            weight: .medium
+                        ))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, TVDesignTokens.Spacing.sm)
                     Spacer()
                 }
                 .frame(width: 400)

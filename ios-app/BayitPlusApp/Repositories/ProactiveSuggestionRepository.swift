@@ -56,7 +56,7 @@ final class APIProactiveSuggestionRepository: ProactiveSuggestionRepository, @un
             maxSuggestions: maxSuggestions
         )
         return try await client.post(
-            "/voice/proactive/suggest",
+            "voice/proactive/suggest",
             body: body,
             as: ProactiveSuggestResponse.self
         )

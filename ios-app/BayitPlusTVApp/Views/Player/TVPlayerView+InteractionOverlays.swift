@@ -58,8 +58,7 @@ extension TVPlayerView {
     @ViewBuilder
     var pauseAskOverlay: some View {
         if state.showPauseAskOverlay,
-           let vm = state.dialogueVM,
-           state.hasVoiceClone
+           let vm = state.dialogueVM
         {
             TVPauseAskDialogueOverlayView(
                 avatarId: state.resolvedAvatarId,

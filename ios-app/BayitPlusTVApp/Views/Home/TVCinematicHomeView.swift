@@ -23,6 +23,7 @@
         @State private var activeCardIndex = 0
         @State private var dockOverlay: HomeDockDestination?
         @State private var liveChannelDetail: ChannelDetail?
+        @State private var allChannels: [LiveChannelItem] = []
         @State private var demoClipURL: URL?
 
         var body: some View {
@@ -116,6 +117,7 @@
                 let response = try await repos.liveTV.fetchChannels(
                     cultureId: nil, category: nil
                 )
+                allChannels = response.channels
                 let preferred = response.channels.first {
                     $0.name?.contains("13") == true
                 } ?? response.channels.first
@@ -173,9 +175,12 @@
                 }
             }
 
-            cards.append(randomCultureCard())
+            let showcaseChannelId = liveChannelDetail?.id
+            for channel in allChannels where channel.id != showcaseChannelId {
+                cards.append(liveChannelCard(channel))
+            }
 
-            heroCards = Array(cards.prefix(5))
+            heroCards = cards
         }
 
         // MARK: - Card Builders
@@ -215,7 +220,7 @@
                 title: detail.name
                     ?? localization.t("cinematic.liveTV.title"),
                 subtitle: localization.t("cinematic.liveTV.subtitle"),
-                backgroundURL: (detail.logo ?? detail.thumbnail)
+                backgroundURL: (detail.thumbnail ?? detail.logo)
                     .flatMap { URL(string: $0) },
                 categoryLabel: localization.t("cinematic.liveAI.groupLabel"),
                 videoURL: streamURL,
@@ -250,21 +255,18 @@
             )
         }
 
-        private func randomCultureCard() -> CinematicHeroCard {
-            let cultureOptions: [(id: String, titleKey: String, subtitleKey: String, asset: String)] = [
-                ("culture-whats-hot", "home.whatsHot", "cinematic.culture.whatsHotSubtitle", "Masada"),
-                ("culture-jerusalem", "home.jerusalem", "cinematic.culture.jerusalemSubtitle", "Jerusalem"),
-                ("culture-tel-aviv", "home.telAviv", "cinematic.culture.telAvivSubtitle", "TelAviv"),
-                ("culture-near-me", "home.nearMe", "cinematic.culture.nearMeSubtitle", "Masada"),
-            ]
-            let pick = cultureOptions.randomElement()!
+        private func liveChannelCard(_ channel: LiveChannelItem) -> CinematicHeroCard {
+            let subtitle = channel.currentShow
+                ?? localization.t("cinematic.liveTV.subtitle")
             return CinematicHeroCard(
-                id: pick.id,
-                type: .culture,
-                title: localization.t(pick.titleKey),
-                subtitle: localization.t(pick.subtitleKey),
-                backgroundAsset: pick.asset,
-                categoryLabel: localization.t(pick.titleKey)
+                id: "channel-\(channel.id)",
+                type: .liveChannel,
+                title: channel.name ?? localization.t("nav.liveTV"),
+                subtitle: subtitle,
+                backgroundURL: (channel.thumbnail ?? channel.logo)
+                    .flatMap { URL(string: $0) },
+                categoryLabel: localization.t("nav.liveTV"),
+                channelId: channel.id
             )
         }
 
@@ -310,34 +312,13 @@
                         )
                     }
                 }
-            case .culture:
-                switch card.id {
-                case "culture-whats-hot":
-                    coordinator.presentCategoryBrowse(
-                        title: localization.t("home.whatsHot"),
-                        icon: "flame.fill",
-                        categoryName: "whatsHot"
+            case .liveChannel:
+                if let channelId = card.channelId {
+                    coordinator.presentPlayer(
+                        contentId: channelId,
+                        contentType: .liveTV,
+                        channelId: channelId
                     )
-                case "culture-jerusalem":
-                    coordinator.presentCategoryBrowse(
-                        title: localization.t("home.jerusalem"),
-                        icon: "building.columns",
-                        categoryName: "Jerusalem"
-                    )
-                case "culture-tel-aviv":
-                    coordinator.presentCategoryBrowse(
-                        title: localization.t("home.telAviv"),
-                        icon: "sun.max.fill",
-                        categoryName: "Tel Aviv"
-                    )
-                case "culture-near-me":
-                    coordinator.presentCategoryBrowse(
-                        title: localization.t("home.nearMe"),
-                        icon: "location.fill",
-                        categoryName: "nearMe"
-                    )
-                default:
-                    break
                 }
             }
         }
@@ -386,15 +367,15 @@
             case .zehAni:
                 dockOverlay = destination
             case .continueWatching:
-                coordinator.presentCategoryBrowse(
-                    title: localization.t("home.continueWatching"),
-                    icon: "play.circle.fill",
-                    categoryName: "continueWatching"
-                )
+                coordinator.fullscreenRoute = .continueWatchingBrowse
             case .plex:
                 coordinator.selectedTab = .byoc
             case .youtube:
                 coordinator.selectedTab = .byoc
+            case .toggleView:
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    prefs.homepageStyle = "classic"
+                }
             }
         }
 
@@ -405,32 +386,9 @@
             case .zehAni: AnyView(TVZehAniHubView())
             default: AnyView(EmptyView())
             }
-            ZStack(alignment: .topLeading) {
-                content
-                dockOverlayBackButton
-            }
-            .background(DesignTokens.Background.primary)
-            .onExitCommand { dockOverlay = nil }
-        }
-
-        private var dockOverlayBackButton: some View {
-            Button { dockOverlay = nil } label: {
-                HStack(spacing: TVDesignTokens.Spacing.sm) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
-                    Text(localization.t("nav.home"))
-                        .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
-                }
-                .foregroundStyle(DesignTokens.Text.secondary)
-                .padding(.horizontal, TVDesignTokens.Spacing.lg)
-                .padding(.vertical, TVDesignTokens.Spacing.sm)
-                .background(DesignTokens.Glass.bgMedium)
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1))
-            }
-            .tvCardStyle()
-            .padding(.top, TVDesignTokens.Spacing.lg)
-            .padding(.leading, TVDesignTokens.Spacing.xl)
+            content
+                .background(DesignTokens.Background.primary)
+                .onExitCommand { dockOverlay = nil }
         }
     }
 
@@ -441,7 +399,7 @@
         case byocShowcase
         case movieAIShowcase
         case continueWatching
-        case culture
+        case liveChannel
     }
 
     enum CinematicHeroAction {
@@ -538,13 +496,13 @@
                 TVHeroContinueWatchingOverlay(
                     progress: card.resumePosition.map { $0 / 7200.0 } ?? 0
                 )
-            case .culture:
-                EmptyView()
+            case .liveChannel:
+                TVHeroLiveTVOverlay()
             }
         }
 
         private var hasVideo: Bool {
-            card.videoURL != nil && card.type != .culture
+            card.videoURL != nil
         }
 
         private var backgroundLayer: some View {
@@ -563,7 +521,9 @@
 
         private var staticBackground: some View {
             Group {
-                if let url = card.backgroundURL {
+                if card.type == .liveChannel {
+                    channelLogoBackground(url: card.backgroundURL)
+                } else if let url = card.backgroundURL {
                     CachedAsyncImage(url: url) { phase in
                         if case let .success(img) = phase {
                             img.resizable()
@@ -581,6 +541,41 @@
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+
+        private func channelLogoBackground(url: URL?) -> some View {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        DesignTokens.Background.primary,
+                        DesignTokens.Primary.p900.opacity(0.3),
+                        DesignTokens.Background.primary,
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+
+                if let url {
+                    CachedAsyncImage(url: url) { phase in
+                        if case let .success(img) = phase {
+                            img.resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: 320, maxHeight: 180)
+                                .shadow(color: .black.opacity(0.5), radius: 20, y: 8)
+                        } else {
+                            channelTextFallback
+                        }
+                    }
+                } else {
+                    channelTextFallback
+                }
+            }
+        }
+
+        private var channelTextFallback: some View {
+            Image(systemName: "play.tv")
+                .font(.system(size: 80, weight: .ultraLight))
+                .foregroundStyle(DesignTokens.Primary.p400.opacity(0.4))
         }
 
         private var gradientOverlay: some View {
@@ -671,22 +666,22 @@
             case .byocShowcase: return "sparkles"
             case .movieAIShowcase: return "play.fill"
             case .continueWatching: return "play.fill"
-            case .culture: return "arrow.right"
+            case .liveChannel: return "play.tv"
             }
         }
 
         private var primaryLabel: String {
             switch card.type {
             case .liveAIShowcase:
-                return localization.t("cinematic.liveTV.watchDubbed")
+                return localization.t("hero.watchNow")
             case .byocShowcase:
                 return localization.t("cinematic.byoc.watchWithAI")
             case .movieAIShowcase:
                 return localization.t("cinematic.pauseAsk.tryItNow")
             case .continueWatching:
                 return localization.t("cinematic.continueWatching.resume")
-            case .culture:
-                return localization.t("cinematic.explore")
+            case .liveChannel:
+                return localization.t("hero.watchNow")
             }
         }
 

@@ -28,6 +28,8 @@ struct TVSubtitleLanguagePickerView: View {
     var onHebrewModeSelect: ((SubtitleHebrewMode) -> Void)?
     var onEnglishModeSelect: ((SubtitleEnglishMode) -> Void)?
     var onSubtitlesRefresh: (() -> Void)?
+    var creditCoordinator: CreditConfirmationCoordinator?
+    var creditBalance: CreditBalance?
 
     @State var generatingMode: String?
     @State var jobProgress: Int = 0
@@ -98,17 +100,11 @@ struct TVSubtitleLanguagePickerView: View {
         .onAppear { checkActiveJobs() }
         .onDisappear { pollingTask?.cancel() }
         .overlay {
-            if let item = pendingGenerationItem {
-                TVAIGenerationConfirmDialog(
-                    modeName: item.displayLabel,
-                    modeDescription: aiModeDescription(for: item),
-                    onConfirm: {
-                        let captured = item
-                        pendingGenerationItem = nil
-                        confirmAndGenerate(captured)
-                    },
-                    onDismiss: { pendingGenerationItem = nil }
-                )
+            if pendingGenerationItem != nil,
+               let coordinator = creditCoordinator,
+               coordinator.isShowing
+            {
+                TVAICreditConfirmDialog(coordinator: coordinator)
             }
         }
     }

@@ -61,6 +61,8 @@ enum TVRoute: Hashable, Identifiable {
     case judaism(category: String)
     /// Navigate to BYOC item detail screen (Plex/IPTV movie detail).
     case byocDetail(item: BYOCContentItem)
+    /// Show the full Continue Watching browse grid (fetches from history/continue endpoint).
+    case continueWatchingBrowse
 
     // MARK: - Hashable
 
@@ -135,6 +137,8 @@ enum TVRoute: Hashable, Identifiable {
         case let .byocDetail(item):
             hasher.combine("byocDetail")
             hasher.combine(item.id)
+        case .continueWatchingBrowse:
+            hasher.combine("continueWatchingBrowse")
         }
     }
 
@@ -192,6 +196,8 @@ enum TVRoute: Hashable, Identifiable {
             return lCat == rCat
         case let (.byocDetail(lItem), .byocDetail(rItem)):
             return lItem.id == rItem.id
+        case (.continueWatchingBrowse, .continueWatchingBrowse):
+            return true
         default:
             return false
         }

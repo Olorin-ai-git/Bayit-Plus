@@ -15,6 +15,7 @@
         case continueWatching
         case plex
         case youtube
+        case toggleView
     }
 
     /// Glass capsule dock anchored at the bottom of the cinematic homepage.
@@ -36,6 +37,7 @@
             if showContinueWatching { items.append(.continueWatching) }
             if showPlex { items.append(.plex) }
             if showYouTube { items.append(.youtube) }
+            items.append(.toggleView)
             return items
         }
 
@@ -118,6 +120,7 @@
             case .continueWatching: return "play.circle"
             case .plex: return "server.rack"
             case .youtube: return "play.rectangle.fill"
+            case .toggleView: return "rectangle.stack"
             }
         }
 
@@ -135,6 +138,8 @@
                 return localization.t("byoc.plex")
             case .youtube:
                 return localization.t("byoc.youtube")
+            case .toggleView:
+                return localization.t("dock.classic")
             }
         }
 

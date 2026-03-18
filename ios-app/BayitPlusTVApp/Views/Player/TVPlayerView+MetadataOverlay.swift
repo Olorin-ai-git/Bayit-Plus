@@ -124,12 +124,31 @@ extension TVPlayerView {
                 creditBalance: vm.creditBalance,
                 autoDismissSeconds: repos.configuration.catchUpAutoPromptSeconds,
                 onAccept: {
-                    Task {
-                        await vm.fetchSummary(
-                            channelId: channelId ?? contentId,
-                            windowMinutes: repos.configuration.catchUpDefaultWindowMinutes,
-                            targetLanguage: state.selectedAILanguage
+                    if let balance = creditsVM?.balance {
+                        creditCoordinator.onConfirmed = { _, _ in
+                            Task {
+                                await vm.fetchSummary(
+                                    channelId: channelId ?? contentId,
+                                    windowMinutes: repos.configuration.catchUpDefaultWindowMinutes,
+                                    targetLanguage: state.selectedAILanguage
+                                )
+                            }
+                        }
+                        creditCoordinator.onDeclined = {
+                            vm.dismissAutoPrompt(channelId: channelId ?? contentId)
+                        }
+                        creditCoordinator.present(
+                            feature: .catchUpSummary,
+                            balance: balance
                         )
+                    } else {
+                        Task {
+                            await vm.fetchSummary(
+                                channelId: channelId ?? contentId,
+                                windowMinutes: repos.configuration.catchUpDefaultWindowMinutes,
+                                targetLanguage: state.selectedAILanguage
+                            )
+                        }
                     }
                 },
                 onDecline: {

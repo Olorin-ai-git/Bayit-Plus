@@ -131,6 +131,10 @@ extension TVPlayerView {
     func initializeViewModels() {
         resolveBYOCCapabilities()
 
+        let vm = BetaCreditsViewModel(repository: repos.betaCredits)
+        creditsVM = vm
+        Task { await vm.loadBalance() }
+
         if isLive {
             let vm = CatchUpViewModel(repository: repos.liveTV, localization: localization)
             state.catchUpVM = vm

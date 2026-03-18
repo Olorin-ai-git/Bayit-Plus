@@ -84,10 +84,33 @@ extension TVSubtitleLanguagePickerView {
         }
 
         if item.isAI, !isAvailable {
-            if let hm = item.hebrewMode, hm != .standard {
+            let isAIMode = (item.hebrewMode != nil && item.hebrewMode != .standard)
+                || (item.englishMode != nil && item.englishMode != .standard)
+            guard isAIMode else { return }
+
+            if let coordinator = creditCoordinator,
+               let balance = creditBalance
+            {
                 pendingGenerationItem = item
-            } else if let em = item.englishMode, em != .standard {
+                coordinator.onConfirmed = { _, _ in
+                    let captured = item
+                    pendingGenerationItem = nil
+                    confirmAndGenerate(captured)
+                }
+                coordinator.onDeclined = {
+                    pendingGenerationItem = nil
+                }
+                coordinator.onUpgradeRequested = {
+                    pendingGenerationItem = nil
+                }
+                coordinator.present(
+                    feature: .subtitleGeneration,
+                    balance: balance
+                )
+            } else {
                 pendingGenerationItem = item
+                confirmAndGenerate(item)
+                pendingGenerationItem = nil
             }
             return
         }

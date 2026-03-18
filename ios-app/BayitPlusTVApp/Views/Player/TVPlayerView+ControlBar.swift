@@ -82,11 +82,7 @@ extension TVPlayerView {
             onSpeed: { state.showSpeedControl = true },
             onTalk: state.interactionVM != nil
                 && (appConfiguration.ownerMode || !isOwnerOnlyContent) ? {
-                    if state.hasVoiceClone {
-                        Task { await startPauseAskInteraction() }
-                    } else {
-                        Task { await openCharacterSelection() }
-                    }
+                    Task { await openCharacterSelection() }
                 } : nil,
             onVocabulary: state.interactiveSubtitleVM != nil ? {
                 state.showVocabulary = true

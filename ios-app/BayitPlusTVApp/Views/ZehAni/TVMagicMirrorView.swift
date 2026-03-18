@@ -19,6 +19,7 @@
         @State var player: AVPlayer?
         @State var avatars: [StarStoryAvatar] = []
         @State var selectedAvatarId: String?
+        @State private var showAvatarManagement = false
         @FocusState private var refreshButtonFocused: Bool
 
         var body: some View {
@@ -38,6 +39,14 @@
             .onAppear {
                 loadGreeting()
             }
+            .fullScreenCover(isPresented: $showAvatarManagement) {
+                TVAvatarManagementView(profileId: profileId)
+                    .tvBreadcrumb(
+                        localization.t("zehAni.avatarManagement.createNew"),
+                        icon: "person.crop.rectangle.stack"
+                    )
+                    .onDisappear { loadGreeting() }
+            }
         }
 
         private func greetingContent(_ greeting: MagicMirrorGreeting) -> some View {
@@ -53,8 +62,29 @@
 
                     TVMagicMirrorVocabularyCard(greeting: greeting)
 
-                    TVMagicMirrorRefreshButton(isFocused: $refreshButtonFocused) {
-                        loadGreeting()
+                    HStack(spacing: TVDesignTokens.Spacing.lg) {
+                        TVMagicMirrorRefreshButton(isFocused: $refreshButtonFocused) {
+                            loadGreeting()
+                        }
+
+                        Button { showAvatarManagement = true } label: {
+                            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                                Image(systemName: "person.crop.rectangle.stack")
+                                    .font(.system(
+                                        size: TVDesignTokens.FontSize.base,
+                                        weight: .semibold
+                                    ))
+                                Text(localization.t("zehAni.magicMirror.manageAvatar"))
+                                    .font(.system(
+                                        size: TVDesignTokens.FontSize.base,
+                                        weight: .semibold
+                                    ))
+                            }
+                            .foregroundStyle(DesignTokens.Text.primary)
+                            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                            .padding(.vertical, TVDesignTokens.Spacing.md)
+                        }
+                        .tvCardStyle()
                     }
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)

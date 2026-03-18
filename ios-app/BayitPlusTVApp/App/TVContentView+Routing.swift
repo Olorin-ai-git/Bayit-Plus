@@ -52,6 +52,8 @@
                 TVBYOCDetailView(item: item)
             case .subscriptionGate:
                 TVSubscriptionView()
+            case .continueWatchingBrowse:
+                TVContinueWatchingBrowseView()
             default:
                 EmptyView()
                     .onAppear { coordinator.dismissFullscreen() }

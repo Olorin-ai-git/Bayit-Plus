@@ -41,7 +41,7 @@
 
         var body: some View {
             ZStack {
-                Color.black.opacity(0.6).ignoresSafeArea()
+                Color.black.opacity(0.7).ignoresSafeArea()
 
                 VStack(spacing: TVDesignTokens.Spacing.xl) {
                     headerSection
@@ -56,16 +56,35 @@
                 }
                 .padding(TVDesignTokens.Spacing.xxl)
                 .frame(maxWidth: 600)
-                .background(DesignTokens.Glass.bgStrong)
+                .background(modalBackground)
                 .clipShape(
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 )
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                        .stroke(DesignTokens.Glass.borderBright, lineWidth: 1.5)
+                )
+                .shadow(color: .black.opacity(0.6), radius: 40, y: 16)
             }
             .focusSection()
             .accessibilityAddTraits(.isModal)
             .onAppear { startCountdown() }
             .onDisappear { countdownTask?.cancel() }
             .onExitCommand { onDecline() }
+        }
+
+        // MARK: - Background
+
+        private var modalBackground: some View {
+            ZStack {
+                Image("onboarding_catchup_byoc")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .overlay(Color.black.opacity(0.75))
+
+                Color.black.opacity(0.3)
+                DesignTokens.Glass.bgStrong
+            }
         }
 
         // MARK: - Header

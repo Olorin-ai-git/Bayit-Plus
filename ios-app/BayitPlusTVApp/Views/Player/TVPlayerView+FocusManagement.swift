@@ -82,12 +82,32 @@ extension TVPlayerView {
     func toggleLiveDubbing() {
         guard let vm = state.liveDubbingVM else { return }
 
-        if !vm.isEnabled {
-            if state.liveSubtitlesVM?.isEnabled == true {
-                state.liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
-            }
-            vm.selectLanguage(state.selectedAILanguage, channelId: contentId)
+        if vm.isEnabled {
+            vm.toggleDubbing(channelId: contentId)
+            return
         }
+
+        guard let balance = creditsVM?.balance else {
+            enableDubbingDirectly(vm)
+            return
+        }
+
+        creditCoordinator.onConfirmed = { [weak vm] _, _ in
+            guard let vm else { return }
+            self.enableDubbingDirectly(vm)
+        }
+        creditCoordinator.onDeclined = nil
+        creditCoordinator.present(
+            feature: .liveDubbing,
+            balance: balance
+        )
+    }
+
+    private func enableDubbingDirectly(_ vm: LiveDubbingViewModel) {
+        if state.liveSubtitlesVM?.isEnabled == true {
+            state.liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+        }
+        vm.selectLanguage(state.selectedAILanguage, channelId: contentId)
         vm.toggleDubbing(channelId: contentId)
     }
 
@@ -218,7 +238,11 @@ extension TVPlayerView {
 
         toggleLiveTrivia()
 
-        state.showControlButtons = false
+        state.isDockFocused = false
+        state.overlayHideTask?.cancel()
+        withAnimation(.easeInOut(duration: 0.25)) {
+            state.showControlButtons = false
+        }
     }
 
     func loadSplitSubtitleAvailability() async {

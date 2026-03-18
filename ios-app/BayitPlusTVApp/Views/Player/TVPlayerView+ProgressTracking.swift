@@ -26,24 +26,17 @@ extension TVPlayerView {
         do {
             let status = try await repos.avatarMeshRepository
                 .fetchAvatarStatus(avatarId: "any")
-            guard let imageUrl = status.avatarImageUrl,
-                  status.status == "ready"
-            else {
+            if let imageUrl = status.avatarImageUrl,
+               status.status == "ready"
+            {
+                state.avatarImageUrl = imageUrl
+                state.resolvedAvatarId = status.avatarId
+                state.hasVoiceClone = status.hasVoiceClone
+            } else {
                 logger.info("Avatar not ready: \(status.status)")
-                await MainActor.run {
-                    withAnimation { state.showNoAvatarWarning = true }
-                }
-                return
             }
-            state.avatarImageUrl = imageUrl
-            state.resolvedAvatarId = status.avatarId
-            state.hasVoiceClone = status.hasVoiceClone
         } catch {
-            logger.warning("Avatar fetch failed: \(error)")
-            await MainActor.run {
-                withAnimation { state.showNoAvatarWarning = true }
-            }
-            return
+            logger.warning("Avatar fetch failed, continuing without avatar")
         }
 
         let vm = VODInteractionViewModel(

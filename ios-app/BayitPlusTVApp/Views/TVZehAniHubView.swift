@@ -34,16 +34,14 @@
         @FocusState var focusedCard: ZehAniFeatureCard?
 
         var body: some View {
-            NavigationStack {
-                ZStack {
-                    TVZehAniBackgroundLayer()
-                    TVZehAniAmbientGlowLayer()
-                    mainContent
-                }
-                .ignoresSafeArea()
-                .navigationDestination(item: $navigationTarget) { card in
-                    cardDestination(card)
-                }
+            ZStack {
+                TVZehAniBackgroundLayer()
+                TVZehAniAmbientGlowLayer()
+                mainContent
+            }
+            .ignoresSafeArea()
+            .fullScreenCover(item: $navigationTarget) { card in
+                cardDestination(card)
             }
             .task { await loadProfile() }
         }

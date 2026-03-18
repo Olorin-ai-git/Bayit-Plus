@@ -36,7 +36,7 @@ struct TVLiveSubtitleOverlayView: View {
                 Text(translatedText)
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundColor(.white)
-                Text(SubtitleLanguageInfo.emojiFlag(for: targetLang))
+                Text(SubtitleLanguages.emojiFlag(for: targetLang))
                     .font(.system(size: TVDesignTokens.FontSize.sm))
             }
             .multilineTextAlignment(.center)
@@ -46,7 +46,7 @@ struct TVLiveSubtitleOverlayView: View {
                     Text(originalText)
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)
-                    Text(SubtitleLanguageInfo.emojiFlag(for: sourceLang))
+                    Text(SubtitleLanguages.emojiFlag(for: sourceLang))
                         .font(.system(size: TVDesignTokens.FontSize.xs))
                 }
                 .multilineTextAlignment(.center)
@@ -63,13 +63,13 @@ struct TVLiveSubtitleOverlayView: View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
             subtitlePane(
                 text: translatedText,
-                flag: SubtitleLanguageInfo.emojiFlag(for: targetLang)
+                flag: SubtitleLanguages.emojiFlag(for: targetLang)
             )
 
             if !originalText.isEmpty {
                 subtitlePane(
                     text: originalText,
-                    flag: SubtitleLanguageInfo.emojiFlag(for: sourceLang)
+                    flag: SubtitleLanguages.emojiFlag(for: sourceLang)
                 )
             }
         }

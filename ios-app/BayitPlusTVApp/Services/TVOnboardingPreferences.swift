@@ -40,9 +40,12 @@ final class TVOnboardingPreferences {
         set { UserDefaults.standard.set(newValue, forKey: key(for: .byocBannerDismissed)) }
     }
 
+    /// Stored property so @Observable tracks changes and triggers SwiftUI updates.
     var homepageStyle: String {
-        get { string(for: .homepageStyle) ?? "cinematic" }
-        set { set(newValue, for: .homepageStyle) }
+        didSet {
+            guard homepageStyle != oldValue else { return }
+            set(homepageStyle, for: .homepageStyle)
+        }
     }
 
     var isCinematicHome: Bool {
@@ -55,6 +58,8 @@ final class TVOnboardingPreferences {
 
     init(profileId: String) {
         self.profileId = profileId
+        let styleKey = "tv.bayit.plus.onboarding.\(profileId).homepageStyle"
+        homepageStyle = UserDefaults.standard.string(forKey: styleKey) ?? "cinematic"
     }
 
     /// Reload preferences for a different profile.

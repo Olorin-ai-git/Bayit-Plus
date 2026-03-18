@@ -48,7 +48,9 @@ extension TVPlayerView {
             },
             onSubtitlesRefresh: {
                 Task { await loadAvailableLanguages() }
-            }
+            },
+            creditCoordinator: creditCoordinator,
+            creditBalance: creditsVM?.balance
         )
     }
 

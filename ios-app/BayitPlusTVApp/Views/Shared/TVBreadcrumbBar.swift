@@ -40,15 +40,13 @@
         }
 
         private var backButton: some View {
-            Button { dismiss() } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .frame(width: 44, height: 44)
-                    .background(DesignTokens.Glass.bgMedium)
-                    .clipShape(Circle())
-            }
-            .tvCardStyle()
+            Image(systemName: "chevron.left")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .frame(width: 44, height: 44)
+                .background(DesignTokens.Glass.bgMedium)
+                .clipShape(Circle())
+                .allowsHitTesting(false)
         }
 
         private func tabRootLabel(title: String, icon: String) -> some View {
