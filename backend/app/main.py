@@ -394,8 +394,9 @@ app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 
 # Validation errors (422 Unprocessable Entity)
+# Only RequestValidationError maps to 422 — pydantic.ValidationError from internal
+# model/document deserialization is a server-side error and falls through to 500.
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(ValidationError, validation_exception_handler)
 
 # Database errors (503 Service Unavailable)
 app.add_exception_handler(PyMongoError, database_exception_handler)

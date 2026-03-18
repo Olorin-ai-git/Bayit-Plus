@@ -13,7 +13,6 @@ from typing import Union
 from fastapi import Request, status
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
 from pymongo.errors import PyMongoError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -48,30 +47,22 @@ async def http_exception_handler(
 
 
 async def validation_exception_handler(
-    request: Request, exc: Union[RequestValidationError, ValidationError]
+    request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     """
-    Handle Pydantic validation errors.
+    Handle FastAPI request validation errors (422 Unprocessable Entity).
 
-    Returns 422 Unprocessable Entity with detailed validation error information.
+    Only handles RequestValidationError — pydantic.ValidationError from internal
+    model deserialization is a server-side error and is handled by global_exception_handler.
     """
     errors = []
 
-    if isinstance(exc, RequestValidationError):
-        for error in exc.errors():
-            errors.append({
-                "loc": error.get("loc", []),
-                "msg": error.get("msg", ""),
-                "type": error.get("type", ""),
-            })
-    else:
-        # Pydantic ValidationError
-        for error in exc.errors():
-            errors.append({
-                "loc": error.get("loc", []),
-                "msg": error.get("msg", ""),
-                "type": error.get("type", ""),
-            })
+    for error in exc.errors():
+        errors.append({
+            "loc": error.get("loc", []),
+            "msg": error.get("msg", ""),
+            "type": error.get("type", ""),
+        })
 
     logger.warning(
         f"Validation error: {len(errors)} error(s)",

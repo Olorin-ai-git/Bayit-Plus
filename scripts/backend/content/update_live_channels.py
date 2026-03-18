@@ -13,7 +13,7 @@ verified_channels = [
         "name": "כאן 11",
         "description": "Kan 11 - Israeli Public Broadcasting",
         "stream_url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/kan11/live.livx/playlist.m3u8",
-        "thumbnail": "https://www.kan.org.il/media/lpadeq2p/%D7%9C%D7%95%D7%92%D7%95-%D7%9B%D7%90%D7%9F-%D7%A2%D7%9D-%D7%A1%D7%A8%D7%98-%D7%A6%D7%94%D7%95%D7%91.svg?rmode=pad&rnd=133624915040200000",
+        "thumbnail": "https://storage.googleapis.com/bayit-plus-media-new/live-channels/kan-11-poster.jpeg",
         "order": 1,
     },
     {

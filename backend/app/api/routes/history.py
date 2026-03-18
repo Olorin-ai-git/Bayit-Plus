@@ -1,13 +1,19 @@
+import re
 from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
+_OBJECT_ID_RE = re.compile(r"^[0-9a-fA-F]{24}$")
+
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content, Podcast, PodcastEpisode
 from app.models.user import User
 from app.models.watchlist import WatchHistory
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -42,6 +48,13 @@ async def get_history(
 
     for item in items:
         if item.content_id in seen_content_ids:
+            continue
+
+        if not _OBJECT_ID_RE.match(item.content_id):
+            logger.warning(
+                "Skipping history item with invalid content_id format",
+                extra={"content_id": item.content_id, "user_id": str(current_user.id)},
+            )
             continue
 
         if item.content_type == "podcast":
@@ -118,18 +131,26 @@ async def get_continue_watching(
     if not current_user:
         return {"items": []}
 
-    items = (
-        await WatchHistory.find(
-            {
-                "user_id": str(current_user.id),
-                "completed": False,
-                "progress_percent": {"$gt": 5}  # At least 5% watched
-            }
+    try:
+        items = (
+            await WatchHistory.find(
+                {
+                    "user_id": str(current_user.id),
+                    "completed": False,
+                    "progress_percent": {"$gt": 5}  # At least 5% watched
+                }
+            )
+            .sort("-last_watched_at")
+            .limit(20)  # Fetch more to deduplicate
+            .to_list()
         )
-        .sort("-last_watched_at")
-        .limit(20)  # Fetch more to deduplicate
-        .to_list()
-    )
+    except ValidationError:
+        logger.error(
+            "WatchHistory document deserialization failed",
+            extra={"user_id": str(current_user.id)},
+            exc_info=True,
+        )
+        return {"items": []}
 
     result = []
     seen_content_ids = set()  # Deduplicate by content_id
@@ -137,6 +158,13 @@ async def get_continue_watching(
 
     for item in items:
         if item.content_id in seen_content_ids:
+            continue
+
+        if not _OBJECT_ID_RE.match(item.content_id):
+            logger.warning(
+                "Skipping history item with invalid content_id format",
+                extra={"content_id": item.content_id, "user_id": str(current_user.id)},
+            )
             continue
 
         if item.content_type == "podcast":
