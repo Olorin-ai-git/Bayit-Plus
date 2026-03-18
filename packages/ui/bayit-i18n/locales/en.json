@@ -5150,6 +5150,7 @@
   "home": {
     "title": "Home",
     "continueWatching": "Continue Watching",
+    "noContinueWatching": "Nothing in progress",
     "featuredContent": "Featured",
     "liveTV": "Live TV",
     "allChannels": "All Channels",
@@ -5302,7 +5303,9 @@
   },
   "dock": {
     "liveAI": "Live AI",
-    "movieAI": "Movie AI"
+    "movieAI": "Movie AI",
+    "classic": "Classic",
+    "cinematic": "Cinematic"
   },
   "jerusalem": {
     "title": "Jerusalem Connection",
@@ -6195,7 +6198,8 @@
         "generic1": "{{name}} is thinking...",
         "generic2": "{{name}} is crafting a response...",
         "generic3": "Almost there...",
-        "generic4": "Just a moment longer..."
+        "generic4": "Just a moment longer...",
+        "enjoyMovie": "This takes a minute or two -- enjoy the movie while we prepare the response"
       },
       "askAgain": "Ask Again",
       "placeholder": "Ask about this scene...",
@@ -11252,7 +11256,14 @@
       "noCreditsDesc": "You need Beta credits to use Magic Mirror",
       "playGreeting": "Play Greeting",
       "refresh": "Refresh",
-      "meshUnavailable": "3D mesh unavailable"
+      "manageAvatar": "Manage Avatar",
+      "meshUnavailable": "3D mesh unavailable",
+      "createGuideTitle": "Create Avatar on Mobile",
+      "createGuideStep1": "Open the Bayit+ app on your iPhone or iPad",
+      "createGuideStep2": "Go to Zeh Ani and tap Create Avatar",
+      "createGuideStep3": "Record a short video of your face",
+      "createGuideStep4": "Your avatar will appear here automatically",
+      "createGuideHint": "Sign in with the same account on both devices"
     },
     "mesh": {
       "title": "Generate 3D Mesh",
@@ -11420,6 +11431,19 @@
       "createNew": "Create New",
       "delete": "Delete",
       "setActive": "Set Active"
+    },
+    "pairing": {
+      "scanTitle": "Scan to Create Avatar",
+      "scanSubtitle": "Open Bayit+ on your phone and scan this code",
+      "codeLabel": "Or enter code manually:",
+      "phoneConnected": "Phone connected",
+      "creatingAvatar": "Creating avatar on your phone...",
+      "completed": "Avatar created successfully!",
+      "expired": "Session expired",
+      "retryButton": "Try Again",
+      "mobileLanding": "Create Avatar for TV",
+      "mobileLandingDesc": "Record a short video selfie to create your avatar",
+      "sentToTV": "Avatar sent to your TV!"
     }
   },
   "security": {
@@ -12230,6 +12254,33 @@
       "loading": {
         "findingVideos": "Finding your videos...",
         "preparingAI": "Preparing AI features..."
+      }
+    },
+    "confirm": {
+      "title": {
+        "default": "Confirm AI Feature"
+      },
+      "cost": "Cost: {{cost}} credits",
+      "balanceAfter": "Balance after: {{balance}} credits",
+      "balanceInsufficient": "Not enough credits",
+      "accept": "Confirm ({{cost}} credits)",
+      "acceptUpgrade": "Upgrade to Plus",
+      "decline": "Not Now",
+      "dubbing": {
+        "title": "Live Dubbing",
+        "description": "AI-powered real-time dubbing in your language",
+        "costLabel": "~1 credit per second",
+        "continueTitle": "Continue Dubbing?"
+      },
+      "subtitle": {
+        "title": "AI Subtitle Generation",
+        "description": "Generate enhanced subtitles with AI",
+        "costLabel": "15 credits"
+      },
+      "catchup": {
+        "title": "Catch Me Up",
+        "description": "AI summary of what you missed",
+        "costLabel": "1 credit"
       }
     }
   },

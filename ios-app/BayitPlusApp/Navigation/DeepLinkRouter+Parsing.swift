@@ -58,6 +58,9 @@ extension DeepLink {
             }
             return .directMessages
 
+        case "pair":
+            return parsePairRoute(pathComponents: pathComponents)
+
         case "tv-login":
             return parseTVLoginRoute(url: url)
 
@@ -102,6 +105,17 @@ extension DeepLink {
             guard let id = contentId else { return nil }
             return .player(contentId: id, contentType: .movie, resume: false)
         }
+    }
+
+    // MARK: - Pair Route (tvOS Avatar QR)
+
+    private static func parsePairRoute(pathComponents: [String]) -> Route? {
+        // Expected: ["pair", "avatar", "{sessionId}"]
+        guard pathComponents.count >= 3,
+              pathComponents[1] == "avatar",
+              let sessionId = sanitizeID(pathComponents[2])
+        else { return nil }
+        return .avatarPairing(sessionId: sessionId)
     }
 
     // MARK: - TV Login Route

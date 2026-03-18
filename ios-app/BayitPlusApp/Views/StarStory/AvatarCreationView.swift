@@ -1,5 +1,6 @@
 import BayitDesignSystem
 import BayitLocalization
+import BayitNetworking
 import SwiftUI
 
 struct AvatarCreationView: View {
@@ -12,6 +13,7 @@ struct AvatarCreationView: View {
     let viewModel: StarStoryViewModel?
     var skipConsent: Bool = false
     var existingAvatarId: String?
+    var pairingSessionId: String?
 
     @State private var currentStep: CreationStep = .consent
     @State private var consentAccepted = false
@@ -190,10 +192,22 @@ struct AvatarCreationView: View {
             self.videoData = nil
             familyPin = ""
             isUploading = false
+            if let sessionId = pairingSessionId {
+                await notifyPairingComplete(sessionId: sessionId, avatarId: avatarId)
+            }
             showPersonaCreation = true
         } else {
             isUploading = false
             errorMessage = viewModel?.errorMessage
         }
+    }
+
+    private func notifyPairingComplete(sessionId: String, avatarId: String) async {
+        struct CompleteResponse: Decodable { let status: String }
+        _ = try? await repos.apiClient.post(
+            "zeh-ani/avatar/pairing/\(sessionId)/complete",
+            body: ["avatar_id": avatarId],
+            as: CompleteResponse.self
+        )
     }
 }

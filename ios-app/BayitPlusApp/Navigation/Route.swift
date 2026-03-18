@@ -152,6 +152,9 @@ public enum Route: Hashable {
     case zehAniMovieCharacters(profileId: String, contentId: String)
     case zehAniCharacterDialogue(profileId: String, contentId: String, characterName: String)
 
+    /// Avatar Pairing (tvOS QR code flow)
+    case avatarPairing(sessionId: String)
+
     /// Interactive Mission
     case interactiveMission(missionId: String, profileId: String)
 }

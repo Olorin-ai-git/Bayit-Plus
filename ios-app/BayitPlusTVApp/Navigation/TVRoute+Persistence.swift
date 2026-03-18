@@ -20,7 +20,7 @@ extension TVRoute {
              .audiobooks, .audiobookBrowse, .podcastBrowse,
              .help, .missions, .missionsLeaderboard, .shekelsWallet,
              .couponShop, .cultureDetail, .aiCompanion, .catchUpSummary,
-             .quiz, .watchlist, .downloads, .judaism, .byocDetail:
+             .quiz, .watchlist, .downloads, .judaism, .byocDetail, .continueWatchingBrowse:
             return nil
         }
     }

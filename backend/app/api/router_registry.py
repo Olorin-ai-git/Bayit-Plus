@@ -133,6 +133,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.zeh_ani import mirror_routes as za_mirror
     from app.api.routes.zeh_ani import highlight_routes as za_highlights
     from app.api.routes.zeh_ani import whatsapp_routes as za_whatsapp
+    from app.api.routes.zeh_ani import avatar_pairing as za_avatar_pairing
     # Movie Interactions Hub (Zeh Ani Phase 4)
     from app.api.routes import movie_interactions
     # Device code authentication routes (TV login - RFC 8628)
@@ -671,6 +672,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(za_mirror.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_highlights.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_whatsapp.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_avatar_pairing.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(
         movie_interactions.router, prefix=prefix, tags=["movie-interactions"]
     )

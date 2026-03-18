@@ -5148,6 +5148,7 @@
   "home": {
     "title": "ホーム",
     "continueWatching": "視聴を続ける",
+    "noContinueWatching": "視聴中のコンテンツはありません",
     "featuredContent": "注目",
     "liveTV": "ライブTV",
     "allChannels": "すべてのチャンネル",
@@ -6119,7 +6120,8 @@
         "generic1": "{{name}}が考えています...",
         "generic2": "{{name}}が返答を準備中...",
         "generic3": "もう少しです...",
-        "generic4": "あと少しお待ちください..."
+        "generic4": "あと少しお待ちください...",
+        "enjoyMovie": これには1、2分かかります -- 返事を準備する間、映画をお楽しみください
       },
       "askAgain": "[ja] Ask Again",
       "placeholder": "[ja] Ask about this scene...",
@@ -11314,6 +11316,19 @@
       "createNew": "Create New",
       "delete": "Delete",
       "setActive": "Set Active"
+    },
+    "pairing": {
+      "scanTitle": "スキャンしてアバターを作成",
+      "scanSubtitle": "スマートフォンでBayit+を開き、このコードをスキャンしてください",
+      "codeLabel": "またはコードを手動で入力:",
+      "phoneConnected": "スマートフォンが接続されました",
+      "creatingAvatar": "スマートフォンでアバターを作成中...",
+      "completed": "アバターが正常に作成されました！",
+      "expired": "セッションが期限切れになりました",
+      "retryButton": "もう一度試す",
+      "mobileLanding": "TV用アバターを作成",
+      "mobileLandingDesc": "短い動画セルフィーを撮影してアバターを作成してください",
+      "sentToTV": "アバターがTVに送信されました！"
     }
   },
   "security": {
@@ -12124,6 +12139,31 @@
       "loading": {
         "findingVideos": "動画を検索中...",
         "preparingAI": "AI機能を準備中..."
+      }
+    },
+    "confirm": {
+      "title": { "default": "AI機能の確認" },
+      "cost": "コスト：{{cost}} クレジット",
+      "balanceAfter": "使用後の残高：{{balance}} クレジット",
+      "balanceInsufficient": "クレジットが不足しています",
+      "accept": "確認（{{cost}} クレジット）",
+      "acceptUpgrade": "Plusにアップグレード",
+      "decline": "今はしない",
+      "dubbing": {
+        "title": "ライブ吹替",
+        "description": "AIによるリアルタイム吹替",
+        "costLabel": "約1クレジット/秒",
+        "continueTitle": "吹替を続けますか？"
+      },
+      "subtitle": {
+        "title": "AI字幕生成",
+        "description": "AIで強化された字幕を生成",
+        "costLabel": "15クレジット"
+      },
+      "catchup": {
+        "title": "追いつかせて",
+        "description": "見逃した内容のAI要約",
+        "costLabel": "1クレジット"
       }
     }
   },

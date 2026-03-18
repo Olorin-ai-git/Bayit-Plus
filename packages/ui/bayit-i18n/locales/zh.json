@@ -5148,6 +5148,7 @@
   "home": {
     "title": "首页",
     "continueWatching": "继续观看",
+    "noContinueWatching": "没有正在进行的内容",
     "featuredContent": "精选",
     "liveTV": "直播电视",
     "allChannels": "所有频道",
@@ -6127,7 +6128,8 @@
         "generic1": "{{name}}正在思考...",
         "generic2": "{{name}}正在组织回答...",
         "generic3": "快好了...",
-        "generic4": "再等一会儿..."
+        "generic4": "再等一会儿...",
+        "enjoyMovie": 这需要一两分钟 -- 请在我们准备回复时继续欣赏电影
       },
       "askAgain": "[zh] Ask Again",
       "placeholder": "[zh] Ask about this scene...",
@@ -11323,6 +11325,19 @@
       "createNew": "Create New",
       "delete": "Delete",
       "setActive": "Set Active"
+    },
+    "pairing": {
+      "scanTitle": "扫描以创建头像",
+      "scanSubtitle": "在手机上打开 Bayit+ 并扫描此二维码",
+      "codeLabel": "或手动输入代码：",
+      "phoneConnected": "手机已连接",
+      "creatingAvatar": "正在手机上创建头像...",
+      "completed": "头像创建成功！",
+      "expired": "会话已过期",
+      "retryButton": "重试",
+      "mobileLanding": "为电视创建头像",
+      "mobileLandingDesc": "录制一段简短的自拍视频以创建您的头像",
+      "sentToTV": "头像已发送到您的电视！"
     }
   },
   "security": {
@@ -12133,6 +12148,31 @@
       "loading": {
         "findingVideos": "正在查找你的视频...",
         "preparingAI": "正在准备AI功能..."
+      }
+    },
+    "confirm": {
+      "title": { "default": "确认AI功能" },
+      "cost": "费用：{{cost}} 积分",
+      "balanceAfter": "使用后余额：{{balance}} 积分",
+      "balanceInsufficient": "积分不足",
+      "accept": "确认（{{cost}} 积分）",
+      "acceptUpgrade": "升级到Plus",
+      "decline": "暂时不要",
+      "dubbing": {
+        "title": "实时配音",
+        "description": "AI驱动的实时语言配音",
+        "costLabel": "约1积分/秒",
+        "continueTitle": "继续配音？"
+      },
+      "subtitle": {
+        "title": "AI字幕生成",
+        "description": "使用AI生成增强字幕",
+        "costLabel": "15积分"
+      },
+      "catchup": {
+        "title": "帮我补课",
+        "description": "AI总结您错过的内容",
+        "costLabel": "1积分"
       }
     }
   },

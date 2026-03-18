@@ -163,6 +163,8 @@ struct RouteDestinationResolver {
             MovieCharactersView(profileId: profileId, contentId: contentId)
         case let .zehAniCharacterDialogue(profileId, contentId, characterName):
             CharacterDialogueView(profileId: profileId, contentId: contentId, characterName: characterName)
+        case let .avatarPairing(sessionId):
+            AvatarPairingLandingView(sessionId: sessionId)
         case let .tvLogin(sessionId, token, expires):
             TVLoginView(sessionId: sessionId, token: token, expires: expires)
         case let .interactiveMission(missionId, profileId):

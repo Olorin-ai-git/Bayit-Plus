@@ -135,6 +135,7 @@ public final class NavigationCoordinator {
              .zehAniAvatarSettings,
              .zehAniMovieInteractions, .zehAniMovieCharacters,
              .zehAniCharacterDialogue,
+             .avatarPairing,
              .interactiveMission:
             pushToCurrentTab(route)
         }

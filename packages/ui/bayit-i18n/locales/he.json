@@ -5148,6 +5148,7 @@
   "home": {
     "title": "בית",
     "continueWatching": "המשך צפייה",
+    "noContinueWatching": "אין כרגע תוכן בצפייה",
     "featuredContent": "מומלצים",
     "liveTV": "שידור חי",
     "allChannels": "לכל הערוצים",
@@ -6135,7 +6136,8 @@
         "generic1": "{{name}} חושב...",
         "generic2": "{{name}} מנסח תשובה...",
         "generic3": "כמעט שם...",
-        "generic4": "רק עוד רגע..."
+        "generic4": "רק עוד רגע...",
+        "enjoyMovie": זה לוקח דקה או שתיים -- תהנו מהסרט בינתיים בזמן שאנחנו מכינים את התשובה
       },
       "askAgain": "שאל שוב",
       "placeholder": "שאל על הסצנה הזו...",
@@ -11328,6 +11330,19 @@
       "createNew": "Create New",
       "delete": "Delete",
       "setActive": "Set Active"
+    },
+    "pairing": {
+      "scanTitle": "סרוק ליצירת אווטאר",
+      "scanSubtitle": "פתח את Bayit+ בטלפון שלך וסרוק את הקוד",
+      "codeLabel": "או הזן קוד ידנית:",
+      "phoneConnected": "הטלפון מחובר",
+      "creatingAvatar": "יוצר אווטאר בטלפון שלך...",
+      "completed": "האווטאר נוצר בהצלחה!",
+      "expired": "פג תוקף הסשן",
+      "retryButton": "נסה שוב",
+      "mobileLanding": "צור אווטאר לטלוויזיה",
+      "mobileLandingDesc": "צלם סרטון סלפי קצר ליצירת האווטאר שלך",
+      "sentToTV": "האווטאר נשלח לטלוויזיה שלך!"
     }
   },
   "security": {
@@ -12138,6 +12153,31 @@
       "loading": {
         "findingVideos": "מחפש את הסרטונים שלך...",
         "preparingAI": "מכין תכונות AI..."
+      }
+    },
+    "confirm": {
+      "title": { "default": "אישור תכונת AI" },
+      "cost": "עלות: {{cost}} קרדיטים",
+      "balanceAfter": "יתרה לאחר: {{balance}} קרדיטים",
+      "balanceInsufficient": "אין מספיק קרדיטים",
+      "accept": "אישור ({{cost}} קרדיטים)",
+      "acceptUpgrade": "שדרוג ל-Plus",
+      "decline": "לא עכשיו",
+      "dubbing": {
+        "title": "דיבוב חי",
+        "description": "דיבוב בזמן אמת מונע AI בשפה שלך",
+        "costLabel": "~1 קרדיט לשנייה",
+        "continueTitle": "להמשיך דיבוב?"
+      },
+      "subtitle": {
+        "title": "יצירת כתוביות AI",
+        "description": "יצירת כתוביות משופרות עם AI",
+        "costLabel": "15 קרדיטים"
+      },
+      "catchup": {
+        "title": "עדכן אותי",
+        "description": "סיכום AI של מה שהחמצת",
+        "costLabel": "1 קרדיט"
       }
     }
   },

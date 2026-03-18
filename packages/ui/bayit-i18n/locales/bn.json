@@ -5148,6 +5148,7 @@
   "home": {
     "title": "হোম",
     "continueWatching": "দেখা চালিয়ে যান",
+    "noContinueWatching": "কোনো বিষয়বস্তু চলছে না",
     "featuredContent": "ফিচার্ড",
     "liveTV": "লাইভ TV",
     "allChannels": "সব চ্যানেল",
@@ -6132,7 +6133,8 @@
         "generic1": "{{name}} ভাবছে...",
         "generic2": "{{name}} উত্তর তৈরি করছে...",
         "generic3": "প্রায় হয়ে গেছে...",
-        "generic4": "আর একটু..."
+        "generic4": "আর একটু...",
+        "enjoyMovie": এটি এক-দুই মিনিট সময় নেয় -- আমরা উত্তর তৈরি করার সময় ছবিটি উপভোগ করুন
       },
       "askAgain": "[bn] Ask Again",
       "placeholder": "[bn] Ask about this scene...",
@@ -11328,6 +11330,19 @@
       "createNew": "Create New",
       "delete": "Delete",
       "setActive": "Set Active"
+    },
+    "pairing": {
+      "scanTitle": "অবতার তৈরি করতে স্ক্যান করুন",
+      "scanSubtitle": "আপনার ফোনে Bayit+ খুলুন এবং এই কোডটি স্ক্যান করুন",
+      "codeLabel": "অথবা কোড ম্যানুয়ালি প্রবেশ করুন:",
+      "phoneConnected": "ফোন সংযুক্ত হয়েছে",
+      "creatingAvatar": "আপনার ফোনে অবতার তৈরি হচ্ছে...",
+      "completed": "অবতার সফলভাবে তৈরি হয়েছে!",
+      "expired": "সেশন মেয়াদ শেষ হয়েছে",
+      "retryButton": "আবার চেষ্টা করুন",
+      "mobileLanding": "TV-র জন্য অবতার তৈরি করুন",
+      "mobileLandingDesc": "আপনার অবতার তৈরি করতে একটি সংক্ষিপ্ত ভিডিও সেলফি রেকর্ড করুন",
+      "sentToTV": "অবতার আপনার TV-তে পাঠানো হয়েছে!"
     }
   },
   "security": {
@@ -12138,6 +12153,31 @@
       "loading": {
         "findingVideos": "আপনার ভিডিও খুঁজছে...",
         "preparingAI": "AI বৈশিষ্ট্য প্রস্তুত করছে..."
+      }
+    },
+    "confirm": {
+      "title": { "default": "AI ফিচার নিশ্চিত করুন" },
+      "cost": "খরচ: {{cost}} ক্রেডিট",
+      "balanceAfter": "পরে ব্যালেন্স: {{balance}} ক্রেডিট",
+      "balanceInsufficient": "পর্যাপ্ত ক্রেডিট নেই",
+      "accept": "নিশ্চিত করুন ({{cost}} ক্রেডিট)",
+      "acceptUpgrade": "Plus এ আপগ্রেড করুন",
+      "decline": "এখন না",
+      "dubbing": {
+        "title": "লাইভ ডাবিং",
+        "description": "আপনার ভাষায় AI-চালিত রিয়েল-টাইম ডাবিং",
+        "costLabel": "~1 ক্রেডিট প্রতি সেকেন্ড",
+        "continueTitle": "ডাবিং চালিয়ে যান?"
+      },
+      "subtitle": {
+        "title": "AI সাবটাইটেল তৈরি",
+        "description": "AI দিয়ে উন্নত সাবটাইটেল তৈরি করুন",
+        "costLabel": "15 ক্রেডিট"
+      },
+      "catchup": {
+        "title": "আমাকে আপডেট করুন",
+        "description": "আপনি যা মিস করেছেন তার AI সারসংক্ষেপ",
+        "costLabel": "1 ক্রেডিট"
       }
     }
   },

@@ -5148,6 +5148,7 @@
   "home": {
     "title": "होम",
     "continueWatching": "देखना जारी रखें",
+    "noContinueWatching": "कोई सामग्री प्रगति में नहीं",
     "featuredContent": "फीचर्ड",
     "liveTV": "लाइव TV",
     "allChannels": "सभी चैनल",
@@ -6132,7 +6133,8 @@
         "generic1": "{{name}} सोच रहा है...",
         "generic2": "{{name}} जवाब तैयार कर रहा है...",
         "generic3": "लगभग हो गया...",
-        "generic4": "बस एक पल और..."
+        "generic4": "बस एक पल और...",
+        "enjoyMovie": इसमें एक-दो मिनट लगते हैं -- जब तक हम जवाब तैयार करते हैं तब तक फिल्म का आनंद लें
       },
       "askAgain": "[hi] Ask Again",
       "placeholder": "[hi] Ask about this scene...",
@@ -11328,6 +11330,19 @@
       "createNew": "Create New",
       "delete": "Delete",
       "setActive": "Set Active"
+    },
+    "pairing": {
+      "scanTitle": "अवतार बनाने के लिए स्कैन करें",
+      "scanSubtitle": "अपने फ़ोन पर Bayit+ खोलें और इस कोड को स्कैन करें",
+      "codeLabel": "या कोड मैन्युअल रूप से दर्ज करें:",
+      "phoneConnected": "फ़ोन कनेक्ट हो गया",
+      "creatingAvatar": "आपके फ़ोन पर अवतार बनाया जा रहा है...",
+      "completed": "अवतार सफलतापूर्वक बनाया गया!",
+      "expired": "सत्र समाप्त हो गया",
+      "retryButton": "पुनः प्रयास करें",
+      "mobileLanding": "TV के लिए अवतार बनाएं",
+      "mobileLandingDesc": "अपना अवतार बनाने के लिए एक छोटा वीडियो सेल्फी रिकॉर्ड करें",
+      "sentToTV": "अवतार आपके TV पर भेज दिया गया!"
     }
   },
   "security": {
@@ -12138,6 +12153,31 @@
       "loading": {
         "findingVideos": "आपके वीडियो ढूंढ रहे हैं...",
         "preparingAI": "AI सुविधाएँ तैयार कर रहे हैं..."
+      }
+    },
+    "confirm": {
+      "title": { "default": "AI सुविधा की पुष्टि करें" },
+      "cost": "लागत: {{cost}} क्रेडिट",
+      "balanceAfter": "शेष बैलेंस: {{balance}} क्रेडिट",
+      "balanceInsufficient": "पर्याप्त क्रेडिट नहीं",
+      "accept": "पुष्टि करें ({{cost}} क्रेडिट)",
+      "acceptUpgrade": "Plus में अपग्रेड करें",
+      "decline": "अभी नहीं",
+      "dubbing": {
+        "title": "लाइव डबिंग",
+        "description": "आपकी भाषा में AI-संचालित रीयल-टाइम डबिंग",
+        "costLabel": "~1 क्रेडिट प्रति सेकंड",
+        "continueTitle": "डबिंग जारी रखें?"
+      },
+      "subtitle": {
+        "title": "AI उपशीर्षक निर्माण",
+        "description": "AI के साथ उन्नत उपशीर्षक बनाएं",
+        "costLabel": "15 क्रेडिट"
+      },
+      "catchup": {
+        "title": "मुझे अपडेट करो",
+        "description": "जो आपने मिस किया उसका AI सारांश",
+        "costLabel": "1 क्रेडिट"
       }
     }
   },

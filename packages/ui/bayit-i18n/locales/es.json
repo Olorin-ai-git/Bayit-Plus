@@ -5148,6 +5148,7 @@
   "home": {
     "title": "Inicio",
     "continueWatching": "Continuar Viendo",
+    "noContinueWatching": "Nada en progreso",
     "featuredContent": "Destacados",
     "liveTV": "TV en Vivo",
     "allChannels": "Todos los Canales",
@@ -6135,7 +6136,8 @@
         "generic1": "{{name}} esta pensando...",
         "generic2": "{{name}} esta elaborando una respuesta...",
         "generic3": "Casi listo...",
-        "generic4": "Solo un momento mas..."
+        "generic4": "Solo un momento mas...",
+        "enjoyMovie": Esto tarda un par de minutos -- disfruta la pelicula mientras preparamos la respuesta
       },
       "askAgain": "Preguntar de nuevo",
       "placeholder": "Pregunta sobre esta escena...",
@@ -11328,6 +11330,19 @@
       "createNew": "Create New",
       "delete": "Delete",
       "setActive": "Set Active"
+    },
+    "pairing": {
+      "scanTitle": "Escanea para crear tu avatar",
+      "scanSubtitle": "Abre Bayit+ en tu teléfono y escanea este código",
+      "codeLabel": "O ingresa el código manualmente:",
+      "phoneConnected": "Teléfono conectado",
+      "creatingAvatar": "Creando avatar en tu teléfono...",
+      "completed": "¡Avatar creado con éxito!",
+      "expired": "Sesión expirada",
+      "retryButton": "Intentar de nuevo",
+      "mobileLanding": "Crea tu avatar para la TV",
+      "mobileLandingDesc": "Graba un breve video selfie para crear tu avatar",
+      "sentToTV": "¡Avatar enviado a tu TV!"
     }
   },
   "security": {
@@ -12138,6 +12153,31 @@
       "loading": {
         "findingVideos": "Buscando tus videos...",
         "preparingAI": "Preparando funciones de IA..."
+      }
+    },
+    "confirm": {
+      "title": { "default": "Confirmar Funcion IA" },
+      "cost": "Costo: {{cost}} creditos",
+      "balanceAfter": "Saldo despues: {{balance}} creditos",
+      "balanceInsufficient": "Creditos insuficientes",
+      "accept": "Confirmar ({{cost}} creditos)",
+      "acceptUpgrade": "Actualizar a Plus",
+      "decline": "Ahora No",
+      "dubbing": {
+        "title": "Doblaje en Vivo",
+        "description": "Doblaje en tiempo real con IA en tu idioma",
+        "costLabel": "~1 credito por segundo",
+        "continueTitle": "Continuar Doblaje?"
+      },
+      "subtitle": {
+        "title": "Generacion de Subtitulos IA",
+        "description": "Genera subtitulos mejorados con IA",
+        "costLabel": "15 creditos"
+      },
+      "catchup": {
+        "title": "Ponme al Dia",
+        "description": "Resumen IA de lo que te perdiste",
+        "costLabel": "1 credito"
       }
     }
   },

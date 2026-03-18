@@ -65,6 +65,7 @@ extension Route {
         case .subscriptionGate: return "Subscribe"
         case .household: return "Household"
         case .devicePairing: return "Devices"
+        case .avatarPairing: return "Avatar Pairing"
         case .tvLogin: return "TV Sign In"
         case .helpCenter: return "Help"
         case .rewards: return "Rewards"

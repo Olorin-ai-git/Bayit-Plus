@@ -12,7 +12,7 @@
         @State private var avatars: [StarStoryAvatar] = []
         @State private var isLoading = true
         @State private var error: String?
-        @State private var showStylePicker = false
+        @State private var showCreateGuide = false
         @State private var showWardrobe = false
         @State private var wardrobeAvatarId: String = ""
 
@@ -31,10 +31,12 @@
                 }
             }
             .onAppear { loadAvatars() }
-            .sheet(isPresented: $showStylePicker) {
-                TVAvatarStylePickerView(profileId: profileId) {
-                    loadAvatars()
-                }
+            .sheet(isPresented: $showCreateGuide) {
+                TVAvatarCreateGuideView(
+                    apiClient: repos.apiClient,
+                    profileId: profileId,
+                    onAvatarCreated: { loadAvatars() }
+                )
             }
             .sheet(isPresented: $showWardrobe) {
                 TVAvatarWardrobeView(
@@ -45,11 +47,8 @@
         }
 
         private var avatarGrid: some View {
-            ScrollView {
-                LazyVGrid(
-                    columns: [GridItem(.adaptive(minimum: 240), spacing: TVDesignTokens.Spacing.lg)],
-                    spacing: TVDesignTokens.Spacing.lg
-                ) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: TVDesignTokens.Spacing.xl) {
                     ForEach(avatars) { avatar in
                         TVAvatarManagementCard(
                             avatar: avatar,
@@ -61,27 +60,41 @@
                                 showWardrobe = true
                             }
                         )
+                        .frame(width: 320)
                     }
 
                     createNewAvatarCard
+                        .frame(width: 320)
                 }
                 .padding(TVDesignTokens.Spacing.xxl)
             }
         }
 
         private var createNewAvatarCard: some View {
-            Button { showStylePicker = true } label: {
-                VStack(spacing: TVDesignTokens.Spacing.md) {
+            Button { showCreateGuide = true } label: {
+                VStack(spacing: TVDesignTokens.Spacing.lg) {
                     Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 48))
+                        .font(.system(size: 64))
                         .foregroundStyle(DesignTokens.Primary.p400)
 
                     Text(localization.t("zehAni.avatarManagement.createNew"))
-                        .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
+                        .font(.system(
+                            size: TVDesignTokens.FontSize.lg, weight: .semibold
+                        ))
                         .foregroundStyle(DesignTokens.Text.primary)
                 }
-                .frame(height: 200)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(DesignTokens.Glass.bgMedium.opacity(0.15))
+                .clipShape(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                        .strokeBorder(style: StrokeStyle(
+                            lineWidth: 1, dash: [8, 4]
+                        ))
+                )
             }
             .tvCardStyle()
         }
