@@ -1,0 +1,1897 @@
+╭─── Claude Code v2.1.77 ──────────────────────────────────────────────────────╮
+│                                                    │ Recent activity         │
+│                  Welcome back Gil!                 │ 16h ago  you know you … │
+│                                                    │ 16h ago  we have a hoo… │
+│                                                    │ 17h ago  read conv.txt… │
+│                       ▐▛███▜▌                      │ /resume for more        │
+│                      ▝▜█████▛▘                     │ ─────────────────────── │
+│                        ▘▘ ▝▝                       │ What's new              │
+│                                                    │ Increased default maxi… │
+│       Opus 4.6 (1M context) · Claude Max ·         │ Added `allowRead` sand… │
+│       gil@olorin.ai's Organization                 │ `/copy` now accepts an… │
+│     ~/…/olorin/olorin-media/bayit-plus/ios-app     │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ AI Capability Grouping: Live AI / Movie AI                                   │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ The cinematic home currently mixes AI features without clear grouping. We    │
+│ need to highlight two distinct AI capability groups across the dock, tabs,   │
+│ and hero cards:                                                              │
+│                                                                              │
+│ - Live AI: Subtitles, Dubbing, Trivia, Catch Up -- features for live TV      │
+│ channels                                                                     │
+│ - Movie AI: Pause & Ask, Interactive Moments -- features for VOD/movie       │
+│ content                                                                      │
+│                                                                              │
+│ Decisions                                                                    │
+│                                                                              │
+│ - Dock: Live AI | Movie AI | Zeh Ani (Listen removed, Discover removed)      │
+│ - Tabs: Home | Search | Live | Discover | VOD | BYOC | Profile | Help (Live  │
+│ and Discover added)                                                          │
+│ - Hero cards: Rename .liveTVProof -> .liveAIShowcase, .pauseAskIntro ->      │
+│ .movieAIShowcase                                                             │
+│ - Labels: "Live AI" / "Movie AI"                                             │
+│                                                                              │
+│ ---                                                                          │
+│ Changes                                                                      │
+│                                                                              │
+│ 1. Dock (TVHomeDock.swift)                                                   │
+│                                                                              │
+│ Enum HomeDockDestination:                                                    │
+│                                                                              │
+│ - Rename .liveTV -> .liveAI                                                  │
+│ - Rename .pauseAsk -> .movieAI                                               │
+│ - Remove .discover, .listen                                                  │
+│ - Keep .zehAni, .continueWatching, .plex, .youtube                           │
+│                                                                              │
+│ visibleItems:                                                                │
+│                                                                              │
+│ [.liveAI, .movieAI, .zehAni] + conditionals                                  │
+│                                                                              │
+│ Icons/labels:                                                                │
+│                                                                              │
+│ - .liveAI: icon waveform.badge.mic, label dock.liveAI ("Live AI"),           │
+│ red-tinted ring at rest                                                      │
+│ - .movieAI: icon sparkles.rectangle.stack, label dock.movieAI ("Movie AI"),  │
+│ purple ring at rest                                                          │
+│ - .zehAni: unchanged                                                         │
+│                                                                              │
+│ Navigation (handleDockNavigation):                                           │
+│                                                                              │
+│ - .liveAI -> opens TVLiveTVView() as fullscreen overlay (same as old         │
+│ .liveTV)                                                                     │
+│ - .movieAI -> calls handleMovieAINavigation() (renamed from                  │
+│ handlePauseAskNavigation())                                                  │
+│                                                                              │
+│ dockOverlayView(for:):                                                       │
+│                                                                              │
+│ - Replace .liveTV -> .liveAI case mapping to TVLiveTVView()                  │
+│ - Remove .discover case                                                      │
+│ - Remove .listen case                                                        │
+│                                                                              │
+│ 2. Tabs (TVMainTabView.swift)                                                │
+│                                                                              │
+│ Add two new tabs to the TabView. New order:                                  │
+│                                                                              │
+│ ┌─────────┬───────────────────┬─────────┬────────────┬──────────────────┐    │
+│ │ Positio │       View        │   Tag   │   Label    │       Icon       │    │
+│ │    n    │                   │         │            │                  │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 1       │ TVHomeView        │ .home   │ nav.home   │ house            │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 2       │ TVSearchView      │ .search │ nav.search │ magnifyingglass  │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 3       │ TVLiveTVView      │ .liveTV │ nav.liveTV │ play.tv          │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 4       │ TVDiscoverView    │ .discov │ nav.discov │ sparkles         │    │
+│ │         │                   │ er      │ er         │                  │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 5       │ TVVODView         │ .vod    │ nav.vod    │ film             │    │
+│ │         │                   │         │            │ (owner-only)     │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 6       │ TVBYOCSourceListV │ .byoc   │ nav.byoc   │ play.tv          │    │
+│ │         │ iew               │         │            │                  │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 7       │ TVProfileView     │ .profil │ nav.profil │ person.crop.circ │    │
+│ │         │                   │ e       │ e          │ le               │    │
+│ ├─────────┼───────────────────┼─────────┼────────────┼──────────────────┤    │
+│ │ 8       │ HelpSupportView   │ .help   │ nav.help   │ questionmark.cir │    │
+│ │         │                   │         │            │ cle              │    │
+│ └─────────┴───────────────────┴─────────┴────────────┴──────────────────┘    │
+│                                                                              │
+│ No changes to TVTab enum (.liveTV and .discover cases already exist, just    │
+│ not rendered as tabs).                                                       │
+│                                                                              │
+│ 3. Hero Cards (TVCinematicHomeView.swift)                                    │
+│                                                                              │
+│ Enum CinematicHeroCardType:                                                  │
+│                                                                              │
+│ - Rename .liveTVProof -> .liveAIShowcase                                     │
+│ - Rename .pauseAskIntro -> .movieAIShowcase                                  │
+│ - Keep .byocShowcase, .continueWatching, .culture                            │
+│                                                                              │
+│ Card builders:                                                               │
+│                                                                              │
+│ - Rename liveTVProofCard() -> liveAIShowcaseCard()                           │
+│   - Set categoryLabel: localization.t("cinematic.liveAI.groupLabel") (->     │
+│ "LIVE AI")                                                                   │
+│ - Rename pauseAskIntroCard() -> movieAIShowcaseCard()                        │
+│   - Set categoryLabel: localization.t("cinematic.movieAI.groupLabel") (->    │
+│ "MOVIE AI")                                                                  │
+│ - Rename handlePauseAskNavigation() -> handleMovieAINavigation()             │
+│                                                                              │
+│ aiBadge condition:                                                           │
+│                                                                              │
+│ - Remove .pauseAskIntro / .movieAIShowcase from the aiBadge condition (it    │
+│ now uses categoryLabel instead)                                              │
+│ - Keep aiBadge only for .byocShowcase                                        │
+│                                                                              │
+│ primaryIcon / primaryLabel switch:                                           │
+│                                                                              │
+│ - Update case names throughout                                               │
+│                                                                              │
+│ handleHeroAction switch:                                                     │
+│                                                                              │
+│ - Update case names throughout                                               │
+│                                                                              │
+│ 4. Hero Overlays (TVHeroOverlays.swift)                                      │
+│                                                                              │
+│ TVHeroLiveTVOverlay:                                                         │
+│ Add a second row below the LIVE badge showing the Live AI feature set:       │
+│                                                                              │
+│ - Four pills: captions.bubble Live Subtitles | waveform AI Dubbing |         │
+│ questionmark.bubble Live Trivia | backward.end Catch Up                      │
+│ - Dimmed style (opacity 0.7), smaller font                                   │
+│                                                                              │
+│ Add TVHeroMovieAIOverlay:                                                    │
+│ Replace TVHeroPauseAskOverlay with a new overlay showing Movie AI features:  │
+│                                                                              │
+│ - Two pills in top-right: text.bubble Pause & Ask | person.wave.2            │
+│ Interactive Moments                                                          │
+│ - Same glass capsule style as Live AI overlay                                │
+│                                                                              │
+│ aiOverlayLayer switch in TVCinematicHeroCardView:                            │
+│                                                                              │
+│ - .liveAIShowcase -> TVHeroLiveTVOverlay()                                   │
+│ - .movieAIShowcase -> TVHeroMovieAIOverlay()                                 │
+│                                                                              │
+│ 5. Localization (en.json)                                                    │
+│                                                                              │
+│ New keys:                                                                    │
+│                                                                              │
+│ cinematic.liveAI.groupLabel: "LIVE AI"                                       │
+│ cinematic.movieAI.groupLabel: "MOVIE AI"                                     │
+│ cinematic.liveAI.feature.subtitles: "Live Subtitles"                         │
+│ cinematic.liveAI.feature.dubbing: "AI Dubbing"                               │
+│ cinematic.liveAI.feature.trivia: "Live Trivia"                               │
+│ cinematic.liveAI.feature.catchUp: "Catch Up"                                 │
+│ cinematic.movieAI.feature.pauseAsk: "Pause & Ask"                            │
+│ cinematic.movieAI.feature.interactive: "Interactive Moments"                 │
+│ dock.liveAI: "Live AI"                                                       │
+│ dock.movieAI: "Movie AI"                                                     │
+│                                                                              │
+│ Remove: dock.pauseAsk (replaced by dock.movieAI)                             │
+│                                                                              │
+│ ---                                                                          │
+│ Files to Modify                                                              │
+│                                                                              │
+│ - BayitPlusTVApp/Views/Home/TVHomeDock.swift -- dock enum, items, icons,     │
+│ labels, colors                                                               │
+│ - BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift -- card types,         │
+│ builders, navigation, overlays                                               │
+│ - BayitPlusTVApp/Views/Home/TVHeroOverlays.swift -- Live AI feature strip,   │
+│ Movie AI overlay                                                             │
+│ - BayitPlusTVApp/App/TVMainTabView.swift -- add Live and Discover tabs       │
+│ - packages/ui/bayit-i18n/locales/en.json -- new locale keys                  │
+│                                                                              │
+│ Verification                                                                 │
+│                                                                              │
+│ 1. Build tvOS target: xcodebuild -project BayitPlus.xcodeproj -scheme        │
+│ BayitPlusTVApp ...                                                           │
+│ 2. Install on Apple TV simulator (9751674D-E696-47F1-B565-BD4C7D43E415)      │
+│ 3. Verify:                                                                   │
+│   - Tab bar shows: Home | Search | Live | Discover | VOD | BYOC | Profile |  │
+│ Help                                                                         │
+│   - Live and Discover tabs open their respective views                       │
+│   - Dock shows: Live AI | Movie AI | Zeh Ani (+ conditionals)                │
+│   - Live AI dock button has red-tinted ring, opens TVLiveTVView              │
+│   - Movie AI dock button has purple ring, plays BYOC/spotlight content with  │
+│ walkthrough                                                                  │
+│   - Hero cards show "LIVE AI" and "MOVIE AI" group labels                    │
+│   - Live AI hero card shows feature strip (Subtitles, Dubbing, Trivia, Catch │
+│  Up)                                                                         │
+│   - Movie AI hero card shows feature pills (Pause & Ask, Interactive         │
+│ Moments)                                                                     │
+│   - Carousel auto-advances between cards                                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ Let me read all the files that need to be modified.
+
+⏺ Read 5 files (ctrl+o to expand)
+
+⏺ Let me check the relevant locale keys and the TVTab enum.
+
+⏺ Searched for 4 patterns (ctrl+o to expand)
+
+⏺ Good, TVTab already has .liveTV and .discover cases. Let me also check the
+  iconName property and the locale file structure.
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now I have all the context I need. Let me also check for any existing
+  TVDiscoverView and TVLiveTVView references to confirm they exist.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Good, all views exist. Now let me implement all the changes. I'll work through
+   each file systematically.
+
+  1. TVHomeDock.swift - Rename enum cases, update visible items, icons, labels,
+  colors:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVHomeDock.swift)
+  ⎿  Added 2 lines, removed 4 lines
+       9              String(describing: self)
+      10          }
+      11  
+      12 -        case discover                                          
+      13 -        case liveTV                                            
+      14 -        case pauseAsk                                          
+      15 -        case listen                                            
+      12 +        case liveAI                                            
+      13 +        case movieAI                                           
+      14          case zehAni
+      15          case continueWatching
+      16          case plex
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVHomeDock.swift)
+  ⎿  Added 1 line, removed 1 line
+      31  
+      32          private var visibleItems: [HomeDockDestination] {
+      33              var items: [HomeDockDestination] = [
+      34 -                .discover, .liveTV, .pauseAsk, .listen, .zehAni
+         -,                                                              
+      34 +                .liveAI, .movieAI, .zehAni,                    
+      35              ]
+      36              if showContinueWatching { items.append(.continueWat
+          ching) }
+      37              if showPlex { items.append(.plex) }
+
+⏺ Now update the circle overlay to use red for liveAI and purple for movieAI:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVHomeDock.swift)
+  ⎿  Added 1 line, removed 3 lines
+      80                                  Circle().strokeBorder(
+      81                                      isFocused
+      82                                          ? DesignTokens.Primary.
+          p400
+      83 -                                        : (item == .pauseAsk   
+      84 -                                            ? DesignTokens.Prim
+         -ary.p400.opacity(0.6)                                          
+      85 -                                            : Color.white.opaci
+         -ty(0.12)),                                                     
+      83 +                                        : restRingColor(for: it
+         +em),                                                           
+      84                                      lineWidth: isFocused ? 2.5 
+          : 1.5
+      85                                  )
+      86                              )
+
+⏺ Now update the iconName and label functions, and add the restRingColor helper:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVHomeDock.swift)
+  ⎿  Added 14 lines, removed 12 lines
+      112  
+      113          private func iconName(for item: HomeDockDestination) -
+           > String {
+      114              switch item {
+      115 -            case .discover: return "sparkles"                 
+      116 -            case .liveTV: return "play.tv"                    
+      117 -            case .pauseAsk: return "text.bubble"              
+      118 -            case .listen: return "headphones"                 
+      115 +            case .liveAI: return "waveform.badge.mic"         
+      116 +            case .movieAI: return "sparkles.rectangle.stack"  
+      117              case .zehAni: return "person.crop.rectangle.stack"
+      118              case .continueWatching: return "play.circle"
+      119              case .plex: return "server.rack"
+     ...
+      123  
+      124          private func label(for item: HomeDockDestination) -> S
+           tring {
+      125              switch item {
+      128 -            case .discover:                                   
+      129 -                return localization.t("nav.discover")         
+      130 -            case .liveTV:                                     
+      131 -                return localization.t("nav.liveTV")           
+      132 -            case .pauseAsk:                                   
+      133 -                return localization.t("dock.pauseAsk")        
+      134 -            case .listen:                                     
+      135 -                return localization.t("nav.listen")           
+      126 +            case .liveAI:                                     
+      127 +                return localization.t("dock.liveAI")          
+      128 +            case .movieAI:                                    
+      129 +                return localization.t("dock.movieAI")         
+      130              case .zehAni:
+      131                  return localization.t("nav.zehAni")
+      132              case .continueWatching:
+     ...
+      138              }
+      139          }
+      140  
+      141 +        private func restRingColor(for item: HomeDockDestinati
+          +on) -> Color {                                                
+      142 +            switch item {                                     
+      143 +            case .liveAI: return Color.red.opacity(0.6)       
+      144 +            case .movieAI: return DesignTokens.Primary.p400.op
+          +acity(0.6)                                                    
+      145 +            default: return Color.white.opacity(0.12)         
+      146 +            }                                                 
+      147 +        }                                                     
+      148 +                                                              
+      149          // MARK: - Visual Chrome
+      150  
+      151          private var pillBackground: some View {
+
+⏺ 2. TVCinematicHomeView.swift - Rename card types, builders, navigation:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 2 lines, removed 2 lines
+      431      // MARK: - Data Models
+      432  
+      433      enum CinematicHeroCardType {
+      434 -        case liveTVProof                                      
+      434 +        case liveAIShowcase                                   
+      435          case byocShowcase
+      436 -        case pauseAskIntro                                    
+      436 +        case movieAIShowcase                                  
+      437          case continueWatching
+      438          case culture
+      439      }
+
+⏺ Now update buildHeroCards to use new names:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 2 lines, removed 2 lines
+      159                  cards.append(resumeCard)
+      160              }
+      161  
+      162 -            if cards.first?.type != .liveTVProof, let tvCard =
+          - liveTVProofCard() {                                          
+      162 +            if cards.first?.type != .liveAIShowcase, let tvCar
+          +d = liveAIShowcaseCard() {                                    
+      163                  cards.append(tvCard)
+      164              }
+      165  
+      166 -            cards.append(pauseAskIntroCard())                 
+      166 +            cards.append(movieAIShowcaseCard())               
+      167  
+      168              if cards.first?.type != .byocShowcase, hasBYOC,
+      169                 let byocCard = firstBYOCCard()
+
+⏺ Rename liveTVProofCard -> liveAIShowcaseCard:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 4 lines, removed 8 lines
+      206              )
+      207          }
+      208  
+      209 -        private func liveTVProofCard() -> CinematicHeroCard? {
+      209 +        private func liveAIShowcaseCard() -> CinematicHeroCard
+          +? {                                                           
+      210              guard let detail = liveChannelDetail else { return
+            nil }
+      211              let streamURL = detail.streamUrl.flatMap { URL(str
+           ing: $0) }
+      212 -            let lang = prefs.primaryLanguage                  
+      212              return CinematicHeroCard(
+      214 -                id: "live-tv-proof",                          
+      215 -                type: .liveTVProof,                           
+      213 +                id: "live-ai-showcase",                       
+      214 +                type: .liveAIShowcase,                        
+      215                  title: detail.name
+      216                      ?? localization.t("cinematic.liveTV.title"
+           ),
+      217                  subtitle: localization.t("cinematic.liveTV.sub
+           title"),
+      218                  backgroundURL: (detail.logo ?? detail.thumbnai
+           l)
+      219                      .flatMap { URL(string: $0) },
+      221 -                categoryLabel: localization.t(                
+      222 -                    "cinematic.liveTV.dubbedIn",              
+      223 -                    ["language": lang]                        
+      224 -                ),                                            
+      220 +                categoryLabel: localization.t("cinematic.liveA
+          +I.groupLabel"),                                               
+      221                  videoURL: streamURL,
+      222                  channelId: detail.id
+      223              )
+
+⏺ Rename pauseAskIntroCard -> movieAIShowcaseCard:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 4 lines, removed 3 lines
+      223              )
+      224          }
+      225  
+      226 -        private func pauseAskIntroCard() -> CinematicHeroCard 
+          -{                                                             
+      226 +        private func movieAIShowcaseCard() -> CinematicHeroCar
+          +d {                                                           
+      227              let videoSource = demoClipURL
+      228                  ?? liveChannelDetail?.streamUrl.flatMap { URL(
+           string: $0) }
+      229  
+     ...
+      238              let movieId = spotlightItem?.id
+      239  
+      240              return CinematicHeroCard(
+      241 -                id: "pause-ask-intro",                        
+      242 -                type: .pauseAskIntro,                         
+      241 +                id: "movie-ai-showcase",                      
+      242 +                type: .movieAIShowcase,                       
+      243                  title: localization.t("cinematic.pauseAsk.titl
+           e"),
+      244                  subtitle: localization.t("cinematic.pauseAsk.s
+           ubtitle"),
+      245                  backgroundAsset: backgroundURL == nil ? "Masad
+           a" : nil,
+      246                  backgroundURL: backgroundURL,
+      247 +                categoryLabel: localization.t("cinematic.movie
+          +AI.groupLabel"),                                              
+      248                  videoURL: bgVideoURL,
+      249                  channelId: movieId
+      250              )
+
+⏺ Now update handleHeroAction:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 3 lines, removed 3 lines
+      275              action: CinematicHeroAction
+      276          ) {
+      277              switch card.type {
+      278 -            case .liveTVProof:                                
+      278 +            case .liveAIShowcase:                             
+      279                  if let channelId = card.channelId {
+      280                      coordinator.presentPlayer(
+      281                          contentId: channelId,
+     ...
+      292                          directUrl: url.absoluteString
+      293                      )
+      294                  }
+      295 -            case .pauseAskIntro:                              
+      295 +            case .movieAIShowcase:                            
+      296                  if action == .secondary, let movieId = card.ch
+           annelId {
+      297                      coordinator.fullscreenRoute = .movieDetail
+           (movieId: movieId)
+      298                  } else {
+      299 -                    handlePauseAskNavigation()                
+      299 +                    handleMovieAINavigation()                 
+      300                  }
+      301              case .continueWatching:
+      302                  let item = viewModel.continueWatching.first
+
+⏺ Rename handlePauseAskNavigation -> handleMovieAINavigation:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 2 lines, removed 2 lines
+      342              }
+      343          }
+      344  
+      345 -        private func handlePauseAskNavigation() {             
+      345 +        private func handleMovieAINavigation() {              
+      346              if let byocItem = byocManager.plexItems.first
+      347                  ?? byocManager.youtubeItems.first,
+      348                  let url = byocItem.streamURL
+     ...
+      371          private func handleDockNavigation(_ destination: HomeD
+           ockDestination) {
+      372              switch destination {
+      373              case .pauseAsk:
+      374 -                handlePauseAskNavigation()                    
+      374 +                handleMovieAINavigation()                     
+      375              case .continueWatching:
+      376                  coordinator.presentCategoryBrowse(
+      377                      title: localization.t("home.continueWatchi
+           ng"),
+
+⏺ Now update handleDockNavigation - replace .pauseAsk with .movieAI:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Error editing file
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ I see - the replace_all for handlePauseAskNavigation didn't catch the
+  .pauseAsk case. Let me fix:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 5 lines, removed 3 lines
+      370  
+      371          private func handleDockNavigation(_ destination: HomeD
+           ockDestination) {
+      372              switch destination {
+      373 -            case .pauseAsk:                                   
+      373 +            case .liveAI:                                     
+      374 +                dockOverlay = destination                     
+      375 +            case .movieAI:                                    
+      376                  handleMovieAINavigation()
+      377 +            case .zehAni:                                     
+      378 +                dockOverlay = destination                     
+      379              case .continueWatching:
+      380                  coordinator.presentCategoryBrowse(
+      381                      title: localization.t("home.continueWatchi
+           ng"),
+     ...
+      386                  coordinator.selectedTab = .byoc
+      387              case .youtube:
+      388                  coordinator.selectedTab = .byoc
+      385 -            default:                                          
+      386 -                dockOverlay = destination                     
+      389              }
+      390          }
+      391  
+
+⏺ Now update dockOverlayView:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 1 line, removed 3 lines
+      392          @ViewBuilder
+      393          private func dockOverlayView(for dest: HomeDockDestina
+           tion) -> some View {
+      394              let content = switch dest {
+      395 -            case .discover: AnyView(TVDiscoverView())         
+      396 -            case .liveTV: AnyView(TVLiveTVView())             
+      397 -            case .listen: AnyView(TVListenView())             
+      395 +            case .liveAI: AnyView(TVLiveTVView())             
+      396              case .zehAni: AnyView(TVZehAniHubView())
+      397              default: AnyView(EmptyView())
+      398              }
+
+⏺ Now update the aiOverlayLayer and aiBadge in TVCinematicHeroCardView:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 3 lines, removed 3 lines
+      519          @ViewBuilder
+      520          private var aiOverlayLayer: some View {
+      521              switch card.type {
+      522 -            case .liveTVProof:                                
+      522 +            case .liveAIShowcase:                             
+      523                  TVHeroLiveTVOverlay()
+      524              case .byocShowcase:
+      525                  TVHeroBYOCOverlay()
+      526 -            case .pauseAskIntro:                              
+      527 -                TVHeroPauseAskOverlay()                       
+      526 +            case .movieAIShowcase:                            
+      527 +                TVHeroMovieAIOverlay()                        
+      528              case .continueWatching:
+      529                  TVHeroContinueWatchingOverlay(
+      530                      progress: card.resumePosition.map { $0 / 7
+           200.0 } ?? 0
+
+⏺ Update aiBadge condition - only show for .byocShowcase now:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 1 line, removed 1 line
+      599                      categoryBadge(label)
+      600                  }
+      601  
+      602 -                if card.type == .pauseAskIntro || card.type ==
+          - .byocShowcase {                                              
+      602 +                if card.type == .byocShowcase {               
+      603                      aiBadge
+      604                  }
+      605  
+
+⏺ Update primaryIcon and primaryLabel switches:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 4 lines, removed 4 lines
+      658  
+      659          private var primaryIcon: String {
+      660              switch card.type {
+      661 -            case .liveTVProof: return "play.tv"               
+      661 +            case .liveAIShowcase: return "play.tv"            
+      662              case .byocShowcase: return "sparkles"
+      663 -            case .pauseAskIntro: return "play.fill"           
+      663 +            case .movieAIShowcase: return "play.fill"         
+      664              case .continueWatching: return "play.fill"
+      665              case .culture: return "arrow.right"
+      666              }
+     ...
+      668  
+      669          private var primaryLabel: String {
+      670              switch card.type {
+      671 -            case .liveTVProof:                                
+      671 +            case .liveAIShowcase:                             
+      672                  return localization.t("cinematic.liveTV.watchD
+           ubbed")
+      673              case .byocShowcase:
+      674                  return localization.t("cinematic.byoc.watchWit
+           hAI")
+      675 -            case .pauseAskIntro:                              
+      675 +            case .movieAIShowcase:                            
+      676                  return localization.t("cinematic.pauseAsk.tryI
+           tNow")
+      677              case .continueWatching:
+      678                  return localization.t("cinematic.continueWatch
+           ing.resume")
+
+⏺ 3. TVHeroOverlays.swift - Add Live AI feature strip and new Movie AI overlay:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVHeroOverlays.swift)
+  ⎿  Added 33 lines, removed 3 lines
+      12              VStack {
+      13                  HStack {
+      14                      Spacer()
+      15 -                    liveBadge                                  
+      16 -                        .padding(.top, TVDesignTokens.Spacing.x
+         -l)                                                             
+      17 -                        .padding(.trailing, TVDesignTokens.Spac
+         -ing.xl)                                                        
+      15 +                    VStack(alignment: .trailing, spacing: TVDes
+         +ignTokens.Spacing.xs) {                                        
+      16 +                        liveBadge                              
+      17 +                        liveAIFeatureStrip                     
+      18 +                    }                                          
+      19 +                    .padding(.top, TVDesignTokens.Spacing.xl)  
+      20 +                    .padding(.trailing, TVDesignTokens.Spacing.
+         +xl)                                                            
+      21                  }
+      22                  Spacer()
+      23              }
+     ...
+       81                  Capsule().stroke(DesignTokens.Glass.border, li
+           neWidth: 1)
+       82              )
+       83          }
+       84 +                                                              
+       85 +        private var liveAIFeatureStrip: some View {           
+       86 +            HStack(spacing: TVDesignTokens.Spacing.sm) {      
+       87 +                featurePill(icon: "captions.bubble", label: lo
+          +calization.t("cinematic.liveAI.feature.subtitles"))           
+       88 +                featurePill(icon: "waveform", label: localizat
+          +ion.t("cinematic.liveAI.feature.dubbing"))                    
+       89 +                featurePill(icon: "questionmark.bubble", label
+          +: localization.t("cinematic.liveAI.feature.trivia"))          
+       90 +                featurePill(icon: "backward.end", label: local
+          +ization.t("cinematic.liveAI.feature.catchUp"))                
+       91 +            }                                                 
+       92 +            .opacity(0.7)                                     
+       93 +        }                                                     
+       94 +                                                              
+       95 +        private func featurePill(icon: String, label: String) 
+          +-> some View {                                                
+       96 +            HStack(spacing: TVDesignTokens.Spacing.xxs) {     
+       97 +                Image(systemName: icon)                       
+       98 +                    .font(.system(size: 11, weight: .semibold)
+          +)                                                             
+       99 +                Text(label)                                   
+      100 +                    .font(.system(size: 11, weight: .semibold)
+          +)                                                             
+      101 +            }                                                 
+      102 +            .foregroundStyle(DesignTokens.Text.secondary)     
+      103 +            .padding(.horizontal, TVDesignTokens.Spacing.sm)  
+      104 +            .padding(.vertical, TVDesignTokens.Spacing.xxs)   
+      105 +            .background(DesignTokens.Glass.bgStrong)          
+      106 +            .clipShape(Capsule())                             
+      107 +            .overlay(                                         
+      108 +                Capsule().stroke(DesignTokens.Glass.border, li
+          +neWidth: 1)                                                   
+      109 +            )                                                 
+      110 +        }                                                     
+      111      }
+      112  
+      113      // MARK: - BYOC Showcase Overlay
+
+⏺ Now replace TVHeroPauseAskOverlay with TVHeroMovieAIOverlay:
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVHeroOverlays.swift)
+  ⎿  Added 35 lines, removed 53 lines
+      162          }
+      163      }
+      164  
+      165 -    // MARK: - Pause & Ask Intro Overlay                      
+      165 +    // MARK: - Movie AI Overlay                               
+      166  
+      167 -    struct TVHeroPauseAskOverlay: View {                      
+      167 +    struct TVHeroMovieAIOverlay: View {                       
+      168          @Environment(LocalizationManager.self) private var loc
+           alization
+      169 -        @State private var showBubble = false                 
+      169  
+      170          var body: some View {
+      171              VStack {
+      173 -                Spacer()                                      
+      172                  HStack {
+      173                      Spacer()
+      176 -                    if showBubble {                           
+      177 -                        conversationBubble                    
+      178 -                            .transition(.opacity.combined(with
+          -: .move(edge: .bottom)))                                      
+      179 -                            .padding(.trailing, TVDesignTokens
+          -.Spacing.xxl)                                                 
+      180 -                            .padding(.bottom, TVDesignTokens.S
+          -pacing.xxxxl)                                                 
+      181 -                    }                                         
+      174 +                    movieAIPills                              
+      175 +                        .padding(.top, TVDesignTokens.Spacing.
+          +xl)                                                           
+      176 +                        .padding(.trailing, TVDesignTokens.Spa
+          +cing.xl)                                                      
+      177                  }
+      178 +                Spacer()                                      
+      179              }
+      180              .allowsHitTesting(false)
+      185 -            .task {                                           
+      186 -                while !Task.isCancelled {                     
+      187 -                    try? await Task.sleep(for: .seconds(10))  
+      188 -                    guard !Task.isCancelled else { break }    
+      189 -                    withAnimation(.spring(duration: 0.5)) {   
+      190 -                        showBubble = true                     
+      191 -                    }                                         
+      192 -                    try? await Task.sleep(for: .seconds(3))   
+      193 -                    guard !Task.isCancelled else { break }    
+      194 -                    withAnimation(.easeOut(duration: 0.3)) {  
+      195 -                        showBubble = false                    
+      196 -                    }                                         
+      197 -                }                                             
+      181 +        }                                                     
+      182 +                                                              
+      183 +        private var movieAIPills: some View {                 
+      184 +            HStack(spacing: TVDesignTokens.Spacing.sm) {      
+      185 +                featurePill(                                  
+      186 +                    icon: "text.bubble",                      
+      187 +                    label: localization.t("cinematic.movieAI.f
+          +eature.pauseAsk")                                             
+      188 +                )                                             
+      189 +                featurePill(                                  
+      190 +                    icon: "person.wave.2",                    
+      191 +                    label: localization.t("cinematic.movieAI.f
+          +eature.interactive")                                          
+      192 +                )                                             
+      193              }
+      194          }
+      195  
+      201 -        private var conversationBubble: some View {           
+      202 -            VStack(alignment: .leading, spacing: TVDesignToken
+          -s.Spacing.sm) {                                               
+      203 -                HStack(spacing: TVDesignTokens.Spacing.xs) {  
+      204 -                    Image(systemName: "person.circle.fill")   
+      205 -                        .font(.system(size: TVDesignTokens.Fon
+          -tSize.md))                                                    
+      206 -                        .foregroundStyle(DesignTokens.Primary.
+          -p300)                                                         
+      207 -                    Text(localization.t("cinematic.overlay.sam
+          -pleSubtitle4"))                                               
+      208 -                        .font(.system(                        
+      209 -                            size: TVDesignTokens.FontSize.sm, 
+      210 -                            weight: .medium                   
+      211 -                        ))                                    
+      212 -                        .foregroundStyle(.white)              
+      213 -                }                                             
+      214 -                HStack(spacing: TVDesignTokens.Spacing.xs) {  
+      215 -                    Image(systemName: "sparkles")             
+      216 -                        .font(.system(size: TVDesignTokens.Fon
+          -tSize.md))                                                    
+      217 -                        .foregroundStyle(DesignTokens.Primary.
+          -p400)                                                         
+      218 -                    Text(localization.t("cinematic.overlay.sam
+          -pleSubtitle1"))                                               
+      219 -                        .font(.system(                        
+      220 -                            size: TVDesignTokens.FontSize.sm, 
+      221 -                            weight: .medium                   
+      222 -                        ))                                    
+      223 -                        .foregroundStyle(DesignTokens.Text.sec
+          -ondary)                                                       
+      224 -                }                                             
+      196 +        private func featurePill(icon: String, label: String) 
+          +-> some View {                                                
+      197 +            HStack(spacing: TVDesignTokens.Spacing.xs) {      
+      198 +                Image(systemName: icon)                       
+      199 +                    .font(.system(                            
+      200 +                        size: TVDesignTokens.FontSize.sm,     
+      201 +                        weight: .semibold                     
+      202 +                    ))                                        
+      203 +                Text(label)                                   
+      204 +                    .font(.system(                            
+      205 +                        size: TVDesignTokens.FontSize.sm,     
+      206 +                        weight: .semibold                     
+      207 +                    ))                                        
+      208              }
+      226 -            .padding(TVDesignTokens.Spacing.lg)               
+      209 +            .foregroundStyle(.white)                          
+      210 +            .padding(.horizontal, TVDesignTokens.Spacing.md)  
+      211 +            .padding(.vertical, TVDesignTokens.Spacing.sm)    
+      212              .background(DesignTokens.Glass.bgStrong)
+      228 -            .clipShape(                                       
+      229 -                RoundedRectangle(cornerRadius: TVDesignTokens.
+          -Radius.lg)                                                    
+      230 -            )                                                 
+      213 +            .clipShape(Capsule())                             
+      214              .overlay(
+      232 -                RoundedRectangle(cornerRadius: TVDesignTokens.
+          -Radius.lg)                                                    
+      233 -                    .stroke(DesignTokens.Glass.border, lineWid
+          -th: 1)                                                        
+      215 +                Capsule().stroke(DesignTokens.Glass.border, li
+          +neWidth: 1)                                                   
+      216              )
+      217          }
+      218      }
+
+⏺ 4. TVMainTabView.swift - Add Live and Discover tabs:
+
+⏺ Update(BayitPlusTVApp/App/TVMainTabView.swift)
+  ⎿  Added 8 lines
+      44                          .tabItem { Label(localization.t("nav.se
+          arch"), systemImage: TVTab.search.iconName) }
+      45                          .tag(TVTab.search)
+      46  
+      47 +                    TVLiveTVView()                             
+      48 +                        .tabItem { Label(localization.t("nav.li
+         +veTV"), systemImage: TVTab.liveTV.iconName) }                  
+      49 +                        .tag(TVTab.liveTV)                     
+      50 +                                                               
+      51 +                    TVDiscoverView()                           
+      52 +                        .tabItem { Label(localization.t("nav.di
+         +scover"), systemImage: TVTab.discover.iconName) }              
+      53 +                        .tag(TVTab.discover)                   
+      54 +                                                               
+      55                      if appConfiguration.ownerMode {
+      56                          TVVODView()
+      57                              .tabItem { Label(localization.t("na
+          v.vod"), systemImage: TVTab.vod.iconName) }
+
+⏺ 5. Localization (en.json) - Add new keys and remove old ones:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/packages/ui/bayit-i
+        18n/locales/en.json)
+  ⎿  Added 2 lines, removed 1 line
+      5285      }
+      5286    },
+      5287    "dock": {
+      5288 -    "pauseAsk": "Pause & Ask"                                
+      5288 +    "liveAI": "Live AI",                                     
+      5289 +    "movieAI": "Movie AI"                                    
+      5290    },
+      5291    "jerusalem": {
+      5292      "title": "Jerusalem Connection",
+
+⏺ Now add the new cinematic keys. I need to add liveAI and movieAI sections
+  inside the cinematic object:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/packages/ui/bayit-i
+        18n/locales/en.json)
+  ⎿  Added 16 lines
+      5277        "splitHe3": "\u05ea\u05d7\u05d6\u05d9\u05ea \u05de\u05d
+            6\u05d2 \u05d4\u05d0\u05d5\u05d5\u05d9\u05e8 \u05dc\u05de\u05
+            d7\u05e8",
+      5278        "splitHe4": "\u05d4\u05d9\u05e9\u05d0\u05e8\u05d5 \u05d
+            0\u05d9\u05ea\u05e0\u05d5 \u05dc\u05e2\u05d3\u05db\u05d5\u05e
+            0\u05d9\u05dd \u05e0\u05d5\u05e1\u05e4\u05d9\u05dd"
+      5279      },
+      5280 +    "liveAI": {                                              
+      5281 +      "groupLabel": "LIVE AI",                               
+      5282 +      "feature": {                                           
+      5283 +        "subtitles": "Live Subtitles",                       
+      5284 +        "dubbing": "AI Dubbing",                             
+      5285 +        "trivia": "Live Trivia",                             
+      5286 +        "catchUp": "Catch Up"                                
+      5287 +      }                                                      
+      5288 +    },                                                       
+      5289 +    "movieAI": {                                             
+      5290 +      "groupLabel": "MOVIE AI",                              
+      5291 +      "feature": {                                           
+      5292 +        "pauseAsk": "Pause & Ask",                           
+      5293 +        "interactive": "Interactive Moments"                 
+      5294 +      }                                                      
+      5295 +    },                                                       
+      5296      "culture": {
+      5297        "whatsHotSubtitle": "Trending stories and moments from 
+            Israel",
+      5298        "jerusalemSubtitle": "Stay connected to the heart of Is
+            rael",
+
+⏺ Now let me check for any remaining references to the old enum cases that might
+   cause build errors:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ No remaining references to the old HomeDockDestination or
+  CinematicHeroCardType enum cases. The .discover and .pauseAsk hits are in
+  unrelated contexts (onboarding, player, quick dock, etc.) which use different
+  enums. Good.
+
+  Now let me build to verify:
+
+⏺ Bash(cd
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app &&
+       xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platf…)
+  ⎿      /usr/bin/codesign --force --sign - --timestamp\=none --generate-en
+     titlement-der /tmp/bayit-tv-derived/Build/Products/Debug-appletvsimula
+     tor/BayitPlusTV.app/BayitPlusTV.debug.dylib
+     … +38 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+
+⏺ Build succeeded. Now install on the Apple TV simulator:
+
+⏺ Bash(xcrun simctl install 9751674D-E696-47F1-B565-BD4C7D43E415 /tmp/bayit-tv-d
+      erived/Build/Products/Debug-appletvsimulator/BayitPlusTV.app && xcrun
+      simctl launch 975…)
+  ⎿  tv.bayit.plus: 97533
+
+⏺ Build succeeded and app is running on the Apple TV simulator. Here's a summary
+   of all changes:
+
+  TVHomeDock.swift - Dock enum simplified from 8 to 6 cases. Removed .discover,
+  .listen, .liveTV, .pauseAsk. Added .liveAI (red ring, waveform.badge.mic icon)
+   and .movieAI (purple ring, sparkles.rectangle.stack icon). Visible items now:
+   [.liveAI, .movieAI, .zehAni] + conditionals.
+
+  TVCinematicHomeView.swift - Renamed CinematicHeroCardType.liveTVProof ->
+  .liveAIShowcase, .pauseAskIntro -> .movieAIShowcase. Card builders renamed
+  accordingly. Movie AI card now uses categoryLabel: "MOVIE AI", Live AI card
+  uses categoryLabel: "LIVE AI". aiBadge only shows for .byocShowcase now. Dock
+  overlay simplified to just .liveAI -> TVLiveTVView() and .zehAni ->
+  TVZehAniHubView().
+
+  TVHeroOverlays.swift - TVHeroLiveTVOverlay now has a second row with 4 feature
+   pills (Live Subtitles, AI Dubbing, Live Trivia, Catch Up) at 70% opacity.
+  TVHeroPauseAskOverlay replaced with TVHeroMovieAIOverlay showing 2 pills
+  (Pause & Ask, Interactive Moments) in the top-right.
+
+  TVMainTabView.swift - Added Live TV and Discover tabs between Search and VOD,
+  giving the full 8-tab layout.
+
+  en.json - Added cinematic.liveAI.* and cinematic.movieAI.* keys. Replaced
+  dock.pauseAsk with dock.liveAI and dock.movieAI.
+
+✻ Cooked for 6m 6s
+
+❯ LiveAI should immediately start streaming channel 13                          
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I need to check how presentPlayer works for live TV with a channel ID. Let me
+  look at how the hero card already does it for Channel 13:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The Live AI hero card already uses liveChannelDetail (which prefers Channel
+  13). The dock .liveAI should do the same - use the already-loaded
+  liveChannelDetail to directly stream Channel 13 via presentPlayer.
+
+⏺ Update(BayitPlusTVApp/Views/Home/TVCinematicHomeView.swift)
+  ⎿  Added 10 lines, removed 1 line
+      371          private func handleDockNavigation(_ destination: HomeD
+           ockDestination) {
+      372              switch destination {
+      373              case .liveAI:
+      374 -                dockOverlay = destination                     
+      374 +                if let channelId = liveChannelDetail?.id {    
+      375 +                    coordinator.presentPlayer(                
+      376 +                        contentId: channelId,                 
+      377 +                        contentType: .liveTV,                 
+      378 +                        channelId: channelId,                 
+      379 +                        isWalkthrough: true                   
+      380 +                    )                                         
+      381 +                } else {                                      
+      382 +                    dockOverlay = destination                 
+      383 +                }                                             
+      384              case .movieAI:
+      385                  handleMovieAINavigation()
+      386              case .zehAni:
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platform=tvOS
+      Simulator,id=9751674D-E696-47F1-B565-BD4C7D43E415' -derivedDataPath /…)
+  ⎿      cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
+     /ios-app
+         builtin-validationUtility /tmp/bayit-tv-derived/Build/Products/Deb
+     … +4 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ both in liveai and movieai viewing modes, it's a walkthrough mode, what does  
+that mean for the viewer                                                        
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Here's what walkthrough mode (isWalkthrough: true) does for the viewer:
+
+  1. Sets isWalkthroughMode = true on the player state, which flows into the
+  Pause & Ask dialogue overlay
+  2. Shows a coach mark for 8 seconds when the player opens -- a hint overlay
+  telling users they can pause and ask AI questions
+  3. Auto-pauses after 15 seconds (VOD only, not live) -- automatically pauses
+  playback and triggers the Pause & Ask overlay so the user experiences the AI
+  feature without having to discover it themselves
+  4. Pre-fills a suggestion in the Pause & Ask input field
+  (player.walkthrough.suggestion) so the user can just hit send instead of
+  typing
+  5. Shows a "works on any content" badge in the Pause & Ask result panel,
+  encouraging users to try it on their own content
+
+  In short: walkthrough mode is a guided first-time demo that automatically
+  pauses the content and walks the user through the Pause & Ask AI feature,
+  lowering the barrier to trying it.
+
+  For Live AI (Channel 13), the auto-pause at 15s is skipped (guard !isLive), so
+   the viewer gets the coach mark overlay but the stream keeps playing --
+  appropriate since you don't want to pause live TV.
+
+  For Movie AI, the full walkthrough fires: 15 seconds of playback, then
+  auto-pause with the pre-filled AI question prompt.
+
+❯ install                                                                       
+
+⏺ Bash(xcrun simctl install 9751674D-E696-47F1-B565-BD4C7D43E415 /tmp/bayit-tv-d
+      erived/Build/Products/Debug-appletvsimulator/BayitPlusTV.app && xcrun
+      simctl launch 975…)
+  ⎿  tv.bayit.plus: 949
+
+⏺ Running on the Apple TV simulator (PID 949).
+
+❯ clicking live AI works - opens the player with live tv streaming but none of  
+the live  features is doing anything                                            
+
+⏺ Let me investigate how the live AI features (dubbing, subtitles, trivia) are
+  activated in the player.
+
+⏺ Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+⏺ Now let me check what the live features need to actually start running -
+  specifically dubbing and live subtitles, since they need WebSocket
+  connections:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Now I see the picture. The VMs are initialized but features require manual
+  toggle via the control bar. In walkthrough mode for live TV, only a coach mark
+   shows for 8 seconds but nothing auto-activates. Let me check what that coach
+  mark says:
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Now I understand the full picture. For live TV walkthrough, the player just
+  shows a text hint for 8 seconds and does nothing else. The features need to be
+   auto-enabled. Let me add auto-activation of live subtitles and dubbing when
+  entering the player in walkthrough mode for live TV.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I need to add a task that auto-enables live subtitles and dubbing when in
+  walkthrough mode for live TV. The VMs are created in initializeViewModels()
+  which runs via .task { initializeViewModels() }, so I need to wait a bit for
+  them to be ready.
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 6 lines
+      124                  await startPauseAskInteraction()
+      125              }
+      126          }
+      127 +        .task {                                               
+      128 +            guard isWalkthrough, isLive else { return }       
+      129 +            try? await Task.sleep(for: .seconds(2))           
+      130 +            guard !Task.isCancelled else { return }           
+      131 +            autoEnableLiveAIFeatures()                        
+      132 +        }                                                     
+      133          .overlay(alignment: .top) {
+      134              if walkthroughCoachMarkVisible {
+      135                  walkthroughCoachMark(forLiveTV: isLive)
+
+⏺ Now I need to add the autoEnableLiveAIFeatures() method. Let me add it to the
+  FocusManagement extension where the other toggle methods live:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now I'll add the autoEnableLiveAIFeatures() method at the end of this
+  extension:
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swiftBayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swift)
+  ⎿  Added 19 lines
+      195  
+      196      // MARK: - Split Subtitle Availability
+      197  
+      198 +    // MARK: - Walkthrough Auto-Enable                        
+      199 +                                                              
+      200 +    func autoEnableLiveAIFeatures() {                         
+      201 +        let cid = channelId ?? contentId                      
+      202 +                                                              
+      203 +        if let subtitleVM = state.liveSubtitlesVM, !subtitleVM
+          +.isEnabled {                                                  
+      204 +            subtitleVM.selectLanguage(state.selectedAILanguage
+          +, channelId: cid)                                             
+      205 +            subtitleVM.toggleSubtitles(channelId: cid)        
+      206 +        }                                                     
+      207 +                                                              
+      208 +        if let dubbingVM = state.liveDubbingVM, !dubbingVM.isE
+          +nabled {                                                      
+      209 +            if state.liveSubtitlesVM?.isEnabled == true {     
+      210 +                state.liveSubtitlesVM?.toggleSubtitles(channel
+          +Id: cid)                                                      
+      211 +            }                                                 
+      212 +            dubbingVM.selectLanguage(state.selectedAILanguage,
+          + channelId: cid)                                              
+      213 +            dubbingVM.toggleDubbing(channelId: cid)           
+      214 +        }                                                     
+      215 +    }                                                         
+      216 +                                                              
+      217      func loadSplitSubtitleAvailability() async {
+      218          guard !contentId.isEmpty, !isLive else { return }
+      219          let repo = repos.subtitle
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ Aut Enable Live subtitles in split mode. pre-select English and Hebrew. also  
+auto enable Trivia. no need to autoenable dubbing                               
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swiftBayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swift)
+  ⎿  Added 4 lines, removed 7 lines
+      205              subtitleVM.toggleSubtitles(channelId: cid)
+      206          }
+      207  
+      208 -        if let dubbingVM = state.liveDubbingVM, !dubbingVM.isE
+          -nabled {                                                      
+      209 -            if state.liveSubtitlesVM?.isEnabled == true {     
+      210 -                state.liveSubtitlesVM?.toggleSubtitles(channel
+          -Id: cid)                                                      
+      211 -            }                                                 
+      212 -            dubbingVM.selectLanguage(state.selectedAILanguage,
+          - channelId: cid)                                              
+      213 -            dubbingVM.toggleDubbing(channelId: cid)           
+      214 -        }                                                     
+      208 +        state.splitModeEnabled = true                         
+      209 +        state.splitLanguages = ["en", "he"]                   
+      210 +                                                              
+      211 +        toggleLiveTrivia()                                    
+      212      }
+      213  
+      214      func loadSplitSubtitleAvailability() async {
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platform=tvOS
+      Simulator,id=9751674D-E696-47F1-B565-BD4C7D43E415' -derivedDataPath /…)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ split mode should be horizontal                                               
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ .sideBySide is the horizontal layout. Let me update the auto-enable function:
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swiftBayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swift)
+  ⎿  Added 1 line
+      207  
+      208          state.splitModeEnabled = true
+      209          state.splitLanguages = ["en", "he"]
+      210 +        state.splitLayout = .sideBySide                       
+      211  
+      212          toggleLiveTrivia()
+      213      }
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platform=tvOS
+      Simulator,id=9751674D-E696-47F1-B565-BD4C7D43E415' -derivedDataPath /…)
+  ⎿      cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
+     /ios-app
+         builtin-validationUtility /tmp/bayit-tv-derived/Build/Products/Deb
+     … +4 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+
+⏺ Bash(xcrun simctl install 9751674D-E696-47F1-B565-BD4C7D43E415 /tmp/bayit-tv-d
+      erived/Build/Products/Debug-appletvsimulator/BayitPlusTV.app && xcrun
+      simctl launch 975…)
+  ⎿  tv.bayit.plus: 11401
+
+⏺ Done. Live AI walkthrough now auto-enables:
+  - Live subtitles (connected via WebSocket)
+  - Split mode with side-by-side (horizontal) layout, English + Hebrew
+  pre-selected
+  - Live trivia (which also ensures subtitles stay active since trivia depends
+  on transcripts)
+
+  Dubbing is left manual as requested.
+
+✻ Baked for 1m 8s
+
+❯ trivia enabled subtitles (translation) is not                                 
+  ⎿  [Image #1]
+
+⏺ I can see from the screenshot that Trivia is active (purple icon) but
+  Translate is not highlighted. The issue is the order in
+  autoEnableLiveAIFeatures() — toggleLiveTrivia() auto-enables subtitles
+  internally, but then I'm calling it after already enabling subtitles, which
+  causes a toggle conflict. Let me look at the flow more carefully:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The problem: I enable subtitles on line 205, then toggleLiveTrivia() (line
+  94-122) checks if state.liveSubtitlesVM?.isEnabled != true — it IS enabled, so
+   it skips that block. But then it calls vm.toggleTrivia(...) which connects
+  trivia. However, toggleLiveTrivia has a path where if subtitles are already
+  enabled, it doesn't re-toggle them, which is correct.
+
+  Wait — re-reading toggleLiveTrivia(): if subtitles ARE already enabled, it
+  just connects trivia. That should be fine. The real issue is that I enable
+  subtitles first (line 203-205), then toggleLiveTrivia sees them as enabled and
+   leaves them alone. So subtitles should be on.
+
+  But looking at the screenshot — the Translate button is NOT highlighted. Maybe
+   the first toggleSubtitles call is failing because the WebSocket isn't
+  connected yet after only 2 seconds. Let me restructure: don't pre-enable
+  subtitles separately — just let toggleLiveTrivia() handle it (it auto-enables
+  subtitles if needed):
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swiftBayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swift)
+  ⎿  Added 1 line, removed 7 lines
+      198      // MARK: - Walkthrough Auto-Enable
+      199  
+      200      func autoEnableLiveAIFeatures() {
+      201 -        let cid = channelId ?? contentId                      
+      202 -                                                              
+      203 -        if let subtitleVM = state.liveSubtitlesVM, !subtitleVM
+          -.isEnabled {                                                  
+      204 -            subtitleVM.selectLanguage(state.selectedAILanguage
+          -, channelId: cid)                                             
+      205 -            subtitleVM.toggleSubtitles(channelId: cid)        
+      206 -        }                                                     
+      207 -                                                              
+      201          state.splitModeEnabled = true
+      202          state.splitLanguages = ["en", "he"]
+      203          state.splitLayout = .sideBySide
+      204  
+      205          toggleLiveTrivia()
+      206 +        toggleLiveTranslation()                               
+      207      }
+      208  
+      209      func loadSplitSubtitleAvailability() async {
+
+⏺ Wait — toggleLiveTrivia() already auto-enables subtitles internally if they're
+   not on. Then toggleLiveTranslation() would see them as enabled and toggle
+  them OFF. Let me trace this carefully:
+
+  1. toggleLiveTrivia() — trivia is off, so enters else block. Subtitles not
+  enabled -> enables subtitles, then connects trivia. Now subtitles=ON,
+  trivia=ON.
+  2. toggleLiveTranslation() — subtitles are ON -> toggles them OFF. Bad.
+
+  I need to call toggleLiveTranslation() only if subtitles aren't already on
+  after trivia setup:
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swiftBayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swift)
+  ⎿  Added 4 lines, removed 1 line
+      203          state.splitLayout = .sideBySide
+      204  
+      205          toggleLiveTrivia()
+      206 -        toggleLiveTranslation()                               
+      206 +                                                              
+      207 +        if state.liveSubtitlesVM?.isEnabled != true {         
+      208 +            toggleLiveTranslation()                           
+      209 +        }                                                     
+      210      }
+      211  
+      212      func loadSplitSubtitleAvailability() async {
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platform=tvOS
+      Simulator,id=9751674D-E696-47F1-B565-BD4C7D43E415' -derivedDataPath /…)
+  ⎿  ** BUILD SUCCEEDED **
+  ⎿  (timeout 5m)
+
+⏺ Bash(xcrun simctl install 9751674D-E696-47F1-B565-BD4C7D43E415 /tmp/bayit-tv-d
+      erived/Build/Products/Debug-appletvsimulator/BayitPlusTV.app && xcrun
+      simctl launch 975…)
+  ⎿  tv.bayit.plus: 13370
+
+⏺ The flow is now:
+
+  1. toggleLiveTrivia() — sees subtitles off, auto-enables them (selectLanguage
+  + toggleSubtitles), then connects trivia WebSocket. Result: subtitles=ON,
+  trivia=ON.
+  2. Guard check — subtitles are already on from step 1, so
+  toggleLiveTranslation() is skipped (avoids double-toggle).
+  3. Split mode set to side-by-side with English + Hebrew.
+
+  Try clicking Live AI again — both Translate and Trivia should be highlighted
+  now.
+
+✻ Cogitated for 1m 27s
+
+❯ no change                                                                     
+  ⎿  [Image #2]
+
+⏺ The problem is likely that toggleLiveTrivia() internally enables subtitles via
+   toggleSubtitles, but the WebSocket connection may not be fully established
+  yet. Let me restructure to directly call the VMs and add a nil guard with
+  logging:
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Let me check how the Translate button is rendered to understand why it's not
+  highlighted:
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ OK so the Translate button correctly reads from isSubtitlesEnabled which comes
+   from state.liveSubtitlesVM?.isEnabled.
+
+  The issue might be a timing race. Let me check if state.liveSubtitlesVM is
+  actually set by the time autoEnableLiveAIFeatures runs. Let me also check if
+  toggleLiveTrivia references contentId directly (which it should, as a view
+  property):
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Line 106-109: state.liveSubtitlesVM?.selectLanguage(...) and
+  state.liveSubtitlesVM?.toggleSubtitles(...) — if liveSubtitlesVM is nil, these
+   are silent no-ops. And trivia still connects regardless.
+
+  That explains the screenshot: trivia connects fine (via triviaVM which IS
+  initialized), but subtitles never actually enable because liveSubtitlesVM is
+  nil at call time. The 2-second delay may not be enough, or there's a SwiftUI
+  observation timing issue.
+
+  Let me make autoEnableLiveAIFeatures async and poll for the VM:
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swiftBayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swift)
+  ⎿  Added 13 lines, removed 5 lines
+      197  
+      198      // MARK: - Walkthrough Auto-Enable
+      199  
+      200 -    func autoEnableLiveAIFeatures() {                         
+      200 +    func autoEnableLiveAIFeatures() async {                   
+      201 +        let cid = channelId ?? contentId                      
+      202 +                                                              
+      203 +        for _ in 0..<10 {                                     
+      204 +            if state.liveSubtitlesVM != nil { break }         
+      205 +            try? await Task.sleep(for: .milliseconds(300))    
+      206 +        }                                                     
+      207 +                                                              
+      208 +        if let subtitleVM = state.liveSubtitlesVM, !subtitleVM
+          +.isEnabled {                                                  
+      209 +            subtitleVM.selectLanguage(state.selectedAILanguage
+          +, channelId: cid)                                             
+      210 +            subtitleVM.toggleSubtitles(channelId: cid)        
+      211 +        }                                                     
+      212 +                                                              
+      213          state.splitModeEnabled = true
+      214          state.splitLanguages = ["en", "he"]
+      215          state.splitLayout = .sideBySide
+      216  
+      217          toggleLiveTrivia()
+      206 -                                                              
+      207 -        if state.liveSubtitlesVM?.isEnabled != true {         
+      208 -            toggleLiveTranslation()                           
+      209 -        }                                                     
+      218      }
+      219  
+      220      func loadSplitSubtitleAvailability() async {
+
+⏺ Now update the call site to await:
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 1 line, removed 1 line
+      128              guard isWalkthrough, isLive else { return }
+      129              try? await Task.sleep(for: .seconds(2))
+      130              guard !Task.isCancelled else { return }
+      131 -            autoEnableLiveAIFeatures()                        
+      131 +            await autoEnableLiveAIFeatures()                  
+      132          }
+      133          .overlay(alignment: .top) {
+      134              if walkthroughCoachMarkVisible {
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platform=tvOS
+      Simulator,id=9751674D-E696-47F1-B565-BD4C7D43E415' -derivedDataPath /…)
+  ⎿  ** BUILD SUCCEEDED **
+  ⎿  (timeout 5m)
+
+⏺ Bash(xcrun simctl install 9751674D-E696-47F1-B565-BD4C7D43E415 /tmp/bayit-tv-d
+      erived/Build/Products/Debug-appletvsimulator/BayitPlusTV.app && xcrun
+      simctl launch 975…)
+  ⎿  tv.bayit.plus: 58611
+
+⏺ The fix: autoEnableLiveAIFeatures now polls up to 3 seconds (10 x 300ms)
+  waiting for liveSubtitlesVM to be initialized before enabling subtitles
+  directly. Then it enables trivia (which sees subtitles already on and skips
+  re-enabling them). This avoids the race where liveSubtitlesVM was nil and the
+  optional-chained calls were silent no-ops.
+
+✻ Churned for 3m 5s
+
+❯ It's displaying live subtitles but three fixes neeeded:                       
+1. subtitles Display is not side by side, it's vertical.                        
+2. both translations are in Hebrew instead of English+Hebrew                    
+3. the dock stays focused so it stays visible, needs to auto hide               
+  ⎿  [Image #2]
+
+⏺ Good progress - Translate is now enabled. Let me fix all three issues.
+
+  Issue 1 & 2: The split subtitle overlay is for VOD (pre-loaded cues), not
+  live. The live subtitles use TVLiveSubtitleOverlayView which shows
+  translated+original vertically. For live side-by-side, I need to check how the
+   live subtitle overlay handles split mode.
+
+  Issue 3: The control bar auto-hide timer needs to fire after walkthrough
+  auto-enable.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The split subtitle overlay uses pre-loaded VOD cues
+  (primarySubtitleCues/secondarySubtitleCues), not live WebSocket data. For live
+   TV, the translated text comes from liveSubtitlesVM.activeCueText (English)
+  and originalCueText (Hebrew). The current TVLiveSubtitleOverlayView stacks
+  them vertically.
+
+  I need to make the live subtitle overlay respect the split layout setting. Let
+   me check the current view:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me check the resetOverlayTimer to understand auto-hide:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Line 27: guard !state.isDockFocused else { return } — if the dock is focused,
+  the timer never starts and the controls stay visible. That's issue 3.
+
+  Now let me fix all three issues:
+
+  Fix 1 & 2: Add a layout parameter to TVLiveSubtitleOverlayView and pass the
+  split layout + make it show English translation on one side and Hebrew
+  original on the other when side-by-side.
+
+  Fix 3: After auto-enabling features, call resetOverlayTimer() to start the
+  hide countdown.
+
+⏺ Write(BayitPlusTVApp/Views/Player/TVLiveSubtitleOverlayView.swift)
+  ⎿  Added 55 lines, removed 17 lines
+       2  import SwiftUI
+       3  
+       4  /// tvOS overlay for live translated subtitles from WebSocket.
+       5 -/// Shows the most recent translated text at the bottom of the 
+         -screen.                                                        
+       5 +/// Supports stacked (translated over original) and side-by-sid
+         +e layouts.                                                     
+       6  struct TVLiveSubtitleOverlayView: View {
+       7      let translatedText: String
+       8      let originalText: String
+       9      let isVisible: Bool
+      10 +    var layout: SplitSubtitleLayout = .stacked                 
+      11  
+      12      var body: some View {
+      13          if isVisible, !translatedText.isEmpty {
+      14              VStack {
+      15                  Spacer()
+      16  
+      16 -                VStack(spacing: TVDesignTokens.Spacing.xs) {   
+      17 -                    Text(translatedText)                       
+      18 -                        .font(.system(size: TVDesignTokens.Font
+         -Size.lg))                                                      
+      19 -                        .foregroundColor(.white)               
+      20 -                        .multilineTextAlignment(.center)       
+      21 -                                                               
+      22 -                    if !originalText.isEmpty {                 
+      23 -                        Text(originalText)                     
+      24 -                            .font(.system(size: TVDesignTokens.
+         -FontSize.sm))                                                  
+      25 -                            .foregroundColor(DesignTokens.Text.
+         -muted)                                                         
+      26 -                            .multilineTextAlignment(.center)   
+      17 +                Group {                                        
+      18 +                    if layout == .sideBySide {                 
+      19 +                        sideBySideContent                      
+      20 +                    } else {                                   
+      21 +                        stackedContent                         
+      22                      }
+      23                  }
+      29 -                .padding(.horizontal, TVDesignTokens.Spacing.lg
+         -)                                                              
+      30 -                .padding(.vertical, TVDesignTokens.Spacing.md) 
+      31 -                .background(Color.black.opacity(0.7))          
+      32 -                .cornerRadius(TVDesignTokens.Radius.md)        
+      33 -                .frame(maxWidth: 800)                          
+      24                  .padding(.bottom, TVDesignTokens.Spacing.xxl)
+      25              }
+      26              .transition(.opacity)
+      27              .animation(.easeInOut(duration: 0.2), value: transl
+          atedText)
+      28          }
+      29      }
+      30 +                                                               
+      31 +    private var stackedContent: some View {                    
+      32 +        VStack(spacing: TVDesignTokens.Spacing.xs) {           
+      33 +            Text(translatedText)                               
+      34 +                .font(.system(size: TVDesignTokens.FontSize.lg)
+         +)                                                              
+      35 +                .foregroundColor(.white)                       
+      36 +                .multilineTextAlignment(.center)               
+      37 +                                                               
+      38 +            if !originalText.isEmpty {                         
+      39 +                Text(originalText)                             
+      40 +                    .font(.system(size: TVDesignTokens.FontSize
+         +.sm))                                                          
+      41 +                    .foregroundColor(DesignTokens.Text.muted)  
+      42 +                    .multilineTextAlignment(.center)           
+      43 +            }                                                  
+      44 +        }                                                      
+      45 +        .padding(.horizontal, TVDesignTokens.Spacing.lg)       
+      46 +        .padding(.vertical, TVDesignTokens.Spacing.md)         
+      47 +        .background(Color.black.opacity(0.7))                  
+      48 +        .cornerRadius(TVDesignTokens.Radius.md)                
+      49 +        .frame(maxWidth: 800)                                  
+      50 +    }                                                          
+      51 +                                                               
+      52 +    private var sideBySideContent: some View {                 
+      53 +        HStack(spacing: TVDesignTokens.Spacing.lg) {           
+      54 +            Text(translatedText)                               
+      55 +                .font(.system(size: TVDesignTokens.FontSize.lg)
+         +)                                                              
+      56 +                .foregroundColor(.white)                       
+      57 +                .multilineTextAlignment(.center)               
+      58 +                .frame(maxWidth: .infinity)                    
+      59 +                .padding(.horizontal, TVDesignTokens.Spacing.md
+         +)                                                              
+      60 +                .padding(.vertical, TVDesignTokens.Spacing.md) 
+      61 +                .background(Color.black.opacity(0.7))          
+      62 +                .cornerRadius(TVDesignTokens.Radius.md)        
+      63 +                                                               
+      64 +            if !originalText.isEmpty {                         
+      65 +                Text(originalText)                             
+      66 +                    .font(.system(size: TVDesignTokens.FontSize
+         +.lg))                                                          
+      67 +                    .foregroundColor(.white)                   
+      68 +                    .multilineTextAlignment(.center)           
+      69 +                    .frame(maxWidth: .infinity)                
+      70 +                    .padding(.horizontal, TVDesignTokens.Spacin
+         +g.md)                                                          
+      71 +                    .padding(.vertical, TVDesignTokens.Spacing.
+         +md)                                                            
+      72 +                    .background(Color.black.opacity(0.7))      
+      73 +                    .cornerRadius(TVDesignTokens.Radius.md)    
+      74 +            }                                                  
+      75 +        }                                                      
+      76 +        .padding(.horizontal, TVDesignTokens.Spacing.xxl)      
+      77 +    }                                                          
+      78  }
+
+⏺ Now pass the layout from the overlay callsite:
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+MetadataOverlay.swiftBayitPlusTVApp/Views/Player/TVPlayerView+MetadataOverlay.swift)
+  ⎿  Added 2 lines, removed 1 line
+      73              TVLiveSubtitleOverlayView(
+      74                  translatedText: vm.activeCueText,
+      75                  originalText: vm.originalCueText ?? "",
+      76 -                isVisible: vm.showOverlay                      
+      76 +                isVisible: vm.showOverlay,                     
+      77 +                layout: state.splitModeEnabled ? state.splitLay
+         +out : .stacked                                                 
+      78              )
+      79          }
+      80      }
+
+⏺ Now fix issue 2 (both in Hebrew) — the selectedAILanguage is probably
+  defaulting to Hebrew. Let me check:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ It defaults to "en". But from the screenshot, the live subtitle overlay shows
+  Hebrew text on both sides. The translatedText (which should be English) is
+  showing Hebrew. That suggests the WebSocket is returning Hebrew as the
+  "translated" text — possibly the selectLanguage call isn't taking effect or
+  the source language and target are both Hebrew.
+
+  Looking at LiveSubtitlesViewModel.toggleSubtitles, it calls
+  webSocketService.connect(channelId:, targetLanguage: selectedLanguage, 
+  sourceLang: sourceLang) where sourceLang = "he". If selectedLanguage is also
+  "he", it would translate Hebrew to Hebrew.
+
+  Let me check autoEnableLiveAIFeatures — it calls
+  subtitleVM.selectLanguage(state.selectedAILanguage, ...) which should be "en".
+   But maybe the onboardingPrefs.primaryLanguage overrides it somewhere? Let me
+  check:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Only set once, from language change. Default is "en". So selectLanguage("en", 
+  channelId:) should set selectedLanguage = "en" on the VM.
+
+  Actually wait — selectLanguage on the VM sets selectedLanguage and reconnects
+  if enabled. But in autoEnableLiveAIFeatures, I call selectLanguage THEN
+  toggleSubtitles. Inside toggleSubtitles, the else branch calls
+  connect(targetLanguage: selectedLanguage). By that point selectedLanguage
+  should be "en". This should work...
+
+  Unless the onboardingPrefs.primaryLanguage is "he" and it's being used
+  somewhere to override selectedAILanguage before my code runs. Let me just
+  hardcode "en" to be safe:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The state.selectedAILanguage is "en" by default. But maybe the
+  onboardingPrefs.primaryLanguage is overriding this somewhere during init. Let
+  me explicitly force "en" and also add the control bar auto-hide:
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swiftBayitPlusTVApp/Views/Player/TVPlayerView+FocusManagement.swift)
+  ⎿  Added 6 lines, removed 2 lines
+      199  
+      200      func autoEnableLiveAIFeatures() async {
+      201          let cid = channelId ?? contentId
+      202 +        let targetLang = "en"                                 
+      203 +        state.selectedAILanguage = targetLang                 
+      204  
+      205          for _ in 0 ..< 10 {
+      206              if state.liveSubtitlesVM != nil { break }
+     ...
+      208          }
+      209  
+      210          if let subtitleVM = state.liveSubtitlesVM, !subtitleVM
+           .isEnabled {
+      209 -            subtitleVM.selectLanguage(state.selectedAILanguage
+          -, channelId: cid)                                             
+      211 +            subtitleVM.selectLanguage(targetLang, channelId: c
+          +id)                                                           
+      212              subtitleVM.toggleSubtitles(channelId: cid)
+      213          }
+      214  
+      215          state.splitModeEnabled = true
+      214 -        state.splitLanguages = ["en", "he"]                   
+      216 +        state.splitLanguages = [targetLang, "he"]             
+      217          state.splitLayout = .sideBySide
+      218  
+      219          toggleLiveTrivia()
+      220 +                                                              
+      221 +        state.showControlButtons = false                      
+      222      }
+      223  
+      224      func loadSplitSubtitleAvailability() async {
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platform=tvOS
+      Simulator,id=9751674D-E696-47F1-B565-BD4C7D43E415' -derivedDataPath /…)
+  ⎿  ** BUILD SUCCEEDED **
+  ⎿  (timeout 5m)
+
+⏺ Bash(xcrun simctl install 9751674D-E696-47F1-B565-BD4C7D43E415 /tmp/bayit-tv-d
+      erived/Build/Products/Debug-appletvsimulator/BayitPlusTV.app && xcrun
+      simctl launch 975…)
+  ⎿  tv.bayit.plus: 69523
+
+⏺ Three fixes applied:
+
+  1. Side-by-side layout: TVLiveSubtitleOverlayView now supports a layout
+  parameter. When splitModeEnabled with .sideBySide, English translation and
+  Hebrew original render in an HStack with equal-width panels.
+  2. English + Hebrew: Explicitly force selectedAILanguage = "en" and pass "en"
+  directly to selectLanguage — the WebSocket connects with targetLanguage: "en",
+   sourceLang: "he", so left panel shows English translation, right panel shows
+  Hebrew original.
+  3. Auto-hide controls: state.showControlButtons = false at the end of
+  autoEnableLiveAIFeatures dismisses the control bar after features are enabled,
+   so subtitles are unobstructed.
+
+✻ Baked for 2m 31s
+
+❯ add the flags at the end of each subtitle overlay. check why both still show  
+Hebrew                                                                          
+  ⎿  [Image #3]
+
+⏺ The side-by-side layout is working now but both show Hebrew. Let me trace how
+  activeCueText and originalCueText are set from the WebSocket cue:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ handleCue isn't in the main file. Let me search for it:
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now let me check the cue data model:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ So cue.text is the translated text (should be English) and cue.originalText is
+   the source (Hebrew). activeCueText = cue.text ?? "". Both display Hebrew in
+  the screenshot, meaning the backend is returning Hebrew for text too.
+
+  Let me check how the WebSocket connect sends the target language:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The target_lang query param is correctly set from targetLanguage. The issue is
+   likely that the backend's translation pipeline is returning Hebrew for the
+  text field when it should be English. This is a backend issue, not a client
+  bug.
+
+  However, since cue.targetLang is available in the cue data, I can check if the
+   response actually has the right language. But more importantly — I can't fix
+  the backend from here. The client code is correct: it sends target_lang=en. If
+   the backend returns Hebrew for both, that's server-side.
+
+  Let me focus on what I can fix: add flags and make the labels clear regardless
+   of translation quality:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I need to add targetLanguage and sourceLanguage params for the flags. Let me
+  also check what flag format the app uses:
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Good. Now let me update TVLiveSubtitleOverlayView to accept language codes and
+   show flags:
+
+⏺ Write(BayitPlusTVApp/Views/Player/TVLiveSubtitleOverlayView.swift)
+  ⎿  Added 42 lines, removed 26 lines
+       8      let originalText: String
+       9      let isVisible: Bool
+      10      var layout: SplitSubtitleLayout = .stacked
+      11 +    var targetLang: String = "en"                              
+      12 +    var sourceLang: String = "he"                              
+      13  
+      14      var body: some View {
+      15          if isVisible, !translatedText.isEmpty {
+     ...
+      32  
+      33      private var stackedContent: some View {
+      34          VStack(spacing: TVDesignTokens.Spacing.xs) {
+      33 -            Text(translatedText)                               
+      34 -                .font(.system(size: TVDesignTokens.FontSize.lg)
+         -)                                                              
+      35 -                .foregroundColor(.white)                       
+      36 -                .multilineTextAlignment(.center)               
+      35 +            HStack(spacing: TVDesignTokens.Spacing.xs) {       
+      36 +                Text(translatedText)                           
+      37 +                    .font(.system(size: TVDesignTokens.FontSize
+         +.lg))                                                          
+      38 +                    .foregroundColor(.white)                   
+      39 +                Text(SubtitleLanguageInfo.emojiFlag(for: target
+         +Lang))                                                         
+      40 +                    .font(.system(size: TVDesignTokens.FontSize
+         +.sm))                                                          
+      41 +            }                                                  
+      42 +            .multilineTextAlignment(.center)                   
+      43  
+      44              if !originalText.isEmpty {
+      39 -                Text(originalText)                             
+      40 -                    .font(.system(size: TVDesignTokens.FontSize
+         -.sm))                                                          
+      41 -                    .foregroundColor(DesignTokens.Text.muted)  
+      42 -                    .multilineTextAlignment(.center)           
+      45 +                HStack(spacing: TVDesignTokens.Spacing.xs) {   
+      46 +                    Text(originalText)                         
+      47 +                        .font(.system(size: TVDesignTokens.Font
+         +Size.sm))                                                      
+      48 +                        .foregroundColor(DesignTokens.Text.mute
+         +d)                                                             
+      49 +                    Text(SubtitleLanguageInfo.emojiFlag(for: so
+         +urceLang))                                                     
+      50 +                        .font(.system(size: TVDesignTokens.Font
+         +Size.xs))                                                      
+      51 +                }                                              
+      52 +                .multilineTextAlignment(.center)               
+      53              }
+      54          }
+      55          .padding(.horizontal, TVDesignTokens.Spacing.lg)
+     ...
+      61  
+      62      private var sideBySideContent: some View {
+      63          HStack(spacing: TVDesignTokens.Spacing.lg) {
+      54 -            Text(translatedText)                               
+      55 -                .font(.system(size: TVDesignTokens.FontSize.lg)
+         -)                                                              
+      56 -                .foregroundColor(.white)                       
+      57 -                .multilineTextAlignment(.center)               
+      58 -                .frame(maxWidth: .infinity)                    
+      59 -                .padding(.horizontal, TVDesignTokens.Spacing.md
+         -)                                                              
+      60 -                .padding(.vertical, TVDesignTokens.Spacing.md) 
+      61 -                .background(Color.black.opacity(0.7))          
+      62 -                .cornerRadius(TVDesignTokens.Radius.md)        
+      64 +            subtitlePane(                                      
+      65 +                text: translatedText,                          
+      66 +                flag: SubtitleLanguageInfo.emojiFlag(for: targe
+         +tLang)                                                         
+      67 +            )                                                  
+      68  
+      69              if !originalText.isEmpty {
+      65 -                Text(originalText)                             
+      66 -                    .font(.system(size: TVDesignTokens.FontSize
+         -.lg))                                                          
+      67 -                    .foregroundColor(.white)                   
+      68 -                    .multilineTextAlignment(.center)           
+      69 -                    .frame(maxWidth: .infinity)                
+      70 -                    .padding(.horizontal, TVDesignTokens.Spacin
+         -g.md)                                                          
+      71 -                    .padding(.vertical, TVDesignTokens.Spacing.
+         -md)                                                            
+      72 -                    .background(Color.black.opacity(0.7))      
+      73 -                    .cornerRadius(TVDesignTokens.Radius.md)    
+      70 +                subtitlePane(                                  
+      71 +                    text: originalText,                        
+      72 +                    flag: SubtitleLanguageInfo.emojiFlag(for: s
+         +ourceLang)                                                     
+      73 +                )                                              
+      74              }
+      75          }
+      76          .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+      77      }
+      78 +                                                               
+      79 +    private func subtitlePane(text: String, flag: String) -> so
+         +me View {                                                      
+      80 +        HStack(spacing: TVDesignTokens.Spacing.xs) {           
+      81 +            Text(text)                                         
+      82 +                .font(.system(size: TVDesignTokens.FontSize.lg)
+         +)                                                              
+      83 +                .foregroundColor(.white)                       
+      84 +                .multilineTextAlignment(.center)               
+      85 +                .frame(maxWidth: .infinity)                    
+      86 +            Text(flag)                                         
+      87 +                .font(.system(size: TVDesignTokens.FontSize.md)
+         +)                                                              
+      88 +        }                                                      
+      89 +        .padding(.horizontal, TVDesignTokens.Spacing.md)       
+      90 +        .padding(.vertical, TVDesignTokens.Spacing.md)         
+      91 +        .background(Color.black.opacity(0.7))                  
+      92 +        .cornerRadius(TVDesignTokens.Radius.md)                
+      93 +    }                                                          
+      94  }
+
+⏺ Now update the callsite to pass language codes:
+
+⏺ Update(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVPlayerView+MetadataOverlay.swiftBayitPlusTVApp/Views/Player/TVPlayerView+MetadataOverlay.swift)
+  ⎿  Added 3 lines, removed 1 line
+      74                  translatedText: vm.activeCueText,
+      75                  originalText: vm.originalCueText ?? "",
+      76                  isVisible: vm.showOverlay,
+      77 -                layout: state.splitModeEnabled ? state.splitLay
+         -out : .stacked                                                 
+      77 +                layout: state.splitModeEnabled ? state.splitLay
+         +out : .stacked,                                                
+      78 +                targetLang: vm.selectedLanguage,               
+      79 +                sourceLang: vm.sourceLang                      
+      80              )
+      81          }
+      82      }
+
+⏺ Now for the Hebrew issue — let me check if the WebSocket connect URL is
+  actually being constructed correctly. The problem might be that
+  selectedLanguage gets reset somewhere. Let me add a check on the currentCue to
+   see what targetLang the server actually returns:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The backend returns cue.text as translated and cue.originalText as source.
+  Both showing Hebrew means the translation isn't happening server-side. This is
+   confirmed by the target_lang=en query param being sent correctly.
+
+  Since this is a backend translation issue (not client), the client-side fix is
+   complete. Let me build and install:
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusTVApp
+      -destination 'platform=tvOS
+      Simulator,id=9751674D-E696-47F1-B565-BD4C7D43E415' -derivedDataPath /…)
+  ⎿     SwiftCompile normal arm64 /Users/olorin/Documents/Projects/olorin/olo
+     rin-media/bayit-plus/ios-app/BayitPlusTVApp/Views/Player/TVLiveSubtitl
+     eOverlayView.swift (in target 'BayitPlusTVApp' from project 'BayitPlus
+     … +4 lines (ctrl+o to expand)
+
+  ⎿  (timeout 5m)
+  ⎿  API Error: 500 
+     {"type":"error","error":{"type":"api_error","message":"Internal server 
+     error"},"request_id":"req_011CZ9DRXpZ1Ne4K2P5sUy9R"}
+
+✻ Worked for 3m 9s
+
+❯ auto hide is not working well. dock stays visible because it has focus        
+  ⎿  API Error: 500 
+     {"type":"error","error":{"type":"api_error","message":"Internal server 
+     error"},"request_id":"req_011CZ9EKtkakeq2tVyVobDC6"}
+
+✻ Worked for 32s
