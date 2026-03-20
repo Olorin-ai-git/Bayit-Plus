@@ -5299,13 +5299,43 @@
       "jerusalemSubtitle": "Stay connected to the heart of Israel",
       "telAvivSubtitle": "The pulse of Israeli innovation and culture",
       "nearMeSubtitle": "Israeli community and businesses near you"
+    },
+    "scrollHint": "Scroll for more",
+    "hero": {
+      "watchNow": "Watch Now",
+      "listenNow": "Listen Now",
+      "exploreNow": "Explore",
+      "moreInfo": "More Info",
+      "resume": "Resume"
+    },
+    "toggle": {
+      "classic": "Switch to Classic"
+    },
+    "podcast": {
+      "title": "Trending Podcast",
+      "episodes": "{{count}} episodes"
+    },
+    "trending": {
+      "title": "What's Hot in Israel",
+      "articles": "{{count}} articles"
+    },
+    "a11y": {
+      "dock": "Navigation dock",
+      "dockItem": "Navigate to {{name}}",
+      "heroCard": "{{title}}, {{type}}"
     }
   },
   "dock": {
     "liveAI": "Live AI",
     "movieAI": "Movie AI",
     "classic": "Classic",
-    "cinematic": "Cinematic"
+    "cinematic": "Cinematic",
+    "discover": "Discover",
+    "liveTV": "Live TV",
+    "listen": "Listen",
+    "continueWatching": "Continue Watching",
+    "plex": "My Plex",
+    "youtube": "My YouTube"
   },
   "jerusalem": {
     "title": "Jerusalem Connection",

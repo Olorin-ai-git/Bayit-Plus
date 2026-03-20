@@ -5243,7 +5243,43 @@
       "jerusalemSubtitle": "ইসরায়েলের হৃদয়ের সাথে সংযুক্ত থাকুন",
       "telAvivSubtitle": "ইসরায়েলি উদ্ভাবন এবং সংস্কৃতির স্পন্দন",
       "nearMeSubtitle": "আপনার কাছে ইসরায়েলি সম্প্রদায় এবং ব্যবসা"
+    },
+    "scrollHint": "আরও দেখতে স্ক্রোল করুন",
+    "hero": {
+      "watchNow": "এখনই দেখুন",
+      "listenNow": "এখনই শুনুন",
+      "exploreNow": "অন্বেষণ করুন",
+      "moreInfo": "আরও তথ্য",
+      "resume": "চালিয়ে যান"
+    },
+    "toggle": {
+      "classic": "ক্লাসিকে যান"
+    },
+    "podcast": {
+      "title": "ট্রেন্ডিং পডকাস্ট",
+      "episodes": "{{count}} এপিসোড"
+    },
+    "trending": {
+      "title": "ইসরায়েলে কী গরম",
+      "articles": "{{count}} নিবন্ধ"
+    },
+    "a11y": {
+      "dock": "নেভিগেশন ডক",
+      "dockItem": "{{name}} এ যান",
+      "heroCard": "{{title}}, {{type}}"
     }
+  },
+  "dock": {
+    "liveAI": "লাইভ AI",
+    "movieAI": "সিনেমা AI",
+    "classic": "ক্লাসিক",
+    "cinematic": "সিনেমাটিক",
+    "discover": "আবিষ্কার করুন",
+    "liveTV": "লাইভ টিভি",
+    "listen": "শুনুন",
+    "continueWatching": "দেখা চালিয়ে যান",
+    "plex": "My Plex",
+    "youtube": "My YouTube"
   },
   "jerusalem": {
     "title": "জেরুজালেম সংযোগ",
@@ -6134,7 +6170,7 @@
         "generic2": "{{name}} উত্তর তৈরি করছে...",
         "generic3": "প্রায় হয়ে গেছে...",
         "generic4": "আর একটু...",
-        "enjoyMovie": এটি এক-দুই মিনিট সময় নেয় -- আমরা উত্তর তৈরি করার সময় ছবিটি উপভোগ করুন
+        "enjoyMovie": "এটি এক-দুই মিনিট সময় নেয় -- আমরা উত্তর তৈরি করার সময় ছবিটি উপভোগ করুন"
       },
       "askAgain": "[bn] Ask Again",
       "placeholder": "[bn] Ask about this scene...",

@@ -29,6 +29,8 @@ struct MainTabView: View {
                 MiniAudioPlayerBar()
                 GlassTabBar()
             }
+            .opacity(shouldHideTabBar ? 0 : 1)
+            .allowsHitTesting(!shouldHideTabBar)
 
             // Floating restored widgets (PiP windows) - shown on all tabs
             if let vm = dockViewModel {
@@ -98,6 +100,10 @@ struct MainTabView: View {
             .presentationDragIndicator(.visible)
             .presentationBackground(.ultraThinMaterial)
         }
+    }
+
+    private var shouldHideTabBar: Bool {
+        uiPreferences.isCinematicHome && coordinator.selectedTab == .home
     }
 
     private func tabContent(for tab: AppTab) -> some View {

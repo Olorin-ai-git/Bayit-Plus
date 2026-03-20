@@ -5243,7 +5243,43 @@
       "jerusalemSubtitle": "イスラエルの心臓部とつながり続ける",
       "telAvivSubtitle": "イスラエルのイノベーションと文化の鼓動",
       "nearMeSubtitle": "近くのイスラエルコミュニティとビジネス"
+    },
+    "scrollHint": "スクロールして続きを見る",
+    "hero": {
+      "watchNow": "今すぐ視聴",
+      "listenNow": "今すぐ聴く",
+      "exploreNow": "探索",
+      "moreInfo": "詳細情報",
+      "resume": "再開"
+    },
+    "toggle": {
+      "classic": "クラシックに切り替え"
+    },
+    "podcast": {
+      "title": "トレンドポッドキャスト",
+      "episodes": "{{count}} エピソード"
+    },
+    "trending": {
+      "title": "イスラエルで話題",
+      "articles": "{{count}} 記事"
+    },
+    "a11y": {
+      "dock": "ナビゲーションドック",
+      "dockItem": "{{name}} に移動",
+      "heroCard": "{{title}}, {{type}}"
     }
+  },
+  "dock": {
+    "liveAI": "ライブAI",
+    "movieAI": "映画AI",
+    "classic": "クラシック",
+    "cinematic": "シネマティック",
+    "discover": "発見",
+    "liveTV": "ライブTV",
+    "listen": "聴く",
+    "continueWatching": "視聴を再開",
+    "plex": "My Plex",
+    "youtube": "My YouTube"
   },
   "jerusalem": {
     "title": "エルサレムコネクション",
@@ -6121,7 +6157,7 @@
         "generic2": "{{name}}が返答を準備中...",
         "generic3": "もう少しです...",
         "generic4": "あと少しお待ちください...",
-        "enjoyMovie": これには1、2分かかります -- 返事を準備する間、映画をお楽しみください
+        "enjoyMovie": "これには1、2分かかります -- 返事を準備する間、映画をお楽しみください"
       },
       "askAgain": "[ja] Ask Again",
       "placeholder": "[ja] Ask about this scene...",

@@ -5243,7 +5243,43 @@
       "jerusalemSubtitle": "Restez connecte au coeur d'Israel",
       "telAvivSubtitle": "Le pouls de l'innovation et de la culture israelienne",
       "nearMeSubtitle": "Communaute et entreprises israeliennes pres de chez vous"
+    },
+    "scrollHint": "Faites defiler pour en voir plus",
+    "hero": {
+      "watchNow": "Regarder maintenant",
+      "listenNow": "Ecouter maintenant",
+      "exploreNow": "Explorer",
+      "moreInfo": "Plus d'infos",
+      "resume": "Reprendre"
+    },
+    "toggle": {
+      "classic": "Passer en classique"
+    },
+    "podcast": {
+      "title": "Podcast tendance",
+      "episodes": "{{count}} episodes"
+    },
+    "trending": {
+      "title": "Ce qui est populaire en Israel",
+      "articles": "{{count}} articles"
+    },
+    "a11y": {
+      "dock": "Barre de navigation",
+      "dockItem": "Naviguer vers {{name}}",
+      "heroCard": "{{title}}, {{type}}"
     }
+  },
+  "dock": {
+    "liveAI": "IA en direct",
+    "movieAI": "IA cinema",
+    "classic": "Classique",
+    "cinematic": "Cinematique",
+    "discover": "Decouvrir",
+    "liveTV": "TV en direct",
+    "listen": "Ecouter",
+    "continueWatching": "Continuer a regarder",
+    "plex": "My Plex",
+    "youtube": "My YouTube"
   },
   "jerusalem": {
     "title": "Connexion Jérusalem",
@@ -6139,7 +6175,7 @@
         "generic2": "{{name}} prepare une reponse...",
         "generic3": "Presque pret...",
         "generic4": "Encore un instant...",
-        "enjoyMovie": Cela prend une ou deux minutes -- profitez du film pendant que nous preparons la reponse
+        "enjoyMovie": "Cela prend une ou deux minutes -- profitez du film pendant que nous preparons la reponse"
       },
       "askAgain": "Redemander",
       "placeholder": "Posez une question sur cette scene...",

@@ -26,6 +26,7 @@ struct SettingsView: View {
                         ProgressView().tint(.white).padding(.top, DesignTokens.Spacing.xxxxl)
                     } else {
                         preferencesSection(vm)
+                        displaySection
                         mediaNavigationSection
                         accountNavigationSection
                         helpSection
@@ -83,6 +84,44 @@ struct SettingsView: View {
             interactiveMomentsRow(vm)
             toggleRow(icon: "lightbulb.max", title: localization.t("settings.showFeatureTips"),
                       isOn: !tooltipManager.tipsDisabled) { v in tooltipManager.tipsDisabled = !v }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private var displaySection: some View {
+        VStack(spacing: DesignTokens.Spacing.sm) {
+            sectionHeader(localization.t("settings.display"))
+            GlassCard {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+                    HStack(spacing: DesignTokens.Spacing.md) {
+                        Image(systemName: "rectangle.on.rectangle")
+                            .font(.system(size: DesignTokens.FontSize.lg))
+                            .foregroundStyle(DesignTokens.Primary.default)
+                            .frame(width: 32)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(localization.t("settings.homepageStyle"))
+                                .font(.system(size: DesignTokens.FontSize.md))
+                                .foregroundStyle(DesignTokens.Text.primary)
+                            Text(localization.t("settings.homepageStyleDescription"))
+                                .font(.system(size: DesignTokens.FontSize.xs))
+                                .foregroundStyle(DesignTokens.Text.muted)
+                        }
+                        Spacer()
+                    }
+                    Picker("", selection: Binding(
+                        get: { uiPreferences.homepageStyle },
+                        set: { uiPreferences.homepageStyle = $0 }
+                    )) {
+                        Text(localization.t("settings.homepageStyleCinematic"))
+                            .tag("cinematic")
+                        Text(localization.t("settings.homepageStyleClassic"))
+                            .tag("classic")
+                    }
+                    .pickerStyle(.segmented)
+                    .tint(DesignTokens.Primary.default)
+                }
+                .padding(DesignTokens.Spacing.md)
+            }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

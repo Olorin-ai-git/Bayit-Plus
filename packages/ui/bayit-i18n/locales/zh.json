@@ -5243,7 +5243,43 @@
       "jerusalemSubtitle": "与以色列的心脏保持连接",
       "telAvivSubtitle": "以色列创新与文化的脉搏",
       "nearMeSubtitle": "您身边的以色列社区和企业"
+    },
+    "scrollHint": "向下滚动查看更多",
+    "hero": {
+      "watchNow": "立即观看",
+      "listenNow": "立即收听",
+      "exploreNow": "探索",
+      "moreInfo": "更多信息",
+      "resume": "继续"
+    },
+    "toggle": {
+      "classic": "切换到经典模式"
+    },
+    "podcast": {
+      "title": "热门播客",
+      "episodes": "{{count}} 集"
+    },
+    "trending": {
+      "title": "以色列热门",
+      "articles": "{{count}} 篇文章"
+    },
+    "a11y": {
+      "dock": "导航栏",
+      "dockItem": "导航到 {{name}}",
+      "heroCard": "{{title}}, {{type}}"
     }
+  },
+  "dock": {
+    "liveAI": "AI直播",
+    "movieAI": "电影AI",
+    "classic": "经典",
+    "cinematic": "影院式",
+    "discover": "发现",
+    "liveTV": "直播电视",
+    "listen": "收听",
+    "continueWatching": "继续观看",
+    "plex": "My Plex",
+    "youtube": "My YouTube"
   },
   "jerusalem": {
     "title": "耶路撒冷连接",
@@ -6129,7 +6165,7 @@
         "generic2": "{{name}}正在组织回答...",
         "generic3": "快好了...",
         "generic4": "再等一会儿...",
-        "enjoyMovie": 这需要一两分钟 -- 请在我们准备回复时继续欣赏电影
+        "enjoyMovie": "这需要一两分钟 -- 请在我们准备回复时继续欣赏电影"
       },
       "askAgain": "[zh] Ask Again",
       "placeholder": "[zh] Ask about this scene...",

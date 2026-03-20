@@ -17,37 +17,19 @@ struct HomeView: View {
     @Environment(WidgetDataSyncService.self) private var widgetSync
     @Environment(BYOCSourceManager.self) var byocManager
     @Environment(\.appConfiguration) var appConfiguration
+    @Environment(UserUIPreferencesStore.self) var uiPreferences
     @State var viewModel: HomeViewModel?
     @State var cardActions: CardActionsViewModel?
     @State var aiGatewayState = AIGatewayState()
     @State var showYouTubeAuth = false
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            if let vm = viewModel {
-                VStack(spacing: DesignTokens.Spacing.xl) {
-                    if vm.isLoading && vm.categories.isEmpty {
-                        loadingState
-                    } else if let error = vm.error, vm.categories.isEmpty {
-                        errorState(error)
-                        // BYOC content is local — show even when API fails
-                        if byocManager.hasAnySources {
-                            BYOCShelfRow()
-                        }
-                    } else {
-                        contentSections(vm)
-                    }
-                }
-                .padding(.top, DesignTokens.Spacing.md)
+        Group {
+            if uiPreferences.isCinematicHome, let vm = viewModel {
+                CinematicHomeView(viewModel: vm)
             } else {
-                ScreenLoadingView()
+                classicHomeContent
             }
-        }
-        .scrollContentBackground(.hidden)
-        .background(DesignTokens.Background.primary)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .refreshable {
-            await viewModel?.refresh()
         }
         .task {
             if cardActions == nil {
@@ -84,5 +66,33 @@ struct HomeView: View {
             BYOCYouTubeAuthSheet()
         }
         .onAppear { aiGatewayState.incrementSession() }
+    }
+
+    private var classicHomeContent: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            if let vm = viewModel {
+                VStack(spacing: DesignTokens.Spacing.xl) {
+                    if vm.isLoading && vm.categories.isEmpty {
+                        loadingState
+                    } else if let error = vm.error, vm.categories.isEmpty {
+                        errorState(error)
+                        if byocManager.hasAnySources {
+                            BYOCShelfRow()
+                        }
+                    } else {
+                        contentSections(vm)
+                    }
+                }
+                .padding(.top, DesignTokens.Spacing.md)
+            } else {
+                ScreenLoadingView()
+            }
+        }
+        .scrollContentBackground(.hidden)
+        .background(DesignTokens.Background.primary)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .refreshable {
+            await viewModel?.refresh()
+        }
     }
 }

@@ -5243,7 +5243,43 @@
       "jerusalemSubtitle": "הישאר מחובר ללב של ישראל",
       "telAvivSubtitle": "הדופק של החדשנות והתרבות הישראלית",
       "nearMeSubtitle": "קהילה ועסקים ישראליים ליד"
+    },
+    "scrollHint": "גלול לעוד",
+    "hero": {
+      "watchNow": "צפה עכשיו",
+      "listenNow": "האזן עכשיו",
+      "exploreNow": "גלה",
+      "moreInfo": "מידע נוסף",
+      "resume": "המשך"
+    },
+    "toggle": {
+      "classic": "עבור לקלאסי"
+    },
+    "podcast": {
+      "title": "פודקאסט מובייל",
+      "episodes": "{{count}} פרקים"
+    },
+    "trending": {
+      "title": "מה חם בישראל",
+      "articles": "{{count}} מאמרים"
+    },
+    "a11y": {
+      "dock": "עגינת ניווט",
+      "dockItem": "נווט אל {{name}}",
+      "heroCard": "{{title}}, {{type}}"
     }
+  },
+  "dock": {
+    "liveAI": "בינה מלאכותית חי",
+    "movieAI": "בינה מלאכותית לסרטים",
+    "classic": "קלאסי",
+    "cinematic": "קולנועי",
+    "discover": "גלה",
+    "liveTV": "טלוויזיה חיה",
+    "listen": "האזן",
+    "continueWatching": "המשך צפייה",
+    "plex": "My Plex",
+    "youtube": "My YouTube"
   },
   "jerusalem": {
     "title": "חיבור לירושלים",
@@ -6137,7 +6173,7 @@
         "generic2": "{{name}} מנסח תשובה...",
         "generic3": "כמעט שם...",
         "generic4": "רק עוד רגע...",
-        "enjoyMovie": זה לוקח דקה או שתיים -- תהנו מהסרט בינתיים בזמן שאנחנו מכינים את התשובה
+        "enjoyMovie": "זה לוקח דקה או שתיים -- תהנו מהסרט בינתיים בזמן שאנחנו מכינים את התשובה"
       },
       "askAgain": "שאל שוב",
       "placeholder": "שאל על הסצנה הזו...",
