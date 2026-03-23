@@ -8,7 +8,6 @@ import logging
 from datetime import datetime, timezone
 
 from app.models.content import Content
-from app.services.audit_logger import AuditLogger
 from app.services.tmdb_service import TMDBService
 
 from .models import VerificationResult
@@ -92,16 +91,6 @@ async def verify_single_content(
                     if not dry_run:
                         content.file_hash = recalculated_hash
                         await content.save()
-                        await AuditLogger.log_event(
-                            event_type="library_integrity_hash_updated",
-                            status="success",
-                            details=f"Updated hash for: {content.title}",
-                            metadata={
-                                "content_id": str(content.id),
-                                "old_hash": content.file_hash,
-                                "new_hash": recalculated_hash,
-                            },
-                        )
 
             except Exception as e:
                 result.error = f"Hash verification failed: {str(e)}"
@@ -170,19 +159,6 @@ async def verify_single_content(
             except Exception as e:
                 logger.error(f"Metadata rehydration failed for {content.title}: {e}")
 
-        # Log verification
-        await AuditLogger.log_event(
-            event_type="library_integrity_verification",
-            status="success" if not result.has_critical_issues else "warning",
-            details=f"Verified: {content.title}",
-            metadata={
-                "content_id": str(content.id),
-                "has_critical_issues": result.has_critical_issues,
-                "has_warnings": result.has_warnings,
-                "issues": result.issues,
-                "warnings": result.warnings,
-            },
-        )
 
     except Exception as e:
         result.error = str(e)

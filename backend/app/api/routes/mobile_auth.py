@@ -18,7 +18,6 @@ from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
 from app.core.security import create_access_token
 from app.models.user import TokenResponse, User
-from app.services.audit_logger import audit_logger
 
 logger = get_logger(__name__)
 
@@ -211,8 +210,6 @@ async def mobile_google_auth(request: Request, body: GoogleIDTokenRequest):
 
     await user.save()
 
-    await audit_logger.log_oauth_login(user, request, "google_mobile")
-
     logger.info(
         "Mobile Google auth succeeded",
         extra={"user_id": str(user.id), "platform": "mobile"},
@@ -296,8 +293,6 @@ async def mobile_apple_auth(request: Request, body: AppleIDTokenRequest):
 
     user.last_login = datetime.now(timezone.utc)
     await user.save()
-
-    await audit_logger.log_oauth_login(user, request, "apple_mobile")
 
     logger.info(
         "Mobile Apple auth succeeded",

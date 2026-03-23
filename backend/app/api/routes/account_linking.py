@@ -15,7 +15,6 @@ from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
 from app.core.security import get_current_active_user
 from app.models.user import User
-from app.services.audit_logger import audit_logger
 
 logger = get_logger(__name__)
 
@@ -171,19 +170,6 @@ async def link_provider(
             # Reload user to get updated state
             await current_user.sync()
 
-            # Audit logging
-            await audit_logger.log_event(
-                event_type="account_link",
-                status="success",
-                details=f"Linked {link_request.provider} provider",
-                user=current_user,
-                request=request,
-                metadata={
-                    "provider": link_request.provider,
-                    "provider_email": google_email,
-                }
-            )
-
             logger.info(
                 f"Google account linked for user: {current_user.email}",
                 extra={"user_id": str(current_user.id)}
@@ -288,19 +274,6 @@ async def link_provider(
             # Reload user to get updated state
             await current_user.sync()
 
-            # Audit logging
-            await audit_logger.log_event(
-                event_type="account_link",
-                status="success",
-                details=f"Linked {link_request.provider} provider",
-                user=current_user,
-                request=request,
-                metadata={
-                    "provider": link_request.provider,
-                    "provider_email": apple_email,
-                }
-            )
-
             logger.info(
                 f"Apple account linked for user: {current_user.email}",
                 extra={"user_id": str(current_user.id)}
@@ -378,19 +351,6 @@ async def unlink_provider(
         current_user.auth_provider = current_user.linked_providers[0]
 
     await current_user.save()
-
-    # Audit logging
-    await audit_logger.log_event(
-        event_type="account_unlink",
-        status="success",
-        details=f"Unlinked {unlink_request.provider} provider",
-        user=current_user,
-        request=request,
-        metadata={
-            "provider": unlink_request.provider,
-            "remaining_providers": current_user.linked_providers,
-        }
-    )
 
     logger.info(
         f"{unlink_request.provider.title()} account unlinked for user: {current_user.email}",

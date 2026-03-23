@@ -75,7 +75,6 @@ from app.models.recording import (Recording, RecordingSchedule,
 from app.models.series_recording_rule import SeriesRecordingRule
 from app.models.search_analytics import SearchQuery
 from app.models.search_history import SearchHistory
-from app.models.security_audit import SecurityAuditLog
 from app.models.subscription import Invoice, Subscription
 from app.models.subtitle_preferences import SubtitlePreference
 from app.models.subtitles import (SubtitleQuotaTrackerDoc,
@@ -320,8 +319,6 @@ async def connect_to_mongo():
         CostBreakdown,
         UserCostBreakdown,
         CostProviderSettings,
-        # Security audit log
-        SecurityAuditLog,
         # Diagnostics models (system health monitoring)
         ClientHeartbeat,
         ClientHealthHistory,

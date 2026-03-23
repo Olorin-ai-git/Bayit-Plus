@@ -15,7 +15,6 @@ from app.core.rate_limiter import limiter
 from app.core.security import (get_current_user, get_password_hash,
                                verify_password)
 from app.models.user import User
-from app.services.audit_logger import audit_logger
 from app.services.email_service import send_email
 
 logger = logging.getLogger(__name__)
@@ -118,8 +117,6 @@ async def request_password_reset(request: Request, reset_request: PasswordResetR
         else:
             logger.warning(f"Password reset email could not be sent to: {user.email}")
 
-        # ✅ Audit log: password reset requested
-        await audit_logger.log_password_reset_request(user.email, request)
     else:
         # Log attempt for non-existent email (potential attack)
         logger.warning(
@@ -201,9 +198,6 @@ async def confirm_password_reset(request: Request, reset_confirm: PasswordResetC
 
     logger.info(f"Password reset completed for: {user.email}")
 
-    # ✅ Audit log: password reset completed
-    await audit_logger.log_password_reset_complete(user, request)
-
     return {
         "message": "Password has been reset successfully. You can now log in with your new password."
     }
@@ -248,8 +242,5 @@ async def change_password(
     await current_user.save()
 
     logger.info(f"Password changed for user: {current_user.email}")
-
-    # Audit log
-    await audit_logger.log_password_change(current_user, request)
 
     return {"message": "Password changed successfully"}

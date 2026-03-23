@@ -18,7 +18,6 @@ from app.core.security import (create_access_token, get_current_active_user,
 from app.models.household import Household
 from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
                              UserResponse, UserUpdate)
-from app.services.audit_logger import audit_logger
 from app.services.payment.signup_checkout_service import SignupCheckoutService
 
 logger = get_logger(__name__)
@@ -184,9 +183,6 @@ async def register(request: Request, user_data: UserCreate):
             extra={"error": str(e)}
         )
 
-    # ✅ Audit log: successful registration
-    await audit_logger.log_registration(user, request)
-
     # Create access and refresh tokens
     access_token = create_access_token(data={"sub": str(user.id)})
     refresh_token = create_refresh_token(
@@ -286,8 +282,6 @@ async def login(request: Request, credentials: UserLogin):
                 logger.warning(
                     f"Account locked due to failed attempts: {credentials.email} from IP: {request.client.host}"
                 )
-                # ✅ Audit log: account locked
-                await audit_logger.log_account_locked(user, request)
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Account temporarily locked due to too many failed login attempts. Please try again in 30 minutes or reset your password.",
@@ -297,11 +291,6 @@ async def login(request: Request, credentials: UserLogin):
             logger.warning(
                 f"Failed login attempt ({user.failed_login_attempts}/5): {credentials.email} from IP: {request.client.host}"
             )
-
-        # ✅ Audit log: failed login
-        await audit_logger.log_login_failure(
-            credentials.email, request, "invalid_credentials"
-        )
 
         # Add small random delay to further prevent timing attacks
         await asyncio.sleep(0.1 + random.uniform(0, 0.2))
@@ -334,9 +323,6 @@ async def login(request: Request, credentials: UserLogin):
     user.last_login = datetime.now(timezone.utc)
 
     await user.save()
-
-    # ✅ Audit log: successful login
-    await audit_logger.log_login_success(user, request, "email_password")
 
     # Create access and refresh tokens
     access_token = create_access_token(data={"sub": str(user.id)})
@@ -529,9 +515,6 @@ async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
 
         await user.save()
 
-        # Audit log
-        await audit_logger.log_oauth_login(user, request, "google")
-
         # Create JWT tokens
         jwt_token = create_access_token(data={"sub": str(user.id)})
         refresh_token = create_refresh_token(
@@ -673,9 +656,6 @@ async def mobile_apple_signin(request: Request, auth_data: AppleMobileAuth):
         user.last_login = datetime.now(timezone.utc)
 
         await user.save()
-
-        # Audit log
-        await audit_logger.log_oauth_login(user, request, "apple")
 
         # Create JWT tokens
         jwt_token = create_access_token(data={"sub": str(user.id)})
@@ -894,9 +874,6 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
         user.avatar = picture
 
     await user.save()
-
-    # ✅ Audit log: OAuth login
-    await audit_logger.log_oauth_login(user, request, "google")
 
     # Create JWT access and refresh tokens
     jwt_token = create_access_token(data={"sub": str(user.id)})

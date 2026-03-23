@@ -14,7 +14,6 @@ from pydantic import BaseModel
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
 from app.models.user import TokenResponse, UserCreate, UserLogin
-from app.services.audit_logger import audit_logger
 from app.services.auth_service_client import get_auth_service_client
 
 logger = get_logger(__name__)
@@ -116,9 +115,6 @@ async def register_via_auth_service(request: Request, user_data: UserCreate):
         except Exception as e:
             logger.warning("Failed to send verification email", extra={"error": str(e)})
 
-        # Audit log
-        await audit_logger.log_registration(user, request)
-
         # Ensure constant response time
         elapsed = asyncio.get_event_loop().time() - start_time
         min_response_time = 0.5
@@ -173,9 +169,6 @@ async def login_via_auth_service(request: Request, credentials: UserLogin):
 
         await user.save()
 
-        # Audit log
-        await audit_logger.log_login_success(user, request)
-
         return AuthProxyResponse(
             access_token=auth_response["access_token"],
             refresh_token=auth_response["refresh_token"],
@@ -184,9 +177,6 @@ async def login_via_auth_service(request: Request, credentials: UserLogin):
         )
 
     except ValueError as e:
-        # Audit log for failed attempt
-        await audit_logger.log_login_failure(credentials.email, request)
-
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
@@ -222,9 +212,6 @@ async def login_google_via_auth_service(request: Request, auth_data: SocialAuthR
 
         await user.save()
 
-        # Audit log
-        await audit_logger.log_oauth_login(user, request, "google")
-
         logger.info(
             "Google OAuth login via auth service",
             extra={"user_id": str(user.id), "email": user.email}
@@ -238,7 +225,6 @@ async def login_google_via_auth_service(request: Request, auth_data: SocialAuthR
         )
 
     except ValueError as e:
-        await audit_logger.log_login_failure(auth_data.id_token[:20], request)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Google OAuth failed: {str(e)}",
@@ -319,9 +305,6 @@ async def google_callback_via_auth_service(request: Request, auth_data: GoogleCa
 
         await user.save()
 
-        # Audit log
-        await audit_logger.log_oauth_login(user, request, "google")
-
         logger.info(
             "Google OAuth web callback via auth service",
             extra={"user_id": str(user.id), "email": user.email}
@@ -335,7 +318,6 @@ async def google_callback_via_auth_service(request: Request, auth_data: GoogleCa
         )
 
     except ValueError as e:
-        await audit_logger.log_login_failure("google_oauth", request)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Google OAuth failed: {str(e)}",
@@ -379,9 +361,6 @@ async def login_apple_via_auth_service(request: Request, auth_data: AppleSocialA
 
         await user.save()
 
-        # Audit log
-        await audit_logger.log_oauth_login(user, request, "apple")
-
         logger.info(
             "Apple Sign In via auth service",
             extra={"user_id": str(user.id), "email": user.email}
@@ -395,7 +374,6 @@ async def login_apple_via_auth_service(request: Request, auth_data: AppleSocialA
         )
 
     except ValueError as e:
-        await audit_logger.log_login_failure(auth_data.id_token[:20], request)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Apple Sign In failed: {str(e)}",

@@ -14,7 +14,6 @@ from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
 from app.core.security import get_current_user
 from app.models.user import TokenResponse, User
-from app.services.audit_logger import audit_logger
 from app.services.auth_service_client import get_auth_service_client
 from app.services.pairing_manager import pairing_manager
 
@@ -126,9 +125,6 @@ async def complete_auth_v2(request: Request, auth_request: CompleteAuthRequest):
         user.last_login = datetime.now(timezone.utc)
         await user.save()
 
-        # Audit log
-        await audit_logger.log_login_success(user, request, "device_pairing_v2")
-
         # Complete pairing - notify TV via WebSocket
         await pairing_manager.complete_pairing(
             auth_request.session_id,
@@ -157,7 +153,6 @@ async def complete_auth_v2(request: Request, auth_request: CompleteAuthRequest):
     except ValueError as e:
         # Authentication failed
         await pairing_manager.fail_pairing(auth_request.session_id, str(e))
-        await audit_logger.log_login_failure(auth_request.email, request, "device_pairing_v2")
 
         logger.warning(
             "Device pairing v2 auth failed",
@@ -248,9 +243,6 @@ async def complete_google_v2(request: Request, auth_request: CompleteGoogleReque
         # Update last login
         user.last_login = datetime.now(timezone.utc)
         await user.save()
-
-        # Audit log
-        await audit_logger.log_oauth_login(user, request, "device_pairing_google_v2")
 
         # Complete pairing - notify TV via WebSocket
         await pairing_manager.complete_pairing(
@@ -378,9 +370,6 @@ async def complete_apple_v2(request: Request, auth_request: CompleteAppleRequest
         user.last_login = datetime.now(timezone.utc)
         await user.save()
 
-        # Audit log
-        await audit_logger.log_oauth_login(user, request, "device_pairing_apple_v2")
-
         # Complete pairing - notify TV via WebSocket
         await pairing_manager.complete_pairing(
             auth_request.session_id,
@@ -483,8 +472,6 @@ async def complete_token_v2(
         # Update last login
         user.last_login = datetime.now(timezone.utc)
         await user.save()
-
-        await audit_logger.log_login_success(user, request, "device_pairing_token_v2")
 
         # Complete pairing - send the existing RS256 token to the TV
         await pairing_manager.complete_pairing(
