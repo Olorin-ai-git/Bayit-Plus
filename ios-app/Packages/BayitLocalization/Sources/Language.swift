@@ -16,10 +16,13 @@ public enum Language: String, CaseIterable, Codable, Sendable {
     case tamil = "ta"
     case bengali = "bn"
     case japanese = "ja"
+    case arabic = "ar"
+    case german = "de"
+    case portuguese = "pt"
 
     /// Whether this language is written right-to-left.
     public var isRTL: Bool {
-        self == .hebrew
+        self == .hebrew || self == .arabic
     }
 
     /// Human-readable name of the language in its own script.
@@ -35,6 +38,9 @@ public enum Language: String, CaseIterable, Codable, Sendable {
         case .tamil: return "\u{0BA4}\u{0BAE}\u{0BBF}\u{0BB4}\u{0BCD}"
         case .bengali: return "\u{09AC}\u{09BE}\u{0982}\u{09B2}\u{09BE}"
         case .japanese: return "\u{65E5}\u{672C}\u{8A9E}"
+        case .arabic: return "\u{0627}\u{0644}\u{0639}\u{0631}\u{0628}\u{064A}\u{0629}"
+        case .german: return "Deutsch"
+        case .portuguese: return "Portugu\u{00EA}s"
         }
     }
 
@@ -51,6 +57,9 @@ public enum Language: String, CaseIterable, Codable, Sendable {
         case .tamil: return "ta-IN"
         case .bengali: return "bn-BD"
         case .japanese: return "ja-JP"
+        case .arabic: return "ar-SA"
+        case .german: return "de-DE"
+        case .portuguese: return "pt-BR"
         }
     }
 
@@ -72,6 +81,9 @@ public enum Language: String, CaseIterable, Codable, Sendable {
         case .tamil: return "\u{1F1EE}\u{1F1F3}"
         case .bengali: return "\u{1F1E7}\u{1F1E9}"
         case .japanese: return "\u{1F1EF}\u{1F1F5}"
+        case .arabic: return "\u{1F1F8}\u{1F1E6}"
+        case .german: return "\u{1F1E9}\u{1F1EA}"
+        case .portuguese: return "\u{1F1E7}\u{1F1F7}"
         }
     }
 
