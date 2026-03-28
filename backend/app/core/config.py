@@ -3082,7 +3082,12 @@ class Settings(BaseSettings):
     CREDIT_RATE_VOD_PAUSE_ASK: int = Field(
         default=3, ge=0,
         env="CREDIT_RATE_VOD_PAUSE_ASK",
-        description="Credits per Pause & Ask exchange (2 animations + polish)",
+        description="Credits per Pause & Ask exchange with lip-sync animation",
+    )
+    CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY: int = Field(
+        default=1, ge=0,
+        env="CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY",
+        description="Credits per Pause & Ask exchange in voice-only mode (no animation)",
     )
     CREDIT_RATE_VOD_FEATURE_UNLOCK: int = Field(
         default=1, ge=0,

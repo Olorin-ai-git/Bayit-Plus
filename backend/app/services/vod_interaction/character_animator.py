@@ -37,6 +37,35 @@ class CharacterAnimatorService:
             settings.ELEVENLABS_API_URL or "https://api.elevenlabs.io"
         ).rstrip("/")
 
+    async def generate_audio_only(
+        self,
+        character_name: str,
+        dialogue_text: str,
+        voice_id: str,
+    ) -> AnimatedResponse:
+        """Generate character TTS audio without lip-sync animation."""
+        logger.info(
+            "Starting character audio-only generation",
+            extra={
+                "character_name": character_name,
+                "text_length": len(dialogue_text),
+            },
+        )
+        audio_url = await self._generate_tts(dialogue_text, voice_id, character_name)
+        duration = await self._get_audio_duration(audio_url)
+
+        logger.info(
+            "Character audio-only generation completed",
+            extra={
+                "character_name": character_name,
+                "duration": duration,
+                "audio_url": audio_url,
+            },
+        )
+        return AnimatedResponse(
+            audio_url=audio_url, video_url="", duration=duration,
+        )
+
     async def animate_character_response(
         self,
         character_name: str,

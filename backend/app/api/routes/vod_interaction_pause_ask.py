@@ -45,6 +45,10 @@ class PauseAskRequest(BaseModel):
         default="", max_length=10,
         description="Language hint for polishing (e.g. 'he', 'en')",
     )
+    voice_only: bool = Field(
+        default=True,
+        description="Voice-only mode (no lip-sync animation, lower cost)",
+    )
 
 
 class TranscriptionResponseModel(BaseModel):
@@ -118,9 +122,14 @@ async def pause_ask_exchange(
             detail="Avatar not found for Pause & Ask",
         )
 
+    credit_amount = (
+        settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
+        if body.voice_only
+        else settings.CREDIT_RATE_VOD_PAUSE_ASK
+    )
     has_balance = await credit_service.has_sufficient_credits(
         user_id=str(current_user.id),
-        amount=settings.CREDIT_RATE_VOD_PAUSE_ASK,
+        amount=credit_amount,
     )
     if not has_balance:
         raise HTTPException(
@@ -133,6 +142,7 @@ async def pause_ask_exchange(
             session=session,
             user_message=body.message,
             language_hint=body.language_hint,
+            voice_only=body.voice_only,
         )
         return PauseAskResponseModel(**result.model_dump())
 

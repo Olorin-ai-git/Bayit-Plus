@@ -48,6 +48,7 @@ class PauseAskOrchestrator:
         session: VODInteractionSession,
         user_message: str,
         language_hint: str = "",
+        voice_only: bool = False,
     ) -> PauseAskResult:
         """Process a Pause & Ask exchange through the full pipeline."""
         session_id = str(session.id)
@@ -69,18 +70,22 @@ class PauseAskOrchestrator:
         )
 
         # 3. PARALLEL: user avatar animation + character AI response
-        #    Uses personal voice clone if ready, otherwise falls back to the
-        #    configured default kid voice (MOVIE_INTERACTION_DEFAULT_VOICE_MALE).
+        #    Voice-only mode skips all animation (lip-sync) for lower cost.
+        #    Full mode uses personal voice clone if ready, otherwise falls back
+        #    to the configured default kid voice.
         scene_context = session.scene_context or ""
         char_desc = session.character_description or ""
 
-        fallback_voice = settings.MOVIE_INTERACTION_DEFAULT_VOICE_MALE
-        has_face = bool(avatar.creatify_avatar_image_url or avatar.primary_avatar_gcs_path)
-        if avatar.has_voice_clone or (has_face and fallback_voice):
-            fb = "" if avatar.has_voice_clone else fallback_voice
-            user_anim_coro = self._animate_user_safe(polished_text, avatar, fb)
-        else:
+        if voice_only:
             user_anim_coro = self._no_animation()
+        else:
+            fallback_voice = settings.MOVIE_INTERACTION_DEFAULT_VOICE_MALE
+            has_face = bool(avatar.creatify_avatar_image_url or avatar.primary_avatar_gcs_path)
+            if avatar.has_voice_clone or (has_face and fallback_voice):
+                fb = "" if avatar.has_voice_clone else fallback_voice
+                user_anim_coro = self._animate_user_safe(polished_text, avatar, fb)
+            else:
+                user_anim_coro = self._no_animation()
         char_response_coro = character_ai_service.generate_response(
             character_name=session.character_name,
             scene_context=scene_context,
@@ -112,20 +117,28 @@ class PauseAskOrchestrator:
             )
             response_text = SAFE_FALLBACK_RESPONSE
 
-        # 5. Animate character response
+        # 5. Character voice/animation
         voice_id = (
             session.character_voice_id
             or settings.CHARACTER_VOICE_DEFAULT
         )
         try:
-            char_animated = await character_animator_service.animate_character_response(
-                character_name=session.character_name,
-                dialogue_text=response_text,
-                character_frame_url=session.character_frame_url,
-                voice_id=voice_id,
-            )
+            if voice_only:
+                char_animated = await character_animator_service.generate_audio_only(
+                    character_name=session.character_name,
+                    dialogue_text=response_text,
+                    voice_id=voice_id,
+                )
+            else:
+                char_animated = await character_animator_service.animate_character_response(
+                    character_name=session.character_name,
+                    dialogue_text=response_text,
+                    character_frame_url=session.character_frame_url,
+                    voice_id=voice_id,
+                )
         except Exception as exc:
-            raise self._classify_error(exc, "fal_ai", session_id) from exc
+            svc = "elevenlabs" if voice_only else "fal_ai"
+            raise self._classify_error(exc, svc, session_id) from exc
 
         # 6. Save exchanges to session
         user_exchange = DialogueExchange(
@@ -151,12 +164,17 @@ class PauseAskOrchestrator:
         session.updated_at = datetime.utcnow()
         await session.save()
 
-        # 7. Charge credits
+        # 7. Charge credits (voice-only costs less — no animation)
+        credit_amount = (
+            settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
+            if voice_only
+            else settings.CREDIT_RATE_VOD_PAUSE_ASK
+        )
         await credit_service.charge_credits(
             user_id=session.user_id,
-            amount=settings.CREDIT_RATE_VOD_PAUSE_ASK,
+            amount=credit_amount,
             reason="vod_pause_ask_exchange",
-            metadata={"session_id": session_id},
+            metadata={"session_id": session_id, "voice_only": voice_only},
         )
 
         logger.info(
@@ -164,6 +182,7 @@ class PauseAskOrchestrator:
             extra={
                 "session_id": session_id,
                 "character_name": session.character_name,
+                "voice_only": voice_only,
                 "user_video_available": user_animated is not None,
             },
         )
