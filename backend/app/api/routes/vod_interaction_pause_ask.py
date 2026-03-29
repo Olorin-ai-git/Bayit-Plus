@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.services.zeh_ani.enhanced_asr_service import EnhancedASRService
 from app.core.logging_config import get_logger
+from app.api.dependencies.olorin_tier import require_lip_sync
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
 from app.models.child_avatar import ChildAvatar
@@ -114,6 +115,9 @@ async def pause_ask_exchange(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Maximum dialogue exchanges reached",
         )
+
+    if not body.voice_only:
+        require_lip_sync(current_user)
 
     if not body.voice_only and session.avatar_id:
         avatar = await ChildAvatar.get(session.avatar_id)

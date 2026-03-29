@@ -3031,9 +3031,9 @@ class Settings(BaseSettings):
         description="Enable multi-character interactions",
     )
     VOD_INTERACTION_MAX_CHARACTERS_PER_MOMENT: int = Field(
-        default=3, ge=1, le=5,
+        default=5, ge=1, le=10,
         env="VOD_INTERACTION_MAX_CHARACTERS_PER_MOMENT",
-        description="Max characters in a single interactive moment",
+        description="Max characters in a single interactive moment (tier-dependent)",
     )
     VOD_INTERACTION_REACTIONS_ENABLED: bool = Field(
         default=True,

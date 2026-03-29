@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 from app.core.logging_config import get_logger
 from app.core.security import get_current_user
+from app.api.dependencies.olorin_tier import require_share_clips
 from app.models.user import User
 from app.services.vod_interaction.reel_compositor import (
     reel_compositor_service,
@@ -59,6 +60,7 @@ async def generate_reel(
     Validates session ownership, composites videos via FFmpeg,
     uploads to GCS, and returns the reel metadata.
     """
+    require_share_clips(current_user)
     try:
         reel = await reel_compositor_service.generate_reel(
             user_id=str(current_user.id),

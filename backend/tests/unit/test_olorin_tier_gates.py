@@ -1,7 +1,7 @@
 """Unit tests for Olorin tier sync endpoint and feature gates."""
 
 import pytest
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch, MagicMock
 
 
 class TestTierSyncEndpoint:
@@ -59,3 +59,108 @@ class TestTierSyncEndpoint:
                 email="nobody@test.com", product="olorin-fan", action="activate",
             )
         assert result["status"] == "user_not_found"
+
+
+from unittest.mock import Mock
+
+
+class TestLipSyncTierGate:
+    def test_free_user_cannot_request_lip_sync(self):
+        from app.api.dependencies.olorin_tier import require_lip_sync
+        from fastapi import HTTPException
+        user = Mock()
+        user.olorin_tier = "free"
+        user.id = "u1"
+        with pytest.raises(HTTPException) as exc:
+            require_lip_sync(user)
+        assert exc.value.status_code == 403
+        assert "Superfan" in exc.value.detail
+
+    def test_fan_user_cannot_request_lip_sync(self):
+        from app.api.dependencies.olorin_tier import require_lip_sync
+        from fastapi import HTTPException
+        user = Mock()
+        user.olorin_tier = "fan"
+        user.id = "u2"
+        with pytest.raises(HTTPException) as exc:
+            require_lip_sync(user)
+        assert exc.value.status_code == 403
+
+    def test_superfan_user_can_request_lip_sync(self):
+        from app.api.dependencies.olorin_tier import require_lip_sync
+        user = Mock()
+        user.olorin_tier = "superfan"
+        user.id = "u3"
+        result = require_lip_sync(user)
+        assert result is None
+
+    def test_b2b_user_can_request_lip_sync(self):
+        from app.api.dependencies.olorin_tier import require_lip_sync
+        user = Mock()
+        user.olorin_tier = "b2b"
+        user.id = "u4"
+        result = require_lip_sync(user)
+        assert result is None
+
+
+class TestShareClipsTierGate:
+    def test_free_user_cannot_generate_reel(self):
+        from app.api.dependencies.olorin_tier import require_share_clips
+        from fastapi import HTTPException
+        user = Mock()
+        user.olorin_tier = "free"
+        user.id = "u1"
+        with pytest.raises(HTTPException) as exc:
+            require_share_clips(user)
+        assert exc.value.status_code == 403
+        assert "Fan" in exc.value.detail
+
+    def test_fan_user_can_generate_reel(self):
+        from app.api.dependencies.olorin_tier import require_share_clips
+        user = Mock()
+        user.olorin_tier = "fan"
+        user.id = "u2"
+        result = require_share_clips(user)
+        assert result is None
+
+    def test_superfan_user_can_generate_reel(self):
+        from app.api.dependencies.olorin_tier import require_share_clips
+        user = Mock()
+        user.olorin_tier = "superfan"
+        user.id = "u3"
+        result = require_share_clips(user)
+        assert result is None
+
+
+class TestCharactersPerVideoLimit:
+    def test_free_tier_max_3_characters(self):
+        from app.services.olorin.tier_service import OlorinTierService
+        svc = OlorinTierService()
+        user = Mock()
+        user.olorin_tier = "free"
+        user.id = "u1"
+        assert svc.get_max_characters(user) == 3
+
+    def test_fan_tier_max_5_characters(self):
+        from app.services.olorin.tier_service import OlorinTierService
+        svc = OlorinTierService()
+        user = Mock()
+        user.olorin_tier = "fan"
+        user.id = "u2"
+        assert svc.get_max_characters(user) == 5
+
+    def test_superfan_tier_max_5_characters(self):
+        from app.services.olorin.tier_service import OlorinTierService
+        svc = OlorinTierService()
+        user = Mock()
+        user.olorin_tier = "superfan"
+        user.id = "u3"
+        assert svc.get_max_characters(user) == 5
+
+    def test_b2b_tier_max_10_characters(self):
+        from app.services.olorin.tier_service import OlorinTierService
+        svc = OlorinTierService()
+        user = Mock()
+        user.olorin_tier = "b2b"
+        user.id = "u4"
+        assert svc.get_max_characters(user) == 10
