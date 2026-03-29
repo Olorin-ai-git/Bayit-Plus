@@ -52,10 +52,15 @@ def register_routes(app: FastAPI) -> None:
     from app.api.routes.olorin import (
         legacy_router as olorin_legacy_router,
         router as olorin_router,
+        vanity_router as olorin_vanity_router,
     )
 
+    # Standard mount: /api/v1/olorin/v1/* (used via api.bayit.tv)
     app.include_router(olorin_router, prefix=prefix, tags=["olorin"])
     app.include_router(olorin_legacy_router, prefix=prefix, tags=["olorin-legacy"])
+
+    # Vanity mount: /v1/* (used via api.olorin.ai — LB routes directly)
+    app.include_router(olorin_vanity_router, tags=["olorin-vanity"])
 
     logger.info(
         "Olorin B2B routes registered",

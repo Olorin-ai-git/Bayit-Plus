@@ -75,4 +75,18 @@ async def redirect_legacy_routes(request: Request, path: str) -> RedirectRespons
     )
 
 
-__all__ = ["router", "legacy_router"]
+# Vanity router for api.olorin.ai (paths: /v1/partner/*, /v1/dubbing/*, etc.)
+# Mounted without the /api/v1/olorin prefix so portal-documented paths work.
+vanity_router = APIRouter(prefix=f"/{API_VERSION}", tags=["olorin"])
+vanity_router.include_router(partner_router, prefix="/partner", tags=["olorin-partner"])
+vanity_router.include_router(dubbing_router, prefix="/dubbing", tags=["olorin-dubbing"])
+vanity_router.include_router(search_router, prefix="/search", tags=["olorin-search"])
+vanity_router.include_router(context_router, prefix="/context", tags=["olorin-context"])
+vanity_router.include_router(recap_router, prefix="/recap", tags=["olorin-recap"])
+vanity_router.include_router(webhooks_router, prefix="/webhooks", tags=["olorin-webhooks"])
+vanity_router.include_router(video_ingest_router, prefix="/videos", tags=["olorin-videos"])
+vanity_router.include_router(pause_ask_router, prefix="/videos", tags=["olorin-pause-ask"])
+vanity_router.include_router(subtitles_router, prefix="/subtitles", tags=["olorin-subtitles"])
+vanity_router.include_router(trivia_router, prefix="/trivia", tags=["olorin-trivia"])
+
+__all__ = ["router", "legacy_router", "vanity_router"]
