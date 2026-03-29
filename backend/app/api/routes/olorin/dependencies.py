@@ -75,6 +75,10 @@ def _get_global_feature_flag(capability: str) -> bool:
         "semantic_search": settings.olorin.semantic_search_enabled,
         "cultural_context": settings.olorin.cultural_context_enabled,
         "recap_agent": settings.olorin.recap_enabled,
+        "video_ingest": settings.olorin.video_ingest_enabled,
+        "pause_ask": settings.olorin.pause_ask_enabled,
+        "subtitles": settings.olorin.subtitles_enabled,
+        "trivia": settings.olorin.trivia_enabled,
     }
     return feature_flags.get(capability, False)
 

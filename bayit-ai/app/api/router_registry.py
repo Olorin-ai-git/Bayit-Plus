@@ -55,6 +55,14 @@ from app.models.avatar_style_cache import AvatarStyleCache
 from app.models.audio_tracks import AudioTrackDoc
 from app.models.ai_generation_job import AIGenerationJob
 from app.models.search_analytics import SearchQuery
+from app.models.integration_partner import (
+    DubbingSession,
+    IntegrationPartner,
+    UsageRecord,
+    WebhookDelivery,
+)
+from app.models.content_embedding import ContentEmbedding, RecapSession
+from app.models.cultural_reference import CulturalReference
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +84,8 @@ SERVICE_MODELS = [
     ContentComprehension, ComprehensionAttempt, Badge, UserReward,
     PhraseBreakdown, GrandparentVoiceNote, NewsClip,
     AvatarStyleCache, AudioTrackDoc, AIGenerationJob, SearchQuery,
+    IntegrationPartner, UsageRecord, DubbingSession, WebhookDelivery,
+    ContentEmbedding, RecapSession, CulturalReference,
 ]
 
 
@@ -193,4 +203,13 @@ def register_routes(app: FastAPI) -> None:
     app.include_router(discover.router, prefix=f"{prefix}/discover", tags=["discover"])
     app.include_router(discover_characters.router, prefix=f"{prefix}/discover", tags=["discover-characters"])
 
-    logger.info("All AI feature routes registered with prefix %s", prefix)
+    # Olorin B2B Partner API (video ingest, pause-ask, dubbing, subtitles,
+    # trivia, search, context, recap, webhooks, partner management)
+    from app.api.routes.olorin import (
+        legacy_router as olorin_legacy_router,
+        router as olorin_router,
+    )
+    app.include_router(olorin_router, prefix=prefix, tags=["olorin"])
+    app.include_router(olorin_legacy_router, prefix=prefix, tags=["olorin-legacy"])
+
+    logger.info("All AI feature + B2B routes registered with prefix %s", prefix)

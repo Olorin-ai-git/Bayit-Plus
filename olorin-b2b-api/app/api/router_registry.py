@@ -23,7 +23,9 @@ from app.models.integration_partner import (
     WebhookDelivery,
 )
 from app.models.live_dubbing import LiveDubbingSession
+from app.models.trivia import ContentTrivia
 from app.models.user import User
+from app.models.vod_interaction import VODInteractionSession
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +40,8 @@ SERVICE_MODELS: list[type] = [
     RecapSession,
     CulturalReference,
     LiveDubbingSession,
+    ContentTrivia,
+    VODInteractionSession,
 ]
 
 

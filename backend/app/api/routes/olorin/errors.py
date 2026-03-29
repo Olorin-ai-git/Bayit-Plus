@@ -81,3 +81,20 @@ class OlorinErrors:
     CREATE_SESSION_FAILED = "create_session_failed"
     ADD_TRANSCRIPT_FAILED = "add_transcript_failed"
     GENERATE_RECAP_FAILED = "generate_recap_failed"
+
+    # Video ingest errors
+    CONTENT_NOT_FOUND = "content_not_found"
+    EXTRACTION_ALREADY_RUNNING = "extraction_already_running"
+    EXTRACTION_FAILED = "extraction_failed"
+    CHARACTERS_NOT_READY = "characters_not_ready"
+
+    # Pause & Ask errors
+    PAUSE_ASK_FAILED = "pause_ask_failed"
+    NO_CHARACTERS_AVAILABLE = "no_characters_available"
+
+    # Subtitle errors
+    SUBTITLE_GENERATION_FAILED = "subtitle_generation_failed"
+
+    # Trivia errors
+    TRIVIA_GENERATION_FAILED = "trivia_generation_failed"
+    TRIVIA_NOT_FOUND = "trivia_not_found"

@@ -1633,6 +1633,26 @@ class OlorinSettings(BaseSettings):
         description="Enable recap agent capability",
         alias="OLORIN_RECAP_ENABLED",
     )
+    video_ingest_enabled: bool = Field(
+        default=False,
+        description="Enable video ingest + character extraction capability",
+        alias="OLORIN_VIDEO_INGEST_ENABLED",
+    )
+    pause_ask_enabled: bool = Field(
+        default=False,
+        description="Enable Pause & Ask B2B capability",
+        alias="OLORIN_PAUSE_ASK_ENABLED",
+    )
+    subtitles_enabled: bool = Field(
+        default=False,
+        description="Enable AI subtitles generation capability",
+        alias="OLORIN_SUBTITLES_ENABLED",
+    )
+    trivia_enabled: bool = Field(
+        default=False,
+        description="Enable trivia generation capability",
+        alias="OLORIN_TRIVIA_ENABLED",
+    )
 
     # Content Configuration
     default_content_language: str = Field(
