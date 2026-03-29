@@ -30,6 +30,14 @@ def _verify_internal_key(api_key: str) -> None:
         raise HTTPException(status_code=403, detail="Invalid API key")
 
 
+def _build_refill_args(user) -> dict:
+    """Extract tier info from User for credit refill."""
+    return {
+        "olorin_tier": getattr(user, "olorin_tier", "free") or "free",
+        "is_plus": getattr(user, "subscription_tier", "free") == "plus",
+    }
+
+
 def _build_credit_service() -> BetaCreditService:
     """Construct BetaCreditService with injected dependencies."""
     db = get_database()
@@ -59,10 +67,10 @@ async def trigger_monthly_credit_refill(
 
     for user in users:
         user_id = str(user.id)
-        is_plus = user.subscription_tier == "plus"
+        refill_args = _build_refill_args(user)
         try:
             await credit_service.refill_monthly_credits(
-                user_id=user_id, is_plus=is_plus
+                user_id=user_id, **refill_args
             )
             refilled_count += 1
         except Exception as exc:

@@ -26,6 +26,17 @@ except ImportError:
 logger = get_logger(__name__)
 
 
+def get_credits_for_olorin_tier(tier: str, settings) -> int:
+    """Map Olorin tier string to monthly credit allocation from settings."""
+    mapping = {
+        "free": settings.FREE_MONTHLY_CREDITS,
+        "fan": settings.FAN_MONTHLY_CREDITS,
+        "superfan": settings.SUPERFAN_MONTHLY_CREDITS,
+        "b2b": settings.B2B_MONTHLY_CREDITS,
+    }
+    return mapping.get(tier, settings.FREE_MONTHLY_CREDITS)
+
+
 class BetaCreditService:
     """
     Credit management service with dependency injection.
@@ -394,25 +405,28 @@ class BetaCreditService:
     async def refill_monthly_credits(
         self,
         user_id: str,
-        is_plus: bool = False
+        is_plus: bool = False,
+        olorin_tier: str = "free",
     ) -> Optional[BetaCredit]:
         """
         Refill monthly credits based on subscription tier.
 
-        Free users: FREE_MONTHLY_CREDITS (50)
-        Plus users: PLUS_MONTHLY_CREDITS (500)
+        Olorin tiers take precedence over Bayit+ plus status.
 
         Args:
             user_id: User ID
-            is_plus: Whether user is a Plus subscriber
+            is_plus: Whether user is a Bayit+ Plus subscriber (legacy, backward compat)
+            olorin_tier: Olorin tier string (free/fan/superfan/b2b)
 
         Returns:
             Updated BetaCredit document or None if not found
         """
-        refill_amount = (
-            self.settings.PLUS_MONTHLY_CREDITS if is_plus
-            else self.settings.FREE_MONTHLY_CREDITS
-        )
+        if olorin_tier != "free":
+            refill_amount = get_credits_for_olorin_tier(olorin_tier, self.settings)
+        elif is_plus:
+            refill_amount = self.settings.PLUS_MONTHLY_CREDITS
+        else:
+            refill_amount = self.settings.FREE_MONTHLY_CREDITS
 
         credit = await BetaCredit.find_one(
             {"user_id": user_id}
@@ -436,7 +450,8 @@ class BetaCreditService:
             balance_after=refill_amount,
             metadata={
                 "event": "monthly_refill",
-                "tier": "plus" if is_plus else "free",
+                "olorin_tier": olorin_tier,
+                "bayit_plus": is_plus,
             },
             created_at=datetime.utcnow()
         )
@@ -446,7 +461,8 @@ class BetaCreditService:
             "Monthly credits refilled",
             extra={
                 "user_id": user_id,
-                "tier": "plus" if is_plus else "free",
+                "olorin_tier": olorin_tier,
+                "bayit_plus": is_plus,
                 "credits": refill_amount,
             }
         )

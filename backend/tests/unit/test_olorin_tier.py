@@ -164,3 +164,48 @@ class TestOlorinTierDependency:
         from app.api.dependencies.olorin_tier import require_share_clips
         result = require_share_clips(_make_mock_user("fan"))
         assert result is None
+
+
+class TestCreditServiceTierMapping:
+    def test_get_credits_for_tier_free(self):
+        from app.services.beta.credit_service import get_credits_for_olorin_tier
+        from app.core.config import settings
+        assert get_credits_for_olorin_tier("free", settings) == settings.FREE_MONTHLY_CREDITS
+
+    def test_get_credits_for_tier_fan(self):
+        from app.services.beta.credit_service import get_credits_for_olorin_tier
+        from app.core.config import settings
+        assert get_credits_for_olorin_tier("fan", settings) == settings.FAN_MONTHLY_CREDITS
+
+    def test_get_credits_for_tier_superfan(self):
+        from app.services.beta.credit_service import get_credits_for_olorin_tier
+        from app.core.config import settings
+        assert get_credits_for_olorin_tier("superfan", settings) == settings.SUPERFAN_MONTHLY_CREDITS
+
+    def test_get_credits_for_tier_b2b(self):
+        from app.services.beta.credit_service import get_credits_for_olorin_tier
+        from app.core.config import settings
+        assert get_credits_for_olorin_tier("b2b", settings) == settings.B2B_MONTHLY_CREDITS
+
+    def test_get_credits_for_tier_unknown_defaults_free(self):
+        from app.services.beta.credit_service import get_credits_for_olorin_tier
+        from app.core.config import settings
+        assert get_credits_for_olorin_tier("unknown", settings) == settings.FREE_MONTHLY_CREDITS
+
+
+class TestCreditRefillTierPassing:
+    def test_refill_passes_olorin_tier(self):
+        from app.api.routes.credit_refill import _build_refill_args
+        user = _make_mock_user("superfan")
+        user.subscription_tier = "free"
+        args = _build_refill_args(user)
+        assert args["olorin_tier"] == "superfan"
+        assert args["is_plus"] is False
+
+    def test_refill_passes_bayit_plus_tier(self):
+        from app.api.routes.credit_refill import _build_refill_args
+        user = _make_mock_user("free")
+        user.subscription_tier = "plus"
+        args = _build_refill_args(user)
+        assert args["olorin_tier"] == "free"
+        assert args["is_plus"] is True

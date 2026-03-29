@@ -596,6 +596,10 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(credits_client.router, prefix=prefix, tags=["beta-credits"])
     logger.debug("Registered AI credit routes")
 
+    from app.api.routes import olorin_tier_sync
+    app.include_router(olorin_tier_sync.router, prefix=prefix, tags=["olorin-internal"])
+    logger.debug("Registered Olorin tier sync route")
+
     # ============================================
     # Hebrew Engagement / Gamification Routes
     # ============================================
