@@ -187,9 +187,9 @@ class VODInteractionSession(Document):
     """Tracks a live interaction session between user avatar and character"""
     user_id: str
     profile_id: str
-    avatar_id: str
+    avatar_id: Optional[str] = Field(None, description="Avatar ID (None for voice-only demo)")
     content_id: str
-    moment_timestamp: float
+    moment_timestamp: float = Field(default=0.0)
     character_name: str
     scene_context: Optional[str] = Field(None, description="Denormalized scene/movie context")
     character_description: Optional[str] = Field(None, description="Denormalized character desc")

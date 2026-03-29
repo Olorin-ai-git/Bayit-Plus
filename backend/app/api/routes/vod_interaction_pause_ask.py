@@ -115,12 +115,13 @@ async def pause_ask_exchange(
             detail="Maximum dialogue exchanges reached",
         )
 
-    avatar = await ChildAvatar.get(session.avatar_id)
-    if not avatar:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Avatar not found for Pause & Ask",
-        )
+    if not body.voice_only and session.avatar_id:
+        avatar = await ChildAvatar.get(session.avatar_id)
+        if not avatar:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Avatar not found for Pause & Ask",
+            )
 
     credit_amount = (
         settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY

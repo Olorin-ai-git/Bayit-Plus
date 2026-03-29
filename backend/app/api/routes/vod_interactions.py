@@ -35,10 +35,10 @@ class StartInteractionRequest(BaseModel):
 class StartFreeInteractionRequest(BaseModel):
     """Request to start a free-form dialogue session with a character"""
     profile_id: Optional[str] = Field(None, description="Child profile ID (auto-resolved from auth user if omitted)")
-    avatar_id: str = Field(..., description="Avatar mesh ID")
+    avatar_id: Optional[str] = Field(None, description="Avatar mesh ID (None for voice-only demo)")
     content_id: str = Field(..., description="Content ID")
     character_name: str = Field(..., description="Character to talk to")
-    current_timestamp: float = Field(..., description="Current playback position")
+    current_timestamp: float = Field(default=0.0, description="Current playback position")
 
 
 class SessionCreatedResponse(BaseModel):

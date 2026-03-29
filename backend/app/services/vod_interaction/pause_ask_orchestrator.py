@@ -60,10 +60,12 @@ class PauseAskOrchestrator:
             },
         )
 
-        # 1. Fetch user avatar
-        avatar = await ChildAvatar.get(session.avatar_id)
-        if not avatar:
-            raise ValueError(f"Avatar not found: {session.avatar_id}")
+        # 1. Fetch user avatar (skip for voice-only sessions without avatar)
+        avatar = None
+        if session.avatar_id:
+            avatar = await ChildAvatar.get(session.avatar_id)
+            if not avatar and not voice_only:
+                raise ValueError(f"Avatar not found: {session.avatar_id}")
         # 2. Polish user text
         polished_text = await text_polisher.polish(
             user_message, language_hint=language_hint,

@@ -119,19 +119,20 @@ class VODInteractionService:
         self,
         user_id: str,
         profile_id: str,
-        avatar_id: str,
+        avatar_id: Optional[str],
         content_id: str,
         character_name: str,
-        current_timestamp: float
+        current_timestamp: float = 0.0
     ) -> VODInteractionSession:
         """
         Start a free-form dialogue session with a character at any timestamp.
         Does not require a curated InteractiveMoment.
+        When avatar_id is None, creates a voice-only session (no lip-sync).
 
         Args:
             user_id: User ID
             profile_id: Child profile ID
-            avatar_id: Avatar mesh ID
+            avatar_id: Avatar mesh ID (None for voice-only demo)
             content_id: Content ID
             character_name: Character to converse with
             current_timestamp: Current playback position
@@ -144,9 +145,12 @@ class VODInteractionService:
             if not content:
                 raise ValueError(f"Content not found: {content_id}")
 
-            avatar = await ChildAvatar.get(avatar_id)
-            if not avatar or avatar.profile_id != profile_id:
-                raise ValueError(f"Invalid avatar: {avatar_id}")
+            child_first_name = None
+            if avatar_id:
+                avatar = await ChildAvatar.get(avatar_id)
+                if not avatar or avatar.profile_id != profile_id:
+                    raise ValueError(f"Invalid avatar: {avatar_id}")
+                child_first_name = avatar.child_first_name
 
             # Find character in interactive_characters list
             character = self._find_character(
@@ -176,7 +180,7 @@ class VODInteractionService:
                 character_description=char_desc,
                 character_voice_id=voice_id,
                 character_frame_url=frame_url,
-                child_first_name=avatar.child_first_name,
+                child_first_name=child_first_name,
                 status="active"
             )
             await session.save()
