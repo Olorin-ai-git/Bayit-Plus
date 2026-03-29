@@ -224,6 +224,7 @@ class User(Document):
     # Subscription info
     subscription_id: Optional[str] = None
     subscription_tier: Optional[str] = "free"  # free, plus
+    olorin_tier: Optional[str] = "free"  # free, fan, superfan, b2b
     subscription_status: Optional[str] = None  # active, canceled, past_due
     subscription_end_date: Optional[datetime] = None
     subscription_start_date: Optional[datetime] = None
