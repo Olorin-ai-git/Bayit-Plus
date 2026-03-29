@@ -78,7 +78,7 @@ class PauseAskOrchestrator:
         scene_context = session.scene_context or ""
         char_desc = session.character_description or ""
 
-        if voice_only:
+        if voice_only or not avatar:
             user_anim_coro = self._no_animation()
         else:
             fallback_voice = settings.MOVIE_INTERACTION_DEFAULT_VOICE_MALE
