@@ -67,4 +67,4 @@ OLORIN_TIER_CONFIGS: dict[str, OlorinTierConfig] = {
 
 def get_tier_config(tier: Union[OlorinTier, str]) -> OlorinTierConfig:
     key = tier.value if isinstance(tier, OlorinTier) else tier
-    return OLORIN_TIER_CONFIGS[key]
+    return OLORIN_TIER_CONFIGS.get(key, OLORIN_TIER_CONFIGS[OlorinTier.FREE.value])

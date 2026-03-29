@@ -5,6 +5,8 @@ Triggers monthly AI credit refill for all users based on tier.
 Protected by internal API key -- not for public consumption.
 """
 
+import hmac
+
 from fastapi import APIRouter, Header, HTTPException
 
 from app.core.config import settings
@@ -26,7 +28,7 @@ def _verify_internal_key(api_key: str) -> None:
             status_code=503,
             detail="Internal cron API key not configured",
         )
-    if api_key != settings.INTERNAL_CRON_API_KEY:
+    if not hmac.compare_digest(api_key, settings.INTERNAL_CRON_API_KEY):
         raise HTTPException(status_code=403, detail="Invalid API key")
 
 

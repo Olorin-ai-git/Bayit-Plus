@@ -67,9 +67,10 @@ class TestOlorinTierConfig:
         cfg = get_tier_config("fan")
         assert cfg.monthly_credits == 100
 
-    def test_get_tier_config_invalid_raises(self):
-        with pytest.raises(KeyError):
-            get_tier_config("nonexistent")
+    def test_get_tier_config_invalid_falls_back_to_free(self):
+        cfg = get_tier_config("nonexistent")
+        assert cfg.monthly_credits == 10
+        assert cfg.is_lifetime is True
 
     def test_all_tiers_have_configs(self):
         for tier in OlorinTier:

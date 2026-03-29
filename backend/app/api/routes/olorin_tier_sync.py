@@ -3,8 +3,11 @@ Internal endpoint for syncing Olorin tier from Stripe checkout.
 Protected by internal API key.
 """
 
+import hmac
+
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
+from typing import Literal
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -23,13 +26,13 @@ PRODUCT_TO_TIER = {
 class TierSyncRequest(BaseModel):
     email: str
     product: str
-    action: str  # "activate" or "deactivate"
+    action: Literal["activate", "deactivate"]
 
 
 def _verify_internal_key(api_key: str) -> None:
     if not settings.INTERNAL_CRON_API_KEY:
         raise HTTPException(status_code=503, detail="Internal API key not configured")
-    if api_key != settings.INTERNAL_CRON_API_KEY:
+    if not hmac.compare_digest(api_key, settings.INTERNAL_CRON_API_KEY):
         raise HTTPException(status_code=403, detail="Invalid API key")
 
 
@@ -43,7 +46,13 @@ async def _sync_tier(email: str, product: str, action: str) -> dict:
         return {"status": "user_not_found", "email": email}
 
     if action == "activate":
-        new_tier = PRODUCT_TO_TIER.get(product, "free")
+        new_tier = PRODUCT_TO_TIER.get(product)
+        if new_tier is None:
+            logger.warning(
+                "Unknown product in tier sync, ignoring",
+                extra={"email": email, "product": product},
+            )
+            return {"status": "unknown_product", "product": product}
     else:
         new_tier = "free"
 

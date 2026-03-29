@@ -2,8 +2,10 @@
 Olorin Tier Service - resolves user tier and answers feature-access questions.
 """
 
+from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.olorin_tier import OlorinTier, OlorinTierConfig, get_tier_config
+from app.services.beta.credit_service import get_credits_for_olorin_tier
 
 logger = get_logger(__name__)
 
@@ -40,7 +42,8 @@ class OlorinTierService:
         return self._config(user).can_trivia
 
     def get_monthly_credits(self, user) -> int:
-        return self._config(user).monthly_credits
+        tier = self.resolve_tier(user)
+        return get_credits_for_olorin_tier(tier.value, settings)
 
     def get_max_characters(self, user) -> int:
         return self._config(user).max_characters_per_video
