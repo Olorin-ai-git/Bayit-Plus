@@ -1611,45 +1611,45 @@ class OlorinSettings(BaseSettings):
     - Recap Agent (live broadcast summaries)
     """
 
-    # Feature flags (all disabled by default for gradual rollout)
+    # Feature flags (enabled by default; set env var to "false" to disable)
     # Using Field alias to support both environment variables and constructor args
     dubbing_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable realtime dubbing capability",
         alias="OLORIN_DUBBING_ENABLED",
     )
     semantic_search_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable semantic search capability",
         alias="OLORIN_SEMANTIC_SEARCH_ENABLED",
     )
     cultural_context_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable cultural context capability",
         alias="OLORIN_CULTURAL_CONTEXT_ENABLED",
     )
     recap_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable recap agent capability",
         alias="OLORIN_RECAP_ENABLED",
     )
     video_ingest_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable video ingest + character extraction capability",
         alias="OLORIN_VIDEO_INGEST_ENABLED",
     )
     pause_ask_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable Pause & Ask B2B capability",
         alias="OLORIN_PAUSE_ASK_ENABLED",
     )
     subtitles_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable AI subtitles generation capability",
         alias="OLORIN_SUBTITLES_ENABLED",
     )
     trivia_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Enable trivia generation capability",
         alias="OLORIN_TRIVIA_ENABLED",
     )
@@ -1661,7 +1661,12 @@ class OlorinSettings(BaseSettings):
         alias="OLORIN_DEFAULT_CONTENT_LANGUAGE",
     )
 
-    # API Version Configuration
+    # API Configuration
+    api_base_url: str = Field(
+        default="https://api.olorin.ai",
+        description="Public base URL for the Olorin B2B API (used in embed URLs, webhooks, etc.)",
+        alias="OLORIN_API_BASE_URL",
+    )
     api_version: str = Field(
         default="v1",
         description="API version prefix for Olorin routes",

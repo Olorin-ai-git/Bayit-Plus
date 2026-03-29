@@ -113,7 +113,7 @@ async def create_session(
         voice_id=request.voice_id or settings.ELEVENLABS_DEFAULT_VOICE_ID,
     )
 
-    ws_url = f"/api/v1/olorin/dubbing/ws/{service.session_id}"
+    ws_url = f"/api/v1/olorin/v1/dubbing/ws/{service.session_id}"
 
     logger.info(
         f"Created dubbing session: {service.session_id} for partner {partner.partner_id}"
@@ -215,7 +215,7 @@ async def get_session(
             voice_id=service.voice_id,
             status="active" if service.is_running else "created",
             started_at="0",
-            websocket_url=f"/api/v1/olorin/dubbing/ws/{service.session_id}",
+            websocket_url=f"/api/v1/olorin/v1/dubbing/ws/{service.session_id}",
         )
 
     session = await metering_service.get_dubbing_session(session_id)
@@ -239,7 +239,7 @@ async def get_session(
         voice_id=session.voice_id,
         status=session.status,
         started_at=session.started_at.isoformat(),
-        websocket_url=f"/api/v1/olorin/dubbing/ws/{session.session_id}",
+        websocket_url=f"/api/v1/olorin/v1/dubbing/ws/{session.session_id}",
     )
 
 
