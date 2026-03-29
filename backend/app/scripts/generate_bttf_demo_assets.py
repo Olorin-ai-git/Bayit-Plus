@@ -38,16 +38,16 @@ CDN_BASE = "https://storage.googleapis.com/bayit-plus-media-new/demo"
 FILM_URL = f"{CDN_BASE}/bttf-demo.mp4"
 
 MOMENTS = [
-    ("Doc Brown",
+    ("Emmett Brown",
      "Twin Pines Mall parking lot, 1:15 AM. Doc reveals the DeLorean time machine. Excited, theatrical.",
      ["What is this machine?", "Is time travel dangerous?", "Why a DeLorean?"]),
-    ("Doc Brown",
+    ("Emmett Brown",
      "Doc explains the flux capacitor and 88 mph requirement. Demonstrating time circuits on dashboard.",
      ["How does the flux capacitor work?", "What happens at 88 miles per hour?", "Where did you get the plutonium?"]),
     ("Marty McFly",
      "1955. Marty sees the young versions of his parents for the first time. Confused and scared.",
      ["What's it like seeing your parents young?", "Are you scared of changing the future?", "Do you miss 1985?"]),
-    ("Doc Brown",
+    ("Emmett Brown",
      "1955 Doc Brown plans to harness lightning at the clock tower to send Marty home. Frantic intensity.",
      ["Can you really harness lightning?", "What if the plan fails?", "Do you believe in destiny?"]),
     ("Marty McFly",
