@@ -173,7 +173,7 @@ class CharacterAnimatorService:
         if not local_path.exists():
             raise FileNotFoundError(f"Local file not found: {local_path}")
 
-        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
             files = {"file": (local_path.name, local_path.read_bytes())}
             resp = await client.post(settings.TEMP_FILE_HOST_URL, files=files)
             resp.raise_for_status()
@@ -190,7 +190,7 @@ class CharacterAnimatorService:
         self, text: str, voice_id: str, character_name: str,
     ) -> str:
         """Generate speech audio using ElevenLabs TTS. Returns storage URL."""
-        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
             response = await client.post(
                 f"{self.elevenlabs_api_url}/v1/text-to-speech/{voice_id}",
                 json={
