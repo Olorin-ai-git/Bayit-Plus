@@ -4,4 +4,5 @@
  * Export all custom hooks for the partner portal.
  */
 
-export { useDirection } from './useDirection';
+export { useDirection } from "./useDirection";
+export { useBrandingTheme } from "./useBrandingTheme";
