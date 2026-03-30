@@ -163,6 +163,8 @@ from app.models.character import Character
 from app.models.vod_interaction import VODInteractionSession
 # Guest demo usage tracking (unauthenticated pricing-page interactions)
 from app.models.guest_demo import GuestDemoUsage
+# Consumer submission model (lead capture from interactive demo)
+from app.models.consumer_submission import ConsumerSubmission
 
 
 class Database:
@@ -476,6 +478,8 @@ async def connect_to_mongo():
         BYOCProvider,
         # Guest demo usage tracking (unauthenticated pricing-page interactions)
         GuestDemoUsage,
+        # Consumer submission model (lead capture from interactive demo)
+        ConsumerSubmission,
     ]
 
     # Conditionally add Olorin models based on database separation setting
