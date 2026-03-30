@@ -144,6 +144,8 @@ try:
         "vod_interaction_shared_message": _dev_limit("10/minute"),
         # VOD Pause & Ask (expensive: 2x animation + AI + polish)
         "vod_interaction_pause_ask": _dev_limit("10/minute"),
+        # Demo portal token auth (demo.olorin.ai AuthGate)
+        "demo_token": _dev_limit("5/minute"),
         # Guest Demo Pause & Ask (unauthenticated pricing-page free tier)
         "guest_demo_pause_ask": _dev_limit("5/minute"),
         # Consumer URL submission

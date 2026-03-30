@@ -138,6 +138,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import movie_interactions
     # Device code authentication routes (TV login - RFC 8628)
     from app.api.routes import device_code
+    # Demo token authentication (demo.olorin.ai portal)
+    from app.api.routes import auth_demo_token
     # Internal cron endpoints (Cloud Scheduler)
     # Discover tab config (AI features hub)
     from app.api.routes import discover
@@ -164,6 +166,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(auth.router, prefix=f"{prefix}/auth", tags=["auth"])
     app.include_router(auth_proxy.router, prefix=f"{prefix}/auth", tags=["auth-proxy"])
     app.include_router(auth_proxy.router, prefix=f"{prefix}/auth/v2", tags=["auth-proxy-v2"])
+    app.include_router(auth_demo_token.router, prefix=f"{prefix}/auth", tags=["auth-demo"])
     app.include_router(
         mobile_auth.router,
         prefix=f"{prefix}/auth",
