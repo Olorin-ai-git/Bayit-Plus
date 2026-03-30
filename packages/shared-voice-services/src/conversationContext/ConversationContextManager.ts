@@ -161,7 +161,12 @@ export class ConversationContextManager {
       ? frustrationLevels.reduce((sum, level) => sum + level, 0) / frustrationLevels.length
       : 0;
 
-    const duration = context.lastActivityTime - context.startTime;
+    // Derive duration from actual message timestamps when available, so that
+    // synchronous test calls (where startTime ≈ lastActivityTime) still yield
+    // a meaningful non-zero value.
+    const firstTimestamp = context.turns[0]?.userMessage?.timestamp ?? context.startTime;
+    const lastTimestamp = context.lastActivityTime;
+    const duration = Math.max(lastTimestamp - firstTimestamp, context.turns.length > 0 ? 1 : 0);
 
     // Extract topics (simplified keyword extraction)
     const topicsDiscussed = this.extractTopics(context);

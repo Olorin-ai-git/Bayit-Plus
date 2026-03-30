@@ -78,11 +78,19 @@ export function analyzePatterns(
   const totalCommands = commandHistory.length;
   const successRate = totalCommands > 0 ? successCount / totalCommands : 0;
 
-  // Check for escalating language
-  const recentCommands = commandHistory.slice(0, 3); // Last 3 commands
-  const escalatingLanguage = recentCommands.some(cmd =>
+  // Check for escalating language: explicit escalation keywords OR repeated
+  // failures (3+ consecutive failures signals escalating frustration).
+  const recentCommands = commandHistory.slice(-3); // Last 3 commands (most recent)
+  const keywordEscalation = recentCommands.some(cmd =>
     ESCALATION_KEYWORDS.some(keyword => cmd.toLowerCase().includes(keyword))
   );
+
+  const recentSuccesses = successHistory.slice(-3);
+  const repeatedFailures =
+    recentSuccesses.length >= 3 &&
+    recentSuccesses.every(s => s === false);
+
+  const escalatingLanguage = keywordEscalation || repeatedFailures;
 
   return {
     repeatedKeywords,

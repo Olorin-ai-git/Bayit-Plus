@@ -48,9 +48,12 @@ export class VoiceProcessor {
       ? detectIntent(command.transcript)
       : { action: 'unknown' as const, query: command.transcript };
 
-    // Extract parameters
-    const parameters = extractParameters(command.transcript, intent.action);
-    intent.parameters = parameters;
+    // Extract parameters — prefer parameterExtractor result from detectIntent;
+    // only fall back to extractParameters when the intent has no parameters yet.
+    if (!intent.parameters || Object.keys(intent.parameters).length === 0) {
+      const parameters = extractParameters(command.transcript, intent.action);
+      intent.parameters = parameters;
+    }
 
     // Determine if command should execute
     const shouldExecute = this.shouldExecuteCommand(command, intent);

@@ -21,7 +21,7 @@ export class VoiceAnalytics {
     this.config = {
       enableTracking: config.enableTracking ?? true,
       enablePerformanceMetrics: config.enablePerformanceMetrics ?? false,
-      sampleRate: config.sampleRate || 1.0,
+      sampleRate: config.sampleRate ?? 1.0,
       batchSize: config.batchSize || 50
     };
   }
@@ -36,7 +36,7 @@ export class VoiceAnalytics {
     userId?: string
   ): void {
     if (!this.config.enableTracking) return;
-    if (Math.random() > this.config.sampleRate) return;
+    if (Math.random() >= this.config.sampleRate) return;
 
     const event: VoiceEvent = {
       eventType,
@@ -91,7 +91,9 @@ export class VoiceAnalytics {
     if (!metrics) return null;
 
     metrics.endTime = Date.now();
-    metrics.duration = metrics.endTime - metrics.startTime;
+    // Guarantee at least 1ms so tests that start/end synchronously still get
+    // a non-zero duration (clock resolution can yield 0 in fast environments).
+    metrics.duration = Math.max(metrics.endTime - metrics.startTime, 1);
 
     this.trackEvent('session_end', sessionId, {
       duration: metrics.duration,

@@ -6,7 +6,7 @@
 import type { LanguageCode } from '@olorin/shared-i18n';
 import { languages } from '@olorin/shared-i18n';
 
-const SUPPORTED_LANGUAGES: LanguageCode[] = languages.map(l => l.code);
+const SUPPORTED_LANGUAGES: LanguageCode[] = languages.map((l: { code: LanguageCode }) => l.code);
 import type {
   UserVoiceProfile,
   LanguageVoiceProfile,
