@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import { colors, spacing, borderRadius } from "@olorin/design-tokens";
 import { GlassView, GlassInput, GlassButton } from "@bayit/shared/ui";
 
-const VIDEO_URL_PATTERN =
-  /^https?:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com|dailymotion\.com)\/.+/i;
+const VIDEO_URL_PATTERN = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
 
 interface Props {
   onSubmit: (url: string) => Promise<void>;

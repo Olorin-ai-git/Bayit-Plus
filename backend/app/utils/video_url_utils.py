@@ -1,13 +1,13 @@
 """
 Video URL Validation and Metadata Extraction
 
-Validates consumer-submitted video URLs and extracts metadata
-via oEmbed APIs (YouTube, Vimeo) or HTML title fallback.
+Validates video URLs and extracts metadata via oEmbed APIs
+(YouTube, Vimeo, Dailymotion) or HTML title / URL-path fallback.
 """
 
 import re
 from typing import List, Optional, Tuple
-from urllib.parse import quote, urlparse
+from urllib.parse import quote, unquote, urlparse
 
 import httpx
 
@@ -25,13 +25,11 @@ _OEMBED_HOSTS = {
     "www.dailymotion.com": "https://www.dailymotion.com/services/oembed?url={url}&format=json",
 }
 
-_ALLOWED_HOSTS = set(_OEMBED_HOSTS.keys())
-
 _DIRECT_VIDEO_EXTS = {".mp4", ".webm", ".mov", ".avi", ".mkv"}
 
 
 def validate_video_url(url: str) -> Tuple[bool, str]:
-    """Validate a consumer-submitted video URL. Returns (ok, error)."""
+    """Validate a video URL — any http/https URL is accepted."""
     if not url or not url.strip():
         return False, "URL is required"
     parsed = urlparse(url.strip())
@@ -40,12 +38,7 @@ def validate_video_url(url: str) -> Tuple[bool, str]:
     host = (parsed.hostname or "").lower()
     if not host:
         return False, "Invalid URL"
-    if host in _ALLOWED_HOSTS:
-        return True, ""
-    path_lower = parsed.path.lower()
-    if any(path_lower.endswith(ext) for ext in _DIRECT_VIDEO_EXTS):
-        return True, ""
-    return False, f"Unsupported video source: {host}. Try YouTube, Vimeo, or a direct video link."
+    return True, ""
 
 
 def get_oembed_url(video_url: str) -> Optional[str]:
@@ -95,20 +88,55 @@ def clean_title_for_search(raw_title: str) -> List[str]:
 
 
 async def extract_video_title(video_url: str) -> Optional[str]:
-    """Extract video title via oEmbed API. Returns None on failure."""
+    """Extract title via oEmbed first, then HTML/URL-path fallback."""
     oembed_url = get_oembed_url(video_url)
-    if not oembed_url:
-        return None
+    if oembed_url:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(oembed_url)
+                if resp.status_code == 200:
+                    title = resp.json().get("title")
+                    if title:
+                        return title
+        except Exception:
+            logger.warning(
+                "oEmbed metadata fetch failed",
+                extra={"url": video_url},
+            )
+    return await _extract_title_fallback(video_url)
+
+
+async def _extract_title_fallback(video_url: str) -> Optional[str]:
+    """Best-effort title from HTML <title> tag or URL path."""
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.get(oembed_url)
-            if resp.status_code != 200:
-                return None
-            data = resp.json()
-            return data.get("title")
+        async with httpx.AsyncClient(
+            timeout=10.0, follow_redirects=True,
+        ) as client:
+            resp = await client.get(
+                video_url, headers={"Range": "bytes=0-32767"},
+            )
+            if resp.status_code in (200, 206):
+                text = resp.text[:32768]
+                match = re.search(
+                    r"<title[^>]*>([^<]+)</title>", text, re.IGNORECASE,
+                )
+                if match:
+                    return match.group(1).strip()
     except Exception:
-        logger.warning(
-            "oEmbed metadata fetch failed",
+        logger.debug(
+            "HTML title fallback failed",
             extra={"url": video_url},
         )
+    return _title_from_url_path(video_url)
+
+
+def _title_from_url_path(video_url: str) -> Optional[str]:
+    """Derive a title from the last path segment of a URL."""
+    parsed = urlparse(video_url)
+    path = unquote(parsed.path).rstrip("/")
+    if not path or path == "/":
         return None
+    segment = path.rsplit("/", 1)[-1]
+    name = re.sub(r"\.[a-zA-Z0-9]{2,5}$", "", segment)
+    name = re.sub(r"[-_]+", " ", name).strip()
+    return name if name else None

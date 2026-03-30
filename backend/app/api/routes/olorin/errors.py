@@ -98,3 +98,8 @@ class OlorinErrors:
     # Trivia errors
     TRIVIA_GENERATION_FAILED = "trivia_generation_failed"
     TRIVIA_NOT_FOUND = "trivia_not_found"
+
+    # Upload errors
+    UPLOAD_FILE_TOO_LARGE = "upload_file_too_large"
+    UPLOAD_INVALID_CONTENT_TYPE = "upload_invalid_content_type"
+    UPLOAD_FAILED = "upload_failed"

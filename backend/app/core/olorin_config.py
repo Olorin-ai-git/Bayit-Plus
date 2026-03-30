@@ -1654,6 +1654,20 @@ class OlorinSettings(BaseSettings):
         alias="OLORIN_TRIVIA_ENABLED",
     )
 
+    # B2B Upload Configuration
+    b2b_max_upload_mb: int = Field(
+        default=500,
+        ge=1,
+        le=5000,
+        description="Maximum video file upload size in MB for B2B partners",
+        alias="OLORIN_B2B_MAX_UPLOAD_MB",
+    )
+    b2b_upload_bucket_prefix: str = Field(
+        default="olorin-b2b-uploads",
+        description="GCS path prefix for B2B partner video uploads",
+        alias="OLORIN_B2B_UPLOAD_BUCKET_PREFIX",
+    )
+
     # Content Configuration
     default_content_language: str = Field(
         default="he",

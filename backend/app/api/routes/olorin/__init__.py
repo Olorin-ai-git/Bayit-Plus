@@ -26,6 +26,7 @@ from app.api.routes.olorin.partner import router as partner_router
 from app.api.routes.olorin.recap import router as recap_router
 from app.api.routes.olorin.search import router as search_router
 from app.api.routes.olorin.video_ingest import router as video_ingest_router
+from app.api.routes.olorin.video_upload import router as video_upload_router
 from app.api.routes.olorin.webhooks import router as webhooks_router
 from app.core.config import settings
 
@@ -43,6 +44,7 @@ router.include_router(context_router, prefix="/context", tags=["olorin-context"]
 router.include_router(recap_router, prefix="/recap", tags=["olorin-recap"])
 router.include_router(webhooks_router, prefix="/webhooks", tags=["olorin-webhooks"])
 router.include_router(video_ingest_router, prefix="/videos", tags=["olorin-videos"])
+router.include_router(video_upload_router, prefix="/videos", tags=["olorin-videos"])
 router.include_router(pause_ask_router, prefix="/videos", tags=["olorin-pause-ask"])
 router.include_router(subtitles_router, prefix="/subtitles", tags=["olorin-subtitles"])
 router.include_router(trivia_router, prefix="/trivia", tags=["olorin-trivia"])
@@ -85,6 +87,7 @@ vanity_router.include_router(context_router, prefix="/context", tags=["olorin-co
 vanity_router.include_router(recap_router, prefix="/recap", tags=["olorin-recap"])
 vanity_router.include_router(webhooks_router, prefix="/webhooks", tags=["olorin-webhooks"])
 vanity_router.include_router(video_ingest_router, prefix="/videos", tags=["olorin-videos"])
+vanity_router.include_router(video_upload_router, prefix="/videos", tags=["olorin-videos"])
 vanity_router.include_router(pause_ask_router, prefix="/videos", tags=["olorin-pause-ask"])
 vanity_router.include_router(subtitles_router, prefix="/subtitles", tags=["olorin-subtitles"])
 vanity_router.include_router(trivia_router, prefix="/trivia", tags=["olorin-trivia"])
