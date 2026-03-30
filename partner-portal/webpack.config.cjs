@@ -31,13 +31,19 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
     alias: {
-      // @olorin packages from packages/ui directory (no /src - files are in root)
-      '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens'),
+      // @olorin packages from packages/ui directory (src/ for subpath resolution)
+      '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens/src'),
       '@olorin/shared-hooks': path.resolve(packagesPath, 'shared-hooks'),
       '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
       '@olorin/shared-services': path.resolve(packagesPath, 'shared-services'),
       '@olorin/shared-stores': path.resolve(packagesPath, 'shared-stores'),
+      // Glass UI web components (olorin-core has pure web components, no react-native)
       '@olorin/glass-ui/web': path.resolve(__dirname, '../../../olorin-core/packages/glass-components/src/web'),
+      '@olorin/glass-ui': path.resolve(__dirname, '../../../olorin-core/packages/glass-components/src/web'),
+      // i18n packages (needed by shared-i18n shim)
+      '@bayit/i18n/web': path.resolve(packagesPath, 'bayit-i18n/web.ts'),
+      '@bayit/i18n/native': path.resolve(packagesPath, 'bayit-i18n/native.ts'),
+      '@bayit/i18n': path.resolve(packagesPath, 'bayit-i18n'),
       // Local aliases
       '@': path.resolve(__dirname, 'src'),
     },
