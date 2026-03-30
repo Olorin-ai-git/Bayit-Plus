@@ -166,6 +166,18 @@ class Settings(BaseSettings):
         description="Monthly AI credits for Olorin B2B API tier partners"
     )
 
+    # Guest Demo (unauthenticated Pause & Ask)
+    DEMO_CONTENT_ID: str = Field(
+        default="",
+        env="DEMO_CONTENT_ID",
+        description="Content ID for the pre-loaded demo video (e.g. BTTF)"
+    )
+    GUEST_DEMO_MAX_INTERACTIONS: int = Field(
+        default=10,
+        env="GUEST_DEMO_MAX_INTERACTIONS",
+        description="Maximum lifetime interactions for unauthenticated demo users"
+    )
+
     # Internal API key for Cloud Scheduler-triggered endpoints
     INTERNAL_CRON_API_KEY: str = Field(
         default="",

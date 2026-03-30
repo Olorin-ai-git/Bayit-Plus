@@ -600,6 +600,10 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(olorin_tier_sync.router, prefix=prefix, tags=["olorin-internal"])
     logger.debug("Registered Olorin tier sync route")
 
+    from app.api.routes import guest_demo
+    app.include_router(guest_demo.router, prefix=prefix, tags=["guest-demo"])
+    logger.debug("Registered guest demo route")
+
     # ============================================
     # Hebrew Engagement / Gamification Routes
     # ============================================

@@ -161,6 +161,8 @@ from app.models.whatsapp_contact import WhatsAppContact
 # Character data model (voice IDs, face URLs, franchise grouping)
 from app.models.character import Character
 from app.models.vod_interaction import VODInteractionSession
+# Guest demo usage tracking (unauthenticated pricing-page interactions)
+from app.models.guest_demo import GuestDemoUsage
 
 
 class Database:
@@ -472,6 +474,8 @@ async def connect_to_mongo():
         # BYOC AI-powered ingestion models
         ChannelIndexEntry,
         BYOCProvider,
+        # Guest demo usage tracking (unauthenticated pricing-page interactions)
+        GuestDemoUsage,
     ]
 
     # Conditionally add Olorin models based on database separation setting
