@@ -107,7 +107,9 @@ async def get_monthly_request_count(
         {"$match": query},
         {"$group": {"_id": None, "total": {"$sum": "$request_count"}}},
     ]
-    result = await UsageRecord.aggregate(pipeline).to_list()
+    collection = UsageRecord.get_pymongo_collection()
+    cursor = collection.aggregate(pipeline)
+    result = await cursor.to_list(length=1)
     return result[0]["total"] if result else 0
 
 

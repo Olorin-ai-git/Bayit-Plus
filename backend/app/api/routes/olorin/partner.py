@@ -142,20 +142,20 @@ class ApiKeyRegenerateResponse(BaseModel):
     "Returns an API key that must be stored securely.",
 )
 @limiter.limit("3/hour")
-async def register_partner(http_request: Request, request: PartnerRegisterRequest):
+async def register_partner(request: Request, body: PartnerRegisterRequest):
     """Register a new integration partner."""
     try:
         partner, api_key = await partner_service.create_partner(
-            partner_id=request.partner_id,
-            name=request.name,
-            contact_email=request.contact_email,
-            name_en=request.name_en,
-            contact_name=request.contact_name,
-            billing_tier=request.billing_tier,
-            capabilities=request.capabilities,
+            partner_id=body.partner_id,
+            name=body.name,
+            contact_email=body.contact_email,
+            name_en=body.name_en,
+            contact_name=body.contact_name,
+            billing_tier=body.billing_tier,
+            capabilities=body.capabilities,
         )
 
-        logger.info(f"Registered new partner: {request.partner_id}")
+        logger.info(f"Registered new partner: {body.partner_id}")
 
         return PartnerRegisterResponse(
             partner_id=partner.partner_id,
