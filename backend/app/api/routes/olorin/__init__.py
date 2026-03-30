@@ -19,6 +19,9 @@ from starlette.responses import RedirectResponse
 
 from app.api.routes.olorin.b2b_sources import router as sources_router
 from app.api.routes.olorin.b2b_pause_ask import router as pause_ask_router
+from app.api.routes.olorin.challenge import router as challenge_router
+from app.api.routes.olorin.clip_share import router as clip_share_router
+from app.api.routes.olorin.free_trivia import router as free_trivia_router
 from app.api.routes.olorin.b2b_subtitles import router as subtitles_router
 from app.api.routes.olorin.b2b_trivia import router as trivia_router
 from app.api.routes.olorin.context import router as context_router
@@ -50,6 +53,9 @@ router.include_router(pause_ask_router, prefix="/videos", tags=["olorin-pause-as
 router.include_router(subtitles_router, prefix="/subtitles", tags=["olorin-subtitles"])
 router.include_router(trivia_router, prefix="/trivia", tags=["olorin-trivia"])
 router.include_router(sources_router, prefix="/sources", tags=["olorin-sources"])
+router.include_router(clip_share_router, prefix="/clips", tags=["olorin-clips"])
+router.include_router(challenge_router, prefix="/challenge", tags=["olorin-challenge"])
+router.include_router(free_trivia_router, prefix="/tools/trivia", tags=["olorin-tools"])
 
 
 # Create redirect router for backward compatibility
@@ -94,5 +100,8 @@ vanity_router.include_router(pause_ask_router, prefix="/videos", tags=["olorin-p
 vanity_router.include_router(subtitles_router, prefix="/subtitles", tags=["olorin-subtitles"])
 vanity_router.include_router(trivia_router, prefix="/trivia", tags=["olorin-trivia"])
 vanity_router.include_router(sources_router, prefix="/sources", tags=["olorin-sources"])
+vanity_router.include_router(clip_share_router, prefix="/clips", tags=["olorin-clips"])
+vanity_router.include_router(challenge_router, prefix="/challenge", tags=["olorin-challenge"])
+vanity_router.include_router(free_trivia_router, prefix="/tools/trivia", tags=["olorin-tools"])
 
 __all__ = ["router", "legacy_router", "vanity_router"]

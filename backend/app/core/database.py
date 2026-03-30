@@ -54,6 +54,7 @@ from app.models.friendship import (FriendRequest, GameResult, PlayerStats,
                                    UserFriendship)
 # Olorin.ai Platform models
 from app.models.b2b_content_source import B2BContentSource
+from app.models.challenge_nomination import ChallengeNomination
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import (DubbingSession, IntegrationPartner,
                                             UsageRecord, WebhookDelivery)
@@ -491,6 +492,7 @@ async def connect_to_mongo():
         document_models.extend(
             [
                 B2BContentSource,
+                ChallengeNomination,
                 IngestJob,
                 IntegrationPartner,
                 UsageRecord,
