@@ -200,7 +200,8 @@
     "inviteSent": "Invito inviato",
     "tempPassword": "Password temporanea",
     "tempPasswordWarning": "Condividi questa password in modo sicuro con il nuovo membro. Dovrà cambiarla dopo il primo accesso.",
-    "you": "Tu"
+    "you": "Tu",
+    "actions": "Azioni"
   },
   "settings": {
     "title": "Impostazioni",

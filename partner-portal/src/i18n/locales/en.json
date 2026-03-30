@@ -200,7 +200,8 @@
     "inviteSent": "Invitation sent",
     "tempPassword": "Temporary Password",
     "tempPasswordWarning": "Share this password securely with the new member. They should change it after first login.",
-    "you": "You"
+    "you": "You",
+    "actions": "Actions"
   },
   "settings": {
     "title": "Settings",

@@ -200,7 +200,8 @@
     "inviteSent": "邀请已发送",
     "tempPassword": "临时密码",
     "tempPasswordWarning": "请安全地将此密码分享给新成员。他们应在首次登录后更改密码。",
-    "you": "您"
+    "you": "您",
+    "actions": "操作"
   },
   "settings": {
     "title": "设置",

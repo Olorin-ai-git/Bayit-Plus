@@ -200,7 +200,8 @@
     "inviteSent": "Invitation envoyée",
     "tempPassword": "Mot de passe temporaire",
     "tempPasswordWarning": "Partagez ce mot de passe de manière sécurisée avec le nouveau membre. Il devra le modifier après sa première connexion.",
-    "you": "Vous"
+    "you": "Vous",
+    "actions": "Actions"
   },
   "settings": {
     "title": "Paramètres",

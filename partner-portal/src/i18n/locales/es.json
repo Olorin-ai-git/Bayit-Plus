@@ -200,7 +200,8 @@
     "inviteSent": "Invitación enviada",
     "tempPassword": "Contraseña temporal",
     "tempPasswordWarning": "Comparte esta contraseña de forma segura con el nuevo miembro. Debe cambiarla después del primer inicio de sesión.",
-    "you": "Tú"
+    "you": "Tú",
+    "actions": "Acciones"
   },
   "settings": {
     "title": "Configuración",

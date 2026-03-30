@@ -200,7 +200,8 @@
     "inviteSent": "招待を送信しました",
     "tempPassword": "一時パスワード",
     "tempPasswordWarning": "このパスワードを新しいメンバーに安全に共有してください。初回ログイン後に変更する必要があります。",
-    "you": "自分"
+    "you": "自分",
+    "actions": "操作"
   },
   "settings": {
     "title": "設定",
