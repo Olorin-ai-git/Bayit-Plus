@@ -41,7 +41,7 @@ class PartnerRegisterRequest(BaseModel):
     contact_email: EmailStr
     contact_name: Optional[str] = Field(None, max_length=100)
     billing_tier: str = Field(
-        default="standard", pattern=r"^(free|standard|enterprise)$"
+        default="standard", pattern=r"^(free|standard|growth|enterprise)$"
     )
     capabilities: Optional[List[str]] = Field(
         default=None,

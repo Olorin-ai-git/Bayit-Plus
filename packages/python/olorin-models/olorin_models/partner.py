@@ -12,7 +12,7 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 from pymongo import ASCENDING, IndexModel
 
 # Type definitions
-BillingTier = Literal["free", "standard", "enterprise"]
+BillingTier = Literal["free", "standard", "growth", "enterprise"]
 CapabilityType = Literal[
     "realtime_dubbing", "semantic_search", "recap_agent", "cultural_context"
 ]

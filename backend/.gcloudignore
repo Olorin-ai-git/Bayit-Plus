@@ -78,6 +78,9 @@ cache/
 # Uploads (don't upload user uploads to build)
 uploads/
 
+# Data files (seed data, fixtures - not needed in container)
+data/
+
 # Scripts (usually not needed in container)
 scripts/
 *.sh
