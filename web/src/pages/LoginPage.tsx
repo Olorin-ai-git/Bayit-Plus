@@ -27,7 +27,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { login, loginWithGoogle, isLoading } = useAuthStore();
+  const { login, loginWithEmail, loginWithGoogle, isLoading } = useAuthStore();
 
   const [email, setEmail] = useState(
     import.meta.env.VITE_DEV_DEFAULT_EMAIL || "",
@@ -58,6 +58,18 @@ export default function LoginPage() {
     setShowLanguageMenu(false);
   };
 
+  const navigateAfterAuth = () => {
+    const { user } = useAuthStore.getState();
+    const lastVisited = user?.id ? getLastVisited(user.id) : null;
+    const destination = returnUrlParam
+      ? decodeURIComponent(returnUrlParam)
+      : (stateFrom ?? lastVisited ?? "/");
+    if (lastVisited && user?.id) {
+      clearLastVisited(user.id);
+    }
+    navigate(destination, { replace: true });
+  };
+
   const handleSubmit = async () => {
     setError("");
 
@@ -66,22 +78,13 @@ export default function LoginPage() {
       return;
     }
 
-    if (!password) {
-      setError(t("login.errors.passwordRequired"));
-      return;
-    }
-
     try {
-      await login(email.trim().toLowerCase(), password);
-      const { user } = useAuthStore.getState();
-      const lastVisited = user?.id ? getLastVisited(user.id) : null;
-      const destination = returnUrlParam
-        ? decodeURIComponent(returnUrlParam)
-        : (stateFrom ?? lastVisited ?? "/");
-      if (lastVisited && user?.id) {
-        clearLastVisited(user.id);
+      if (!password) {
+        await loginWithEmail(email.trim().toLowerCase());
+      } else {
+        await login(email.trim().toLowerCase(), password);
       }
-      navigate(destination, { replace: true });
+      navigateAfterAuth();
     } catch (err: any) {
       setError(err.message || t("login.errors.loginFailed"));
     }

@@ -3,92 +3,105 @@
  * Platform-agnostic: works on web, iOS, Android, and tvOS
  */
 
-import { api } from './client';
-import { isWebPlatform } from '../../utils/storage';
+import { api } from "./client";
+import { isWebPlatform } from "../../utils/storage";
 
 // Auth Service (API)
 export const apiAuthService = {
   login: (email: string, password: string) =>
-    api.post('/auth/v2/login', { email, password }),
+    api.post("/auth/v2/login", { email, password }),
   register: (userData: { email: string; name: string; password: string }) =>
-    api.post('/auth/v2/register', userData),
-  me: () => api.get('/auth/me'),
+    api.post("/auth/v2/register", userData),
+  me: () => api.get("/auth/me"),
   refreshToken: (refreshToken: string) =>
-    api.post('/auth/v2/refresh', { refresh_token: refreshToken }),
+    api.post("/auth/v2/refresh", { refresh_token: refreshToken }),
   getGoogleAuthUrl: async (redirectUri?: string) => {
-    const uri = redirectUri || (isWebPlatform() && typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/google/callback`
-      : undefined);
-    const response: any = await api.get('/auth/google/url', { params: { redirect_uri: uri } });
+    const uri =
+      redirectUri ||
+      (isWebPlatform() && typeof window !== "undefined"
+        ? `${window.location.origin}/auth/google/callback`
+        : undefined);
+    const response: any = await api.get("/auth/google/url", {
+      params: { redirect_uri: uri },
+    });
 
-    if (isWebPlatform() && typeof window !== 'undefined' && response.state) {
-      sessionStorage.setItem('oauth_state', response.state);
+    if (isWebPlatform() && typeof window !== "undefined" && response.state) {
+      sessionStorage.setItem("oauth_state", response.state);
     }
 
     return response;
   },
   googleCallback: (code: string, redirectUri?: string, state?: string) => {
     let finalState = state;
-    if (!finalState && isWebPlatform() && typeof window !== 'undefined') {
-      finalState = sessionStorage.getItem('oauth_state') || undefined;
+    if (!finalState && isWebPlatform() && typeof window !== "undefined") {
+      finalState = sessionStorage.getItem("oauth_state") || undefined;
       if (finalState) {
-        sessionStorage.removeItem('oauth_state');
+        sessionStorage.removeItem("oauth_state");
       }
     }
 
-    return api.post('/auth/v2/google/callback', {
+    return api.post("/auth/v2/google/callback", {
       code,
       redirect_uri: redirectUri,
       state: finalState,
     });
   },
+  loginWithEmail: (email: string) => api.post("/auth/demo-token", { email }),
   requestPasswordReset: (email: string) =>
-    api.post('/auth/password-reset/request', { email }),
+    api.post("/auth/password-reset/request", { email }),
   confirmPasswordReset: (token: string, newPassword: string) =>
-    api.post('/auth/password-reset/confirm', { token, new_password: newPassword }),
+    api.post("/auth/password-reset/confirm", {
+      token,
+      new_password: newPassword,
+    }),
   loginWithApple: (idToken: string, deviceId?: string) =>
-    api.post('/auth/v2/apple', {
+    api.post("/auth/v2/apple", {
       id_token: idToken,
-      tenant_id: 'bayit_plus',
+      tenant_id: "bayit_plus",
       device_id: deviceId,
     }),
   getAppleAuthUrl: async (redirectUri?: string) => {
-    const uri = redirectUri || (isWebPlatform() && typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/apple/callback`
-      : undefined);
-    const response: any = await api.get('/auth/apple/authorize', { params: { redirect_uri: uri } });
+    const uri =
+      redirectUri ||
+      (isWebPlatform() && typeof window !== "undefined"
+        ? `${window.location.origin}/auth/apple/callback`
+        : undefined);
+    const response: any = await api.get("/auth/apple/authorize", {
+      params: { redirect_uri: uri },
+    });
 
-    if (isWebPlatform() && typeof window !== 'undefined' && response.state) {
-      sessionStorage.setItem('apple_oauth_state', response.state);
+    if (isWebPlatform() && typeof window !== "undefined" && response.state) {
+      sessionStorage.setItem("apple_oauth_state", response.state);
     }
 
     return response;
   },
   appleCallback: (code: string, redirectUri?: string, state?: string) => {
     let finalState = state;
-    if (!finalState && isWebPlatform() && typeof window !== 'undefined') {
-      finalState = sessionStorage.getItem('apple_oauth_state') || undefined;
+    if (!finalState && isWebPlatform() && typeof window !== "undefined") {
+      finalState = sessionStorage.getItem("apple_oauth_state") || undefined;
       if (finalState) {
-        sessionStorage.removeItem('apple_oauth_state');
+        sessionStorage.removeItem("apple_oauth_state");
       }
     }
 
-    return api.post('/auth/v2/apple/callback', {
+    return api.post("/auth/v2/apple/callback", {
       code,
       redirect_uri: redirectUri,
       state: finalState,
-      tenant_id: 'bayit_plus',
+      tenant_id: "bayit_plus",
     });
   },
 };
 
 // Verification Service (API)
 export const apiVerificationService = {
-  sendEmailVerification: () => api.post('/verification/email/send'),
-  verifyEmail: (token: string) => api.post('/verification/email/verify', { token }),
+  sendEmailVerification: () => api.post("/verification/email/send"),
+  verifyEmail: (token: string) =>
+    api.post("/verification/email/verify", { token }),
   sendPhoneVerification: (phoneNumber: string) =>
-    api.post('/verification/phone/send', { phone_number: phoneNumber }),
+    api.post("/verification/phone/send", { phone_number: phoneNumber }),
   verifyPhone: (code: string) =>
-    api.post('/verification/phone/verify', { code }),
-  getVerificationStatus: () => api.get('/verification/status'),
+    api.post("/verification/phone/verify", { code }),
+  getVerificationStatus: () => api.get("/verification/status"),
 };

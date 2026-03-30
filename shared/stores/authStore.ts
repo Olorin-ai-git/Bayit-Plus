@@ -3,11 +3,11 @@
  * Works across web, iOS, Android, and tvOS platforms
  */
 
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { authService } from '../services/api';
-import { Role, Permission, ROLE_PERMISSIONS } from '../types/rbac';
-import { getPlatformStorage, isWebPlatform } from '../utils/storage';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { authService } from "../services/api";
+import { Role, Permission, ROLE_PERMISSIONS } from "../types/rbac";
+import { getPlatformStorage, isWebPlatform } from "../utils/storage";
 
 interface User {
   id: string;
@@ -53,6 +53,7 @@ interface AuthState {
   passkeySessionExpires: string | null;
   // Actions
   login: (email: string, password: string) => Promise<void>;
+  loginWithEmail: (email: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   loginWithGoogle: (redirectUri?: string) => Promise<string | void>;
   handleGoogleCallback: (code: string, state?: string) => Promise<any>;
@@ -84,7 +85,7 @@ interface AuthState {
 // Helper function to decode JWT and check expiration
 const decodeToken = (token: string): { exp?: number } | null => {
   try {
-    const parts = token.split('.');
+    const parts = token.split(".");
     if (parts.length !== 3) return null;
     const payload = JSON.parse(atob(parts[1]));
     return payload;
@@ -105,7 +106,7 @@ const willExpireSoon = (token: string): boolean => {
 
 // Get redirect URI for current platform
 const getRedirectUri = (): string | undefined => {
-  if (isWebPlatform() && typeof window !== 'undefined') {
+  if (isWebPlatform() && typeof window !== "undefined") {
     return `${window.location.origin}/auth/google/callback`;
   }
   return undefined;
@@ -144,7 +145,31 @@ export const useAuthStore = create<AuthState>()(
           get().scheduleTokenRefresh();
         } catch (error: any) {
           set({
-            error: error.detail || error.message || 'Login failed',
+            error: error.detail || error.message || "Login failed",
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      loginWithEmail: async (email: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response: any = await authService.loginWithEmail(email);
+          const token = response.token || response.access_token;
+
+          set({
+            user: response.user,
+            token,
+            refreshToken: response.refresh_token || null,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+
+          get().scheduleTokenRefresh();
+        } catch (error: any) {
+          set({
+            error: error.detail || error.message || "Email login failed",
             isLoading: false,
           });
           throw error;
@@ -169,7 +194,7 @@ export const useAuthStore = create<AuthState>()(
           get().scheduleTokenRefresh();
         } catch (error: any) {
           set({
-            error: error.detail || error.message || 'Registration failed',
+            error: error.detail || error.message || "Registration failed",
             isLoading: false,
           });
           throw error;
@@ -183,7 +208,7 @@ export const useAuthStore = create<AuthState>()(
           const response: any = await authService.getGoogleAuthUrl(uri);
 
           // For web, redirect to Google OAuth URL
-          if (isWebPlatform() && typeof window !== 'undefined') {
+          if (isWebPlatform() && typeof window !== "undefined") {
             window.location.href = response.url;
             return;
           }
@@ -192,7 +217,7 @@ export const useAuthStore = create<AuthState>()(
           return response.url;
         } catch (error: any) {
           set({
-            error: error.detail || error.message || 'Google login failed',
+            error: error.detail || error.message || "Google login failed",
             isLoading: false,
           });
           throw error;
@@ -203,7 +228,11 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const redirectUri = getRedirectUri();
-          const response: any = await authService.googleCallback(code, redirectUri, state);
+          const response: any = await authService.googleCallback(
+            code,
+            redirectUri,
+            state,
+          );
 
           set({
             user: response.user,
@@ -218,7 +247,7 @@ export const useAuthStore = create<AuthState>()(
           return response;
         } catch (error: any) {
           set({
-            error: error.detail || error.message || 'Google login failed',
+            error: error.detail || error.message || "Google login failed",
             isLoading: false,
           });
           throw error;
@@ -231,24 +260,25 @@ export const useAuthStore = create<AuthState>()(
           // This method will be platform-specific
           // For iOS/tvOS: Use native module to get identity token
           // For web: Use OAuth flow with Apple JS SDK
-          const Platform = require('react-native').Platform;
+          const Platform = require("react-native").Platform;
 
-          if (Platform.OS === 'ios' || Platform.OS === 'tvos') {
+          if (Platform.OS === "ios" || Platform.OS === "tvos") {
             // Native iOS/tvOS implementation
-            const { NativeModules } = require('react-native');
+            const { NativeModules } = require("react-native");
             const AppleAuth = NativeModules.AppleAuthModule;
 
             if (!AppleAuth) {
-              throw new Error('Apple Sign In module not available');
+              throw new Error("Apple Sign In module not available");
             }
 
             const { identityToken } = await AppleAuth.signIn();
 
             if (!identityToken) {
-              throw new Error('Failed to get identity token from Apple');
+              throw new Error("Failed to get identity token from Apple");
             }
 
-            const response: any = await authService.loginWithApple(identityToken);
+            const response: any =
+              await authService.loginWithApple(identityToken);
 
             set({
               user: response.user,
@@ -264,17 +294,19 @@ export const useAuthStore = create<AuthState>()(
             // Web or Android - use OAuth flow
             const response: any = await authService.getAppleAuthUrl();
 
-            if (isWebPlatform() && typeof window !== 'undefined') {
+            if (isWebPlatform() && typeof window !== "undefined") {
               window.location.href = response.authorization_url;
               return;
             }
 
             // For native Android, return URL for WebView
-            throw new Error('Apple Sign In on Android requires WebView implementation');
+            throw new Error(
+              "Apple Sign In on Android requires WebView implementation",
+            );
           }
         } catch (error: any) {
           set({
-            error: error.detail || error.message || 'Apple login failed',
+            error: error.detail || error.message || "Apple login failed",
             isLoading: false,
           });
           throw error;
@@ -355,7 +387,7 @@ export const useAuthStore = create<AuthState>()(
         const timeUntilExpiry = expirationTime - now;
 
         // Refresh 5 minutes before expiration
-        const refreshTime = Math.max(0, timeUntilExpiry - (5 * 60 * 1000));
+        const refreshTime = Math.max(0, timeUntilExpiry - 5 * 60 * 1000);
 
         const timeout = setTimeout(() => {
           get().refreshAccessToken();
@@ -403,18 +435,24 @@ export const useAuthStore = create<AuthState>()(
 
       hasAnyPermission: (permissions: Permission[]) => {
         const userPermissions = get().getPermissions();
-        return permissions.some(p => userPermissions.includes(p));
+        return permissions.some((p) => userPermissions.includes(p));
       },
 
       hasAllPermissions: (permissions: Permission[]) => {
         const userPermissions = get().getPermissions();
-        return permissions.every(p => userPermissions.includes(p));
+        return permissions.every((p) => userPermissions.includes(p));
       },
 
       isAdmin: () => {
         const { user } = get();
         if (!user) return false;
-        const adminRoles: Role[] = ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support'];
+        const adminRoles: Role[] = [
+          "super_admin",
+          "admin",
+          "content_manager",
+          "billing_admin",
+          "support",
+        ];
         return adminRoles.includes(user.role);
       },
 
@@ -422,7 +460,13 @@ export const useAuthStore = create<AuthState>()(
       isAdminRole: () => {
         const { user } = get();
         if (!user) return false;
-        const adminRoles: Role[] = ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support'];
+        const adminRoles: Role[] = [
+          "super_admin",
+          "admin",
+          "content_manager",
+          "billing_admin",
+          "support",
+        ];
         return adminRoles.includes(user.role);
       },
 
@@ -451,20 +495,26 @@ export const useAuthStore = create<AuthState>()(
         const { user } = get();
         if (!user) return false;
         if (get().isAdminRole()) return true;
-        const premiumPlans = ['premium', 'family'];
-        return get().isVerified() && premiumPlans.includes(user.subscription?.plan || '');
+        const premiumPlans = ["premium", "family"];
+        return (
+          get().isVerified() &&
+          premiumPlans.includes(user.subscription?.plan || "")
+        );
       },
 
       isPremium: () => {
         const { user } = get();
         if (!user) return false;
         if (get().isAdminRole()) return true;
-        const premiumPlans = ['premium', 'family'];
-        return get().isVerified() && premiumPlans.includes(user.subscription?.plan || '');
+        const premiumPlans = ["premium", "family"];
+        return (
+          get().isVerified() &&
+          premiumPlans.includes(user.subscription?.plan || "")
+        );
       },
     }),
     {
-      name: 'bayit-auth',
+      name: "bayit-auth",
       storage: createJSONStorage(() => getPlatformStorage()),
       partialize: (state) => ({
         user: state.user,
@@ -514,6 +564,6 @@ export const useAuthStore = create<AuthState>()(
           }
         }
       },
-    }
-  )
+    },
+  ),
 );

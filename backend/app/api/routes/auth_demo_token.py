@@ -32,8 +32,10 @@ class DemoTokenRequest(BaseModel):
 
 
 class DemoTokenResponse(BaseModel):
-    """Response with token for demo portal."""
+    """Response with token for demo portal and bayit.tv email-only login."""
     token: str
+    refresh_token: str | None = None
+    user: dict | None = None
 
 
 def _derive_demo_password(email: str) -> str:
@@ -139,7 +141,11 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
             },
         )
 
-        return DemoTokenResponse(token=auth_response["access_token"])
+        return DemoTokenResponse(
+            token=auth_response["access_token"],
+            refresh_token=auth_response.get("refresh_token"),
+            user=existing_user.to_response().dict(),
+        )
 
     # New user — register at auth service
     try:
@@ -190,4 +196,8 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
         },
     )
 
-    return DemoTokenResponse(token=auth_response["access_token"])
+    return DemoTokenResponse(
+        token=auth_response["access_token"],
+        refresh_token=auth_response.get("refresh_token"),
+        user=user.to_response().dict(),
+    )
