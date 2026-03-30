@@ -127,20 +127,27 @@ async def pause_ask_exchange(
                 detail="Avatar not found for Pause & Ask",
             )
 
-    credit_amount = (
-        settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
-        if body.voice_only
-        else settings.CREDIT_RATE_VOD_PAUSE_ASK
+    # Demo content is credit-free (demo.olorin.ai showcase)
+    is_demo_content = (
+        settings.DEMO_CONTENT_ID
+        and session.content_id == settings.DEMO_CONTENT_ID
     )
-    has_balance = await credit_service.has_sufficient_credits(
-        user_id=str(current_user.id),
-        amount=credit_amount,
-    )
-    if not has_balance:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Insufficient credits for Pause & Ask",
+
+    if not is_demo_content:
+        credit_amount = (
+            settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
+            if body.voice_only
+            else settings.CREDIT_RATE_VOD_PAUSE_ASK
         )
+        has_balance = await credit_service.has_sufficient_credits(
+            user_id=str(current_user.id),
+            amount=credit_amount,
+        )
+        if not has_balance:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail="Insufficient credits for Pause & Ask",
+            )
 
     try:
         result: PauseAskResult = await pause_ask_orchestrator.process_exchange(

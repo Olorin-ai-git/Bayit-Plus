@@ -166,18 +166,23 @@ class PauseAskOrchestrator:
         session.updated_at = datetime.utcnow()
         await session.save()
 
-        # 7. Charge credits (voice-only costs less — no animation)
-        credit_amount = (
-            settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
-            if voice_only
-            else settings.CREDIT_RATE_VOD_PAUSE_ASK
+        # 7. Charge credits (skip for demo content — demo.olorin.ai is free)
+        is_demo_content = (
+            settings.DEMO_CONTENT_ID
+            and session.content_id == settings.DEMO_CONTENT_ID
         )
-        await credit_service.charge_credits(
-            user_id=session.user_id,
-            amount=credit_amount,
-            reason="vod_pause_ask_exchange",
-            metadata={"session_id": session_id, "voice_only": voice_only},
-        )
+        if not is_demo_content:
+            credit_amount = (
+                settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
+                if voice_only
+                else settings.CREDIT_RATE_VOD_PAUSE_ASK
+            )
+            await credit_service.charge_credits(
+                user_id=session.user_id,
+                amount=credit_amount,
+                reason="vod_pause_ask_exchange",
+                metadata={"session_id": session_id, "voice_only": voice_only},
+            )
 
         logger.info(
             "Pause & Ask pipeline completed",
