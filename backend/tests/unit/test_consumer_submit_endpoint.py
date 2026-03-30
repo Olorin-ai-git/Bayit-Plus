@@ -56,3 +56,13 @@ class TestSubmissionStatusResponse:
             error="Could not find in TMDB",
         )
         assert resp.error == "Could not find in TMDB"
+
+
+class TestRateLimitKeys:
+    def test_consumer_demo_submit_key_exists(self):
+        from app.core.rate_limiter import RATE_LIMITS
+        assert "consumer_demo_submit" in RATE_LIMITS
+
+    def test_consumer_demo_status_key_exists(self):
+        from app.core.rate_limiter import RATE_LIMITS
+        assert "consumer_demo_status" in RATE_LIMITS

@@ -146,6 +146,9 @@ try:
         "vod_interaction_pause_ask": _dev_limit("10/minute"),
         # Guest Demo Pause & Ask (unauthenticated pricing-page free tier)
         "guest_demo_pause_ask": _dev_limit("5/minute"),
+        # Consumer URL submission
+        "consumer_demo_submit": _dev_limit("3/minute"),
+        "consumer_demo_status": _dev_limit("30/minute"),
     }
 
     RATE_LIMITING_ENABLED = True

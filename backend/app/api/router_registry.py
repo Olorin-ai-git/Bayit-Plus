@@ -604,6 +604,10 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(guest_demo.router, prefix=prefix, tags=["guest-demo"])
     logger.debug("Registered guest demo route")
 
+    # Consumer URL Submission
+    from app.api.routes import consumer_submit
+    app.include_router(consumer_submit.router, prefix=prefix, tags=["consumer-demo"])
+
     # ============================================
     # Hebrew Engagement / Gamification Routes
     # ============================================
