@@ -17,6 +17,7 @@ from fastapi import APIRouter, status
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
+from app.api.routes.olorin.b2b_sources import router as sources_router
 from app.api.routes.olorin.b2b_pause_ask import router as pause_ask_router
 from app.api.routes.olorin.b2b_subtitles import router as subtitles_router
 from app.api.routes.olorin.b2b_trivia import router as trivia_router
@@ -48,6 +49,7 @@ router.include_router(video_upload_router, prefix="/videos", tags=["olorin-video
 router.include_router(pause_ask_router, prefix="/videos", tags=["olorin-pause-ask"])
 router.include_router(subtitles_router, prefix="/subtitles", tags=["olorin-subtitles"])
 router.include_router(trivia_router, prefix="/trivia", tags=["olorin-trivia"])
+router.include_router(sources_router, prefix="/sources", tags=["olorin-sources"])
 
 
 # Create redirect router for backward compatibility
@@ -91,5 +93,6 @@ vanity_router.include_router(video_upload_router, prefix="/videos", tags=["olori
 vanity_router.include_router(pause_ask_router, prefix="/videos", tags=["olorin-pause-ask"])
 vanity_router.include_router(subtitles_router, prefix="/subtitles", tags=["olorin-subtitles"])
 vanity_router.include_router(trivia_router, prefix="/trivia", tags=["olorin-trivia"])
+vanity_router.include_router(sources_router, prefix="/sources", tags=["olorin-sources"])
 
 __all__ = ["router", "legacy_router", "vanity_router"]

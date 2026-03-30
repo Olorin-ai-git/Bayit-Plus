@@ -53,6 +53,7 @@ from app.models.household import Household
 from app.models.friendship import (FriendRequest, GameResult, PlayerStats,
                                    UserFriendship)
 # Olorin.ai Platform models
+from app.models.b2b_content_source import B2BContentSource
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import (DubbingSession, IntegrationPartner,
                                             UsageRecord, WebhookDelivery)
@@ -489,6 +490,7 @@ async def connect_to_mongo():
         # Phase 1: Olorin models in main database
         document_models.extend(
             [
+                B2BContentSource,
                 IngestJob,
                 IntegrationPartner,
                 UsageRecord,
