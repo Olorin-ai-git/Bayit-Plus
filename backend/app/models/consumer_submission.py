@@ -18,7 +18,8 @@ class ConsumerSubmission(Document):
 
     job_id: str = Field(default_factory=lambda: uuid4().hex[:12])
     url: str
-    fingerprint: str
+    fingerprint: str = Field(default="", description="Client fingerprint (demo submissions)")
+    user_id: Optional[str] = Field(default=None, description="Authenticated user ID")
     email: Optional[str] = None
     priority: int = Field(default=10, description="Queue priority (0=highest, 10=lowest)")
     source_tier: str = Field(default="free", description="Submitter tier: free|fan|superfan|b2b")
@@ -33,4 +34,4 @@ class ConsumerSubmission(Document):
 
     class Settings:
         name = "consumer_submissions"
-        indexes = ["job_id", "fingerprint", "priority"]
+        indexes = ["job_id", "fingerprint", "priority", "user_id"]

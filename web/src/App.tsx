@@ -148,6 +148,7 @@ const DiscoverFeatureDetailPage = lazy(
 );
 const ListenPage = lazy(() => import("./pages/ListenPage"));
 const BYOCPage = lazy(() => import("./pages/BYOCPage"));
+const SubmitVideoPage = lazy(() => import("./pages/SubmitVideoPage"));
 const HouseholdPage = lazy(() => import("./pages/HouseholdPage"));
 const DirectMessagesPage = lazy(() => import("./pages/DirectMessagesPage"));
 const ConversationPage = lazy(() => import("./pages/ConversationPage"));
@@ -478,6 +479,7 @@ const AppContent = () => {
         />
         <Route path="/listen" element={<ListenPage />} />
         <Route path="/byoc" element={<BYOCPage />} />
+        <Route path="/submit" element={<SubmitVideoPage />} />
         <Route path="/household" element={<HouseholdPage />} />
         <Route path="/messages" element={<DirectMessagesPage />} />
         <Route path="/messages/:friendId" element={<ConversationPage />} />

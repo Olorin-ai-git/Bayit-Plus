@@ -188,6 +188,20 @@ class Settings(BaseSettings):
         description="Hours before consumer-submitted content is cleaned up",
     )
 
+    # Consumer URL Submission (authenticated, per-tier limits)
+    CONSUMER_SUBMIT_LIMIT_FREE: int = Field(
+        default=3,
+        description="Maximum URL submissions for free tier (lifetime)",
+    )
+    CONSUMER_SUBMIT_LIMIT_FAN: int = Field(
+        default=10,
+        description="Maximum URL submissions for fan tier (lifetime)",
+    )
+    CONSUMER_SUBMIT_LIMIT_SUPERFAN: int = Field(
+        default=50,
+        description="Maximum URL submissions for superfan tier (lifetime)",
+    )
+
     # Internal API key for Cloud Scheduler-triggered endpoints
     INTERNAL_CRON_API_KEY: str = Field(
         default="",

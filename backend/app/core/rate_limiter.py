@@ -148,9 +148,13 @@ try:
         "demo_token": _dev_limit("5/minute"),
         # Guest Demo Pause & Ask (unauthenticated pricing-page free tier)
         "guest_demo_pause_ask": _dev_limit("5/minute"),
-        # Consumer URL submission
+        # Consumer URL submission (demo — unauthenticated)
         "consumer_demo_submit": _dev_limit("3/minute"),
         "consumer_demo_status": _dev_limit("30/minute"),
+        # Consumer URL submission (authenticated)
+        "consumer_submit": _dev_limit("3/minute"),
+        "consumer_submissions_list": _dev_limit("30/minute"),
+        "consumer_submission_status": _dev_limit("30/minute"),
         # Internal submission processor (Cloud Scheduler)
         "internal_process_submissions": "10/minute",
     }
