@@ -82,7 +82,7 @@ async def run_daily_audit(
             try:
                 object_id = PydanticObjectId(audit_id)
                 audit_report = await AuditReport.get(object_id)
-            except:
+            except Exception:
                 # If not a valid ObjectId, search by audit_id field
                 audit_report = await AuditReport.find_one({"audit_id": audit_id})
         except Exception as e:

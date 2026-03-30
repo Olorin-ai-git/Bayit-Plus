@@ -113,7 +113,7 @@ async def fetch_rss_feed(rss_url: str) -> Optional[PodcastData]:
                         pub_date = parsedate_to_datetime(
                             ep_pubdate.get_text(strip=True)
                         )
-                    except:
+                    except (ValueError, TypeError):
                         pub_date = None
 
                 guid_str = ""

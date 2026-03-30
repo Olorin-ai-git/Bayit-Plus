@@ -46,7 +46,7 @@ async def parse_feed(rss_url: str) -> Optional[dict]:
             # Parse RSS feed
             try:
                 soup = BeautifulSoup(response.text, "xml")
-            except:
+            except Exception:
                 soup = BeautifulSoup(response.text, "html.parser")
 
             channel = soup.find("channel")
@@ -106,7 +106,7 @@ async def fetch_rss_episodes(
             # Try to use lxml for XML parsing if available, otherwise fallback to html.parser
             try:
                 soup = BeautifulSoup(response.text, "xml")
-            except:
+            except Exception:
                 soup = BeautifulSoup(response.text, "html.parser")
             items = soup.find_all("item")[:max_episodes]
 
@@ -142,7 +142,7 @@ async def fetch_rss_episodes(
                         pub_date = parsedate_to_datetime(
                             pubdate_elem.get_text(strip=True)
                         )
-                    except:
+                    except (ValueError, TypeError):
                         pass
 
                 # If no pubDate found, calculate based on position
