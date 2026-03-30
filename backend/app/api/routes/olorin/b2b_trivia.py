@@ -64,6 +64,7 @@ class TriviaEmbedResponse(BaseModel):
     content_id: str
     embed_url: str
     iframe_html: str
+    branding_url: str
     question_count: int
 
 
@@ -164,11 +165,13 @@ async def get_trivia_embed(
         f'width="100%" height="400" '
         f'frameborder="0" allow="clipboard-write"></iframe>'
     )
+    branding_url = f"{base_url}/v1/partner/{partner.partner_id}/branding"
 
     return TriviaEmbedResponse(
         quiz_id=quiz_id,
         content_id=content_id,
         embed_url=embed_url,
         iframe_html=iframe_html,
+        branding_url=branding_url,
         question_count=len(trivia.facts),
     )

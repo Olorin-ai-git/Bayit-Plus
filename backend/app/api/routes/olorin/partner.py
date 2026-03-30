@@ -76,8 +76,20 @@ class PartnerInfoResponse(BaseModel):
     is_verified: bool
     webhook_url: Optional[str]
     webhook_events: List[str]
+    branding: dict = Field(default_factory=dict)
     created_at: datetime
     last_active_at: Optional[datetime]
+
+
+class PartnerBrandingPublicResponse(BaseModel):
+    """Public branding info for embeddable widgets. No auth required."""
+
+    partner_id: str
+    name: str
+    primary_color: Optional[str] = None
+    secondary_color: Optional[str] = None
+    logo_url: Optional[str] = None
+    show_powered_by: bool = True
 
 
 class PartnerUpdateRequest(BaseModel):
@@ -189,6 +201,7 @@ async def get_partner_info(
         is_verified=partner.is_verified,
         webhook_url=partner.webhook_url,
         webhook_events=[str(e) for e in partner.webhook_events],
+        branding=partner.branding.model_dump(exclude_none=True),
         created_at=partner.created_at,
         last_active_at=partner.last_active_at,
     )
@@ -218,7 +231,13 @@ async def update_partner(
         for k, v in updates["branding"].items():
             if v is not None:
                 existing[k] = v
-        updates["branding"] = BrandingConfig(**existing)
+        merged = BrandingConfig(**existing)
+
+        # Enforce: only enterprise tier can disable "Powered by Olorin"
+        if not merged.show_powered_by and partner.billing_tier != "enterprise":
+            merged = merged.model_copy(update={"show_powered_by": True})
+
+        updates["branding"] = merged
 
     updated = await partner_service.update_partner(
         partner_id=partner.partner_id,
@@ -242,6 +261,7 @@ async def update_partner(
         is_verified=updated.is_verified,
         webhook_url=updated.webhook_url,
         webhook_events=[str(e) for e in updated.webhook_events],
+        branding=updated.branding.model_dump(exclude_none=True),
         created_at=updated.created_at,
         last_active_at=updated.last_active_at,
     )
@@ -281,6 +301,7 @@ async def configure_webhook(
         is_verified=updated.is_verified,
         webhook_url=updated.webhook_url,
         webhook_events=[str(e) for e in updated.webhook_events],
+        branding=updated.branding.model_dump(exclude_none=True),
         created_at=updated.created_at,
         last_active_at=updated.last_active_at,
     )
@@ -350,3 +371,29 @@ async def get_capability_usage(
     )
 
     return UsageSummaryResponse(**summary)
+
+
+@router.get(
+    "/{partner_id}/branding",
+    response_model=PartnerBrandingPublicResponse,
+    summary="Get partner branding (public)",
+    description="Public endpoint for widgets to fetch partner branding. No auth required.",
+)
+async def get_partner_branding(partner_id: str):
+    """Get public branding config for a partner."""
+    partner = await partner_service.get_partner(partner_id)
+
+    if not partner or not partner.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=get_error_message(OlorinErrors.PARTNER_NOT_FOUND),
+        )
+
+    return PartnerBrandingPublicResponse(
+        partner_id=partner.partner_id,
+        name=partner.name_en or partner.name,
+        primary_color=partner.branding.primary_color,
+        secondary_color=partner.branding.secondary_color,
+        logo_url=partner.branding.logo_url,
+        show_powered_by=partner.branding.show_powered_by,
+    )
