@@ -34,3 +34,9 @@ class TestProcessorResponseModel:
         assert resp.processed == 0
         assert resp.skipped == 0
         assert resp.pending == 0
+
+
+class TestProcessorRateLimit:
+    def test_rate_limit_key_exists(self):
+        from app.core.rate_limiter import RATE_LIMITS
+        assert "internal_process_submissions" in RATE_LIMITS

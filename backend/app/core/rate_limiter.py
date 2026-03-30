@@ -149,6 +149,8 @@ try:
         # Consumer URL submission
         "consumer_demo_submit": _dev_limit("3/minute"),
         "consumer_demo_status": _dev_limit("30/minute"),
+        # Internal submission processor (Cloud Scheduler)
+        "internal_process_submissions": "10/minute",
     }
 
     RATE_LIMITING_ENABLED = True

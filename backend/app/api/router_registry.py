@@ -608,6 +608,10 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import consumer_submit
     app.include_router(consumer_submit.router, prefix=prefix, tags=["consumer-demo"])
 
+    # Submission Queue Processor (Cloud Scheduler-triggered)
+    from app.api.routes import submission_processor
+    app.include_router(submission_processor.router, prefix=prefix, tags=["internal"])
+
     # ============================================
     # Hebrew Engagement / Gamification Routes
     # ============================================
