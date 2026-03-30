@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { GlassButton, GlassCard } from "@olorin/glass-ui/web";
+import { GlassButton } from "@olorin/glass-ui/web";
 import { useAuthStore } from "../stores/authStore";
 import { AuthLayout } from "../components/layout/AuthLayout";
 

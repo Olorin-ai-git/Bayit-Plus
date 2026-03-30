@@ -16,8 +16,8 @@ export const TopBar: React.FC = () => {
   const navigate = useNavigate();
   const { partner, logout } = useAuthStore();
   const { toggleSidebar, isSidebarOpen } = useUIStore();
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const userMenuRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     logout();
@@ -25,35 +25,22 @@ export const TopBar: React.FC = () => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsUserMenuOpen(false);
-      }
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
+        setMenuOpen(false);
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const partnerInitial = partner?.name?.charAt(0).toUpperCase() ?? "P";
+  const initial = partner?.name?.charAt(0).toUpperCase() ?? "P";
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-glass-card/30 backdrop-blur-xl">
-      {/* Left Side */}
       <div className="flex items-center gap-4">
         <button
           onClick={toggleSidebar}
-          className="
-            lg:hidden
-            flex items-center justify-center
-            h-10 w-10
-            rounded-xl
-            text-white/60 hover:text-white hover:bg-white/10
-            transition-all duration-200
-          "
+          className="lg:hidden flex items-center justify-center h-10 w-10 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-all"
           aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
         >
           <svg
@@ -70,7 +57,6 @@ export const TopBar: React.FC = () => {
             />
           </svg>
         </button>
-
         {partner && (
           <div className="hidden sm:block">
             <p className="text-sm text-white/40">
@@ -81,37 +67,27 @@ export const TopBar: React.FC = () => {
         )}
       </div>
 
-      {/* Right Side */}
       <div className="flex items-center gap-4">
         <LanguageSelector />
 
-        {/* User Menu */}
-        <div className="relative" ref={userMenuRef}>
+        <div className="relative" ref={menuRef}>
           <button
-            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="
-              flex items-center gap-3
-              px-3 py-2
-              rounded-xl
-              hover:bg-white/5
-              transition-all duration-200
-            "
-            aria-expanded={isUserMenuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 transition-all"
+            aria-expanded={menuOpen}
             aria-haspopup="menu"
           >
             <div className="h-9 w-9 rounded-full bg-partner-primary/20 flex items-center justify-center">
               <span className="text-partner-primary font-semibold text-sm">
-                {partnerInitial}
+                {initial}
               </span>
             </div>
-
             <div className="hidden md:block text-left rtl:text-right">
               <p className="text-sm font-medium text-white">{partner?.name}</p>
               <p className="text-xs text-white/50">{partner?.billing_tier}</p>
             </div>
-
             <svg
-              className={`h-4 w-4 text-white/50 transition-transform ${isUserMenuOpen ? "rotate-180" : ""}`}
+              className={`h-4 w-4 text-white/50 transition-transform ${menuOpen ? "rotate-180" : ""}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -125,17 +101,9 @@ export const TopBar: React.FC = () => {
             </svg>
           </button>
 
-          {isUserMenuOpen && (
+          {menuOpen && (
             <div
-              className="
-                absolute right-0 rtl:right-auto rtl:left-0 mt-2
-                w-56
-                rounded-xl border border-white/10
-                bg-glass-card backdrop-blur-xl
-                py-1
-                shadow-xl shadow-black/30
-                z-50
-              "
+              className="absolute right-0 rtl:right-auto rtl:left-0 mt-2 w-56 rounded-xl border border-white/10 bg-glass-card backdrop-blur-xl py-1 shadow-xl shadow-black/30 z-50"
               role="menu"
             >
               <div className="px-4 py-3 border-b border-white/10">
@@ -146,20 +114,13 @@ export const TopBar: React.FC = () => {
                   {partner?.contact_email}
                 </p>
               </div>
-
               <div className="py-1">
                 <button
                   onClick={() => {
-                    setIsUserMenuOpen(false);
+                    setMenuOpen(false);
                     navigate("/settings");
                   }}
-                  className="
-                    w-full flex items-center gap-3 px-4 py-2.5
-                    text-left rtl:text-right
-                    text-sm text-white/80
-                    hover:bg-white/10
-                    transition-colors
-                  "
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-left rtl:text-right text-sm text-white/80 hover:bg-white/10 transition-colors"
                   role="menuitem"
                 >
                   <svg
@@ -184,17 +145,10 @@ export const TopBar: React.FC = () => {
                   {t("nav.settings")}
                 </button>
               </div>
-
               <div className="border-t border-white/10 py-1">
                 <button
                   onClick={handleLogout}
-                  className="
-                    w-full flex items-center gap-3 px-4 py-2.5
-                    text-left rtl:text-right
-                    text-sm text-red-400
-                    hover:bg-red-500/10
-                    transition-colors
-                  "
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-left rtl:text-right text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                   role="menuitem"
                 >
                   <svg

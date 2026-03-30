@@ -21,7 +21,8 @@
     "copied": "অনুলিপি করা হয়েছে!",
     "viewAll": "সব দেখুন",
     "noData": "কোনো ডেটা উপলব্ধ নেই",
-    "required": "প্রয়োজনীয়"
+    "required": "প্রয়োজনীয়",
+    "allRightsReserved": "সর্বস্বত্ব সংরক্ষিত।"
   },
   "auth": {
     "login": "সাইন ইন করুন",
@@ -39,7 +40,14 @@
     "loginError": "অবৈধ ইমেইল বা পাসওয়ার্ড",
     "registerError": "নিবন্ধন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
     "welcomeBack": "আবার স্বাগতম",
-    "createYourAccount": "আপনার অ্যাকাউন্ট তৈরি করুন"
+    "createYourAccount": "আপনার অ্যাকাউন্ট তৈরি করুন",
+    "apiKey": "API কী",
+    "connect": "সংযুক্ত করুন",
+    "connectToPortal": "সংযুক্ত হতে আপনার API কী প্রবেশ করুন",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "API কী দেখান",
+    "hideApiKey": "API কী লুকান",
+    "cliOnly": "অংশীদার নিবন্ধন শুধুমাত্র CLI এর মাধ্যমে উপলব্ধ। অ্যাক্সেসের জন্য আমাদের সাথে যোগাযোগ করুন।"
   },
   "register": {
     "step1Title": "সংস্থার বিবরণ",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "দলের সদস্য যোগ করুন",
     "viewInvoices": "চালান দেখুন",
     "viewInvoicesDescription": "বিলিং ইতিহাস",
-    "recentActivity": "সাম্প্রতিক কার্যকলাপ"
+    "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+    "capabilities": "সক্রিয় সক্ষমতা",
+    "partnerStatus": "অংশীদার অবস্থা",
+    "capabilityBreakdown": "সক্ষমতা অনুসারে ব্যবহার",
+    "cost": "খরচ",
+    "statusActive": "সক্রিয়",
+    "statusInactive": "নিষ্ক্রিয়"
   },
   "usage": {
     "title": "ব্যবহার বিশ্লেষণ",
@@ -103,7 +117,12 @@
     "p95Latency": "P95 লেটেন্সি",
     "endpoint": "এন্ডপয়েন্ট",
     "exportCsv": "CSV রপ্তানি করুন",
-    "exportJson": "JSON রপ্তানি করুন"
+    "exportJson": "JSON রপ্তানি করুন",
+    "selectCapability": "বিস্তারিত দেখতে একটি সক্ষমতা নির্বাচন করুন",
+    "audioSeconds": "অডিও সেকেন্ড",
+    "tokensConsumed": "ব্যবহৃত টোকেন",
+    "estimatedCost": "আনুমানিক খরচ",
+    "capabilityDetail": "বিস্তারিত"
   },
   "billing": {
     "title": "বিলিং",

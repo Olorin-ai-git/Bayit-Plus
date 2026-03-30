@@ -21,7 +21,8 @@
     "copied": "コピーしました！",
     "viewAll": "すべて表示",
     "noData": "データがありません",
-    "required": "必須"
+    "required": "必須",
+    "allRightsReserved": "全著作権所有。"
   },
   "auth": {
     "login": "ログイン",
@@ -39,7 +40,14 @@
     "loginError": "メールアドレスまたはパスワードが無効です",
     "registerError": "登録に失敗しました。もう一度お試しください。",
     "welcomeBack": "おかえりなさい",
-    "createYourAccount": "アカウントを作成"
+    "createYourAccount": "アカウントを作成",
+    "apiKey": "API キー",
+    "connect": "接続",
+    "connectToPortal": "API キーを入力して接続",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "API キーを表示",
+    "hideApiKey": "API キーを非表示",
+    "cliOnly": "パートナー登録は CLI からのみ利用可能です。アクセスについてはお問い合わせください。"
   },
   "register": {
     "step1Title": "組織情報",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "チームメンバーを追加",
     "viewInvoices": "請求書を表示",
     "viewInvoicesDescription": "請求履歴",
-    "recentActivity": "最近のアクティビティ"
+    "recentActivity": "最近のアクティビティ",
+    "capabilities": "有効な機能",
+    "partnerStatus": "パートナーステータス",
+    "capabilityBreakdown": "機能別利用状況",
+    "cost": "コスト",
+    "statusActive": "アクティブ",
+    "statusInactive": "非アクティブ"
   },
   "usage": {
     "title": "利用状況分析",
@@ -103,7 +117,12 @@
     "p95Latency": "P95 レイテンシー",
     "endpoint": "エンドポイント",
     "exportCsv": "CSV エクスポート",
-    "exportJson": "JSON エクスポート"
+    "exportJson": "JSON エクスポート",
+    "selectCapability": "詳細を表示する機能を選択してください",
+    "audioSeconds": "オーディオ秒数",
+    "tokensConsumed": "消費トークン",
+    "estimatedCost": "推定コスト",
+    "capabilityDetail": "詳細"
   },
   "billing": {
     "title": "請求",

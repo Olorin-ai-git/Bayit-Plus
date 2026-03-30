@@ -21,7 +21,8 @@
     "copied": "நகலெடுக்கப்பட்டது!",
     "viewAll": "அனைத்தையும் காண்க",
     "noData": "தரவு எதுவும் இல்லை",
-    "required": "தேவையானது"
+    "required": "தேவையானது",
+    "allRightsReserved": "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை."
   },
   "auth": {
     "login": "உள்நுழைக",
@@ -39,7 +40,14 @@
     "loginError": "தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்",
     "registerError": "பதிவு தோல்வியடைந்தது. மீண்டும் முயலவும்.",
     "welcomeBack": "மீண்டும் வரவேற்கிறோம்",
-    "createYourAccount": "உங்கள் கணக்கை உருவாக்கு"
+    "createYourAccount": "உங்கள் கணக்கை உருவாக்கு",
+    "apiKey": "API விசை",
+    "connect": "இணைக்கவும்",
+    "connectToPortal": "இணைக்க உங்கள் API விசையை உள்ளிடவும்",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "API விசையை காட்டு",
+    "hideApiKey": "API விசையை மறை",
+    "cliOnly": "பங்குதாரர் பதிவு CLI வழியாக மட்டுமே கிடைக்கும். அணுகலுக்கு எங்களை தொடர்பு கொள்ளுங்கள்."
   },
   "register": {
     "step1Title": "நிறுவன விவரங்கள்",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "குழு உறுப்பினர்களை சேர்க்கவும்",
     "viewInvoices": "விலைப்பட்டியல்களை காண்க",
     "viewInvoicesDescription": "பில்லிங் வரலாறு",
-    "recentActivity": "சமீபத்திய செயல்பாடு"
+    "recentActivity": "சமீபத்திய செயல்பாடு",
+    "capabilities": "செயலில் உள்ள திறன்கள்",
+    "partnerStatus": "பங்குதாரர் நிலை",
+    "capabilityBreakdown": "திறன் வாரியான பயன்பாடு",
+    "cost": "செலவு",
+    "statusActive": "செயலில்",
+    "statusInactive": "செயலில் இல்லை"
   },
   "usage": {
     "title": "பயன்பாட்டு பகுப்பாய்வு",
@@ -103,7 +117,12 @@
     "p95Latency": "P95 தாமதம்",
     "endpoint": "எண்ட்பாயிண்ட்",
     "exportCsv": "CSV ஏற்றுமதி",
-    "exportJson": "JSON ஏற்றுமதி"
+    "exportJson": "JSON ஏற்றுமதி",
+    "selectCapability": "விவரங்களைக் காண திறனைத் தேர்ந்தெடுக்கவும்",
+    "audioSeconds": "ஒலி வினாடிகள்",
+    "tokensConsumed": "பயன்படுத்தப்பட்ட டோக்கன்கள்",
+    "estimatedCost": "மதிப்பிடப்பட்ட செலவு",
+    "capabilityDetail": "விவரம்"
   },
   "billing": {
     "title": "பில்லிங்",
