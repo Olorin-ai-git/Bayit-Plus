@@ -117,7 +117,12 @@
     "p95Latency": "P95 लेटेंसी",
     "endpoint": "एंडपॉइंट",
     "exportCsv": "CSV निर्यात करें",
-    "exportJson": "JSON निर्यात करें"
+    "exportJson": "JSON निर्यात करें",
+    "selectCapability": "विवरण देखने के लिए क्षमता चुनें",
+    "audioSeconds": "ऑडियो सेकंड",
+    "tokensConsumed": "खपत किए गए टोकन",
+    "estimatedCost": "अनुमानित लागत",
+    "capabilityDetail": "विवरण"
   },
   "billing": {
     "title": "बिलिंग",
