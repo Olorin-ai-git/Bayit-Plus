@@ -90,6 +90,27 @@ async def get_usage_summary(
     }
 
 
+async def get_monthly_request_count(
+    partner_id: str,
+    capability: Optional[str] = None,
+) -> int:
+    """Count total requests for current billing month."""
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    query: dict = {
+        "partner_id": partner_id,
+        "period_start": {"$gte": month_start},
+    }
+    if capability:
+        query["capability"] = capability
+    pipeline = [
+        {"$match": query},
+        {"$group": {"_id": None, "total": {"$sum": "$request_count"}}},
+    ]
+    result = await UsageRecord.aggregate(pipeline).to_list()
+    return result[0]["total"] if result else 0
+
+
 async def check_usage_limit(
     partner: IntegrationPartner,
     capability: str,

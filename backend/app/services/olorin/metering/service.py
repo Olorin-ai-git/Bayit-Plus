@@ -65,6 +65,17 @@ class MeteringService:
             partner_id, tokens_used, transcript_seconds
         )
 
+    async def record_usage(
+        self,
+        partner_id: str,
+        capability: str,
+        metadata: dict,
+    ) -> UsageRecord:
+        """Record usage for any capability (generic)."""
+        return await usage.record_generic_usage(
+            partner_id, capability, metadata
+        )
+
     async def get_usage_summary(
         self,
         partner_id: str,

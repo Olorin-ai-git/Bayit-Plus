@@ -8,7 +8,7 @@ import logging
 from typing import Dict, List, Optional
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.api.routes.olorin.dependencies import (
@@ -16,6 +16,7 @@ from app.api.routes.olorin.dependencies import (
     verify_capability,
 )
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.api.routes.olorin.webhooks import send_webhook_event
 from app.core.config import settings
 from app.models.content import Content
 from app.models.integration_partner import IntegrationPartner
@@ -75,6 +76,7 @@ class TriviaEmbedResponse(BaseModel):
 )
 async def generate_trivia(
     request: TriviaGenerateRequest,
+    background_tasks: BackgroundTasks,
     partner: IntegrationPartner = Depends(get_current_partner),
 ) -> TriviaGenerateResponse:
     """Generate AI-powered trivia questions for content."""
@@ -122,6 +124,12 @@ async def generate_trivia(
             "facts_generated": len(facts),
         },
     )
+
+    await send_webhook_event(partner, "session.ended", {
+        "capability": "trivia",
+        "content_id": request.content_id,
+        "facts_generated": len(facts),
+    }, background_tasks)
 
     return TriviaGenerateResponse(
         content_id=request.content_id,

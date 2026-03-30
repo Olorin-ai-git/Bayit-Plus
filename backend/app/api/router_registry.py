@@ -90,6 +90,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import comprehension
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
+    from app.api.routes.olorin import vanity_router as olorin_vanity_router
     # Subtitle routes (split into 3 files per 200-line limit)
     from app.api.routes import subtitles_cues, subtitles_tracks, subtitles_translation
     # BYOC Enrichment routes (Bring Your Own Content)
@@ -584,7 +585,9 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(olorin_router, prefix=prefix, tags=["olorin"])
     # Legacy redirect routes: /api/v1/olorin/* -> /api/v1/olorin/v1/*
     app.include_router(olorin_legacy_router, prefix=prefix, tags=["olorin-legacy"])
-    logger.debug("Registered Olorin.ai platform routes (versioned + legacy redirects)")
+    # Olorin vanity routes (for api.olorin.ai — clean /v1/ paths)
+    app.include_router(olorin_vanity_router, tags=["olorin-vanity"])
+    logger.debug("Registered Olorin.ai platform routes (versioned + legacy redirects + vanity)")
 
     # ============================================
     # NLP Routes (Natural Language Processing for CLI)
@@ -607,9 +610,13 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(guest_demo.router, prefix=prefix, tags=["guest-demo"])
     logger.debug("Registered guest demo route")
 
-    # Consumer URL Submission
+    # Consumer URL Submission (demo — unauthenticated)
     from app.api.routes import consumer_submit
     app.include_router(consumer_submit.router, prefix=prefix, tags=["consumer-demo"])
+
+    # Consumer URL Submission (authenticated)
+    from app.api.routes import consumer_submit_auth
+    app.include_router(consumer_submit_auth.router, prefix=prefix, tags=["consumer"])
 
     # Submission Queue Processor (Cloud Scheduler-triggered)
     from app.api.routes import submission_processor

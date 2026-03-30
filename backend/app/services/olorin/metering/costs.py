@@ -60,3 +60,20 @@ def calculate_session_cost(
         + audio_seconds * metering.cost_per_audio_second_tts
         + (characters_translated / 1000) * metering.cost_per_1k_translation_chars
     )
+
+
+GENERIC_CAPABILITY_COST_USD: dict[str, float] = {
+    "pause_ask": 0.02,
+    "video_ingest": 0.10,
+    "subtitles": 0.05,
+    "trivia": 0.03,
+}
+
+GENERIC_CAPABILITY_DEFAULT_COST_USD: float = 0.01
+
+
+def calculate_generic_cost(capability: str) -> float:
+    """Calculate per-request cost for a generic capability."""
+    return GENERIC_CAPABILITY_COST_USD.get(
+        capability, GENERIC_CAPABILITY_DEFAULT_COST_USD
+    )

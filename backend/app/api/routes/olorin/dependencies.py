@@ -12,6 +12,7 @@ from fastapi import Header, HTTPException, Request, status
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
+from app.services.olorin.metering.summary import get_monthly_request_count
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.partner_service import partner_service
 from app.services.olorin.rate_limiter import partner_rate_limiter
@@ -90,10 +91,11 @@ async def verify_capability(
     """
     Verify partner has access to a specific capability.
 
-    Implements 3-step verification:
+    Implements 4-step verification:
     1. Check global feature flag (system kill switch) -> 503 if disabled
     2. Check partner.get_capability_config(capability) -> 403 if not enabled
     3. Check usage limits via metering service -> 429 if exceeded
+    4. Check monthly interaction limit -> 429 if exceeded
 
     Args:
         partner: Authenticated partner
@@ -157,6 +159,23 @@ async def verify_capability(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=error_message,
         )
+
+    # Step 4: Check monthly interaction limit
+    if partner.monthly_interaction_limit is not None:
+        current_count = await get_monthly_request_count(partner.partner_id)
+        if current_count >= partner.monthly_interaction_limit:
+            logger.warning(
+                f"Partner {partner.partner_id} reached monthly interaction "
+                f"limit: {current_count}/{partner.monthly_interaction_limit} (429)"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=(
+                    f"Monthly interaction limit reached "
+                    f"({current_count}/{partner.monthly_interaction_limit}). "
+                    f"Upgrade your plan for more interactions."
+                ),
+            )
 
 
 async def check_partner_rate_limit(

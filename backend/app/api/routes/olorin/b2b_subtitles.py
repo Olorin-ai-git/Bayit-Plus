@@ -17,6 +17,7 @@ from app.api.routes.olorin.dependencies import (
     verify_capability,
 )
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.api.routes.olorin.webhooks import send_webhook_event
 from app.models.content import Content
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.metering_service import metering_service
@@ -139,12 +140,32 @@ async def _run_subtitle_generation(
                 "tracks_ready": ready,
             },
         )
-    except Exception:
+
+        partner_doc = await IntegrationPartner.find_one(
+            IntegrationPartner.partner_id == partner_id,
+        )
+        if partner_doc:
+            await send_webhook_event(partner_doc, "translation.completed", {
+                "capability": "subtitles",
+                "content_id": content_id,
+                "languages": languages,
+            })
+    except Exception as e:
         logger.exception(
             "Subtitle generation failed",
             extra={"content_id": content_id},
         )
         job["status"] = "failed"
+
+        partner_doc = await IntegrationPartner.find_one(
+            IntegrationPartner.partner_id == partner_id,
+        )
+        if partner_doc:
+            await send_webhook_event(partner_doc, "error.occurred", {
+                "capability": "subtitles",
+                "content_id": content_id,
+                "error": str(e),
+            })
 
 
 @router.post(

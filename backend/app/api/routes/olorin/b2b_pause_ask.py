@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import Optional
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.api.routes.olorin.dependencies import (
@@ -18,6 +18,7 @@ from app.api.routes.olorin.dependencies import (
     verify_capability,
 )
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.api.routes.olorin.webhooks import send_webhook_event
 from app.models.content import Content
 from app.models.integration_partner import IntegrationPartner
 from app.models.vod_interaction import ContentCharacter, VODInteractionSession
@@ -73,6 +74,7 @@ def _find_character(
 async def pause_ask(
     content_id: str,
     request: PauseAskRequest,
+    background_tasks: BackgroundTasks,
     partner: IntegrationPartner = Depends(get_current_partner),
 ) -> PauseAskResponse:
     """Ask a character a question about video content."""
@@ -151,6 +153,12 @@ async def pause_ask(
         capability="pause_ask",
         metadata={"content_id": content_id, "voice_only": voice_only},
     )
+
+    await send_webhook_event(partner, "session.ended", {
+        "capability": "pause_ask",
+        "content_id": content_id,
+        "character": character.name,
+    }, background_tasks)
 
     return PauseAskResponse(
         character_name=result.character_name,

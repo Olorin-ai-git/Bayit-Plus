@@ -16,6 +16,7 @@ from app.api.routes.olorin.dependencies import (
     verify_capability,
 )
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.api.routes.olorin.webhooks import send_webhook_event
 from app.models.content import Content
 from app.models.integration_partner import IntegrationPartner
 from app.models.vod_interaction import ContentCharacter
@@ -85,12 +86,31 @@ async def _run_extraction(content_id: str, partner_id: str) -> None:
             metadata={"content_id": content_id, "characters": len(characters)},
         )
         _extraction_jobs[content_id] = "completed"
+
+        partner_doc = await IntegrationPartner.find_one(
+            IntegrationPartner.partner_id == partner_id,
+        )
+        if partner_doc:
+            await send_webhook_event(partner_doc, "session.ended", {
+                "capability": "video_ingest",
+                "content_id": content_id,
+                "characters": len(characters),
+            })
     except Exception:
         logger.exception(
             "Background extraction failed",
             extra={"content_id": content_id},
         )
         _extraction_jobs[content_id] = "failed"
+
+        partner_doc = await IntegrationPartner.find_one(
+            IntegrationPartner.partner_id == partner_id,
+        )
+        if partner_doc:
+            await send_webhook_event(partner_doc, "error.occurred", {
+                "capability": "video_ingest",
+                "content_id": content_id,
+            })
 
 
 @router.post(

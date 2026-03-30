@@ -119,6 +119,10 @@ class IntegrationPartner(Document):
         default=None,
         description="Monthly spending limit in USD (None = unlimited)",
     )
+    monthly_interaction_limit: Optional[int] = Field(
+        default=None,
+        description="Monthly interaction cap (None = unlimited)",
+    )
     billing_email: Optional[EmailStr] = Field(default=None)
 
     # Webhooks
