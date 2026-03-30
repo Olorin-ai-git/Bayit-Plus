@@ -14,7 +14,11 @@ from pydantic import BaseModel, EmailStr, Field
 from app.api.routes.olorin.dependencies import get_current_partner
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.rate_limiter import limiter
-from app.models.integration_partner import IntegrationPartner, WebhookEventType
+from app.models.integration_partner import (
+    BrandingConfig,
+    IntegrationPartner,
+    WebhookEventType,
+)
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.partner_service import partner_service
 
@@ -84,8 +88,7 @@ class PartnerUpdateRequest(BaseModel):
     contact_name: Optional[str] = Field(None, max_length=100)
     technical_contact_email: Optional[EmailStr] = None
     description: Optional[str] = Field(None, max_length=500)
-    logo_url: Optional[str] = None
-    website_url: Optional[str] = None
+    branding: Optional[BrandingConfig] = None
 
 
 class WebhookConfigRequest(BaseModel):
@@ -208,6 +211,14 @@ async def update_partner(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=get_error_message(OlorinErrors.NO_UPDATES_PROVIDED),
         )
+
+    # Merge branding: overlay provided fields onto existing config
+    if "branding" in updates and updates["branding"] is not None:
+        existing = partner.branding.model_dump()
+        for k, v in updates["branding"].items():
+            if v is not None:
+                existing[k] = v
+        updates["branding"] = BrandingConfig(**existing)
 
     updated = await partner_service.update_partner(
         partner_id=partner.partner_id,

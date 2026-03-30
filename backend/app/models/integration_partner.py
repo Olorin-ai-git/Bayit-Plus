@@ -29,6 +29,31 @@ WebhookEventType = Literal[
 ]
 
 
+class BrandingConfig(BaseModel):
+    """Partner branding configuration for white-label widgets."""
+
+    primary_color: Optional[str] = Field(
+        None,
+        pattern=r"^#[0-9A-Fa-f]{6}$",
+        description="Primary brand color (hex)",
+    )
+    secondary_color: Optional[str] = Field(
+        None,
+        pattern=r"^#[0-9A-Fa-f]{6}$",
+        description="Secondary brand color (hex)",
+    )
+    logo_url: Optional[str] = Field(
+        None, description="Partner logo URL for widget header"
+    )
+    website_url: Optional[str] = Field(
+        None, description="Partner website URL"
+    )
+    show_powered_by: bool = Field(
+        default=True,
+        description="Show 'Powered by Olorin' badge in widgets",
+    )
+
+
 class RateLimitConfig(BaseModel):
     """Rate limit configuration for a capability."""
 
@@ -107,6 +132,9 @@ class IntegrationPartner(Document):
     description: Optional[str] = Field(default=None)
     logo_url: Optional[str] = Field(default=None)
     website_url: Optional[str] = Field(default=None)
+
+    # Branding
+    branding: BrandingConfig = Field(default_factory=BrandingConfig)
 
     # Status
     is_active: bool = Field(default=True)
