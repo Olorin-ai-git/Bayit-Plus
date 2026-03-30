@@ -76,3 +76,24 @@ class TestGuestDemoEndpointLogic:
         usage.can_interact = Mock(return_value=True)
         result = _check_demo_limit(usage, max_interactions=10)
         assert result is None
+
+
+class TestDynamicContentId:
+    def test_request_model_accepts_optional_content_id(self):
+        from app.api.routes.guest_demo import GuestDemoRequest
+        req = GuestDemoRequest(
+            fingerprint="fp-12345678",
+            message="Hello Walter!",
+            character_name="Walter Burns",
+            content_id="abc123def456",
+        )
+        assert req.content_id == "abc123def456"
+
+    def test_request_model_content_id_defaults_none(self):
+        from app.api.routes.guest_demo import GuestDemoRequest
+        req = GuestDemoRequest(
+            fingerprint="fp-12345678",
+            message="Hello!",
+            character_name="Walter Burns",
+        )
+        assert req.content_id is None

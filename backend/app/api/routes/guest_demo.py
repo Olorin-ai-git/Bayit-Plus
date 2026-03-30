@@ -47,6 +47,10 @@ class GuestDemoRequest(BaseModel):
         default="en", max_length=10,
         description="Language hint for text polishing",
     )
+    content_id: Optional[str] = Field(
+        None, max_length=64,
+        description="Optional content ID for consumer-submitted videos (overrides demo default)",
+    )
 
 
 class GuestDemoResponse(BaseModel):
@@ -111,22 +115,28 @@ async def guest_demo_pause_ask(
     No auth required. Limited to GUEST_DEMO_MAX_INTERACTIONS per fingerprint
     and 5 requests/minute per IP.
     """
-    if not settings.DEMO_CONTENT_ID:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Demo is not configured",
-        )
-
     ip_address = request.client.host if request.client else ""
 
     usage = await _get_or_create_usage(body.fingerprint, ip_address)
     _check_demo_limit(usage, settings.GUEST_DEMO_MAX_INTERACTIONS)
 
-    content = await Content.get(PydanticObjectId(settings.DEMO_CONTENT_ID))
-    if not content:
+    # Resolve content: consumer-submitted content_id or fixed demo
+    target_content_id = body.content_id or settings.DEMO_CONTENT_ID
+    if not target_content_id:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Demo content unavailable",
+            detail="Demo is not configured",
+        )
+
+    content = await Content.get(PydanticObjectId(target_content_id))
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+            if body.content_id
+            else status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Content unavailable"
+            if body.content_id
+            else "Demo content unavailable",
         )
 
     chars = getattr(content, "interactive_characters", []) or []
@@ -140,7 +150,7 @@ async def guest_demo_pause_ask(
     session = VODInteractionSession(
         user_id="guest:demo",
         profile_id="guest:demo",
-        content_id=settings.DEMO_CONTENT_ID,
+        content_id=target_content_id,
         character_name=character.name,
         character_description=character.description,
         character_voice_id=character.voice_id,
