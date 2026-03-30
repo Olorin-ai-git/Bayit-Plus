@@ -2,10 +2,19 @@
  * Settings Page
  *
  * Organization settings, branding, webhooks, and preferences.
+ * Uses @olorin/glass-ui/web components exclusively.
  */
 
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  GlassButton,
+  GlassCard,
+  GlassInput,
+  GlassSelect,
+  GlassTabs,
+  GlassToggle,
+} from "@olorin/glass-ui/web";
 import { usePartnerStore } from "../stores/partnerStore";
 import { toast } from "../stores/uiStore";
 import { isB2BFeatureEnabled } from "../config/env";
@@ -54,6 +63,9 @@ export const SettingsPage: React.FC = () => {
 
   // Preferences
   const [language, setLanguage] = useState(i18n.language);
+  const [emailNotifs, setEmailNotifs] = useState(true);
+  const [usageAlerts, setUsageAlerts] = useState(true);
+  const [productUpdates, setProductUpdates] = useState(false);
 
   useEffect(() => {
     fetchOrganization();
@@ -77,10 +89,7 @@ export const SettingsPage: React.FC = () => {
   const handleSaveOrganization = async () => {
     setIsSaving(true);
     try {
-      await updateOrganization({
-        name: orgName,
-        contactEmail,
-      });
+      await updateOrganization({ name: orgName, contactEmail });
       toast.success(t("common.success"));
     } catch {
       toast.error(t("errors.serverError"));
@@ -140,15 +149,13 @@ export const SettingsPage: React.FC = () => {
     );
   };
 
-  const tabs: { id: Tab; labelKey: string; show: boolean }[] = [
-    { id: "organization", labelKey: "settings.organization", show: true },
-    { id: "branding", labelKey: "settings.branding", show: true },
-    {
-      id: "webhooks",
-      labelKey: "settings.webhooks",
-      show: isB2BFeatureEnabled("enableWebhooks"),
-    },
-    { id: "preferences", labelKey: "settings.preferences", show: true },
+  const visibleTabs = [
+    { id: "organization", label: t("settings.organization") },
+    { id: "branding", label: t("settings.branding") },
+    ...(isB2BFeatureEnabled("enableWebhooks")
+      ? [{ id: "webhooks", label: t("settings.webhooks") }]
+      : []),
+    { id: "preferences", label: t("settings.preferences") },
   ];
 
   if (isLoading && !organization) {
@@ -163,26 +170,12 @@ export const SettingsPage: React.FC = () => {
     <div className="space-y-8">
       <PageHeader title={t("settings.title")} />
 
-      <div className="flex gap-2 border-b border-white/10 pb-4">
-        {tabs
-          .filter((tab) => tab.show)
-          .map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                px-4 py-2 rounded-xl text-sm font-medium transition-colors
-                ${
-                  activeTab === tab.id
-                    ? "bg-partner-primary text-white"
-                    : "text-white/60 hover:text-white hover:bg-white/10"
-                }
-              `}
-            >
-              {t(tab.labelKey)}
-            </button>
-          ))}
-      </div>
+      <GlassTabs
+        tabs={visibleTabs}
+        activeTab={activeTab}
+        onChange={(id) => setActiveTab(id as Tab)}
+        variant="pills"
+      />
 
       {activeTab === "organization" && (
         <OrganizationTab
@@ -232,6 +225,12 @@ export const SettingsPage: React.FC = () => {
           t={t}
           language={language}
           onLanguageChange={handleLanguageChange}
+          emailNotifs={emailNotifs}
+          setEmailNotifs={setEmailNotifs}
+          usageAlerts={usageAlerts}
+          setUsageAlerts={setUsageAlerts}
+          productUpdates={productUpdates}
+          setProductUpdates={setProductUpdates}
         />
       )}
     </div>
@@ -240,7 +239,7 @@ export const SettingsPage: React.FC = () => {
 
 export default SettingsPage;
 
-/* ---- Sub-components (kept in same file for colocation) ---- */
+/* ---- Sub-components ---- */
 
 interface OrganizationTabProps {
   t: (key: string) => string;
@@ -261,42 +260,33 @@ const OrganizationTab: React.FC<OrganizationTabProps> = ({
   isSaving,
   onSave,
 }) => (
-  <div className="rounded-2xl border border-white/10 bg-glass-card backdrop-blur-xl p-6">
+  <GlassCard>
     <h2 className="text-lg font-semibold text-white mb-6">
       {t("settings.organization")}
     </h2>
     <div className="space-y-6 max-w-xl">
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.orgName")}
-        </label>
-        <input
-          type="text"
-          value={orgName}
-          onChange={(e) => setOrgName(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-partner-primary"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.contactEmail")}
-        </label>
-        <input
-          type="email"
-          value={contactEmail}
-          onChange={(e) => setContactEmail(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-partner-primary"
-        />
-      </div>
-      <button
+      <GlassInput
+        label={t("settings.orgName")}
+        type="text"
+        value={orgName}
+        onChange={(e) => setOrgName(e.target.value)}
+      />
+      <GlassInput
+        label={t("settings.contactEmail")}
+        type="email"
+        value={contactEmail}
+        onChange={(e) => setContactEmail(e.target.value)}
+      />
+      <GlassButton
         onClick={onSave}
         disabled={isSaving}
-        className="px-6 py-3 rounded-xl bg-partner-primary text-white font-medium text-sm hover:bg-partner-primary/90 disabled:opacity-50 transition-colors"
+        loading={isSaving}
+        size="md"
       >
-        {isSaving ? t("common.loading") : t("settings.saveChanges")}
-      </button>
+        {t("settings.saveChanges")}
+      </GlassButton>
     </div>
-  </div>
+  </GlassCard>
 );
 
 interface BrandingTabProps {
@@ -328,79 +318,46 @@ const BrandingTab: React.FC<BrandingTabProps> = ({
   isSaving,
   onSave,
 }) => (
-  <div className="rounded-2xl border border-white/10 bg-glass-card backdrop-blur-xl p-6">
+  <GlassCard>
     <h2 className="text-lg font-semibold text-white mb-6">
       {t("settings.branding")}
     </h2>
     <div className="space-y-6 max-w-xl">
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.logoUrl")}
-        </label>
-        <input
-          type="url"
-          value={brandLogoUrl}
-          onChange={(e) => setBrandLogoUrl(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-partner-primary"
-          placeholder="https://..."
-        />
-        {brandLogoUrl && (
-          <div className="mt-4">
-            <img
-              src={brandLogoUrl}
-              alt={t("settings.branding")}
-              className="h-16 w-auto rounded-lg bg-white/10"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
-          </div>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.primaryColor")}
-        </label>
-        <div className="flex items-center gap-3">
-          <input
-            type="color"
-            value={primaryColor || "#6366F1"}
-            onChange={(e) => setPrimaryColor(e.target.value)}
-            className="h-10 w-10 rounded-lg border border-white/10 bg-transparent cursor-pointer"
-          />
-          <input
-            type="text"
-            value={primaryColor}
-            onChange={(e) => setPrimaryColor(e.target.value)}
-            placeholder="#6366F1"
-            className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-partner-primary font-mono text-sm"
+      <GlassInput
+        label={t("settings.logoUrl")}
+        type="url"
+        value={brandLogoUrl}
+        onChange={(e) => setBrandLogoUrl(e.target.value)}
+        placeholder="https://..."
+      />
+      {brandLogoUrl && (
+        <div className="mt-2">
+          <img
+            src={brandLogoUrl}
+            alt={t("settings.branding")}
+            className="h-16 w-auto rounded-lg bg-white/10"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
           />
         </div>
-      </div>
+      )}
 
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.secondaryColor")}
-        </label>
-        <div className="flex items-center gap-3">
-          <input
-            type="color"
-            value={secondaryColor || "#8B5CF6"}
-            onChange={(e) => setSecondaryColor(e.target.value)}
-            className="h-10 w-10 rounded-lg border border-white/10 bg-transparent cursor-pointer"
-          />
-          <input
-            type="text"
-            value={secondaryColor}
-            onChange={(e) => setSecondaryColor(e.target.value)}
-            placeholder="#8B5CF6"
-            className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-partner-primary font-mono text-sm"
-          />
-        </div>
-      </div>
+      <ColorPickerField
+        label={t("settings.primaryColor")}
+        value={primaryColor}
+        onChange={setPrimaryColor}
+        defaultColor="#6366F1"
+      />
 
-      <label className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+      <ColorPickerField
+        label={t("settings.secondaryColor")}
+        value={secondaryColor}
+        onChange={setSecondaryColor}
+        defaultColor="#8B5CF6"
+      />
+
+      <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-glass-bg border border-glass-border">
         <div>
           <span className="text-sm text-white/80">
             {t("settings.showPoweredBy")}
@@ -409,19 +366,14 @@ const BrandingTab: React.FC<BrandingTabProps> = ({
             {t("settings.showPoweredByHint")}
           </p>
         </div>
-        <input
-          type="checkbox"
-          checked={showPoweredBy}
-          onChange={(e) => setShowPoweredBy(e.target.checked)}
-          className="h-4 w-4 rounded border-white/30 bg-white/5 text-partner-primary focus:ring-partner-primary focus:ring-offset-0"
-        />
-      </label>
+        <GlassToggle checked={showPoweredBy} onChange={setShowPoweredBy} />
+      </div>
 
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-3">
+        <span className="block text-sm font-medium text-white/80 mb-3">
           {t("settings.brandPreview")}
-        </label>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex items-center gap-3">
+        </span>
+        <div className="rounded-xl border border-glass-border bg-glass-bg p-4 flex items-center gap-3">
           {brandLogoUrl ? (
             <img
               src={brandLogoUrl}
@@ -453,13 +405,47 @@ const BrandingTab: React.FC<BrandingTabProps> = ({
         </div>
       </div>
 
-      <button
+      <GlassButton
         onClick={onSave}
         disabled={isSaving}
-        className="px-6 py-3 rounded-xl bg-partner-primary text-white font-medium text-sm hover:bg-partner-primary/90 disabled:opacity-50 transition-colors"
+        loading={isSaving}
+        size="md"
       >
-        {isSaving ? t("common.loading") : t("settings.saveChanges")}
-      </button>
+        {t("settings.saveChanges")}
+      </GlassButton>
+    </div>
+  </GlassCard>
+);
+
+interface ColorPickerFieldProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  defaultColor: string;
+}
+
+const ColorPickerField: React.FC<ColorPickerFieldProps> = ({
+  label,
+  value,
+  onChange,
+  defaultColor,
+}) => (
+  <div className="flex flex-col gap-1.5">
+    <span className="text-sm font-medium text-white/80">{label}</span>
+    <div className="flex items-center gap-3">
+      <input
+        type="color"
+        value={value || defaultColor}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-10 w-10 rounded-lg border border-glass-border bg-transparent cursor-pointer"
+      />
+      <GlassInput
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={defaultColor}
+        className="font-mono"
+      />
     </div>
   </div>
 );
@@ -487,126 +473,133 @@ const WebhooksTab: React.FC<WebhooksTabProps> = ({
   isSaving,
   onSave,
 }) => (
-  <div className="rounded-2xl border border-white/10 bg-glass-card backdrop-blur-xl p-6">
+  <GlassCard>
     <h2 className="text-lg font-semibold text-white mb-6">
       {t("settings.webhooks")}
     </h2>
     <div className="space-y-6 max-w-xl">
+      <GlassInput
+        label={t("settings.webhookUrl")}
+        type="url"
+        value={webhookUrl}
+        onChange={(e) => setWebhookUrl(e.target.value)}
+        placeholder="https://your-server.com/webhook"
+      />
+      <GlassInput
+        label={t("settings.webhookSecret")}
+        type="password"
+        value={webhookSecret}
+        onChange={(e) => setWebhookSecret(e.target.value)}
+      />
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.webhookUrl")}
-        </label>
-        <input
-          type="url"
-          value={webhookUrl}
-          onChange={(e) => setWebhookUrl(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-partner-primary"
-          placeholder="https://your-server.com/webhook"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.webhookSecret")}
-        </label>
-        <input
-          type="password"
-          value={webhookSecret}
-          onChange={(e) => setWebhookSecret(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-partner-primary"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-3">
+        <span className="block text-sm font-medium text-white/80 mb-3">
           {t("settings.webhookEvents")}
-        </label>
+        </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {WEBHOOK_EVENTS.map((event) => (
-            <label
+            <div
               key={event}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+              onClick={() => toggleWebhookEvent(event)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-glass-bg border border-glass-border cursor-pointer hover:bg-glass-hover transition-colors"
+              role="checkbox"
+              aria-checked={webhookEvents.includes(event)}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === " " || e.key === "Enter") {
+                  e.preventDefault();
+                  toggleWebhookEvent(event);
+                }
+              }}
             >
-              <input
-                type="checkbox"
+              <GlassToggle
                 checked={webhookEvents.includes(event)}
                 onChange={() => toggleWebhookEvent(event)}
-                className="h-4 w-4 rounded border-white/30 bg-white/5 text-partner-primary focus:ring-partner-primary focus:ring-offset-0"
               />
               <span className="text-sm text-white/80 font-mono">{event}</span>
-            </label>
+            </div>
           ))}
         </div>
       </div>
-      <button
+      <GlassButton
         onClick={onSave}
         disabled={isSaving || !webhookUrl}
-        className="px-6 py-3 rounded-xl bg-partner-primary text-white font-medium text-sm hover:bg-partner-primary/90 disabled:opacity-50 transition-colors"
+        loading={isSaving}
+        size="md"
       >
-        {isSaving ? t("common.loading") : t("settings.saveChanges")}
-      </button>
+        {t("settings.saveChanges")}
+      </GlassButton>
     </div>
-  </div>
+  </GlassCard>
 );
 
 interface PreferencesTabProps {
   t: (key: string) => string;
   language: string;
   onLanguageChange: (lang: string) => void;
+  emailNotifs: boolean;
+  setEmailNotifs: (v: boolean) => void;
+  usageAlerts: boolean;
+  setUsageAlerts: (v: boolean) => void;
+  productUpdates: boolean;
+  setProductUpdates: (v: boolean) => void;
 }
+
+const LANGUAGE_OPTIONS = [
+  { value: "he", label: "\u05E2\u05D1\u05E8\u05D9\u05EA" },
+  { value: "en", label: "English" },
+  { value: "es", label: "Espa\u00F1ol" },
+];
 
 const PreferencesTab: React.FC<PreferencesTabProps> = ({
   t,
   language,
   onLanguageChange,
+  emailNotifs,
+  setEmailNotifs,
+  usageAlerts,
+  setUsageAlerts,
+  productUpdates,
+  setProductUpdates,
 }) => (
-  <div className="rounded-2xl border border-white/10 bg-glass-card backdrop-blur-xl p-6">
+  <GlassCard>
     <h2 className="text-lg font-semibold text-white mb-6">
       {t("settings.preferences")}
     </h2>
     <div className="space-y-6 max-w-xl">
+      <GlassSelect
+        label={t("settings.language")}
+        options={LANGUAGE_OPTIONS}
+        value={language}
+        onChange={onLanguageChange}
+      />
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-2">
-          {t("settings.language")}
-        </label>
-        <select
-          value={language}
-          onChange={(e) => onLanguageChange(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-partner-primary"
-        >
-          <option value="he">עברית</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-white/80 mb-3">
+        <span className="block text-sm font-medium text-white/80 mb-3">
           {t("settings.notifications")}
-        </label>
+        </span>
         <div className="space-y-3">
-          <label className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
-            <span className="text-sm text-white/80">Email notifications</span>
-            <input
-              type="checkbox"
-              defaultChecked
-              className="h-4 w-4 rounded border-white/30 bg-white/5 text-partner-primary focus:ring-partner-primary focus:ring-offset-0"
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-glass-bg border border-glass-border">
+            <span className="text-sm text-white/80">
+              {t("settings.emailNotifications")}
+            </span>
+            <GlassToggle checked={emailNotifs} onChange={setEmailNotifs} />
+          </div>
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-glass-bg border border-glass-border">
+            <span className="text-sm text-white/80">
+              {t("settings.usageAlerts")}
+            </span>
+            <GlassToggle checked={usageAlerts} onChange={setUsageAlerts} />
+          </div>
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-glass-bg border border-glass-border">
+            <span className="text-sm text-white/80">
+              {t("settings.productUpdates")}
+            </span>
+            <GlassToggle
+              checked={productUpdates}
+              onChange={setProductUpdates}
             />
-          </label>
-          <label className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
-            <span className="text-sm text-white/80">Usage alerts</span>
-            <input
-              type="checkbox"
-              defaultChecked
-              className="h-4 w-4 rounded border-white/30 bg-white/5 text-partner-primary focus:ring-partner-primary focus:ring-offset-0"
-            />
-          </label>
-          <label className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
-            <span className="text-sm text-white/80">Product updates</span>
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-white/30 bg-white/5 text-partner-primary focus:ring-partner-primary focus:ring-offset-0"
-            />
-          </label>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </GlassCard>
 );

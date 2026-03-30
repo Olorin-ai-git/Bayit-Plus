@@ -137,8 +137,6 @@ class IntegrationPartner(Document):
 
     # Metadata
     description: Optional[str] = Field(default=None)
-    logo_url: Optional[str] = Field(default=None)
-    website_url: Optional[str] = Field(default=None)
 
     # Branding
     branding: BrandingConfig = Field(default_factory=BrandingConfig)

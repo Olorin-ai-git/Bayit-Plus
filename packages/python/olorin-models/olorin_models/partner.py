@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from typing import List, Literal, Optional
 
 from beanie import Document
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from pymongo import ASCENDING, IndexModel
 
 # Type definitions
@@ -42,6 +42,43 @@ class CapabilityConfig(BaseModel):
     enabled: bool = True
     rate_limits: RateLimitConfig = Field(default_factory=RateLimitConfig)
     custom_settings: dict = Field(default_factory=dict)
+
+
+HEX_COLOR_PATTERN = r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+
+
+class BrandingConfig(BaseModel):
+    """Partner brand customization for portal and embeds."""
+
+    primary_color: Optional[str] = Field(
+        default=None,
+        pattern=HEX_COLOR_PATTERN,
+        description="Primary brand color as hex (e.g., '#6366F1')",
+    )
+    secondary_color: Optional[str] = Field(
+        default=None,
+        pattern=HEX_COLOR_PATTERN,
+        description="Secondary brand color as hex",
+    )
+    logo_url: Optional[str] = Field(
+        default=None,
+        description="HTTPS URL to partner logo image",
+    )
+    website_url: Optional[str] = Field(
+        default=None,
+        description="Partner website URL",
+    )
+    show_powered_by: bool = Field(
+        default=True,
+        description="Show 'Powered by Olorin' in embeds (enterprise can disable)",
+    )
+
+    @field_validator("logo_url")
+    @classmethod
+    def validate_logo_https(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and not v.startswith("https://"):
+            raise ValueError("Logo URL must use HTTPS")
+        return v
 
 
 class IntegrationPartner(Document):
@@ -98,8 +135,9 @@ class IntegrationPartner(Document):
 
     # Metadata
     description: Optional[str] = Field(default=None)
-    logo_url: Optional[str] = Field(default=None)
-    website_url: Optional[str] = Field(default=None)
+
+    # Branding
+    branding: BrandingConfig = Field(default_factory=BrandingConfig)
 
     # Status
     is_active: bool = Field(default=True)

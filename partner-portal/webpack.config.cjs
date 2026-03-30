@@ -37,6 +37,7 @@ module.exports = {
       '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
       '@olorin/shared-services': path.resolve(packagesPath, 'shared-services'),
       '@olorin/shared-stores': path.resolve(packagesPath, 'shared-stores'),
+      '@olorin/glass-ui/web': path.resolve(__dirname, '../../../olorin-core/packages/glass-components/src/web'),
       // Local aliases
       '@': path.resolve(__dirname, 'src'),
     },
