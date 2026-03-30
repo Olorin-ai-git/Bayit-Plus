@@ -21,7 +21,8 @@
     "copied": "¡Copiado!",
     "viewAll": "Ver todo",
     "noData": "No hay datos disponibles",
-    "required": "Obligatorio"
+    "required": "Obligatorio",
+    "allRightsReserved": "Todos los derechos reservados."
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -39,7 +40,14 @@
     "loginError": "Correo o contraseña incorrectos",
     "registerError": "Error en el registro. Intenta de nuevo.",
     "welcomeBack": "Bienvenido de nuevo",
-    "createYourAccount": "Crea tu cuenta"
+    "createYourAccount": "Crea tu cuenta",
+    "apiKey": "Clave API",
+    "connect": "Conectar",
+    "connectToPortal": "Ingresa tu clave API para conectar",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "Mostrar clave API",
+    "hideApiKey": "Ocultar clave API",
+    "cliOnly": "El registro de socios solo esta disponible via CLI. Contactenos para acceso."
   },
   "register": {
     "step1Title": "Detalles de la organización",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "Agregar miembros del equipo",
     "viewInvoices": "Ver facturas",
     "viewInvoicesDescription": "Historial de facturación",
-    "recentActivity": "Actividad reciente"
+    "recentActivity": "Actividad reciente",
+    "capabilities": "Capacidades activas",
+    "partnerStatus": "Estado del socio",
+    "capabilityBreakdown": "Uso por capacidad",
+    "cost": "Costo",
+    "statusActive": "Activo",
+    "statusInactive": "Inactivo"
   },
   "usage": {
     "title": "Análisis de uso",
@@ -103,7 +117,12 @@
     "p95Latency": "Latencia P95",
     "endpoint": "Punto de acceso",
     "exportCsv": "Exportar CSV",
-    "exportJson": "Exportar JSON"
+    "exportJson": "Exportar JSON",
+    "selectCapability": "Selecciona una capacidad para ver detalles",
+    "audioSeconds": "Segundos de audio",
+    "tokensConsumed": "Tokens consumidos",
+    "estimatedCost": "Costo estimado",
+    "capabilityDetail": "Detalle"
   },
   "billing": {
     "title": "Facturación",

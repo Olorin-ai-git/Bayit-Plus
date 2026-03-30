@@ -5,8 +5,8 @@
  */
 
 import React, { useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import { useB2BAuthStore } from "../../stores/authStore";
+import { Outlet, Navigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/authStore";
 import { useUIStore } from "../../stores/uiStore";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
@@ -14,22 +14,15 @@ import { LoadingSpinner } from "../common/LoadingSpinner";
 import { useBrandingTheme } from "../../hooks/useBrandingTheme";
 
 export const PartnerLayout: React.FC = () => {
-  const { fetchCurrentUser, isLoading } = useB2BAuthStore();
+  const { isAuthenticated, isLoading } = useAuthStore();
   const { isSidebarOpen, setSidebarOpen } = useUIStore();
 
   useBrandingTheme();
 
-  // Fetch current user data on mount
-  useEffect(() => {
-    fetchCurrentUser();
-  }, [fetchCurrentUser]);
-
-  // Handle mobile sidebar backdrop click
   const handleBackdropClick = () => {
     setSidebarOpen(false);
   };
 
-  // Close sidebar on mobile when route changes
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -51,9 +44,12 @@ export const PartnerLayout: React.FC = () => {
     );
   }
 
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-glass-bg flex">
-      {/* Mobile Sidebar Backdrop */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -62,7 +58,6 @@ export const PartnerLayout: React.FC = () => {
         />
       )}
 
-      {/* Sidebar */}
       <div
         className={`
           fixed lg:static inset-y-0 left-0 rtl:left-auto rtl:right-0 z-50
@@ -73,12 +68,8 @@ export const PartnerLayout: React.FC = () => {
         <Sidebar />
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar */}
         <TopBar />
-
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>

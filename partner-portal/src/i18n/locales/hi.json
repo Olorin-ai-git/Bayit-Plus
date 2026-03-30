@@ -21,7 +21,8 @@
     "copied": "कॉपी हो गया!",
     "viewAll": "सभी देखें",
     "noData": "कोई डेटा उपलब्ध नहीं",
-    "required": "आवश्यक"
+    "required": "आवश्यक",
+    "allRightsReserved": "सर्वाधिकार सुरक्षित।"
   },
   "auth": {
     "login": "साइन इन करें",
@@ -39,7 +40,14 @@
     "loginError": "अमान्य ईमेल या पासवर्ड",
     "registerError": "पंजीकरण विफल हुआ। कृपया पुनः प्रयास करें।",
     "welcomeBack": "वापसी पर स्वागत है",
-    "createYourAccount": "अपना खाता बनाएं"
+    "createYourAccount": "अपना खाता बनाएं",
+    "apiKey": "API कुंजी",
+    "connect": "कनेक्ट करें",
+    "connectToPortal": "कनेक्ट करने के लिए अपनी API कुंजी दर्ज करें",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "API कुंजी दिखाएं",
+    "hideApiKey": "API कुंजी छिपाएं",
+    "cliOnly": "पार्टनर पंजीकरण केवल CLI के माध्यम से उपलब्ध है। एक्सेस के लिए हमसे संपर्क करें।"
   },
   "register": {
     "step1Title": "संगठन विवरण",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "टीम सदस्य जोड़ें",
     "viewInvoices": "चालान देखें",
     "viewInvoicesDescription": "बिलिंग इतिहास",
-    "recentActivity": "हाल की गतिविधि"
+    "recentActivity": "हाल की गतिविधि",
+    "capabilities": "सक्रिय क्षमताएं",
+    "partnerStatus": "पार्टनर स्थिति",
+    "capabilityBreakdown": "क्षमता अनुसार उपयोग",
+    "cost": "लागत",
+    "statusActive": "सक्रिय",
+    "statusInactive": "निष्क्रिय"
   },
   "usage": {
     "title": "उपयोग विश्लेषण",

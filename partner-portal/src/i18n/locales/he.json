@@ -21,7 +21,8 @@
     "copied": "הועתק!",
     "viewAll": "הצג הכל",
     "noData": "אין נתונים זמינים",
-    "required": "שדה חובה"
+    "required": "שדה חובה",
+    "allRightsReserved": "כל הזכויות שמורות."
   },
   "auth": {
     "login": "התחברות",
@@ -39,7 +40,14 @@
     "loginError": "אימייל או סיסמה שגויים",
     "registerError": "ההרשמה נכשלה. נסה שוב.",
     "welcomeBack": "ברוך הבא",
-    "createYourAccount": "צור את החשבון שלך"
+    "createYourAccount": "צור את החשבון שלך",
+    "apiKey": "מפתח API",
+    "connect": "התחבר",
+    "connectToPortal": "הזן את מפתח ה-API שלך כדי להתחבר",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "הצג מפתח API",
+    "hideApiKey": "הסתר מפתח API",
+    "cliOnly": "הרשמת שותפים זמינה דרך CLI בלבד. צור קשר לגישה."
   },
   "register": {
     "step1Title": "פרטי הארגון",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "הוסף חברי צוות",
     "viewInvoices": "הצג חשבוניות",
     "viewInvoicesDescription": "היסטוריית חיובים",
-    "recentActivity": "פעילות אחרונה"
+    "recentActivity": "פעילות אחרונה",
+    "capabilities": "יכולות פעילות",
+    "partnerStatus": "סטטוס שותף",
+    "capabilityBreakdown": "שימוש לפי יכולת",
+    "cost": "עלות",
+    "statusActive": "פעיל",
+    "statusInactive": "לא פעיל"
   },
   "usage": {
     "title": "ניתוח שימוש",
@@ -103,7 +117,12 @@
     "p95Latency": "זמן תגובה P95",
     "endpoint": "נקודת קצה",
     "exportCsv": "ייצוא CSV",
-    "exportJson": "ייצוא JSON"
+    "exportJson": "ייצוא JSON",
+    "selectCapability": "בחר יכולת לצפייה בפרטים",
+    "audioSeconds": "שניות שמע",
+    "tokensConsumed": "טוקנים שנצרכו",
+    "estimatedCost": "עלות משוערת",
+    "capabilityDetail": "פירוט"
   },
   "billing": {
     "title": "חיובים",

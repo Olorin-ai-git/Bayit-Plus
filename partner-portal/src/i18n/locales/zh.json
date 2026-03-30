@@ -21,7 +21,8 @@
     "copied": "已复制！",
     "viewAll": "查看全部",
     "noData": "暂无数据",
-    "required": "必填"
+    "required": "必填",
+    "allRightsReserved": "保留所有权利。"
   },
   "auth": {
     "login": "登录",
@@ -39,7 +40,14 @@
     "loginError": "电子邮箱或密码无效",
     "registerError": "注册失败，请重试。",
     "welcomeBack": "欢迎回来",
-    "createYourAccount": "创建您的账户"
+    "createYourAccount": "创建您的账户",
+    "apiKey": "API 密钥",
+    "connect": "连接",
+    "connectToPortal": "输入您的 API 密钥以连接",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "显示 API 密钥",
+    "hideApiKey": "隐藏 API 密钥",
+    "cliOnly": "合作伙伴注册仅通过 CLI 提供。请联系我们获取访问权限。"
   },
   "register": {
     "step1Title": "组织信息",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "添加团队成员",
     "viewInvoices": "查看账单",
     "viewInvoicesDescription": "账单历史",
-    "recentActivity": "最近活动"
+    "recentActivity": "最近活动",
+    "capabilities": "启用的功能",
+    "partnerStatus": "合作伙伴状态",
+    "capabilityBreakdown": "按功能用量",
+    "cost": "费��",
+    "statusActive": "活跃",
+    "statusInactive": "未激活"
   },
   "usage": {
     "title": "用量分析",
@@ -103,7 +117,12 @@
     "p95Latency": "P95 延迟",
     "endpoint": "接口",
     "exportCsv": "导出 CSV",
-    "exportJson": "导出 JSON"
+    "exportJson": "导出 JSON",
+    "selectCapability": "选择功能查看详情",
+    "audioSeconds": "音频秒数",
+    "tokensConsumed": "消耗的令牌",
+    "estimatedCost": "预估费用",
+    "capabilityDetail": "详情"
   },
   "billing": {
     "title": "账单",

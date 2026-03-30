@@ -21,7 +21,8 @@
     "copied": "Copied!",
     "viewAll": "View All",
     "noData": "No data available",
-    "required": "Required"
+    "required": "Required",
+    "allRightsReserved": "All rights reserved."
   },
   "auth": {
     "login": "Sign In",
@@ -39,7 +40,14 @@
     "loginError": "Invalid email or password",
     "registerError": "Registration failed. Please try again.",
     "welcomeBack": "Welcome back",
-    "createYourAccount": "Create your account"
+    "createYourAccount": "Create your account",
+    "apiKey": "API Key",
+    "connect": "Connect",
+    "connectToPortal": "Enter your API key to connect",
+    "apiKeyPlaceholder": "olorin_...",
+    "showApiKey": "Show API key",
+    "hideApiKey": "Hide API key",
+    "cliOnly": "Partner registration is available via CLI only. Contact us for access."
   },
   "register": {
     "step1Title": "Organization Details",
@@ -80,7 +88,13 @@
     "inviteMemberDescription": "Add team members",
     "viewInvoices": "View Invoices",
     "viewInvoicesDescription": "Billing history",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "capabilities": "Active Capabilities",
+    "partnerStatus": "Partner Status",
+    "capabilityBreakdown": "Usage by Capability",
+    "cost": "Cost",
+    "statusActive": "Active",
+    "statusInactive": "Inactive"
   },
   "usage": {
     "title": "Usage Analytics",
@@ -103,7 +117,12 @@
     "p95Latency": "P95 Latency",
     "endpoint": "Endpoint",
     "exportCsv": "Export CSV",
-    "exportJson": "Export JSON"
+    "exportJson": "Export JSON",
+    "selectCapability": "Select a capability to view details",
+    "audioSeconds": "Audio Seconds",
+    "tokensConsumed": "Tokens Consumed",
+    "estimatedCost": "Estimated Cost",
+    "capabilityDetail": "Detail"
   },
   "billing": {
     "title": "Billing",
