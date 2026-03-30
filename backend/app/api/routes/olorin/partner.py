@@ -201,7 +201,7 @@ async def get_partner_info(
         is_verified=partner.is_verified,
         webhook_url=partner.webhook_url,
         webhook_events=[str(e) for e in partner.webhook_events],
-        branding=partner.branding.model_dump(exclude_none=True),
+        branding=(partner.branding.model_dump(exclude_none=True) if partner.branding else {}),
         created_at=partner.created_at,
         last_active_at=partner.last_active_at,
     )
@@ -227,7 +227,7 @@ async def update_partner(
 
     # Merge branding: overlay provided fields onto existing config
     if "branding" in updates and updates["branding"] is not None:
-        existing = partner.branding.model_dump()
+        existing = partner.branding.model_dump() if partner.branding else {}
         for k, v in updates["branding"].items():
             if v is not None:
                 existing[k] = v
@@ -261,7 +261,7 @@ async def update_partner(
         is_verified=updated.is_verified,
         webhook_url=updated.webhook_url,
         webhook_events=[str(e) for e in updated.webhook_events],
-        branding=updated.branding.model_dump(exclude_none=True),
+        branding=(updated.branding.model_dump(exclude_none=True) if updated.branding else {}),
         created_at=updated.created_at,
         last_active_at=updated.last_active_at,
     )
@@ -301,7 +301,7 @@ async def configure_webhook(
         is_verified=updated.is_verified,
         webhook_url=updated.webhook_url,
         webhook_events=[str(e) for e in updated.webhook_events],
-        branding=updated.branding.model_dump(exclude_none=True),
+        branding=(updated.branding.model_dump(exclude_none=True) if updated.branding else {}),
         created_at=updated.created_at,
         last_active_at=updated.last_active_at,
     )
@@ -389,11 +389,12 @@ async def get_partner_branding(partner_id: str):
             detail=get_error_message(OlorinErrors.PARTNER_NOT_FOUND),
         )
 
+    branding = partner.branding or BrandingConfig()
     return PartnerBrandingPublicResponse(
         partner_id=partner.partner_id,
         name=partner.name_en or partner.name,
-        primary_color=partner.branding.primary_color,
-        secondary_color=partner.branding.secondary_color,
-        logo_url=partner.branding.logo_url,
-        show_powered_by=partner.branding.show_powered_by,
+        primary_color=branding.primary_color,
+        secondary_color=branding.secondary_color,
+        logo_url=branding.logo_url,
+        show_powered_by=branding.show_powered_by,
     )
