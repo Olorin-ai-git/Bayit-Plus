@@ -42,3 +42,17 @@ class TestConsumerSubmissionModel:
             email="user@example.com",
         )
         assert sub.email == "user@example.com"
+
+
+class TestConsumerSubmissionConfig:
+    def test_max_submissions_config_exists(self):
+        from app.core.config import Settings
+        s = Settings()
+        assert hasattr(s, "CONSUMER_DEMO_MAX_SUBMISSIONS")
+        assert s.CONSUMER_DEMO_MAX_SUBMISSIONS == 3
+
+    def test_consumer_demo_ttl_hours_exists(self):
+        from app.core.config import Settings
+        s = Settings()
+        assert hasattr(s, "CONSUMER_DEMO_TTL_HOURS")
+        assert s.CONSUMER_DEMO_TTL_HOURS == 24

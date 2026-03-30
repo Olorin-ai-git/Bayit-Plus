@@ -178,6 +178,16 @@ class Settings(BaseSettings):
         description="Maximum lifetime interactions for unauthenticated demo users"
     )
 
+    # Consumer URL Submission (unauthenticated)
+    CONSUMER_DEMO_MAX_SUBMISSIONS: int = Field(
+        default=3,
+        description="Maximum URL submissions per fingerprint (lifetime)",
+    )
+    CONSUMER_DEMO_TTL_HOURS: int = Field(
+        default=24,
+        description="Hours before consumer-submitted content is cleaned up",
+    )
+
     # Internal API key for Cloud Scheduler-triggered endpoints
     INTERNAL_CRON_API_KEY: str = Field(
         default="",
