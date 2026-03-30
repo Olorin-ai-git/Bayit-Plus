@@ -225,6 +225,15 @@ class Content(Document):
     )  # Characters available for free-form dialogue
     supports_avatar_interaction: bool = False  # Quick check for interaction support
 
+    # Transcript (populated by non-TMDB extraction pipeline)
+    transcript: Optional[str] = Field(
+        default=None, description="Full video transcript text"
+    )
+    transcript_segments: Optional[List[Dict[str, Any]]] = Field(
+        default=None,
+        description="Diarized transcript segments [{speaker, text, start, end}]",
+    )
+
     # Audiobook-specific fields
     narrator: Optional[str] = None  # Narrator/speaker name
     author: Optional[str] = None  # Book author
