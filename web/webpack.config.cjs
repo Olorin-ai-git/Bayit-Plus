@@ -51,8 +51,8 @@ module.exports = (env, argv) => {
         'node_modules',
       ],
       alias: {
-        // @olorin packages from packages/ui directory (no /src - files are in root)
-        '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens'),
+        // @olorin packages from packages/ui directory (src/ for subpath resolution)
+        '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens/src'),
         // Glass UI - use native version for components (GlassPlaceholder, etc.)
         // The web version only has theme/hooks; all components are in native (RN Web compatible)
         '@olorin/glass-ui/web': path.resolve(packagesPath, 'glass-components/dist/web/index.mjs'),
@@ -115,8 +115,9 @@ module.exports = (env, argv) => {
         // i18n packages (new domain split)
         '@bayit/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
         '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
-        '@bayit/i18n': path.resolve(packagesPath, 'bayit-i18n'),
         '@bayit/i18n/web': path.resolve(packagesPath, 'bayit-i18n/web.ts'),
+        '@bayit/i18n/native': path.resolve(packagesPath, 'bayit-i18n/native.ts'),
+        '@bayit/i18n': path.resolve(packagesPath, 'bayit-i18n'),
         '@bayit/shared-config': path.resolve(sharedPath, 'config'),
         '@bayit/shared-types': path.resolve(sharedPath, 'types'),
         '@bayit/shared-utils': path.resolve(sharedPath, 'utils'),
