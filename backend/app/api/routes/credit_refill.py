@@ -70,6 +70,10 @@ async def trigger_monthly_credit_refill(
     for user in users:
         user_id = str(user.id)
         refill_args = _build_refill_args(user)
+        # Free Olorin tier users get lifetime credits (not monthly refill)
+        # unless they're also Bayit+ Plus subscribers
+        if refill_args["olorin_tier"] == "free" and not refill_args["is_plus"]:
+            continue
         try:
             await credit_service.refill_monthly_credits(
                 user_id=user_id, **refill_args

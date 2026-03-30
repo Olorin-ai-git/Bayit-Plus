@@ -6,6 +6,7 @@ Supports both audio dubbing and live subtitles
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from app.api.dependencies.olorin_tier import require_dubbing
 
 from datetime import timedelta
 
@@ -53,6 +54,8 @@ async def create_dubbing_session(
     - session_type: Enabled features (audio_dubbing, live_subtitles)
     """
     try:
+        require_dubbing(current_user)
+
         # Create dubbing service
         dubbing_service = UserDubbingService(user=current_user)
 

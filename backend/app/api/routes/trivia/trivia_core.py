@@ -54,6 +54,10 @@ async def get_trivia(
         multilingual: If True, return all language fields. If False, return single language
         current_user: Optional authenticated user
     """
+    if current_user is not None:
+        from app.api.dependencies.olorin_tier import require_trivia
+        require_trivia(current_user)
+
     validated_id = validate_object_id(content_id)
 
     existing = await ContentTrivia.get_for_content(validated_id)
@@ -102,6 +106,10 @@ async def get_vod_quiz(
         language: Preferred language for questions
         current_user: Optional authenticated user
     """
+    if current_user is not None:
+        from app.api.dependencies.olorin_tier import require_trivia
+        require_trivia(current_user)
+
     validated_id = validate_object_id(content_id)
 
     content = await Content.get(validated_id)

@@ -26,6 +26,15 @@ def require_share_clips(user) -> None:
         )
 
 
+def require_trivia(user) -> None:
+    if not _tier_service.can_trivia(user):
+        tier = _tier_service.resolve_tier(user).value
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Trivia generation requires Superfan tier or above (current: {tier})",
+        )
+
+
 def require_dubbing(user) -> None:
     if not _tier_service.can_dubbing(user):
         tier = _tier_service.resolve_tier(user).value

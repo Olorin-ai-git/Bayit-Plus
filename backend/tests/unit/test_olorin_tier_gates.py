@@ -164,3 +164,65 @@ class TestCharactersPerVideoLimit:
         user.olorin_tier = "b2b"
         user.id = "u4"
         assert svc.get_max_characters(user) == 10
+
+
+class TestTriviaGate:
+    def test_free_user_cannot_use_trivia(self):
+        from app.api.dependencies.olorin_tier import require_trivia
+        from fastapi import HTTPException
+        user = Mock()
+        user.olorin_tier = "free"
+        user.id = "u1"
+        with pytest.raises(HTTPException) as exc:
+            require_trivia(user)
+        assert exc.value.status_code == 403
+
+    def test_fan_user_cannot_use_trivia(self):
+        from app.api.dependencies.olorin_tier import require_trivia
+        from fastapi import HTTPException
+        user = Mock()
+        user.olorin_tier = "fan"
+        user.id = "u2"
+        with pytest.raises(HTTPException) as exc:
+            require_trivia(user)
+        assert exc.value.status_code == 403
+
+    def test_superfan_user_can_use_trivia(self):
+        from app.api.dependencies.olorin_tier import require_trivia
+        user = Mock()
+        user.olorin_tier = "superfan"
+        user.id = "u3"
+        result = require_trivia(user)
+        assert result is None
+
+
+class TestDubbingGate:
+    def test_free_user_cannot_create_dubbing(self):
+        from app.api.dependencies.olorin_tier import require_dubbing
+        from fastapi import HTTPException
+        user = Mock()
+        user.olorin_tier = "free"
+        user.id = "u1"
+        with pytest.raises(HTTPException) as exc:
+            require_dubbing(user)
+        assert exc.value.status_code == 403
+
+    def test_superfan_user_can_create_dubbing(self):
+        from app.api.dependencies.olorin_tier import require_dubbing
+        user = Mock()
+        user.olorin_tier = "superfan"
+        user.id = "u2"
+        result = require_dubbing(user)
+        assert result is None
+
+
+class TestFreeLifetimeCredits:
+    def test_build_refill_args_free_tier(self):
+        from app.api.routes.credit_refill import _build_refill_args
+        user = Mock()
+        user.olorin_tier = "free"
+        user.subscription_tier = "free"
+        user.id = "u1"
+        args = _build_refill_args(user)
+        assert args["olorin_tier"] == "free"
+        assert args["is_plus"] is False
