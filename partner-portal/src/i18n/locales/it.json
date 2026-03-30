@@ -196,7 +196,13 @@
     "preferences": "Preferenze",
     "language": "Lingua",
     "notifications": "Notifiche",
-    "saveChanges": "Salva modifiche"
+    "saveChanges": "Salva modifiche",
+    "branding": "Marchio",
+    "primaryColor": "Colore primario",
+    "secondaryColor": "Colore secondario",
+    "showPoweredBy": "Mostra 'Powered by Olorin'",
+    "showPoweredByHint": "I partner Enterprise possono nascondere l'attribuzione Olorin",
+    "brandPreview": "Anteprima"
   },
   "playground": {
     "title": "Playground API",

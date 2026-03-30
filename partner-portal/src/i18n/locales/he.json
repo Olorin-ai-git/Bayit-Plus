@@ -196,7 +196,13 @@
     "preferences": "העדפות",
     "language": "שפה",
     "notifications": "התראות",
-    "saveChanges": "שמור שינויים"
+    "saveChanges": "שמור שינויים",
+    "branding": "מיתוג",
+    "primaryColor": "צבע ראשי",
+    "secondaryColor": "צבע משני",
+    "showPoweredBy": "הצג 'מופעל על ידי Olorin'",
+    "showPoweredByHint": "שותפי Enterprise יכולים להסתיר את הייחוס ל-Olorin",
+    "brandPreview": "תצוגה מקדימה"
   },
   "playground": {
     "title": "סביבת ניסוי API",

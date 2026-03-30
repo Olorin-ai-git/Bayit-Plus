@@ -2,8 +2,17 @@
  * B2B Partner Portal Types
  */
 
+// Branding Types
+export interface B2BBranding {
+  primary_color: string | null;
+  secondary_color: string | null;
+  logo_url: string | null;
+  website_url: string | null;
+  show_powered_by: boolean;
+}
+
 // Auth Types
-export type B2BUserRole = 'owner' | 'admin' | 'member' | 'viewer';
+export type B2BUserRole = "owner" | "admin" | "member" | "viewer";
 
 export interface B2BUser {
   id: string;
@@ -22,7 +31,7 @@ export interface B2BOrganization {
   orgId: string;
   name: string;
   contactEmail: string;
-  logoUrl: string | null;
+  branding: B2BBranding;
   webhookUrl: string | null;
   webhookEvents: string[];
   createdAt: string;
@@ -84,7 +93,7 @@ export interface InviteMemberResponse {
   temporaryPassword: string;
 }
 
-export type ApiKeyScope = 'fraud' | 'content' | 'all';
+export type ApiKeyScope = "fraud" | "content" | "all";
 
 export interface ApiKey {
   id: string;
@@ -117,10 +126,20 @@ export interface WebhookConfig {
 }
 
 // Billing Types
-export type PlanTier = 'free' | 'starter' | 'professional' | 'enterprise';
-export type BillingPeriod = 'monthly' | 'annual';
-export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'trialing' | 'paused';
-export type InvoiceStatus = 'draft' | 'open' | 'paid' | 'void' | 'uncollectible';
+export type PlanTier = "free" | "starter" | "professional" | "enterprise";
+export type BillingPeriod = "monthly" | "annual";
+export type SubscriptionStatus =
+  | "active"
+  | "cancelled"
+  | "past_due"
+  | "trialing"
+  | "paused";
+export type InvoiceStatus =
+  | "draft"
+  | "open"
+  | "paid"
+  | "void"
+  | "uncollectible";
 
 export interface Plan {
   id: string;
@@ -170,8 +189,8 @@ export interface Invoice {
 }
 
 // Usage Types
-export type UsageGranularity = 'hourly' | 'daily' | 'monthly';
-export type CapabilityType = 'fraud' | 'content' | 'all';
+export type UsageGranularity = "hourly" | "daily" | "monthly";
+export type CapabilityType = "fraud" | "content" | "all";
 
 export interface UsageSummary {
   organizationId: string;

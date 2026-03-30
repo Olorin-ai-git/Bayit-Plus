@@ -196,7 +196,13 @@
     "preferences": "偏好设置",
     "language": "语言",
     "notifications": "通知",
-    "saveChanges": "保存更改"
+    "saveChanges": "保存更改",
+    "branding": "品牌",
+    "primaryColor": "主色",
+    "secondaryColor": "辅色",
+    "showPoweredBy": "显示 'Powered by Olorin'",
+    "showPoweredByHint": "企业级合作伙伴可以隐藏 Olorin 署名",
+    "brandPreview": "预览"
   },
   "playground": {
     "title": "API 试验场",

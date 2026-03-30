@@ -196,7 +196,13 @@
     "preferences": "Preferencias",
     "language": "Idioma",
     "notifications": "Notificaciones",
-    "saveChanges": "Guardar cambios"
+    "saveChanges": "Guardar cambios",
+    "branding": "Marca",
+    "primaryColor": "Color primario",
+    "secondaryColor": "Color secundario",
+    "showPoweredBy": "Mostrar 'Powered by Olorin'",
+    "showPoweredByHint": "Los socios Enterprise pueden ocultar la atribucion de Olorin",
+    "brandPreview": "Vista previa"
   },
   "playground": {
     "title": "Área de pruebas API",
