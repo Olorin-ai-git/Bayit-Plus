@@ -56,3 +56,28 @@ class TestConsumerSubmissionConfig:
         s = Settings()
         assert hasattr(s, "CONSUMER_DEMO_TTL_HOURS")
         assert s.CONSUMER_DEMO_TTL_HOURS == 24
+
+
+class TestConsumerSubmissionPriority:
+    def test_default_priority_is_free(self):
+        from app.models.consumer_submission import ConsumerSubmission
+        sub = ConsumerSubmission.model_construct(
+            url="https://youtube.com/watch?v=x", fingerprint="fp",
+        )
+        assert sub.priority == 10
+
+    def test_priority_field_accepts_values(self):
+        from app.models.consumer_submission import ConsumerSubmission
+        sub = ConsumerSubmission.model_construct(
+            url="https://youtube.com/watch?v=x", fingerprint="fp",
+            priority=0, source_tier="b2b",
+        )
+        assert sub.priority == 0
+        assert sub.source_tier == "b2b"
+
+    def test_source_tier_defaults_to_free(self):
+        from app.models.consumer_submission import ConsumerSubmission
+        sub = ConsumerSubmission.model_construct(
+            url="https://youtube.com/watch?v=x", fingerprint="fp",
+        )
+        assert sub.source_tier == "free"

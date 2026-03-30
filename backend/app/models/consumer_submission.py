@@ -20,6 +20,8 @@ class ConsumerSubmission(Document):
     url: str
     fingerprint: str
     email: Optional[str] = None
+    priority: int = Field(default=10, description="Queue priority (0=highest, 10=lowest)")
+    source_tier: str = Field(default="free", description="Submitter tier: free|fan|superfan|b2b")
     status: str = Field(default="pending")  # pending | extracting | ready | failed
     content_id: Optional[str] = None
     video_title: Optional[str] = None
@@ -31,4 +33,4 @@ class ConsumerSubmission(Document):
 
     class Settings:
         name = "consumer_submissions"
-        indexes = ["job_id", "fingerprint"]
+        indexes = ["job_id", "fingerprint", "priority"]
