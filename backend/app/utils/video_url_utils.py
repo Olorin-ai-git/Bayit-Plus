@@ -5,7 +5,8 @@ Validates consumer-submitted video URLs and extracts metadata
 via oEmbed APIs (YouTube, Vimeo) or HTML title fallback.
 """
 
-from typing import Optional, Tuple
+import re
+from typing import List, Optional, Tuple
 from urllib.parse import quote, urlparse
 
 import httpx
@@ -55,6 +56,42 @@ def get_oembed_url(video_url: str) -> Optional[str]:
     if not template:
         return None
     return template.format(url=quote(video_url, safe=""))
+
+
+_STRIP_PATTERNS = [
+    re.compile(r"\s*[\(\[]\d{4}[\)\]]"),          # (1985) or [1985]
+    re.compile(r"\s*[\(\[].*?[\)\]]"),             # any (text) or [text]
+    re.compile(r"\s*[-–—|]\s*.+$"),                # everything after dash/pipe
+    re.compile(
+        r"\s*\b(?:official|theatrical|teaser|final|new|full)?\s*"
+        r"(?:trailer|teaser|clip|promo|preview|featurette)\b.*$",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\s*\b(?:HD|4K|UHD|HQ|1080p|720p|IMAX)\b", re.IGNORECASE),
+    re.compile(r"\s*\b(?:movie|film|video|scene)\s*$", re.IGNORECASE),
+]
+
+
+def clean_title_for_search(raw_title: str) -> List[str]:
+    """
+    Produce candidate search queries from a raw oEmbed title.
+
+    Returns a list from most-cleaned to least-cleaned so callers can
+    try each until TMDB returns a match.
+    """
+    cleaned_versions: List[str] = []
+    current = raw_title.strip()
+    for pattern in _STRIP_PATTERNS:
+        cleaned = pattern.sub("", current).strip()
+        if cleaned and cleaned != current:
+            current = cleaned
+            if current not in cleaned_versions:
+                cleaned_versions.append(current)
+    # Most-cleaned first (best TMDB match), raw title last as fallback
+    cleaned_versions.reverse()
+    if raw_title.strip() not in cleaned_versions:
+        cleaned_versions.append(raw_title.strip())
+    return cleaned_versions
 
 
 async def extract_video_title(video_url: str) -> Optional[str]:
