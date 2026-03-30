@@ -10,6 +10,11 @@ import { usePartnerStore } from "../stores/partnerStore";
 
 const DEFAULT_PRIMARY = "#6366F1";
 const DEFAULT_SECONDARY = "#8B5CF6";
+const HEX_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+function isValidHex(value: string | null | undefined): value is string {
+  return typeof value === "string" && HEX_PATTERN.test(value);
+}
 
 function hexToRgb(hex: string): string {
   const h = hex.replace("#", "");
@@ -45,9 +50,12 @@ export function useBrandingTheme(): void {
 
   useEffect(() => {
     const root = document.documentElement;
-    const primary = organization?.branding?.primary_color || DEFAULT_PRIMARY;
-    const secondary =
-      organization?.branding?.secondary_color || DEFAULT_SECONDARY;
+    const rawPrimary = organization?.branding?.primary_color;
+    const rawSecondary = organization?.branding?.secondary_color;
+    const primary = isValidHex(rawPrimary) ? rawPrimary : DEFAULT_PRIMARY;
+    const secondary = isValidHex(rawSecondary)
+      ? rawSecondary
+      : DEFAULT_SECONDARY;
 
     root.style.setProperty("--partner-primary", primary);
     root.style.setProperty("--partner-primary-hover", darken(primary, 20));

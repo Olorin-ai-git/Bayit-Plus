@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import List, Literal, Optional
 
 from beanie import Document
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from pymongo import ASCENDING, IndexModel
 
 # Type definitions
@@ -43,7 +43,7 @@ class BrandingConfig(BaseModel):
         description="Secondary brand color (hex)",
     )
     logo_url: Optional[str] = Field(
-        None, description="Partner logo URL for widget header"
+        None, description="Partner logo URL for widget header (HTTPS only)"
     )
     website_url: Optional[str] = Field(
         None, description="Partner website URL"
@@ -52,6 +52,13 @@ class BrandingConfig(BaseModel):
         default=True,
         description="Show 'Powered by Olorin' badge in widgets",
     )
+
+    @field_validator("logo_url")
+    @classmethod
+    def validate_logo_https(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and not v.startswith("https://"):
+            raise ValueError("Logo URL must use HTTPS")
+        return v
 
 
 class RateLimitConfig(BaseModel):
