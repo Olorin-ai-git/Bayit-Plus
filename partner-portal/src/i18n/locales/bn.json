@@ -196,7 +196,13 @@
     "preferences": "পছন্দসমূহ",
     "language": "ভাষা",
     "notifications": "বিজ্ঞপ্তি",
-    "saveChanges": "পরিবর্তন সংরক্ষণ করুন"
+    "saveChanges": "পরিবর্তন সংরক্ষণ করুন",
+    "branding": "ব্র্যান্ডিং",
+    "primaryColor": "প্রাথমিক রঙ",
+    "secondaryColor": "মাধ্যমিক রঙ",
+    "showPoweredBy": "'Powered by Olorin' দেখান",
+    "showPoweredByHint": "Enterprise অংশীদাররা Olorin অ্যাট্রিবিউশন লুকাতে পারেন",
+    "brandPreview": "প্রিভিউ"
   },
   "playground": {
     "title": "API পরীক্ষাক্ষেত্র",

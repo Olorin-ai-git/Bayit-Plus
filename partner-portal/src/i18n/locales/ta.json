@@ -196,7 +196,13 @@
     "preferences": "விருப்பத்தேர்வுகள்",
     "language": "மொழி",
     "notifications": "அறிவிப்புகள்",
-    "saveChanges": "மாற்றங்களை சேமி"
+    "saveChanges": "மாற்றங்களை சேமி",
+    "branding": "பிராண்டிங்",
+    "primaryColor": "முதன்மை நிறம்",
+    "secondaryColor": "இரண்டாம் நிலை நிறம்",
+    "showPoweredBy": "'Powered by Olorin' காட்டு",
+    "showPoweredByHint": "Enterprise பங்குதாரர்கள் Olorin அடையாளத்தை மறைக்கலாம்",
+    "brandPreview": "முன்னோட்டம்"
   },
   "playground": {
     "title": "API சோதனை களம்",

@@ -196,7 +196,13 @@
     "preferences": "प्राथमिकताएं",
     "language": "भाषा",
     "notifications": "सूचनाएं",
-    "saveChanges": "परिवर्तन सहेजें"
+    "saveChanges": "परिवर्तन सहेजें",
+    "branding": "ब्रांडिंग",
+    "primaryColor": "प्राथमिक रंग",
+    "secondaryColor": "द्वितीयक रंग",
+    "showPoweredBy": "'Powered by Olorin' दिखाएं",
+    "showPoweredByHint": "Enterprise स्तर के भागीदार Olorin एट्रिब्यूशन छिपा सकते हैं",
+    "brandPreview": "पूर्वावलोकन"
   },
   "playground": {
     "title": "API परीक्षण क्षेत्र",

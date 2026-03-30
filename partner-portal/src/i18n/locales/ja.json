@@ -196,7 +196,13 @@
     "preferences": "環境設定",
     "language": "言語",
     "notifications": "通知",
-    "saveChanges": "変更を保存"
+    "saveChanges": "変更を保存",
+    "branding": "ブランディング",
+    "primaryColor": "プライマリカラー",
+    "secondaryColor": "セカンダリカラー",
+    "showPoweredBy": "'Powered by Olorin' を表示",
+    "showPoweredByHint": "Enterpriseパートナーは Olorin の帰属表示を非表示にできます",
+    "brandPreview": "プレビュー"
   },
   "playground": {
     "title": "API プレイグラウンド",
