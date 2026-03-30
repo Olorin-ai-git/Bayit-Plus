@@ -11,7 +11,11 @@ from typing import Optional, Tuple
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.consumer_submission import ConsumerSubmission
-from app.utils.video_url_utils import extract_video_title, validate_video_url
+from app.utils.video_url_utils import (
+    clean_title_for_search,
+    extract_video_title,
+    validate_video_url,
+)
 
 logger = get_logger(__name__)
 
@@ -120,15 +124,28 @@ class ConsumerSubmissionService:
     async def _search_tmdb(
         self, title: Optional[str],
     ) -> Optional[dict]:
-        """Search TMDB for a movie matching the title."""
+        """Search TMDB for a movie matching the title.
+
+        Tries progressively cleaned versions of the title until a match
+        is found (e.g. strips year, trailer, actor names from oEmbed titles).
+        """
         if not title:
             return None
         from app.services.tmdb_service import TMDBService
         tmdb = TMDBService()
-        result = await tmdb.search_movie(title)
-        if result:
-            return result
-        return await tmdb.search_tv_series(title)
+        candidates = clean_title_for_search(title)
+        for candidate in candidates:
+            logger.info(
+                "TMDB search attempt",
+                extra={"query": candidate},
+            )
+            result = await tmdb.search_movie(candidate)
+            if result:
+                return result
+            result = await tmdb.search_tv_series(candidate)
+            if result:
+                return result
+        return None
 
     async def _create_content_and_extract(
         self, tmdb_result: dict, source_url: str,

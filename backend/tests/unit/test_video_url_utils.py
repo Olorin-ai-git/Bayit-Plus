@@ -42,6 +42,43 @@ class TestVideoUrlValidation:
         assert ok is False
 
 
+class TestCleanTitleForSearch:
+    def test_strips_year_and_trailer(self):
+        from app.utils.video_url_utils import clean_title_for_search
+        candidates = clean_title_for_search(
+            "Back To The Future (1985) Theatrical Trailer - Michael J. Fox Movie HD"
+        )
+        assert candidates[0] == "Back To The Future"
+
+    def test_strips_official_trailer(self):
+        from app.utils.video_url_utils import clean_title_for_search
+        candidates = clean_title_for_search("The Matrix Official Trailer [HD]")
+        assert any("The Matrix" == c for c in candidates)
+
+    def test_strips_dash_suffix(self):
+        from app.utils.video_url_utils import clean_title_for_search
+        candidates = clean_title_for_search("Inception - Official Trailer HD")
+        assert candidates[0] == "Inception"
+
+    def test_simple_title_unchanged(self):
+        from app.utils.video_url_utils import clean_title_for_search
+        candidates = clean_title_for_search("Pulp Fiction")
+        assert "Pulp Fiction" in candidates
+
+    def test_returns_original_as_fallback(self):
+        from app.utils.video_url_utils import clean_title_for_search
+        raw = "Some Obscure Video Title"
+        candidates = clean_title_for_search(raw)
+        assert raw in candidates
+
+    def test_real_youtube_title(self):
+        from app.utils.video_url_utils import clean_title_for_search
+        candidates = clean_title_for_search(
+            "Jaws (1975) Official Trailer - Steven Spielberg Movie"
+        )
+        assert candidates[0] == "Jaws"
+
+
 class TestOembedUrl:
     def test_youtube_oembed_url(self):
         from app.utils.video_url_utils import get_oembed_url
