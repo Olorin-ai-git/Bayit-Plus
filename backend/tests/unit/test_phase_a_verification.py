@@ -86,10 +86,10 @@ class TestA3WebhookWiring:
         source = inspect.getsource(b2b_trivia)
         assert "send_webhook_event" in source
 
-    def test_video_ingest_imports_webhook(self):
+    def test_video_ingest_orchestrator_fires_webhook(self):
         import inspect
-        from app.api.routes.olorin import video_ingest
-        source = inspect.getsource(video_ingest)
+        from app.services.olorin import ingest_orchestrator
+        source = inspect.getsource(ingest_orchestrator)
         assert "send_webhook_event" in source
 
     def test_webhook_send_function_exists(self):

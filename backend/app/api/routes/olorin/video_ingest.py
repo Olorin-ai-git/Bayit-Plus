@@ -1,7 +1,8 @@
 """
 Olorin.ai Video Ingest API
 
-B2B endpoints for video character extraction via TMDB.
+B2B endpoints for orchestrated video ingestion. Accepts a video URL or
+existing content ID plus a list of capabilities to run.
 """
 
 import logging
@@ -16,35 +17,65 @@ from app.api.routes.olorin.dependencies import (
     verify_capability,
 )
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
-from app.api.routes.olorin.webhooks import send_webhook_event
 from app.models.content import Content
+from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
 from app.models.vod_interaction import ContentCharacter
-from app.services.olorin.metering_service import metering_service
-from app.services.vod_interaction.character_extractor import (
-    character_extractor_service,
+from app.services.olorin.ingest_orchestrator import (
+    create_ingest_job,
+    run_pipeline,
 )
+from app.utils.video_url_utils import extract_video_title, validate_video_url
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# In-memory extraction job tracker (single-instance MVP)
-_extraction_jobs: Dict[str, str] = {}
 
+# ---------------------------------------------------------------------------
+# Request / Response models
+# ---------------------------------------------------------------------------
 
 class IngestRequest(BaseModel):
-    """Request to ingest a video for character extraction."""
+    """Request to ingest a video with orchestrated capabilities."""
 
-    content_id: str = Field(..., description="Internal content ID or TMDB ID")
+    video_url: Optional[str] = Field(
+        None, description="Video URL (any http/https)",
+    )
+    content_id: Optional[str] = Field(
+        None, description="Existing content document ID",
+    )
+    title: Optional[str] = Field(
+        None, description="Video title hint (used when no TMDB match)",
+    )
+    capabilities: List[str] = Field(
+        default=["characters"],
+        description="Capabilities: characters, subtitles, trivia, search, or all",
+    )
 
 
 class IngestResponse(BaseModel):
     """Response after initiating video ingestion."""
 
+    job_id: str
     content_id: str
-    status: str = Field(description="processing | completed | failed")
-    characters_count: int = 0
+    status: str = Field(description="processing | completed | failed | partial")
+    capabilities: Dict[str, str] = Field(
+        default_factory=dict,
+        description="Per-capability status",
+    )
+
+
+class JobStatusResponse(BaseModel):
+    """Detailed job status with per-capability progress."""
+
+    job_id: str
+    content_id: str
+    video_url: str
+    status: str
+    capabilities: Dict[str, str]
+    created_at: str
+    updated_at: str
 
 
 class CharacterResponse(BaseModel):
@@ -66,124 +97,138 @@ class CharactersListResponse(BaseModel):
     characters: List[CharacterResponse]
 
 
-async def _run_extraction(content_id: str, partner_id: str) -> None:
-    """Background task: extract characters and store on Content."""
-    try:
-        content = await Content.get(PydanticObjectId(content_id))
-        if not content:
-            _extraction_jobs[content_id] = "failed"
-            return
-
-        characters = await character_extractor_service.extract_characters(
-            content
-        )
-        content.interactive_characters = characters
-        await content.save()
-
-        await metering_service.record_usage(
-            partner_id=partner_id,
-            capability="video_ingest",
-            metadata={"content_id": content_id, "characters": len(characters)},
-        )
-        _extraction_jobs[content_id] = "completed"
-
-        partner_doc = await IntegrationPartner.find_one(
-            IntegrationPartner.partner_id == partner_id,
-        )
-        if partner_doc:
-            await send_webhook_event(partner_doc, "session.ended", {
-                "capability": "video_ingest",
-                "content_id": content_id,
-                "characters": len(characters),
-            })
-    except Exception:
-        logger.exception(
-            "Background extraction failed",
-            extra={"content_id": content_id},
-        )
-        _extraction_jobs[content_id] = "failed"
-
-        partner_doc = await IntegrationPartner.find_one(
-            IntegrationPartner.partner_id == partner_id,
-        )
-        if partner_doc:
-            await send_webhook_event(partner_doc, "error.occurred", {
-                "capability": "video_ingest",
-                "content_id": content_id,
-            })
-
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
 
 @router.post(
     "/ingest",
     response_model=IngestResponse,
-    summary="Ingest video for character extraction",
+    summary="Ingest video with orchestrated capabilities",
 )
 async def ingest_video(
     request: IngestRequest,
     background_tasks: BackgroundTasks,
     partner: IntegrationPartner = Depends(get_current_partner),
 ) -> IngestResponse:
-    """Submit a video for character extraction. Returns immediately."""
+    """Submit a video for orchestrated AI processing. Returns immediately."""
     await verify_capability(partner, "video_ingest")
 
-    content = await Content.get(PydanticObjectId(request.content_id))
-    if not content:
+    if not request.video_url and not request.content_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Provide either video_url or content_id",
+        )
+
+    content: Optional[Content] = None
+    video_url = request.video_url or ""
+
+    if request.content_id:
+        content = await Content.get(PydanticObjectId(request.content_id))
+        if not content:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=get_error_message(OlorinErrors.CONTENT_NOT_FOUND),
+            )
+        video_url = video_url or getattr(content, "stream_url", "") or ""
+
+    if request.video_url and not content:
+        ok, err = validate_video_url(request.video_url)
+        if not ok:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=err,
+            )
+        title = request.title
+        if not title:
+            title = await extract_video_title(request.video_url)
+        content = Content(
+            title=title or "Untitled",
+            description=f"B2B ingest from {partner.partner_id}",
+            stream_url=request.video_url,
+        )
+        await content.insert()
+        video_url = request.video_url
+
+    job = await create_ingest_job(
+        partner=partner,
+        content=content,
+        video_url=video_url,
+        capabilities=request.capabilities,
+    )
+
+    background_tasks.add_task(run_pipeline, job)
+
+    return IngestResponse(
+        job_id=job.job_id,
+        content_id=str(content.id),
+        status=job.overall_status,
+        capabilities=job.capabilities,
+    )
+
+
+@router.get(
+    "/jobs/{job_id}/status",
+    response_model=JobStatusResponse,
+    summary="Check orchestrated ingest job status",
+)
+async def get_job_status(
+    job_id: str,
+    partner: IntegrationPartner = Depends(get_current_partner),
+) -> JobStatusResponse:
+    """Poll for per-capability progress of an ingest job."""
+    await verify_capability(partner, "video_ingest")
+
+    job = await IngestJob.find_one(
+        IngestJob.job_id == job_id,
+        IngestJob.partner_id == partner.partner_id,
+    )
+    if not job:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=get_error_message(OlorinErrors.CONTENT_NOT_FOUND),
+            detail="Ingest job not found",
         )
 
-    existing = getattr(content, "interactive_characters", None)
-    if existing:
-        return IngestResponse(
-            content_id=request.content_id,
-            status="completed",
-            characters_count=len(existing),
-        )
-
-    if _extraction_jobs.get(request.content_id) == "processing":
-        return IngestResponse(
-            content_id=request.content_id, status="processing"
-        )
-
-    _extraction_jobs[request.content_id] = "processing"
-    background_tasks.add_task(
-        _run_extraction, request.content_id, partner.partner_id
-    )
-    return IngestResponse(
-        content_id=request.content_id, status="processing"
+    return JobStatusResponse(
+        job_id=job.job_id,
+        content_id=job.content_id,
+        video_url=job.video_url,
+        status=job.overall_status,
+        capabilities=job.capabilities,
+        created_at=job.created_at.isoformat(),
+        updated_at=job.updated_at.isoformat(),
     )
 
 
 @router.get(
     "/{content_id}/status",
     response_model=IngestResponse,
-    summary="Check video ingestion status",
+    summary="Check video ingestion status (legacy)",
 )
 async def get_ingest_status(
     content_id: str,
     partner: IntegrationPartner = Depends(get_current_partner),
 ) -> IngestResponse:
-    """Poll for extraction completion."""
+    """Legacy status endpoint — finds latest job for this content."""
     await verify_capability(partner, "video_ingest")
 
-    content = await Content.get(PydanticObjectId(content_id))
-    if not content:
+    job = await IngestJob.find_one(
+        IngestJob.content_id == content_id,
+        IngestJob.partner_id == partner.partner_id,
+        sort=[("created_at", -1)],
+    )
+    if not job:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=get_error_message(OlorinErrors.CONTENT_NOT_FOUND),
+            detail="No ingest job found for this content",
         )
 
-    existing = getattr(content, "interactive_characters", None)
-    if existing:
-        return IngestResponse(
-            content_id=content_id,
-            status="completed",
-            characters_count=len(existing),
-        )
-
-    job_status = _extraction_jobs.get(content_id, "not_started")
-    return IngestResponse(content_id=content_id, status=job_status)
+    return IngestResponse(
+        job_id=job.job_id,
+        content_id=content_id,
+        status=job.overall_status,
+        capabilities=job.capabilities,
+    )
 
 
 @router.get(
@@ -206,7 +251,7 @@ async def get_characters(
         )
 
     chars: List[ContentCharacter] = getattr(
-        content, "interactive_characters", []
+        content, "interactive_characters", [],
     ) or []
     if not chars:
         raise HTTPException(
