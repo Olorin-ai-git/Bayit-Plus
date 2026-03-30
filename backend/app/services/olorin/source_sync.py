@@ -232,13 +232,20 @@ async def _fetch_rss_feed(
     source: B2BContentSource,
 ) -> List[tuple[str, str]]:
     """Parse an RSS feed for video enclosures or media links."""
-    async with httpx.AsyncClient(
-        timeout=30.0, follow_redirects=True,
-    ) as client:
-        resp = await client.get(source.source_url)
-        if resp.status_code != 200:
-            return []
-        xml_text = resp.text
+    try:
+        async with httpx.AsyncClient(
+            timeout=30.0, follow_redirects=True,
+        ) as client:
+            resp = await client.get(source.source_url)
+            if resp.status_code != 200:
+                return []
+            xml_text = resp.text
+    except Exception:
+        logger.warning(
+            "RSS feed fetch failed",
+            extra={"url": source.source_url},
+        )
+        return []
 
     results = []
     try:

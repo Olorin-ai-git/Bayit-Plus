@@ -245,7 +245,22 @@ async def trigger_sync(
 
     from app.services.olorin.source_sync import sync_source
 
-    new_count = await sync_source(source, partner)
+    try:
+        new_count = await sync_source(source, partner)
+    except Exception as exc:
+        logger.exception(
+            "Source sync failed",
+            extra={"source_id": source_id},
+        )
+        source.status = "error"
+        source.error_detail = str(exc)[:500]
+        source.updated_at = datetime.now(timezone.utc)
+        await source.save()
+        return SyncResponse(
+            source_id=str(source.id),
+            status="error",
+            message=f"Sync failed: {str(exc)[:200]}",
+        )
 
     source.last_synced_at = datetime.now(timezone.utc)
     source.updated_at = datetime.now(timezone.utc)
