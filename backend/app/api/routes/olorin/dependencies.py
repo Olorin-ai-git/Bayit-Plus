@@ -91,18 +91,20 @@ async def verify_capability(
     """
     Verify partner has access to a specific capability.
 
-    Implements 4-step verification:
+    Implements 5-step verification:
     1. Check global feature flag (system kill switch) -> 503 if disabled
     2. Check partner.get_capability_config(capability) -> 403 if not enabled
     3. Check usage limits via metering service -> 429 if exceeded
     4. Check monthly interaction limit -> 429 if exceeded
+    5. Check sliding window rate limit + record request -> 429 if exceeded
 
     Args:
         partner: Authenticated partner
         capability: Capability type to verify
 
     Raises:
-        HTTPException: 503 if globally disabled, 403 if not enabled, 429 if rate limited
+        HTTPException: 503 if globally disabled, 403 if not enabled,
+                       429 if rate/usage limited
     """
     # Step 1: Check global feature flag (system kill switch)
     if not _get_global_feature_flag(capability):
@@ -176,6 +178,22 @@ async def verify_capability(
                     f"Upgrade your plan for more interactions."
                 ),
             )
+
+    # Step 5: Check sliding window rate limit and record request
+    if cap_config and cap_config.rate_limits:
+        within_rate, rate_msg = await partner_rate_limiter.check_rate_limit(
+            partner_id=partner.partner_id,
+            capability=capability,
+            rate_limits=cap_config.rate_limits,
+        )
+        if not within_rate:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=rate_msg,
+            )
+        await partner_rate_limiter.record_request(
+            partner.partner_id, capability
+        )
 
 
 async def check_partner_rate_limit(

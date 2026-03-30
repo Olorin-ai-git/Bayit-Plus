@@ -49,7 +49,7 @@ class PartnerService:
             contact_email: Primary contact email
             name_en: Display name (English)
             contact_name: Contact person name
-            billing_tier: Billing tier (free, standard, enterprise)
+            billing_tier: Billing tier (free, standard, growth, enterprise)
             capabilities: List of capability types to enable
 
         Returns:
@@ -353,6 +353,7 @@ class PartnerService:
         tier_multipliers = {
             "free": 1,
             "standard": 5,
+            "growth": 10,
             "enterprise": 20,
         }
         multiplier = tier_multipliers.get(billing_tier, 1)
@@ -382,6 +383,30 @@ class PartnerService:
                 requests_per_minute=10 * multiplier,
                 requests_per_hour=100 * multiplier,
                 requests_per_day=500 * multiplier,
+                concurrent_sessions=5 * multiplier,
+            ),
+            "pause_ask": RateLimitConfig(
+                requests_per_minute=20 * multiplier,
+                requests_per_hour=200 * multiplier,
+                requests_per_day=1000 * multiplier,
+                concurrent_sessions=5 * multiplier,
+            ),
+            "video_ingest": RateLimitConfig(
+                requests_per_minute=5 * multiplier,
+                requests_per_hour=50 * multiplier,
+                requests_per_day=200 * multiplier,
+                concurrent_sessions=3 * multiplier,
+            ),
+            "subtitles": RateLimitConfig(
+                requests_per_minute=10 * multiplier,
+                requests_per_hour=100 * multiplier,
+                requests_per_day=500 * multiplier,
+                concurrent_sessions=5 * multiplier,
+            ),
+            "trivia": RateLimitConfig(
+                requests_per_minute=15 * multiplier,
+                requests_per_hour=150 * multiplier,
+                requests_per_day=750 * multiplier,
                 concurrent_sessions=5 * multiplier,
             ),
         }

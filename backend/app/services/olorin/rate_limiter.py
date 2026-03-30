@@ -1,7 +1,8 @@
 """
 Partner Rate Limiter Service
 
-Sliding window rate limiting for per-partner capability access.
+MongoDB-backed sliding window rate limiting for per-partner capability access.
+Falls back to in-memory counters if MongoDB operations exceed timeout.
 """
 
 import asyncio
@@ -11,79 +12,82 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
 from app.models.integration_partner import RateLimitConfig
+from app.services.olorin import rate_limiter_store as store
 
 logger = logging.getLogger(__name__)
 
+MONGODB_TIMEOUT_MS = 100
+
+WINDOWS = [
+    ("minute", 60),
+    ("hour", 3600),
+    ("day", 86400),
+]
+
 
 class SlidingWindowCounter:
-    """
-    Sliding window counter for rate limiting.
-
-    Tracks request counts in time buckets for accurate rate limiting
-    over rolling time windows.
-    """
+    """In-memory fallback counter for rate limiting."""
 
     def __init__(self, window_seconds: int = 60):
-        """
-        Initialize sliding window counter.
-
-        Args:
-            window_seconds: Size of the sliding window in seconds
-        """
         self.window_seconds = window_seconds
-        self._buckets: List[Tuple[float, int]] = []  # (timestamp, count)
+        self._buckets: List[Tuple[float, int]] = []
         self._lock = asyncio.Lock()
 
     async def add_request(self) -> None:
-        """Record a new request."""
         async with self._lock:
-            current_time = time.time()
-            self._cleanup_old_buckets(current_time)
-            self._buckets.append((current_time, 1))
+            now = time.time()
+            self._cleanup(now)
+            self._buckets.append((now, 1))
 
     async def get_count(self) -> int:
-        """Get total request count in current window."""
         async with self._lock:
-            current_time = time.time()
-            self._cleanup_old_buckets(current_time)
-            return sum(count for _, count in self._buckets)
+            self._cleanup(time.time())
+            return sum(c for _, c in self._buckets)
 
-    def _cleanup_old_buckets(self, current_time: float) -> None:
-        """Remove buckets outside the window."""
-        cutoff = current_time - self.window_seconds
-        self._buckets = [(ts, count) for ts, count in self._buckets if ts > cutoff]
+    def _cleanup(self, now: float) -> None:
+        cutoff = now - self.window_seconds
+        self._buckets = [(ts, c) for ts, c in self._buckets if ts > cutoff]
+
+
+async def _get_count_with_fallback(
+    partner_id: str,
+    capability: str,
+    window_type: str,
+    window_seconds: int,
+    fallback: SlidingWindowCounter,
+) -> int:
+    """Get count from MongoDB, falling back to in-memory on timeout."""
+    try:
+        return await asyncio.wait_for(
+            store.get_count(partner_id, capability, window_type, window_seconds),
+            timeout=MONGODB_TIMEOUT_MS / 1000,
+        )
+    except (asyncio.TimeoutError, Exception) as exc:
+        logger.warning("Rate limiter read fallback: %s", exc)
+        return await fallback.get_count()
 
 
 class PartnerRateLimiter:
     """
-    Rate limiter service for per-partner capability access.
+    MongoDB-backed rate limiter with in-memory fallback.
 
-    Implements sliding window rate limiting with support for:
-    - Per-minute limits
-    - Per-hour limits
-    - Per-day limits
+    Uses atomic $inc on MongoDB documents keyed by time buckets.
+    Falls back to in-memory SlidingWindowCounter if MongoDB is slow.
     """
 
     def __init__(self):
-        """Initialize the rate limiter."""
-        # Nested dict: partner_id -> capability -> time_window -> counter
-        self._counters: Dict[str, Dict[str, Dict[str, SlidingWindowCounter]]] = (
+        self._fallback: Dict[str, Dict[str, Dict[str, SlidingWindowCounter]]] = (
             defaultdict(lambda: defaultdict(dict))
         )
-        self._lock = asyncio.Lock()
 
-    def _get_counter(
-        self,
-        partner_id: str,
-        capability: str,
-        window_type: str,
-        window_seconds: int,
+    def _get_fallback(
+        self, partner_id: str, capability: str,
+        window_type: str, window_seconds: int,
     ) -> SlidingWindowCounter:
-        """Get or create a counter for the given parameters."""
-        partner_counters = self._counters[partner_id][capability]
-        if window_type not in partner_counters:
-            partner_counters[window_type] = SlidingWindowCounter(window_seconds)
-        return partner_counters[window_type]
+        counters = self._fallback[partner_id][capability]
+        if window_type not in counters:
+            counters[window_type] = SlidingWindowCounter(window_seconds)
+        return counters[window_type]
 
     async def check_rate_limit(
         self,
@@ -91,136 +95,78 @@ class PartnerRateLimiter:
         capability: str,
         rate_limits: RateLimitConfig,
     ) -> Tuple[bool, Optional[str]]:
-        """
-        Check if partner is within rate limits for a capability.
+        """Check if partner is within rate limits for a capability."""
+        limits = [
+            ("minute", 60, rate_limits.requests_per_minute),
+            ("hour", 3600, rate_limits.requests_per_hour),
+            ("day", 86400, rate_limits.requests_per_day),
+        ]
 
-        Args:
-            partner_id: Partner identifier
-            capability: Capability being accessed
-            rate_limits: Rate limit configuration
+        for window_type, window_seconds, limit in limits:
+            if not limit:
+                continue
 
-        Returns:
-            Tuple of (is_within_limit, error_message)
-        """
-        async with self._lock:
-            # Check minute limit
-            if rate_limits.requests_per_minute:
-                counter = self._get_counter(partner_id, capability, "minute", 60)
-                count = await counter.get_count()
-                if count >= rate_limits.requests_per_minute:
-                    logger.warning(
-                        f"Partner {partner_id} exceeded minute rate limit "
-                        f"({count}/{rate_limits.requests_per_minute}) for {capability}"
-                    )
-                    return False, (
-                        f"Rate limit exceeded: {count}/{rate_limits.requests_per_minute} "
-                        f"requests per minute for {capability}"
-                    )
+            fb = self._get_fallback(
+                partner_id, capability, window_type, window_seconds
+            )
+            count = await _get_count_with_fallback(
+                partner_id, capability, window_type, window_seconds, fb
+            )
 
-            # Check hour limit
-            if rate_limits.requests_per_hour:
-                counter = self._get_counter(partner_id, capability, "hour", 3600)
-                count = await counter.get_count()
-                if count >= rate_limits.requests_per_hour:
-                    logger.warning(
-                        f"Partner {partner_id} exceeded hour rate limit "
-                        f"({count}/{rate_limits.requests_per_hour}) for {capability}"
-                    )
-                    return False, (
-                        f"Rate limit exceeded: {count}/{rate_limits.requests_per_hour} "
-                        f"requests per hour for {capability}"
-                    )
+            if count >= limit:
+                logger.warning(
+                    "Partner %s exceeded %s rate limit (%d/%d) for %s",
+                    partner_id, window_type, count, limit, capability,
+                )
+                return False, (
+                    f"Rate limit exceeded: {count}/{limit} "
+                    f"requests per {window_type} for {capability}"
+                )
 
-            # Check day limit
-            if rate_limits.requests_per_day:
-                counter = self._get_counter(partner_id, capability, "day", 86400)
-                count = await counter.get_count()
-                if count >= rate_limits.requests_per_day:
-                    logger.warning(
-                        f"Partner {partner_id} exceeded day rate limit "
-                        f"({count}/{rate_limits.requests_per_day}) for {capability}"
-                    )
-                    return False, (
-                        f"Rate limit exceeded: {count}/{rate_limits.requests_per_day} "
-                        f"requests per day for {capability}"
-                    )
-
-            return True, None
+        return True, None
 
     async def record_request(
-        self,
-        partner_id: str,
-        capability: str,
+        self, partner_id: str, capability: str,
     ) -> None:
-        """
-        Record a successful request for rate limiting.
+        """Record a successful request for rate limiting."""
+        await store.ensure_indexes()
 
-        Should be called after successful endpoint handling to track usage.
-
-        Args:
-            partner_id: Partner identifier
-            capability: Capability accessed
-        """
-        async with self._lock:
-            # Record in all relevant windows
-            for window_type, window_seconds in [
-                ("minute", 60),
-                ("hour", 3600),
-                ("day", 86400),
-            ]:
-                counter = self._get_counter(
+        for window_type, window_seconds in WINDOWS:
+            try:
+                await asyncio.wait_for(
+                    store.increment(
+                        partner_id, capability, window_type, window_seconds
+                    ),
+                    timeout=MONGODB_TIMEOUT_MS / 1000,
+                )
+            except (asyncio.TimeoutError, Exception) as exc:
+                logger.warning("Rate limiter write fallback: %s", exc)
+                fb = self._get_fallback(
                     partner_id, capability, window_type, window_seconds
                 )
-                await counter.add_request()
-
-        logger.debug(
-            f"Recorded request for partner {partner_id}, capability {capability}"
-        )
+                await fb.add_request()
 
     async def get_usage_stats(
-        self,
-        partner_id: str,
-        capability: str,
+        self, partner_id: str, capability: str,
     ) -> Dict[str, int]:
-        """
-        Get current usage statistics for a partner's capability.
-
-        Args:
-            partner_id: Partner identifier
-            capability: Capability to check
-
-        Returns:
-            Dict with counts for each time window
-        """
+        """Get current usage statistics for a partner's capability."""
         stats = {}
-        async with self._lock:
-            for window_type, window_seconds in [
-                ("minute", 60),
-                ("hour", 3600),
-                ("day", 86400),
-            ]:
-                counter = self._get_counter(
-                    partner_id, capability, window_type, window_seconds
-                )
-                stats[f"requests_per_{window_type}"] = await counter.get_count()
-
+        for window_type, window_seconds in WINDOWS:
+            fb = self._get_fallback(
+                partner_id, capability, window_type, window_seconds
+            )
+            count = await _get_count_with_fallback(
+                partner_id, capability, window_type, window_seconds, fb
+            )
+            stats[f"requests_per_{window_type}"] = count
         return stats
 
     def reset(self, partner_id: Optional[str] = None) -> None:
-        """
-        Reset rate limit counters.
-
-        Args:
-            partner_id: Reset only for this partner, or all if None
-        """
+        """Reset in-memory fallback counters."""
         if partner_id:
-            if partner_id in self._counters:
-                del self._counters[partner_id]
-                logger.info(f"Reset rate limit counters for partner {partner_id}")
+            self._fallback.pop(partner_id, None)
         else:
-            self._counters.clear()
-            logger.info("Reset all rate limit counters")
+            self._fallback.clear()
 
 
-# Singleton instance
 partner_rate_limiter = PartnerRateLimiter()
