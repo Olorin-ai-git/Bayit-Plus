@@ -18,6 +18,7 @@ from app.services.consumer_submission_service import (
     SubmissionLimitReached,
     consumer_submission_service,
 )
+from app.utils.priority_utils import should_process_immediately, tier_to_priority
 
 logger = get_logger(__name__)
 
@@ -33,6 +34,8 @@ class SubmitUrlRequest(BaseModel):
 class SubmitUrlResponse(BaseModel):
     job_id: str
     status: str
+    priority: int = 10
+    queued: bool = True
 
 
 class SubmissionStatusResponse(BaseModel):
@@ -58,12 +61,18 @@ async def submit_url(
     background_tasks: BackgroundTasks,
 ) -> SubmitUrlResponse:
     """Accept a video URL, start background extraction, return job_id."""
+    # Detect tier (anonymous = free for now)
+    tier = "free"
+    priority = tier_to_priority(tier)
+
     try:
         submission = await consumer_submission_service.submit_url(
             url=body.url,
             fingerprint=body.fingerprint,
             email=body.email,
             max_submissions=settings.CONSUMER_DEMO_MAX_SUBMISSIONS,
+            priority=priority,
+            source_tier=tier,
         )
     except InvalidVideoUrl as exc:
         raise HTTPException(
@@ -79,12 +88,18 @@ async def submit_url(
             ),
         ) from exc
 
-    background_tasks.add_task(
-        consumer_submission_service.run_extraction, submission,
-    )
+    queued = True
+    if should_process_immediately(tier):
+        background_tasks.add_task(
+            consumer_submission_service.run_extraction, submission,
+        )
+        queued = False
 
     return SubmitUrlResponse(
-        job_id=submission.job_id, status=submission.status,
+        job_id=submission.job_id,
+        status=submission.status,
+        priority=priority,
+        queued=queued,
     )
 
 

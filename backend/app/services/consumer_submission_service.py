@@ -40,6 +40,8 @@ class ConsumerSubmissionService:
         fingerprint: str,
         email: Optional[str] = None,
         max_submissions: int = settings.CONSUMER_DEMO_MAX_SUBMISSIONS,
+        priority: int = 10,
+        source_tier: str = "free",
     ) -> ConsumerSubmission:
         """Validate URL, check limits, create submission record."""
         is_valid, err = validate_video_url(url)
@@ -53,7 +55,11 @@ class ConsumerSubmissionService:
             raise SubmissionLimitReached(count, max_submissions)
 
         submission = ConsumerSubmission(
-            url=url.strip(), fingerprint=fingerprint, email=email,
+            url=url.strip(),
+            fingerprint=fingerprint,
+            email=email,
+            priority=priority,
+            source_tier=source_tier,
         )
         await submission.insert()
         logger.info(

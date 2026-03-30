@@ -66,3 +66,20 @@ class TestRateLimitKeys:
     def test_consumer_demo_status_key_exists(self):
         from app.core.rate_limiter import RATE_LIMITS
         assert "consumer_demo_status" in RATE_LIMITS
+
+
+class TestPriorityAssignment:
+    def test_response_includes_priority(self):
+        from app.api.routes.consumer_submit import SubmitUrlResponse
+        resp = SubmitUrlResponse(
+            job_id="abc", status="pending", priority=10, queued=True,
+        )
+        assert resp.priority == 10
+        assert resp.queued is True
+
+    def test_response_not_queued(self):
+        from app.api.routes.consumer_submit import SubmitUrlResponse
+        resp = SubmitUrlResponse(
+            job_id="abc", status="pending", priority=0, queued=False,
+        )
+        assert resp.queued is False
