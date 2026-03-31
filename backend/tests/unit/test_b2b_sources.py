@@ -53,10 +53,10 @@ class TestB2BContentSourceModel:
 
 
 class TestSourceResponseMapping:
-    """Response model construction from _source_to_response."""
+    """Response model construction from source_to_response."""
 
     def test_import_response_models(self):
-        from app.api.routes.olorin.b2b_sources import (
+        from app.api.routes.olorin.b2b_source_schemas import (
             CreateSourceRequest,
             SourceListResponse,
             SourceResponse,
@@ -68,7 +68,7 @@ class TestSourceResponseMapping:
         assert SyncResponse is not None
 
     def test_create_request_validation(self):
-        from app.api.routes.olorin.b2b_sources import CreateSourceRequest
+        from app.api.routes.olorin.b2b_source_schemas import CreateSourceRequest
 
         req = CreateSourceRequest(
             source_type="youtube_channel",
@@ -81,7 +81,7 @@ class TestSourceResponseMapping:
         assert req.sync_interval_hours == 24
 
     def test_create_request_custom_values(self):
-        from app.api.routes.olorin.b2b_sources import CreateSourceRequest
+        from app.api.routes.olorin.b2b_source_schemas import CreateSourceRequest
 
         req = CreateSourceRequest(
             source_type="rss",
@@ -96,7 +96,7 @@ class TestSourceResponseMapping:
         assert req.sync_interval_hours == 12
 
     def test_sync_response_fields(self):
-        from app.api.routes.olorin.b2b_sources import SyncResponse
+        from app.api.routes.olorin.b2b_source_schemas import SyncResponse
 
         resp = SyncResponse(
             source_id="abc123",
