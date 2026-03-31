@@ -33,7 +33,7 @@ class CreateSourceRequest(BaseModel):
     """Register a new content source."""
 
     source_type: str = Field(
-        ..., description="youtube_channel | playlist | rss | manual",
+        ..., description="youtube_channel | playlist | rss | manual | plex | iptv",
     )
     source_url: str = Field(..., description="Source URL")
     name: str = Field(..., description="Human-readable name")
@@ -113,7 +113,7 @@ async def create_source(
     request: CreateSourceRequest,
     partner: IntegrationPartner = Depends(get_current_partner),
 ) -> SourceResponse:
-    """Connect a YouTube channel, playlist, or RSS feed for auto-ingestion."""
+    """Connect a YouTube channel, playlist, RSS feed, Plex server, or IPTV playlist for auto-ingestion."""
     await verify_capability(partner, "video_ingest")
 
     if request.source_type not in SOURCE_TYPES:
