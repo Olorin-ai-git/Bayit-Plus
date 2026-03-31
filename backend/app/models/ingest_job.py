@@ -34,6 +34,10 @@ class IngestJob(Document):
     partner_id: str = Field(..., description="Owning partner")
     content_id: str = Field(..., description="Target content document")
     video_url: str = Field(..., description="Source video URL")
+    direct: bool = Field(
+        default=False,
+        description="Skip TMDB lookup; use transcript-only extraction (training content)",
+    )
     capabilities: Dict[str, str] = Field(
         default_factory=dict,
         description="Per-capability status: pending|processing|completed|failed",

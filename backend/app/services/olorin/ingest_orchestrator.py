@@ -42,14 +42,25 @@ async def create_ingest_job(
     content: Content,
     video_url: str,
     capabilities: list[str],
+    direct: bool = False,
 ) -> IngestJob:
-    """Create and persist a new IngestJob."""
+    """Create and persist a new IngestJob.
+
+    Args:
+        partner: Owning partner record.
+        content: Content document to process.
+        video_url: Source video URL.
+        capabilities: Processing stages to run.
+        direct: When True, skip TMDB lookup and use transcript-only extraction.
+                Set to True for training content which has no TMDB record.
+    """
     caps = _expand_capabilities(capabilities)
     job = IngestJob(
         job_id=uuid.uuid4().hex,
         partner_id=partner.partner_id,
         content_id=str(content.id),
         video_url=video_url,
+        direct=direct,
         capabilities={c: "pending" for c in caps},
     )
     await job.insert()
@@ -162,16 +173,43 @@ async def _run_characters(
     partner: IntegrationPartner,
     transcript_text: str,
 ) -> None:
-    """Stage: Extract characters (TMDB first, transcript fallback)."""
+    """Stage: Extract characters (TMDB first, transcript fallback).
+
+    When job.direct is True the TMDB lookup is bypassed entirely;
+    extraction uses only the transcript (training content has no TMDB record).
+    """
     from app.services.olorin.unified_extractor import extract_characters
+    from app.services.olorin.speaker_extraction import (
+        extract_speakers_from_transcript,
+    )
 
     await job.update_capability("characters", "processing")
     try:
-        characters = await extract_characters(
-            content,
-            video_url=job.video_url,
-            video_title=content.title,
-        )
+        if job.direct and transcript_text:
+            # Training path: transcript captured by Stage 0; skip TMDB entirely.
+            from app.services.olorin.video_transcriber import TranscriptSegment
+            raw_segs = getattr(content, "transcript_segments", None) or []
+            segments = [
+                TranscriptSegment(
+                    speaker=s.get("speaker", "Speaker"),
+                    text=s.get("text", ""),
+                    start=float(s.get("start", 0.0)),
+                    end=float(s.get("end", 0.0)),
+                )
+                for s in raw_segs
+            ]
+            speaker_count = len({seg.speaker for seg in segments}) if segments else 1
+            characters = await extract_speakers_from_transcript(
+                segments=segments,
+                speakers_count=speaker_count,
+                video_title=content.title,
+            )
+        else:
+            characters = await extract_characters(
+                content,
+                video_url=job.video_url,
+                video_title=content.title,
+            )
         content.interactive_characters = characters
         await content.save()
 
