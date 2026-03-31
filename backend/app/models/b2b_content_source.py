@@ -11,7 +11,7 @@ from beanie import Document
 from pydantic import Field
 
 
-SOURCE_TYPES = ("youtube_channel", "playlist", "rss", "manual")
+SOURCE_TYPES = ("youtube_channel", "playlist", "rss", "manual", "plex", "iptv")
 
 
 class B2BContentSource(Document):
@@ -19,7 +19,7 @@ class B2BContentSource(Document):
 
     partner_id: str = Field(..., description="Owning partner")
     source_type: str = Field(
-        ..., description="youtube_channel | playlist | rss | manual",
+        ..., description="youtube_channel | playlist | rss | manual | plex | iptv",
     )
     source_url: str = Field(..., description="Source URL")
     name: str = Field(..., description="Human-readable source name")
