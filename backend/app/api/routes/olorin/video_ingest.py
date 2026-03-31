@@ -52,6 +52,17 @@ class IngestRequest(BaseModel):
         default=["characters"],
         description="Capabilities: characters, subtitles, trivia, search, or all",
     )
+    direct: bool = Field(
+        default=False,
+        description="Direct ingest mode: skip TMDB lookup, use transcript-based extraction only",
+    )
+    description: Optional[str] = Field(
+        None, description="Video description (used in direct mode)",
+    )
+    tags: List[str] = Field(
+        default_factory=list,
+        description="Content tags (used in direct mode)",
+    )
 
 
 class IngestResponse(BaseModel):
@@ -142,11 +153,16 @@ async def ingest_video(
         title = request.title
         if not title:
             title = await extract_video_title(request.video_url)
+        desc = request.description or f"B2B ingest from {partner.partner_id}"
         content = Content(
             title=title or "Untitled",
-            description=f"B2B ingest from {partner.partner_id}",
+            description=desc,
             stream_url=request.video_url,
         )
+        if request.tags:
+            content.topic_tags = request.tags  # type: ignore[attr-defined]
+        if request.direct:
+            content.partner_id = partner.partner_id  # type: ignore[attr-defined]
         await content.insert()
         video_url = request.video_url
 

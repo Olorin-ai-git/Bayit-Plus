@@ -11,7 +11,7 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 from pymongo import ASCENDING, IndexModel
 
 # Type definitions
-BillingTier = Literal["free", "standard", "growth", "enterprise"]
+BillingTier = Literal["free", "standard", "growth", "enterprise", "training"]
 CapabilityType = Literal[
     "realtime_dubbing",
     "semantic_search",
@@ -151,6 +151,12 @@ class IntegrationPartner(Document):
 
     # Branding
     branding: BrandingConfig = Field(default_factory=BrandingConfig)
+
+    # Training-specific config (only for tier=training)
+    training_config: Optional[dict] = Field(
+        default=None,
+        description="Training org settings (org_display_name, seat_limit, etc.)",
+    )
 
     # Status
     is_active: bool = Field(default=True)

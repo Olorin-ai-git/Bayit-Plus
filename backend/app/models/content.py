@@ -145,6 +145,9 @@ class Content(Document):
     total_seasons: Optional[int] = None
     total_episodes: Optional[int] = None
 
+    # Training platform (org-scoped content)
+    partner_id: Optional[str] = None  # Training org partner_id for scoping
+
     # TMDB Integration
     tmdb_id: Optional[int] = None
     imdb_id: Optional[str] = None  # e.g., "tt1234567"

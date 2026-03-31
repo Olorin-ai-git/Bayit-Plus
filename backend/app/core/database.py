@@ -58,6 +58,9 @@ from app.models.challenge_nomination import ChallengeNomination
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import (DubbingSession, IntegrationPartner,
                                             UsageRecord, WebhookDelivery)
+from app.models.training_assignment import TrainingAssignment
+from app.models.training_progress import TrainingProgress
+from app.models.training_user import TrainingUser
 from app.models.jerusalem_content import (JerusalemContentItem,
                                           JerusalemContentSource)
 from app.models.jewish_calendar import JewishCalendarCache
@@ -501,6 +504,10 @@ async def connect_to_mongo():
                 ContentEmbedding,
                 RecapSession,
                 CulturalReference,
+                # Training platform models
+                TrainingUser,
+                TrainingProgress,
+                TrainingAssignment,
             ]
         )
         logger.info("Olorin models included in main database (Phase 1)")

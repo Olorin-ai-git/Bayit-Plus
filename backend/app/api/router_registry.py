@@ -145,6 +145,8 @@ def register_all_routers(app: FastAPI) -> None:
     # Discover tab config (AI features hub)
     from app.api.routes import discover
     from app.api.routes import discover_characters
+    # Training platform routes (Olorin for Training)
+    from app.api.routes.training import router as training_router
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -588,6 +590,12 @@ def register_all_routers(app: FastAPI) -> None:
     # Olorin vanity routes (for api.olorin.ai — clean /v1/ paths)
     app.include_router(olorin_vanity_router, tags=["olorin-vanity"])
     logger.debug("Registered Olorin.ai platform routes (versioned + legacy redirects + vanity)")
+
+    # ============================================
+    # Training Platform Routes (/api/v1/training/*)
+    # ============================================
+    app.include_router(training_router, prefix=prefix, tags=["training"])
+    logger.debug("Registered Olorin Training platform routes")
 
     # ============================================
     # NLP Routes (Natural Language Processing for CLI)

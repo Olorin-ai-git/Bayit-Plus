@@ -354,6 +354,7 @@ class PartnerService:
             "free": 1,
             "standard": 5,
             "growth": 10,
+            "training": 8,
             "enterprise": 20,
         }
         multiplier = tier_multipliers.get(billing_tier, 1)
