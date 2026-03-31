@@ -27,7 +27,7 @@ async def _fire_webhook(
     """Lazy-import webhook sender to avoid circular imports."""
     from app.api.routes.olorin.webhooks import send_webhook_event
 
-    await _fire_webhook(partner, event_type, payload)
+    await send_webhook_event(partner, event_type, payload)
 
 
 def _expand_capabilities(requested: list[str]) -> list[str]:

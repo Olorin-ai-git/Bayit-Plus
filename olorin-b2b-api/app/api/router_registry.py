@@ -13,6 +13,7 @@ from fastapi import FastAPI
 from app.core.config import settings
 
 # MongoDB document models required by Olorin B2B routes
+from app.models.b2b_content_source import B2BContentSource
 from app.models.content import Content
 from app.models.content_embedding import ContentEmbedding, RecapSession
 from app.models.cultural_reference import CulturalReference
@@ -30,6 +31,7 @@ from app.models.vod_interaction import VODInteractionSession
 logger = logging.getLogger(__name__)
 
 SERVICE_MODELS: list[type] = [
+    B2BContentSource,
     Content,
     User,
     IntegrationPartner,
