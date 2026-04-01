@@ -9,20 +9,21 @@ Example: RATE_LIMIT_MULTIPLIER=10 relaxes all limits by 10x.
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
-# Ensure .env is loaded before reading RATE_LIMIT_MULTIPLIER
+# Read directly from .env file (os.getenv may not have it yet at import time)
 _env_path = Path(__file__).resolve().parents[2] / ".env"
-if _env_path.exists():
-    load_dotenv(_env_path, override=False)
+_env_vals = dotenv_values(_env_path) if _env_path.exists() else {}
 
 try:
     from slowapi import Limiter
     from slowapi.util import get_remote_address
 
-    # Development multiplier - set via env var (default: 1 = no change)
-    # Example: RATE_LIMIT_MULTIPLIER=10 gives 10x the normal limits
-    DEV_MULTIPLIER = int(os.getenv("RATE_LIMIT_MULTIPLIER", "1"))
+    # Development multiplier - read from .env directly, fallback to os.getenv
+    DEV_MULTIPLIER = int(
+        _env_vals.get("RATE_LIMIT_MULTIPLIER")
+        or os.getenv("RATE_LIMIT_MULTIPLIER", "1")
+    )
 
     # Initialize rate limiter
     limiter = Limiter(key_func=get_remote_address)

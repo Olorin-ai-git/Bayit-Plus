@@ -13,7 +13,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 from app.api.routes.olorin.dependencies import get_current_partner
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
-from app.core.rate_limiter import limiter
+from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.integration_partner import (
     BrandingConfig,
     IntegrationPartner,
@@ -141,7 +141,7 @@ class ApiKeyRegenerateResponse(BaseModel):
     description="Register a new third-party platform for Olorin.ai integration. "
     "Returns an API key that must be stored securely.",
 )
-@limiter.limit("3/hour")
+@limiter.limit(RATE_LIMITS["partner_register"])
 async def register_partner(request: Request, body: PartnerRegisterRequest):
     """Register a new integration partner."""
     try:
