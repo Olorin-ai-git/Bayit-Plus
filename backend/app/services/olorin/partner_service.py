@@ -115,8 +115,7 @@ class PartnerService:
         # Find by prefix first (efficient lookup)
         prefix = api_key[:8]
         partner = await IntegrationPartner.find_one(
-            {"api_key_prefix": prefix}, 
-            {"is_active": True},   # noqa: E712
+            {"api_key_prefix": prefix, "is_active": True},  # noqa: E712
         )
 
         if not partner:
