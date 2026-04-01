@@ -72,6 +72,13 @@ class TrainingUser(Document):
     activated_at: Optional[datetime] = Field(default=None)
     last_login_at: Optional[datetime] = Field(default=None)
 
+    password_reset_token: Optional[str] = Field(
+        default=None, description="One-time password reset token"
+    )
+    password_reset_expires_at: Optional[datetime] = Field(
+        default=None, description="Password reset token expiry"
+    )
+
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
@@ -96,5 +103,11 @@ class TrainingUser(Document):
                 unique=True,
                 sparse=True,
                 name="invite_token_unique",
+            ),
+            IndexModel(
+                [("password_reset_token", ASCENDING)],
+                unique=True,
+                sparse=True,
+                name="password_reset_token_unique",
             ),
         ]

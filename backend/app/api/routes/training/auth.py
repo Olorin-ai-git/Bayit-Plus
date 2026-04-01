@@ -1,8 +1,7 @@
 """Training platform authentication routes."""
-
 import logging
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
@@ -11,13 +10,15 @@ from app.core.security import get_password_hash, verify_password
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingConfig, TrainingUser
 from app.api.routes.training.dependencies import (
-    create_training_token,
-    get_current_training_user,
-    require_training_admin,
+    create_training_token, get_current_training_user, require_training_admin,
 )
 from app.services.olorin.partner_service import partner_service
 
 logger = logging.getLogger(__name__)
+
+TRIAL_DURATION_DAYS = 14
+TRIAL_CREDIT_LIMIT = 50
+TRIAL_SEAT_LIMIT = 25
 
 router = APIRouter(prefix="/auth", tags=["training-auth"])
 
@@ -61,7 +62,12 @@ async def register(body: RegisterRequest):
         capabilities=["video_ingest", "pause_ask", "subtitles", "trivia"],
     )
 
-    training_config = TrainingConfig(org_display_name=body.org_name)
+    training_config = TrainingConfig(
+        org_display_name=body.org_name,
+        trial_ends_at=datetime.now(timezone.utc) + timedelta(days=TRIAL_DURATION_DAYS),
+        credit_limit_monthly=TRIAL_CREDIT_LIMIT,
+        seat_limit=TRIAL_SEAT_LIMIT,
+    )
     partner.training_config = training_config  # type: ignore[attr-defined]
     await partner.save()
 
@@ -75,8 +81,7 @@ async def register(body: RegisterRequest):
         activated_at=datetime.now(timezone.utc),
     )
     await user.insert()
-    logger.info(f"Training org registered: {partner_id}")
-
+    logger.info("Training org registered: %s", partner_id)
     token = create_training_token(user)
     return {
         "token": token,
@@ -107,7 +112,6 @@ async def login(body: LoginRequest):
 
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
-
     token = create_training_token(user)
     return {"token": token, "user": _user_response(user)}
 
@@ -142,7 +146,7 @@ async def invite_employees(
         )
         await user.insert()
         invited.append({"email": email, "status": "pending"})
-        logger.info(f"Training invite sent: {email} -> {admin.partner_id}")
+        logger.info("Training invite sent: %s -> %s", email, admin.partner_id)
 
     return {"invited": invited}
 
@@ -163,7 +167,6 @@ async def accept_invite(body: AcceptInviteRequest):
     user.invite_token = None
     user.activated_at = datetime.now(timezone.utc)
     await user.save()
-
     token = create_training_token(user)
     return {"token": token, "user": _user_response(user)}
 
@@ -178,26 +181,20 @@ async def get_me(
     )
     org_name = user.partner_id
     if partner and hasattr(partner, "training_config"):
-        config = getattr(partner, "training_config", None)
-        if config:
-            org_name = config.get("org_display_name", user.partner_id)
-
+        tc = getattr(partner, "training_config", None)
+        if tc:
+            org_name = tc.get("org_display_name", user.partner_id)
+    tier = partner.billing_tier if partner else "training"
     return {
         "user": _user_response(user),
-        "organization": {
-            "partner_id": user.partner_id,
-            "org_name": org_name,
-            "tier": partner.billing_tier if partner else "training",
-        },
+        "organization": {"partner_id": user.partner_id, "org_name": org_name, "tier": tier},
     }
 
 
 def _user_response(user: TrainingUser) -> dict:
+    """Format user document for API response."""
     return {
-        "id": str(user.id),
-        "email": user.email,
-        "role": user.role,
-        "display_name": user.display_name,
-        "partner_id": user.partner_id,
+        "id": str(user.id), "email": user.email, "role": user.role,
+        "display_name": user.display_name, "partner_id": user.partner_id,
         "department": user.department,
     }

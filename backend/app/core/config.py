@@ -28,6 +28,7 @@ from app.core.config_domains.media_pipeline import MediaPipelineConfigMixin
 from app.core.config_domains.media_ssrf import MediaSsrfConfigMixin
 from app.core.config_domains.monitoring import MonitoringConfigMixin
 from app.core.config_domains.olorin_compat import OlorinCompatConfigMixin
+from app.core.config_domains.restored_fields import RestoredFieldsMixin
 from app.core.config_domains.payments import PaymentsConfigMixin
 from app.core.config_domains.voice import VoiceConfigMixin
 from app.core.config_domains.zehani import ZehAniConfigMixin
@@ -51,6 +52,7 @@ except (IndexError, OSError):
 
 
 class Settings(
+    RestoredFieldsMixin,
     BackwardCompatPropertiesMixin,
     PaymentsConfigMixin,
     FreemiumConfigMixin,
@@ -101,6 +103,12 @@ class Settings(
     AUTH_SERVICE_ENABLED: bool = Field(
         default=True,
         description="Enable auth service integration (dual-mode during migration)",
+    )
+
+    # Training Portal
+    TRAINING_PORTAL_URL: str = Field(
+        default="",
+        description="Training portal URL for password reset links (e.g. https://training.olorin.ai)",
     )
 
     # MongoDB
@@ -164,7 +172,7 @@ class Settings(
     class Config:
         env_file = ".env"
         case_sensitive = True
-        extra = "ignore"
+        extra = "allow"
 
 
 @lru_cache()
