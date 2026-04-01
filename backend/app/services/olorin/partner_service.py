@@ -112,17 +112,23 @@ class PartnerService:
         if not api_key or len(api_key) < 8:
             return None
 
-        # Find by prefix first (efficient lookup)
+        # Find candidates by prefix, then verify full hash
         prefix = api_key[:8]
-        partner = await IntegrationPartner.find_one(
+        candidates = await IntegrationPartner.find(
             {"api_key_prefix": prefix, "is_active": True},  # noqa: E712
-        )
+        ).to_list()
 
-        if not partner:
+        if not candidates:
             return None
 
-        # Verify full key hash
-        if not self._verify_api_key(api_key, partner.api_key_hash):
+        # Check each candidate (handles prefix collisions)
+        partner = None
+        for candidate in candidates:
+            if self._verify_api_key(api_key, candidate.api_key_hash):
+                partner = candidate
+                break
+
+        if not partner:
             logger.warning(f"API key verification failed for partner prefix: {prefix}")
             return None
 
