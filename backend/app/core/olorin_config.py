@@ -17,6 +17,7 @@ class PartnerAPIConfig(BaseSettings):
 
     api_key_salt: str = Field(
         default="",
+        validation_alias="OLORIN_PARTNER_API_KEY_SALT",
         description="Salt for API key hashing (bcrypt). REQUIRED in production.",
     )
     default_rate_limit_rpm: int = Field(
