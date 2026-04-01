@@ -7,6 +7,14 @@ Example: RATE_LIMIT_MULTIPLIER=10 relaxes all limits by 10x.
 """
 
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Ensure .env is loaded before reading RATE_LIMIT_MULTIPLIER
+_env_path = Path(__file__).resolve().parents[2] / ".env"
+if _env_path.exists():
+    load_dotenv(_env_path, override=False)
 
 try:
     from slowapi import Limiter
