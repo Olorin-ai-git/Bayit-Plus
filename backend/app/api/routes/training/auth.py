@@ -16,9 +16,7 @@ from app.services.olorin.partner_service import partner_service
 
 logger = logging.getLogger(__name__)
 
-TRIAL_DURATION_DAYS = 14
-TRIAL_CREDIT_LIMIT = 50
-TRIAL_SEAT_LIMIT = 25
+TRIAL_DURATION_DAYS, TRIAL_CREDIT_LIMIT, TRIAL_SEAT_LIMIT = 14, 50, 25
 
 router = APIRouter(prefix="/auth", tags=["training-auth"])
 
@@ -69,6 +67,7 @@ async def register(body: RegisterRequest):
         seat_limit=TRIAL_SEAT_LIMIT,
     )
     partner.training_config = training_config  # type: ignore[attr-defined]
+    partner.capabilities = partner_service.get_training_tier_defaults()
     await partner.save()
 
     user = TrainingUser(

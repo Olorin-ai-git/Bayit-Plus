@@ -413,6 +413,30 @@ class PartnerService:
 
         return base_limits.get(capability, RateLimitConfig())
 
+    def get_training_tier_defaults(self) -> dict[str, CapabilityConfig]:
+        """Return default capability configs for a training-tier partner.
+
+        Training partners get interactive AI features: pause_ask, video_ingest,
+        subtitles, trivia, semantic_search, cultural_context, recap_agent.
+        Excludes realtime_dubbing (consumer-only live TV feature).
+        """
+        training_capabilities = [
+            "pause_ask",
+            "video_ingest",
+            "subtitles",
+            "trivia",
+            "semantic_search",
+            "cultural_context",
+            "recap_agent",
+        ]
+        return {
+            cap: CapabilityConfig(
+                enabled=True,
+                rate_limits=self._get_default_rate_limits("training", cap),
+            )
+            for cap in training_capabilities
+        }
+
 
 # Singleton instance
 partner_service = PartnerService()
