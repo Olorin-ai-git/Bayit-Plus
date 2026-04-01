@@ -82,16 +82,11 @@ async def register(body: RegisterRequest):
     await user.insert()
     logger.info("Training org registered: %s", partner_id)
     token = create_training_token(user)
-    return {
-        "token": token,
-        "user": _user_response(user),
-        "organization": {
-            "partner_id": partner_id,
-            "org_name": body.org_name,
-            "tier": "training",
-            "credits_remaining": training_config.credit_limit_monthly,
-        },
-    }
+    return {"token": token, "user": _user_response(user), "organization": {
+        "partner_id": partner_id, "org_name": body.org_name,
+        "tier": training_config.org_tier,
+        "credits_remaining": training_config.credit_limit_monthly,
+    }}
 
 
 @router.post("/login")
@@ -178,15 +173,19 @@ async def get_me(
     partner = await IntegrationPartner.find_one(
         {"partner_id": user.partner_id}
     )
-    org_name = user.partner_id
-    if partner and hasattr(partner, "training_config"):
-        tc = getattr(partner, "training_config", None)
-        if tc:
-            org_name = tc.get("org_display_name", user.partner_id)
-    tier = partner.billing_tier if partner else "training"
+    tc = (partner.training_config if partner else None) or {}
+    org_name = tc.get("org_display_name", user.partner_id)
+    tier = tc.get("org_tier", "team")
+    cap = tc.get("credit_limit_monthly", 0)
+    used = tc.get("credits_used", 0)
     return {
         "user": _user_response(user),
-        "organization": {"partner_id": user.partner_id, "org_name": org_name, "tier": tier},
+        "organization": {
+            "partner_id": user.partner_id, "org_name": org_name,
+            "tier": tier, "credits_remaining": cap - used,
+            "logo_url": tc.get("logo_url"),
+            "accent_color": tc.get("accent_color"),
+        },
     }
 
 

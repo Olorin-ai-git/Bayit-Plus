@@ -35,6 +35,14 @@ class TrainingConfig(BaseModel):
     trial_ends_at: Optional[datetime] = Field(
         default=None, description="Trial expiration date"
     )
+    org_tier: str = Field(
+        default="team",
+        pattern=r"^(team|organization|trial)$",
+        description="Organization sub-tier",
+    )
+    credits_used: int = Field(
+        default=0, ge=0, description="Credits consumed this billing period"
+    )
     stripe_customer_id: Optional[str] = Field(
         default=None, description="Stripe customer ID"
     )

@@ -9,6 +9,9 @@ from app.api.routes.training.password_reset import router as password_reset_rout
 from app.api.routes.training.team import router as team_router
 from app.api.routes.training.progress import router as progress_router
 from app.api.routes.training.assignments import router as assignments_router
+from app.api.routes.training.settings import router as settings_router
+from app.api.routes.training.byoc import router as byoc_router
+from app.api.routes.training.party import router as party_router
 
 router = APIRouter(prefix="/training")
 
@@ -19,3 +22,6 @@ router.include_router(content_edit_router)
 router.include_router(team_router)
 router.include_router(progress_router)
 router.include_router(assignments_router)
+router.include_router(settings_router)
+router.include_router(byoc_router)
+router.include_router(party_router)
