@@ -21,6 +21,8 @@ from app.models.training_progress import TrainingProgress
 from app.models.training_assignment import TrainingAssignment
 from app.models.ingest_job import IngestJob
 from app.models.content import Content
+from app.models.vod_interaction import VODInteractionSession
+from app.models.b2b_content_source import B2BContentSource
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -29,6 +31,8 @@ SERVICE_MODELS: List[Type[Document]] = [
     TrainingAssignment,
     IngestJob,
     Content,
+    VODInteractionSession,
+    B2BContentSource,
 ]
 
 
