@@ -74,6 +74,7 @@ class DubbingLatencyConfigMixin:
             )
             if not is_prod:
                 return [
+                    "http://localhost:3006",
                     "http://localhost:3200",
                     "http://localhost:3211",
                     "http://localhost:8000",
