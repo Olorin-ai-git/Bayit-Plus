@@ -13,6 +13,7 @@ from app.api.routes.training.settings import router as settings_router
 from app.api.routes.training.byoc import router as byoc_router
 from app.api.routes.training.party import router as party_router
 from app.api.routes.training.pause_ask import router as pause_ask_router
+from app.api.routes.training.checkout import router as checkout_router
 
 router = APIRouter(prefix="/training")
 
@@ -27,3 +28,4 @@ router.include_router(settings_router)
 router.include_router(byoc_router)
 router.include_router(party_router)
 router.include_router(pause_ask_router)
+router.include_router(checkout_router)

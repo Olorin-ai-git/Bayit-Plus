@@ -27,17 +27,14 @@ class RegisterRequest(BaseModel):
     org_name: str = Field(min_length=2, max_length=100)
     display_name: str = Field(min_length=1, max_length=100)
 
-
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
-
 
 class InviteRequest(BaseModel):
     emails: list[EmailStr] = Field(min_length=1, max_length=50)
     role: str = Field(default="viewer", pattern=r"^(admin|viewer)$")
     department: str | None = None
-
 
 class AcceptInviteRequest(BaseModel):
     token: str
@@ -86,8 +83,12 @@ async def register(body: RegisterRequest):
         "partner_id": partner_id, "org_name": body.org_name,
         "tier": training_config.org_tier,
         "credits_remaining": training_config.credit_limit_monthly,
+        "trial_ends_at": (
+            training_config.trial_ends_at.isoformat()
+            if training_config.trial_ends_at else None
+        ),
+        "stripe_subscription_id": None,
     }}
-
 
 @router.post("/login")
 async def login(body: LoginRequest):
@@ -108,7 +109,6 @@ async def login(body: LoginRequest):
     await user.save()
     token = create_training_token(user)
     return {"token": token, "user": _user_response(user)}
-
 
 @router.post("/invite", status_code=status.HTTP_201_CREATED)
 async def invite_employees(
@@ -144,7 +144,6 @@ async def invite_employees(
 
     return {"invited": invited}
 
-
 @router.post("/accept-invite")
 async def accept_invite(body: AcceptInviteRequest):
     """Accept an invitation and set password."""
@@ -164,7 +163,6 @@ async def accept_invite(body: AcceptInviteRequest):
     token = create_training_token(user)
     return {"token": token, "user": _user_response(user)}
 
-
 @router.get("/me")
 async def get_me(
     user: TrainingUser = Depends(get_current_training_user),
@@ -178,6 +176,8 @@ async def get_me(
     tier = tc.get("org_tier", "team")
     cap = tc.get("credit_limit_monthly", 0)
     used = tc.get("credits_used", 0)
+    trial_raw = tc.get("trial_ends_at")
+    trial_str = trial_raw.isoformat() if hasattr(trial_raw, "isoformat") else trial_raw
     return {
         "user": _user_response(user),
         "organization": {
@@ -185,6 +185,8 @@ async def get_me(
             "tier": tier, "credits_remaining": cap - used,
             "logo_url": tc.get("logo_url"),
             "accent_color": tc.get("accent_color"),
+            "trial_ends_at": trial_str,
+            "stripe_subscription_id": tc.get("stripe_subscription_id"),
         },
     }
 

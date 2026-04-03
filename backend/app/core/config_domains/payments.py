@@ -161,3 +161,27 @@ class PaymentsConfigMixin:
         env="PAYMENT_CONVERSION_THRESHOLD",
         description="Trigger rollback if payment conversion rate falls below this threshold"
     )
+
+    # ==========================================
+    # TRAINING PLATFORM STRIPE
+    # ==========================================
+    STRIPE_PRICE_TRAINING_TEAM: str = Field(
+        default="",
+        env="STRIPE_PRICE_TRAINING_TEAM",
+        description="Stripe price ID for Training Team tier ($349/mo)",
+    )
+    STRIPE_PRICE_TRAINING_ORG: str = Field(
+        default="",
+        env="STRIPE_PRICE_TRAINING_ORG",
+        description="Stripe price ID for Training Organization tier ($599/mo)",
+    )
+    STRIPE_WEBHOOK_SECRET_TRAINING: str = Field(
+        default="",
+        env="STRIPE_WEBHOOK_SECRET_TRAINING",
+        description="Webhook signing secret for training checkout endpoint",
+    )
+    TRAINING_FRONTEND_URL: str = Field(
+        default="",
+        env="TRAINING_FRONTEND_URL",
+        description="Training portal frontend URL for Stripe redirects",
+    )
