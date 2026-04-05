@@ -161,3 +161,40 @@ class InteractiveConfigMixin:
         env="CREDIT_RATE_VOD_FEATURE_UNLOCK",
         description="Credits per VOD AI feature unlock (per user per content)",
     )
+
+    # Phase 1: Character Memory & Continuity
+    VOD_FILM_MEMORY_ENABLED: bool = Field(
+        default=False,
+        env="VOD_FILM_MEMORY_ENABLED",
+        description="Enable cross-moment character memory (Phase 1)",
+    )
+    VOD_FILM_MEMORY_VERBATIM_WINDOW: int = Field(
+        default=3, ge=1, le=10,
+        env="VOD_FILM_MEMORY_VERBATIM_WINDOW",
+        description="Number of most-recent exchanges kept verbatim before summarization",
+    )
+    VOD_FILM_MEMORY_MAX_RECENT_HARD_CAP: int = Field(
+        default=10, ge=3, le=30,
+        env="VOD_FILM_MEMORY_MAX_RECENT_HARD_CAP",
+        description="Hard cap on recent_exchanges list length (safety net if summarizer broken)",
+    )
+    VOD_FILM_MEMORY_SUMMARY_MAX_CHARS: int = Field(
+        default=2000, ge=500, le=5000,
+        env="VOD_FILM_MEMORY_SUMMARY_MAX_CHARS",
+        description="Hard cap on summary prose length (truncated at sentence boundary)",
+    )
+    VOD_FILM_MEMORY_SUMMARIZER_MODEL: str = Field(
+        default="claude-haiku-4-5-20251001",
+        env="VOD_FILM_MEMORY_SUMMARIZER_MODEL",
+        description="Claude model used for memory summarization (fast, cheap)",
+    )
+    VOD_FILM_MEMORY_SUMMARIZER_MAX_TOKENS: int = Field(
+        default=400, ge=100, le=1000,
+        env="VOD_FILM_MEMORY_SUMMARIZER_MAX_TOKENS",
+        description="Max tokens for memory summarizer response",
+    )
+    VOD_FILM_MEMORY_SUMMARIZER_FAILURE_THRESHOLD: int = Field(
+        default=3, ge=1, le=10,
+        env="VOD_FILM_MEMORY_SUMMARIZER_FAILURE_THRESHOLD",
+        description="Consecutive summarizer failures before circuit breaker trips per-memory-doc",
+    )
