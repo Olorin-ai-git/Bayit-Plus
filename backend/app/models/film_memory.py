@@ -8,6 +8,7 @@ from typing import List
 
 from beanie import Document
 from pydantic import BaseModel, Field
+from pymongo import IndexModel
 
 
 class FilmMemoryExchange(BaseModel):
@@ -49,6 +50,10 @@ class VODFilmMemory(Document):
     class Settings:
         name = "vod_film_memories"
         indexes = [
-            [("user_id", 1), ("profile_id", 1), ("content_id", 1)],
+            IndexModel(
+                [("user_id", 1), ("profile_id", 1), ("content_id", 1)],
+                unique=True,
+                name="user_profile_content_unique",
+            ),
             "updated_at",
         ]
