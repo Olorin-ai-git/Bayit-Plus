@@ -6,6 +6,8 @@ avatar can pause a movie, select a character, ask a question, and receive
 animated lip-sync videos of both their avatar and the character's response.
 """
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, status
 from pydantic import BaseModel, Field
 
@@ -20,6 +22,7 @@ from app.models.user import User
 from app.models.vod_interaction import VODInteractionSession
 from app.services.beta.credit_service import credit_service
 from app.services.vod_interaction.pause_ask_models import (
+    MemoryReference,
     PauseAskResult,
     PauseAskServiceError,
 )
@@ -70,6 +73,7 @@ class PauseAskResponseModel(BaseModel):
     character_audio_url: str
     character_animated_video_url: str
     character_video_duration: float
+    memory_metadata: Optional[MemoryReference] = None
 
 
 @router.post(

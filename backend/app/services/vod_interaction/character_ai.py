@@ -5,13 +5,15 @@ Generates in-character dialogue responses using Claude AI.
 Characters stay true to their personality, scene context, and speak naturally to children.
 """
 
-from typing import List, Optional
+from typing import List, Literal, Optional
 from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
 from app.models.vod_interaction import DialogueExchange, CharacterResponse
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
+
+PersonaMode = Literal["character", "speaker"]
 
 
 class CharacterAIService:
@@ -26,7 +28,9 @@ class CharacterAIService:
         character_description: str = "",
         movie_context: str = "",
         child_name: str = "",
-        memory_context: str = ""
+        memory_context: str = "",
+        persona_mode: PersonaMode = "character",
+        audience_description: str = ""
     ) -> CharacterResponse:
         """
         Generate in-character response to user message
@@ -51,6 +55,8 @@ class CharacterAIService:
                 movie_context=movie_context,
                 child_name=child_name,
                 memory_context=memory_context,
+                persona_mode=persona_mode,
+                audience_description=audience_description,
             )
 
             logger.info(
@@ -101,13 +107,24 @@ class CharacterAIService:
         character_description: str = "",
         movie_context: str = "",
         child_name: str = "",
-        memory_context: str = ""
+        memory_context: str = "",
+        persona_mode: PersonaMode = "character",
+        audience_description: str = ""
     ) -> str:
         """Build system prompt for character dialogue generation.
 
         User message is passed separately via the messages array
         to prevent prompt injection.
         """
+        if persona_mode == "speaker":
+            return self._build_speaker_system_prompt(
+                speaker_name=character_name,
+                scene_context=scene_context,
+                history=history,
+                speaker_description=character_description,
+                audience_description=audience_description,
+                memory_context=memory_context,
+            )
 
         history_text = self._format_history(history, child_name=child_name)
 
@@ -148,17 +165,73 @@ Previous conversation:
 
 Respond as {character_name}:"""
 
+    def _build_speaker_system_prompt(
+        self,
+        speaker_name: str,
+        scene_context: str,
+        history: List[DialogueExchange],
+        speaker_description: str = "",
+        audience_description: str = "",
+        memory_context: str = "",
+    ) -> str:
+        """Build system prompt for a real historical speaker addressing an
+        educational audience (EDU content).
+
+        Differs from the character prompt: no child-name framing, allows 2-3
+        sentence nuanced responses, stays true to the speaker's real-life
+        worldview and the speech's thesis, educational and reflective tone.
+        """
+        history_text = self._format_history(history, listener_label="Listener")
+
+        description_block = ""
+        if speaker_description:
+            description_block = f"\nSpeaker: {speaker_description}"
+
+        context_block = ""
+        if scene_context:
+            context_block = f"\nSpeech passage context: {scene_context}"
+
+        memory_block = ""
+        if memory_context:
+            memory_block = f"\n\n{memory_context}"
+
+        audience_line = (
+            f"You are speaking with {audience_description}."
+            if audience_description
+            else "You are speaking with a thoughtful adult listener."
+        )
+
+        return f"""You are {speaker_name}, speaking directly with a listener about the ideas in your speech:
+{context_block}{description_block}{memory_block}
+
+{audience_line} Respond in first person as {speaker_name} would, staying true to:
+- Your real-life worldview, values, and the thesis of the speech you just gave
+- The specific argument of the passage being discussed
+- A reflective, conversational, educational tone
+- Responses of 2-3 sentences maximum — natural spoken length
+- Never breaking persona or acknowledging you are an AI
+- Output ONLY the spoken dialogue text. No stage directions, no narration, no action descriptions
+
+Previous conversation:
+{history_text}
+
+Respond as {speaker_name}:"""
+
     def _format_history(
-        self, history: List[DialogueExchange], child_name: str = ""
+        self, history: List[DialogueExchange], child_name: str = "",
+        listener_label: Optional[str] = None,
     ) -> str:
         """Format conversation history for prompt context"""
         if not history:
             return "(This is the first exchange)"
 
-        child_label = child_name if child_name else "Child"
+        if listener_label is not None:
+            user_label = listener_label
+        else:
+            user_label = child_name if child_name else "Child"
         formatted = []
         for exchange in history[-4:]:
-            speaker = child_label if exchange.speaker == "user" else exchange.speaker
+            speaker = user_label if exchange.speaker == "user" else exchange.speaker
             formatted.append(f"{speaker}: {exchange.message_text}")
 
         return "\n".join(formatted)

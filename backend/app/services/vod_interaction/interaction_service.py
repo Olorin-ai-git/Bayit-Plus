@@ -90,6 +90,8 @@ class VODInteractionService:
                 scene_context=moment.scene_context,
                 character_voice_id=moment.voice_id,
                 character_frame_url=moment.character_frame_url,
+                persona_mode=content.persona_mode,
+                audience_description=content.audience_description,
                 child_first_name=avatar.child_first_name,
                 status="active"
             )
@@ -182,6 +184,8 @@ class VODInteractionService:
                 character_description=char_desc,
                 character_voice_id=voice_id,
                 character_frame_url=frame_url,
+                persona_mode=content.persona_mode,
+                audience_description=content.audience_description,
                 child_first_name=child_first_name,
                 status="active"
             )
@@ -269,6 +273,8 @@ class VODInteractionService:
                 movie_context=scene_context,
                 child_name=session.child_first_name or "",
                 memory_context=memory_context,
+                persona_mode=session.persona_mode or "character",
+                audience_description=session.audience_description or "",
             )
 
             if BLOCKED_RESPONSE_PATTERNS.search(character_response.text):
@@ -348,6 +354,8 @@ class VODInteractionService:
                     session.user_id, session.profile_id, session.content_id,
                 )
                 await film_memory_service.ingest_exchanges(memory, film_exchanges)
+                session.memory_ingested_count = len(session.dialogue_exchanges)
+                await session.save()
 
         logger.info(
             "Session completed",
@@ -362,9 +370,14 @@ class VODInteractionService:
     def _dialogue_to_film_exchanges(
         self, session: VODInteractionSession,
     ) -> List[FilmMemoryExchange]:
-        """Pair user/character DialogueExchanges into FilmMemoryExchange entries."""
+        """Pair user/character DialogueExchanges into FilmMemoryExchange entries.
+
+        Only pairs exchanges that have not already been ingested
+        (per session.memory_ingested_count) to prevent double-writes
+        when pause-ask has already ingested per-turn.
+        """
         pairs: List[FilmMemoryExchange] = []
-        i = 0
+        i = session.memory_ingested_count
         exchanges = session.dialogue_exchanges
         while i < len(exchanges) - 1:
             user_msg = exchanges[i]

@@ -195,8 +195,25 @@ class VODInteractionSession(Document):
     character_description: Optional[str] = Field(None, description="Denormalized character desc")
     character_voice_id: Optional[str] = Field(None, description="Denormalized voice ID")
     character_frame_url: Optional[str] = Field(None, description="Denormalized frame URL")
+    persona_mode: Optional[str] = Field(
+        None,
+        description=(
+            "Denormalized from Content: 'character' (default, child audience) "
+            "or 'speaker' (EDU, adult audience). Drives AI prompt template."
+        ),
+    )
+    audience_description: Optional[str] = Field(
+        None,
+        description="Denormalized from Content. Used only when persona_mode='speaker'.",
+    )
     child_first_name: Optional[str] = Field(None, description="Child avatar first name for AI personalization")
     dialogue_exchanges: List[DialogueExchange] = Field(default_factory=list)
+    memory_ingested_count: int = Field(
+        default=0,
+        description="Number of dialogue_exchanges already ingested to VODFilmMemory. "
+                    "Both pause-ask per-turn ingestion and complete_session bulk "
+                    "ingestion advance this counter to prevent double-writes.",
+    )
     status: str = Field(default="active", description="active, recording, completed")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
