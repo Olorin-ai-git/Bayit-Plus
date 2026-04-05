@@ -88,6 +88,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import cultural_context_user
     # Comprehension quiz routes
     from app.api.routes import comprehension
+    # Comprehension Mode DEV-ONLY turn-loop entry point (Phase 1 Plan 01-02)
+    from app.api.routes import comprehension_dev
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
     from app.api.routes.olorin import vanity_router as olorin_vanity_router
@@ -407,6 +409,11 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(quiz.router, prefix=f"{prefix}/quiz", tags=["quiz"])
     app.include_router(rewards.router, prefix=f"{prefix}/rewards", tags=["rewards"])
     app.include_router(comprehension.router, prefix=f"{prefix}/comprehension", tags=["comprehension"])
+    app.include_router(
+        comprehension_dev.router,
+        prefix=f"{prefix}/comprehension/dev",
+        tags=["comprehension-dev"],
+    )
     app.include_router(
         cultural_context_user.router,
         prefix=prefix,
