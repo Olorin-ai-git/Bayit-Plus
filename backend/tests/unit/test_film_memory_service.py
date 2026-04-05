@@ -122,15 +122,15 @@ def test_build_memory_context_exchanges_only_no_summary():
 
 
 # ---------------------------------------------------------------------------
-# Task 7: ingest_exchanges
+# Task 7: ingest_exchanges (patching _save_with_version per Task 9 update)
 # ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_ingest_exchanges_appends_under_window():
     service = FilmMemoryService()
     memory = _make_memory()
-    mock_save = AsyncMock()
-    with patch.object(VODFilmMemory, "save", mock_save):
+    mock_save = AsyncMock(return_value=True)
+    with patch.object(FilmMemoryService, "_save_with_version", mock_save):
         result = await service.ingest_exchanges(memory, [_exchange()])
     assert len(result.recent_exchanges) == 1
     assert result.exchange_count == 1
@@ -150,7 +150,7 @@ async def test_ingest_exchanges_rolls_over_when_exceeding_window():
         exchange_count=3,
     )
     mock_summarize = AsyncMock(return_value="Summary text.")
-    with patch.object(VODFilmMemory, "save", new=AsyncMock()), \
+    with patch.object(FilmMemoryService, "_save_with_version", new=AsyncMock(return_value=True)), \
          patch(
              "app.services.vod_interaction.film_memory_service.film_memory_summarizer.summarize",
              new=mock_summarize,
@@ -182,7 +182,7 @@ async def test_ingest_exchanges_summarizer_failure_keeps_verbatim_no_rollover():
         summarizer_failure_streak=0,
     )
     mock_summarize = AsyncMock(side_effect=SummarizerFailure("boom"))
-    with patch.object(VODFilmMemory, "save", new=AsyncMock()), \
+    with patch.object(FilmMemoryService, "_save_with_version", new=AsyncMock(return_value=True)), \
          patch(
              "app.services.vod_interaction.film_memory_service.film_memory_summarizer.summarize",
              new=mock_summarize,
@@ -207,7 +207,7 @@ async def test_ingest_exchanges_circuit_breaker_skips_summarizer_after_threshold
         summarizer_failure_streak=3,
     )
     mock_summarize = AsyncMock(return_value="unused")
-    with patch.object(VODFilmMemory, "save", new=AsyncMock()), \
+    with patch.object(FilmMemoryService, "_save_with_version", new=AsyncMock(return_value=True)), \
          patch(
              "app.services.vod_interaction.film_memory_service.film_memory_summarizer.summarize",
              new=mock_summarize,
@@ -228,7 +228,7 @@ async def test_ingest_exchanges_hard_cap_drops_oldest_past_limit():
         ],
         summarizer_failure_streak=3,
     )
-    with patch.object(VODFilmMemory, "save", new=AsyncMock()):
+    with patch.object(FilmMemoryService, "_save_with_version", new=AsyncMock(return_value=True)):
         result = await service.ingest_exchanges(
             memory, [_exchange(timestamp=99.0, user_msg="m99")],
         )
@@ -249,7 +249,7 @@ async def test_ingest_exchanges_resets_failure_streak_on_success():
         summarizer_failure_streak=2,
     )
     mock_summarize = AsyncMock(return_value="Summary.")
-    with patch.object(VODFilmMemory, "save", new=AsyncMock()), \
+    with patch.object(FilmMemoryService, "_save_with_version", new=AsyncMock(return_value=True)), \
          patch(
              "app.services.vod_interaction.film_memory_service.film_memory_summarizer.summarize",
              new=mock_summarize,
@@ -279,3 +279,44 @@ async def test_reset_for_user_content_noop_when_absent():
     service = FilmMemoryService()
     with patch.object(VODFilmMemory, "find", new=_fake_find_returning(None)):
         await service.reset_for_user_content("u", "p", "c")
+
+
+# ---------------------------------------------------------------------------
+# Task 9: versioned concurrent writes
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_ingest_exchanges_retries_once_on_version_conflict():
+    service = FilmMemoryService()
+    memory = _make_memory(version=0)
+    refreshed = _make_memory(version=1, recent_exchanges=[])
+    save_results = [False, True]
+    save_calls = []
+
+    async def mock_save_with_version(_self, mem_arg):
+        save_calls.append(mem_arg.version)
+        success = save_results.pop(0)
+        if success:
+            mem_arg.version += 1
+        return success
+
+    with patch.object(FilmMemoryService, "_save_with_version", new=mock_save_with_version), \
+         patch.object(VODFilmMemory, "find", new=_fake_find_returning(refreshed)):
+        result = await service.ingest_exchanges(memory, [_exchange()])
+    assert len(save_calls) == 2
+    assert result.version == 2
+
+
+@pytest.mark.asyncio
+async def test_ingest_exchanges_gives_up_after_second_conflict():
+    service = FilmMemoryService()
+    memory = _make_memory(version=0)
+    refreshed = _make_memory(version=5)
+
+    async def mock_save_always_conflict(_self, _mem_arg):
+        return False
+
+    with patch.object(FilmMemoryService, "_save_with_version", new=mock_save_always_conflict), \
+         patch.object(VODFilmMemory, "find", new=_fake_find_returning(refreshed)):
+        result = await service.ingest_exchanges(memory, [_exchange()])
+    assert result.version == 5

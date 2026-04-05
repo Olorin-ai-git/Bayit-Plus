@@ -127,8 +127,28 @@ class FilmMemoryService:
             )
 
         memory.updated_at = datetime.utcnow()
-        await memory.save()
-        return memory
+        saved = await self._save_with_version(memory)
+        if saved:
+            return memory
+        logger.warning(
+            "VODFilmMemory version conflict, refetching and retrying once",
+            extra={"user_id": memory.user_id, "content_id": memory.content_id},
+        )
+        fresh = await VODFilmMemory.find(
+            {"user_id": memory.user_id, "profile_id": memory.profile_id, "content_id": memory.content_id},
+        ).first_or_none()
+        if fresh is None:
+            return memory
+        fresh.recent_exchanges.extend(new_exchanges)
+        fresh.exchange_count += len(new_exchanges)
+        fresh.updated_at = datetime.utcnow()
+        saved_retry = await self._save_with_version(fresh)
+        if not saved_retry:
+            logger.warning(
+                "VODFilmMemory version conflict on retry, skipping write",
+                extra={"user_id": memory.user_id, "content_id": memory.content_id},
+            )
+        return fresh
 
     async def reset_for_user_content(
         self, user_id: str, profile_id: str, content_id: str,
@@ -145,6 +165,25 @@ class FilmMemoryService:
                     "user_id": user_id, "profile_id": profile_id, "content_id": content_id,
                 },
             )
+
+    async def _save_with_version(self, memory: VODFilmMemory) -> bool:
+        """Atomic versioned update. Returns True on success, False on conflict."""
+        collection = VODFilmMemory.get_motor_collection()
+        current_version = memory.version
+        new_version = current_version + 1
+
+        update_doc = memory.model_dump(exclude={"id"})
+        update_doc["version"] = new_version
+
+        result = await collection.find_one_and_update(
+            {"_id": memory.id, "version": current_version},
+            {"$set": update_doc},
+            return_document=True,
+        )
+        if result is None:
+            return False
+        memory.version = new_version
+        return True
 
 
 film_memory_service = FilmMemoryService()
