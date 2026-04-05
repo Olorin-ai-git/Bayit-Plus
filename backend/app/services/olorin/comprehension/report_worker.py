@@ -38,8 +38,7 @@ def _redis_settings_from_url(url: str) -> RedisSettings:
 async def _upsert_report(report: ComprehensionReport) -> None:
     """Replace the existing report for comprehension_session_id, or insert."""
     existing = await ComprehensionReport.find_one(
-        ComprehensionReport.comprehension_session_id
-        == report.comprehension_session_id,
+        {"comprehension_session_id": report.comprehension_session_id},
     )
     if existing is not None:
         existing.partner_id = report.partner_id
@@ -68,7 +67,7 @@ async def _record_failure(
 ) -> None:
     """Persist terminal generation_failed state (best-effort)."""
     existing = await ComprehensionReport.find_one(
-        ComprehensionReport.comprehension_session_id == session_id,
+        {"comprehension_session_id": session_id},
     )
     err = str(exc)[:500]
     if existing is not None:
