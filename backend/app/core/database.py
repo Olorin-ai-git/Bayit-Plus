@@ -170,6 +170,8 @@ from app.models.vod_interaction import VODInteractionSession
 from app.models.film_memory import VODFilmMemory
 # Phase 2: Comprehension Mode scored-turn persistence
 from app.models.comprehension_session import ComprehensionSession
+# Phase 3: Comprehension Mode post-session assembly-only report
+from app.models.comprehension_report import ComprehensionReport
 # Guest demo usage tracking (unauthenticated pricing-page interactions)
 from app.models.guest_demo import GuestDemoUsage
 # Consumer submission model (lead capture from interactive demo)
@@ -486,6 +488,8 @@ async def connect_to_mongo():
         VODFilmMemory,
         # Comprehension Mode scored-turn persistence (Phase 2)
         ComprehensionSession,
+        # Comprehension Mode post-session report (Phase 3)
+        ComprehensionReport,
         # BYOC AI-powered ingestion models
         ChannelIndexEntry,
         BYOCProvider,
