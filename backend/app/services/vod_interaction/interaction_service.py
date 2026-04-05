@@ -17,8 +17,10 @@ from app.models.vod_interaction import (
 from app.models.content import Content
 from app.models.child_avatar import ChildAvatar
 from app.models.character import Character
+from app.models.film_memory import FilmMemoryExchange
 from app.services.vod_interaction.character_ai import character_ai_service
 from app.services.vod_interaction.character_animator import character_animator_service
+from app.services.vod_interaction.film_memory_service import film_memory_service
 from app.services.beta.credit_service import credit_service
 from app.core.logging_config import get_logger
 from app.core.config import settings
@@ -251,6 +253,13 @@ class VODInteractionService:
                 or await self._get_character_voice_id(session.character_name)
             )
 
+            memory_context = ""
+            if settings.VOD_FILM_MEMORY_ENABLED:
+                memory = await film_memory_service.get_or_create(
+                    session.user_id, session.profile_id, session.content_id,
+                )
+                memory_context = film_memory_service.build_memory_context(memory)
+
             character_response = await character_ai_service.generate_response(
                 character_name=session.character_name,
                 scene_context=scene_context,
@@ -259,6 +268,7 @@ class VODInteractionService:
                 character_description=character_description,
                 movie_context=scene_context,
                 child_name=session.child_first_name or "",
+                memory_context=memory_context,
             )
 
             if BLOCKED_RESPONSE_PATTERNS.search(character_response.text):
@@ -320,13 +330,8 @@ class VODInteractionService:
 
     async def complete_session(self, session_id: str) -> VODInteractionSession:
         """
-        Mark session as completed
-
-        Args:
-            session_id: Session ID
-
-        Returns:
-            Updated session
+        Mark session as completed. If VOD_FILM_MEMORY_ENABLED, also ingest
+        this session's dialogue pairs into the film memory.
         """
         session = await VODInteractionSession.get(session_id)
         if not session:
@@ -336,15 +341,46 @@ class VODInteractionService:
         session.updated_at = datetime.utcnow()
         await session.save()
 
+        if settings.VOD_FILM_MEMORY_ENABLED:
+            film_exchanges = self._dialogue_to_film_exchanges(session)
+            if film_exchanges:
+                memory = await film_memory_service.get_or_create(
+                    session.user_id, session.profile_id, session.content_id,
+                )
+                await film_memory_service.ingest_exchanges(memory, film_exchanges)
+
         logger.info(
             "Session completed",
             extra={
                 "session_id": str(session.id),
-                "exchanges_count": len(session.dialogue_exchanges)
-            }
+                "exchanges_count": len(session.dialogue_exchanges),
+            },
         )
 
         return session
+
+    def _dialogue_to_film_exchanges(
+        self, session: VODInteractionSession,
+    ) -> List[FilmMemoryExchange]:
+        """Pair user/character DialogueExchanges into FilmMemoryExchange entries."""
+        pairs: List[FilmMemoryExchange] = []
+        i = 0
+        exchanges = session.dialogue_exchanges
+        while i < len(exchanges) - 1:
+            user_msg = exchanges[i]
+            char_msg = exchanges[i + 1]
+            if user_msg.speaker == "user" and char_msg.speaker == "character":
+                pairs.append(FilmMemoryExchange(
+                    moment_timestamp=session.moment_timestamp,
+                    character_name=session.character_name,
+                    user_message=user_msg.message_text,
+                    character_response=char_msg.message_text,
+                    created_at=char_msg.timestamp,
+                ))
+                i += 2
+            else:
+                i += 1
+        return pairs
 
     def _find_moment(
         self,
