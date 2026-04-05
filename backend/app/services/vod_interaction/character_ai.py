@@ -25,7 +25,8 @@ class CharacterAIService:
         conversation_history: List[DialogueExchange],
         character_description: str = "",
         movie_context: str = "",
-        child_name: str = ""
+        child_name: str = "",
+        memory_context: str = ""
     ) -> CharacterResponse:
         """
         Generate in-character response to user message
@@ -49,6 +50,7 @@ class CharacterAIService:
                 character_description=character_description,
                 movie_context=movie_context,
                 child_name=child_name,
+                memory_context=memory_context,
             )
 
             logger.info(
@@ -98,7 +100,8 @@ class CharacterAIService:
         history: List[DialogueExchange],
         character_description: str = "",
         movie_context: str = "",
-        child_name: str = ""
+        child_name: str = "",
+        memory_context: str = ""
     ) -> str:
         """Build system prompt for character dialogue generation.
 
@@ -116,6 +119,10 @@ class CharacterAIService:
         if movie_context:
             context_block = f"\nMovie Context: {movie_context}"
 
+        memory_block = ""
+        if memory_context:
+            memory_block = f"\n\n{memory_context}"
+
         child_intro = (
             f"A child named {child_name} is talking to you."
             if child_name
@@ -124,7 +131,7 @@ class CharacterAIService:
 
         return f"""You are {character_name} from this scene:
 
-Scene Context: {scene_context}{description_block}{context_block}
+Scene Context: {scene_context}{description_block}{context_block}{memory_block}
 
 {child_intro} Respond in character as {character_name} would, staying true to:
 - Your personality, values, and speech patterns
