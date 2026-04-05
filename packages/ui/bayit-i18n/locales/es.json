@@ -4864,7 +4864,26 @@
     "loading": "Cargando pregunta...",
     "insufficient_credits": "Créditos insuficientes para pregunta de comprensión",
     "error": "Error al cargar la pregunta",
-    "comprehensionCheck": "Comprobación de comprensión"
+    "comprehensionCheck": "Comprobación de comprensión",
+    "reaction": {
+      "correct": "Exacto - lo viste claramente.",
+      "partial": "Estás cerca. Déjame decirlo de otra forma.",
+      "incorrect": "No del todo - piensa en lo que realmente ocurría."
+    },
+    "retry": {
+      "prompt": "Inténtalo de nuevo - lo formularé de otra manera."
+    },
+    "answer_reveal": {
+      "intro": "A esto me refería:",
+      "closing": "Sigamos viendo."
+    },
+    "answer": {
+      "input_placeholder_text": "Escribe tu respuesta...",
+      "input_placeholder_voice": "Mantén pulsado para hablar tu respuesta"
+    },
+    "toggle": {
+      "label": "Modo Comprensión"
+    }
   },
   "content": {
     "play": "Reproducir",

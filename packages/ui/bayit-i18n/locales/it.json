@@ -4864,7 +4864,26 @@
     "loading": "Caricamento domanda...",
     "insufficient_credits": "Crediti insufficienti per la domanda di comprensione",
     "error": "Errore nel caricamento della domanda",
-    "comprehensionCheck": "Verifica comprensione"
+    "comprehensionCheck": "Verifica comprensione",
+    "reaction": {
+      "correct": "Esatto - l'hai capito al volo.",
+      "partial": "Ci sei quasi. Lascia che lo dica in un altro modo.",
+      "incorrect": "Non proprio - pensa a cosa stava davvero accadendo."
+    },
+    "retry": {
+      "prompt": "Riprova - stavolta lo formulo diversamente."
+    },
+    "answer_reveal": {
+      "intro": "Ecco cosa volevo dire:",
+      "closing": "Continuiamo a guardare."
+    },
+    "answer": {
+      "input_placeholder_text": "Scrivi la tua risposta...",
+      "input_placeholder_voice": "Tieni premuto per parlare la tua risposta"
+    },
+    "toggle": {
+      "label": "Modalità Comprensione"
+    }
   },
   "content": {
     "play": "Riproduci",

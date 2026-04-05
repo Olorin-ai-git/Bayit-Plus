@@ -4864,7 +4864,26 @@
     "loading": "質問を読み込み中...",
     "insufficient_credits": "理解度クイズに必要なクレジットが不足しています",
     "error": "質問の読み込みエラー",
-    "comprehensionCheck": "理解度チェック"
+    "comprehensionCheck": "理解度チェック",
+    "reaction": {
+      "correct": "その通り - 見抜いたね。",
+      "partial": "近いよ。別の言い方をしてみよう。",
+      "incorrect": "惜しい - あそこで本当に何が起きていたか考えてみて。"
+    },
+    "retry": {
+      "prompt": "もう一度やってみて - 今度は違う言い方で聞くよ。"
+    },
+    "answer_reveal": {
+      "intro": "言いたかったのはこういうことだ:",
+      "closing": "観続けよう。"
+    },
+    "answer": {
+      "input_placeholder_text": "答えを入力してください...",
+      "input_placeholder_voice": "長押しして答えを話してください"
+    },
+    "toggle": {
+      "label": "理解モード"
+    }
   },
   "content": {
     "play": "再生",

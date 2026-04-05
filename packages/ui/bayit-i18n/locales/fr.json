@@ -4864,7 +4864,26 @@
     "loading": "Chargement de la question...",
     "insufficient_credits": "Crédits insuffisants pour la question de compréhension",
     "error": "Erreur lors du chargement de la question",
-    "comprehensionCheck": "Test de compréhension"
+    "comprehensionCheck": "Test de compréhension",
+    "reaction": {
+      "correct": "Exactement - tu as vu juste.",
+      "partial": "Tu y es presque. Laisse-moi reformuler.",
+      "incorrect": "Pas tout à fait - réfléchis à ce qui se passait vraiment."
+    },
+    "retry": {
+      "prompt": "Essaie encore - je vais le formuler autrement."
+    },
+    "answer_reveal": {
+      "intro": "Voici ce que je voulais dire:",
+      "closing": "Continuons à regarder."
+    },
+    "answer": {
+      "input_placeholder_text": "Tape ta réponse...",
+      "input_placeholder_voice": "Maintiens appuyé pour parler ta réponse"
+    },
+    "toggle": {
+      "label": "Mode Compréhension"
+    }
   },
   "content": {
     "play": "Lire",
