@@ -1,0 +1,708 @@
+{
+  "metadata": {
+    "film_title": "His Girl Friday",
+    "film_year": 1940,
+    "rubric_file": "his_girl_friday_rubric.md",
+    "authored_by": "dev+LLM-draft+dev-verified",
+    "authored_date": "2026-04-04",
+    "tuple_count": 52,
+    "band_distribution": {
+      "wrong": 15,
+      "partial": 15,
+      "right": 15,
+      "insightful": 7
+    },
+    "scene_count": 15,
+    "authoring_protocol": "D-19: dev selects scene+concept, LLM drafts candidate answer, dev verifies score against rubric."
+  },
+  "tuples": [
+    {
+      "tuple_id": "hgf-001",
+      "scene_id": "newsroom-opening",
+      "scene_context": "Hildy Johnson walks into the bustling newsroom to tell her ex-husband Walter Burns she is retiring from journalism to marry Bruce Baldwin. Walter sits behind his desk, barely looking up from his paperwork.",
+      "question": "Why does Walter pretend to be unbothered when Hildy announces she's leaving?",
+      "student_answer": "Because he doesn't actually care about her anymore.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["surface", "scheming", "manipulation"],
+      "band_category": "wrong",
+      "notes": "Wrong: reads Walter's calm as indifference when the scene frames it as tactical. Walter spends the rest of the film scheming to keep Hildy."
+    },
+    {
+      "tuple_id": "hgf-002",
+      "scene_id": "newsroom-opening",
+      "scene_context": "Hildy Johnson walks into the bustling newsroom to tell her ex-husband Walter Burns she is retiring from journalism to marry Bruce Baldwin. Walter sits behind his desk, barely looking up from his paperwork.",
+      "question": "Why does Walter pretend to be unbothered when Hildy announces she's leaving?",
+      "student_answer": "Walter wants her to stay.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["right motive", "misses", "tactic"],
+      "band_category": "partial",
+      "notes": "Partial: correct about Walter's goal but misses that his calm is a deliberate tactic, not resignation."
+    },
+    {
+      "tuple_id": "hgf-003",
+      "scene_id": "newsroom-opening",
+      "scene_context": "Hildy Johnson walks into the bustling newsroom to tell her ex-husband Walter Burns she is retiring from journalism to marry Bruce Baldwin. Walter sits behind his desk, barely looking up from his paperwork.",
+      "question": "Why does Walter pretend to be unbothered when Hildy announces she's leaving?",
+      "student_answer": "Walter's indifference is a bluff — he knows showing desperation would make Hildy dig in, so he plays it cool while he figures out how to pull her back.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": ["bluff", "tactic", "manipulation"],
+      "band_category": "right",
+      "notes": "Right: names the tactic (bluff) and the anti-leverage insight (showing desperation would lose her)."
+    },
+    {
+      "tuple_id": "hgf-004",
+      "scene_id": "newsroom-opening",
+      "scene_context": "Hildy Johnson walks into the bustling newsroom to tell her ex-husband Walter Burns she is retiring from journalism to marry Bruce Baldwin. Walter sits behind his desk, barely looking up from his paperwork.",
+      "question": "Why does Walter pretend to be unbothered when Hildy announces she's leaving?",
+      "student_answer": "His calm is the whole joke — Hawks stages Walter's manipulation as ordinary workplace behavior, which is how the film gets us to root for the manipulator and treat Hildy's return to journalism as a rescue, not a trap.",
+      "expected_score": 3,
+      "expected_band": "high",
+      "expected_rationale_contains": ["craft", "complicity", "workplace"],
+      "band_category": "insightful",
+      "notes": "Insightful: connects the scene to Hawks' craft choice and the audience-complicity theme that runs through the film."
+    },
+    {
+      "tuple_id": "hgf-005",
+      "scene_id": "walter-office-first-meeting",
+      "scene_context": "Walter invites Hildy and her fiance Bruce to lunch. In his private office before they leave, Walter sizes Bruce up for the first time.",
+      "question": "What is Walter doing when he studies Bruce so carefully?",
+      "student_answer": "He's being polite because Bruce is Hildy's fiance.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not polite", "sizing up", "opponent"],
+      "band_category": "wrong",
+      "notes": "Wrong: reads the moment as politeness when Walter is sizing up an opponent to find his weaknesses."
+    },
+    {
+      "tuple_id": "hgf-006",
+      "scene_id": "walter-office-first-meeting",
+      "scene_context": "Walter invites Hildy and her fiance Bruce to lunch. In his private office before they leave, Walter sizes Bruce up for the first time.",
+      "question": "What is Walter doing when he studies Bruce so carefully?",
+      "student_answer": "Walter is checking out his rival.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["rival", "misses", "tactical"],
+      "band_category": "partial",
+      "notes": "Partial: names the frame (rival) but misses that Walter is cataloging exploitable weaknesses, not just assessing."
+    },
+    {
+      "tuple_id": "hgf-007",
+      "scene_id": "walter-office-first-meeting",
+      "scene_context": "Walter invites Hildy and her fiance Bruce to lunch. In his private office before they leave, Walter sizes Bruce up for the first time.",
+      "question": "What is Walter doing when he studies Bruce so carefully?",
+      "student_answer": "Walter is cataloging Bruce's weak points — the soft manners, the insurance-salesman steadiness — so he can use them against Bruce later in his plan to keep Hildy.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": ["cataloging", "weak points", "exploit"],
+      "band_category": "right",
+      "notes": "Right: identifies the cataloging-for-exploitation dynamic with specifics (soft manners, steadiness)."
+    },
+    {
+      "tuple_id": "hgf-008",
+      "scene_id": "lunch-with-bruce",
+      "scene_context": "Walter takes Hildy and Bruce to lunch at a restaurant. Walter steers the conversation and orders for everyone.",
+      "question": "Why does Walter insist on ordering Bruce's lunch for him?",
+      "student_answer": "Because Walter is a bossy guy.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not bossy", "territory", "emasculate"],
+      "band_category": "wrong",
+      "notes": "Wrong: treats ordering as a personality trait, missing that it's a territorial move to diminish Bruce in front of Hildy."
+    },
+    {
+      "tuple_id": "hgf-009",
+      "scene_id": "lunch-with-bruce",
+      "scene_context": "Walter takes Hildy and Bruce to lunch at a restaurant. Walter steers the conversation and orders for everyone.",
+      "question": "Why does Walter insist on ordering Bruce's lunch for him?",
+      "student_answer": "Walter is trying to take control of the situation.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["control", "misses", "diminish"],
+      "band_category": "partial",
+      "notes": "Partial: correct that it's about control but misses the specific aim of diminishing Bruce in front of Hildy."
+    },
+    {
+      "tuple_id": "hgf-010",
+      "scene_id": "lunch-with-bruce",
+      "scene_context": "Walter takes Hildy and Bruce to lunch at a restaurant. Walter steers the conversation and orders for everyone.",
+      "question": "Why does Walter insist on ordering Bruce's lunch for him?",
+      "student_answer": "Walter is performing alpha-male dominance in front of Hildy — each small choice he makes for Bruce makes Bruce look passive and Walter look decisive.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "dominance",
+        "performance",
+        "Bruce looks passive"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the performance-of-dominance dynamic and its effect on how Hildy perceives Bruce."
+    },
+    {
+      "tuple_id": "hgf-011",
+      "scene_id": "pressroom-press-gang",
+      "scene_context": "The pressroom at the county jail is full of reporters playing cards and swapping jokes while waiting for Earl Williams' execution.",
+      "question": "What does the reporters' card game tell us about how they treat Earl Williams' execution?",
+      "student_answer": "They're taking a break before the execution.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not break", "routine", "desensitized"],
+      "band_category": "wrong",
+      "notes": "Wrong: reads the card game as downtime when the film is using it to show the reporters are desensitized to state killing."
+    },
+    {
+      "tuple_id": "hgf-012",
+      "scene_id": "pressroom-press-gang",
+      "scene_context": "The pressroom at the county jail is full of reporters playing cards and swapping jokes while waiting for Earl Williams' execution.",
+      "question": "What does the reporters' card game tell us about how they treat Earl Williams' execution?",
+      "student_answer": "The reporters are used to covering hangings.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["used to", "misses", "critique"],
+      "band_category": "partial",
+      "notes": "Partial: names the desensitization but misses that the film is staging it as critique, not just fact."
+    },
+    {
+      "tuple_id": "hgf-013",
+      "scene_id": "pressroom-press-gang",
+      "scene_context": "The pressroom at the county jail is full of reporters playing cards and swapping jokes while waiting for Earl Williams' execution.",
+      "question": "What does the reporters' card game tell us about how they treat Earl Williams' execution?",
+      "student_answer": "The reporters treat the hanging as a routine work assignment — the casual card game is the film's way of showing that journalism has stopped treating state killing as a moral event.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": ["routine", "moral event", "critique"],
+      "band_category": "right",
+      "notes": "Right: names the normalization-as-critique reading and its connection to the film's journalism-ethics theme."
+    },
+    {
+      "tuple_id": "hgf-014",
+      "scene_id": "pressroom-press-gang",
+      "scene_context": "The pressroom at the county jail is full of reporters playing cards and swapping jokes while waiting for Earl Williams' execution.",
+      "question": "What does the reporters' card game tell us about how they treat Earl Williams' execution?",
+      "student_answer": "The card game is the film telling us that the real villains aren't Walter or the mayor — they are the press corps itself, which has turned the machinery of state violence into background ambience and has lost the capacity to be outraged.",
+      "expected_score": 3,
+      "expected_band": "high",
+      "expected_rationale_contains": ["villains", "press corps", "background"],
+      "band_category": "insightful",
+      "notes": "Insightful: widens the indictment from Walter to the whole press corps and names the aesthetic (background ambience) doing the work."
+    },
+    {
+      "tuple_id": "hgf-015",
+      "scene_id": "earl-williams-interview",
+      "scene_context": "Hildy interviews Earl Williams in his cell before his execution. Earl is a meek, confused man who does not understand the politics around his case.",
+      "question": "Why does Hildy choose a sympathetic angle for her Earl Williams story?",
+      "student_answer": "Because she feels bad for him.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not sentiment", "craft", "political"],
+      "band_category": "wrong",
+      "notes": "Wrong: reduces Hildy's choice to sentiment when the scene frames it as a political-journalism craft decision."
+    },
+    {
+      "tuple_id": "hgf-016",
+      "scene_id": "earl-williams-interview",
+      "scene_context": "Hildy interviews Earl Williams in his cell before his execution. Earl is a meek, confused man who does not understand the politics around his case.",
+      "question": "Why does Hildy choose a sympathetic angle for her Earl Williams story?",
+      "student_answer": "Hildy wants readers to care about Earl.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["care", "misses", "political"],
+      "band_category": "partial",
+      "notes": "Partial: right about the emotional aim but misses that the sympathy angle is a lever against the mayor's execution politics."
+    },
+    {
+      "tuple_id": "hgf-017",
+      "scene_id": "earl-williams-interview",
+      "scene_context": "Hildy interviews Earl Williams in his cell before his execution. Earl is a meek, confused man who does not understand the politics around his case.",
+      "question": "Why does Hildy choose a sympathetic angle for her Earl Williams story?",
+      "student_answer": "Hildy knows a sympathy story will weaponize public opinion against the mayor, who needs the execution for his election — she's choosing a frame that is both true to Earl and politically useful.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "weaponize",
+        "mayor",
+        "politically useful"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the dual-purpose framing (true + politically useful) and its target (the mayor's election)."
+    },
+    {
+      "tuple_id": "hgf-018",
+      "scene_id": "molly-malloy-defense",
+      "scene_context": "Molly Malloy bursts into the pressroom to defend Earl Williams, accusing the reporters of twisting their friendship into a scandal.",
+      "question": "What does Molly's outburst reveal about the reporters' treatment of her story?",
+      "student_answer": "Molly is upset about Earl.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": [
+        "not about Earl",
+        "reporters fabricated",
+        "accusation"
+      ],
+      "band_category": "wrong",
+      "notes": "Wrong: misses that Molly's outburst is a direct accusation that the reporters fabricated a romance."
+    },
+    {
+      "tuple_id": "hgf-019",
+      "scene_id": "molly-malloy-defense",
+      "scene_context": "Molly Malloy bursts into the pressroom to defend Earl Williams, accusing the reporters of twisting their friendship into a scandal.",
+      "question": "What does Molly's outburst reveal about the reporters' treatment of her story?",
+      "student_answer": "Molly says the reporters got her story wrong.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["got wrong", "misses", "invented"],
+      "band_category": "partial",
+      "notes": "Partial: notes the complaint but misses that she's charging them with inventing the story, not just misreporting."
+    },
+    {
+      "tuple_id": "hgf-020",
+      "scene_id": "molly-malloy-defense",
+      "scene_context": "Molly Malloy bursts into the pressroom to defend Earl Williams, accusing the reporters of twisting their friendship into a scandal.",
+      "question": "What does Molly's outburst reveal about the reporters' treatment of her story?",
+      "student_answer": "Molly is calling out the reporters for inventing a romance between her and Earl to sell copies — her outburst reveals that the press corps has been manufacturing facts, not reporting them.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "inventing",
+        "manufacturing",
+        "sell copies"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the manufacturing-not-reporting charge and its commercial motive."
+    },
+    {
+      "tuple_id": "hgf-021",
+      "scene_id": "walter-sabotage-bruce",
+      "scene_context": "Walter arranges a series of calamities to delay Bruce: a fake counterfeiting charge, a staged pickpocket incident, a mysterious woman claiming Bruce proposed to her.",
+      "question": "What pattern connects all of Walter's moves against Bruce?",
+      "student_answer": "Walter wants to hurt Bruce.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not hurt", "delay", "escalation"],
+      "band_category": "wrong",
+      "notes": "Wrong: frames Walter's moves as harm-seeking rather than delay-engineering. He wants Bruce stuck, not injured."
+    },
+    {
+      "tuple_id": "hgf-022",
+      "scene_id": "walter-sabotage-bruce",
+      "scene_context": "Walter arranges a series of calamities to delay Bruce: a fake counterfeiting charge, a staged pickpocket incident, a mysterious woman claiming Bruce proposed to her.",
+      "question": "What pattern connects all of Walter's moves against Bruce?",
+      "student_answer": "Walter keeps getting Bruce in trouble.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["trouble", "misses", "escalating"],
+      "band_category": "partial",
+      "notes": "Partial: notes the pattern but misses that each incident is engineered to delay Bruce and escalates in stakes."
+    },
+    {
+      "tuple_id": "hgf-023",
+      "scene_id": "walter-sabotage-bruce",
+      "scene_context": "Walter arranges a series of calamities to delay Bruce: a fake counterfeiting charge, a staged pickpocket incident, a mysterious woman claiming Bruce proposed to her.",
+      "question": "What pattern connects all of Walter's moves against Bruce?",
+      "student_answer": "Each staged calamity is a delay tactic that escalates in stakes — small trouble, then legal trouble, then romantic trouble — so Hildy is forced to stay behind each time to help, which is exactly what Walter wants.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "delay tactic",
+        "escalates",
+        "stay behind"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the escalation structure and its functional purpose (keeping Hildy from leaving)."
+    },
+    {
+      "tuple_id": "hgf-024",
+      "scene_id": "walter-sabotage-bruce",
+      "scene_context": "Walter arranges a series of calamities to delay Bruce: a fake counterfeiting charge, a staged pickpocket incident, a mysterious woman claiming Bruce proposed to her.",
+      "question": "What pattern connects all of Walter's moves against Bruce?",
+      "student_answer": "The escalation isn't really about Bruce — it's Hawks running a comic algorithm where each failed delay forces Walter to raise the stakes, and the comedy comes from watching a capable man be defeated by his own momentum as he commits to ever-worse crimes to keep his ex-wife.",
+      "expected_score": 3,
+      "expected_band": "high",
+      "expected_rationale_contains": ["algorithm", "momentum", "comedy"],
+      "band_category": "insightful",
+      "notes": "Insightful: names the comic-escalation structure as craft and identifies the momentum-vs-agency joke at the film's core."
+    },
+    {
+      "tuple_id": "hgf-025",
+      "scene_id": "mrs-baldwin-confrontation",
+      "scene_context": "Bruce's mother, Mrs. Baldwin, arrives to confront Hildy and Walter about what's happened to Bruce. She is treated rudely and hustled into a cab by the reporters.",
+      "question": "What does the treatment of Mrs. Baldwin reveal about the newsroom's values?",
+      "student_answer": "The reporters are in a hurry.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not hurry", "contempt", "outsider"],
+      "band_category": "wrong",
+      "notes": "Wrong: treats the rudeness as busyness when the scene stages it as the newsroom's contempt for outsiders."
+    },
+    {
+      "tuple_id": "hgf-026",
+      "scene_id": "mrs-baldwin-confrontation",
+      "scene_context": "Bruce's mother, Mrs. Baldwin, arrives to confront Hildy and Walter about what's happened to Bruce. She is treated rudely and hustled into a cab by the reporters.",
+      "question": "What does the treatment of Mrs. Baldwin reveal about the newsroom's values?",
+      "student_answer": "The reporters don't respect Mrs. Baldwin.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["respect", "misses", "in-group"],
+      "band_category": "partial",
+      "notes": "Partial: notes the lack of respect but misses that the scene is about in-group/out-group dynamics."
+    },
+    {
+      "tuple_id": "hgf-027",
+      "scene_id": "mrs-baldwin-confrontation",
+      "scene_context": "Bruce's mother, Mrs. Baldwin, arrives to confront Hildy and Walter about what's happened to Bruce. She is treated rudely and hustled into a cab by the reporters.",
+      "question": "What does the treatment of Mrs. Baldwin reveal about the newsroom's values?",
+      "student_answer": "The newsroom treats anyone outside the press corps as an obstacle — Mrs. Baldwin represents conventional domestic life, which the newsroom contemptuously ejects so the story can keep moving.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": ["obstacle", "domestic", "ejects"],
+      "band_category": "right",
+      "notes": "Right: names the in-group dynamic and what Mrs. Baldwin represents (domestic life as obstacle)."
+    },
+    {
+      "tuple_id": "hgf-028",
+      "scene_id": "escape-earl-roll-top-desk",
+      "scene_context": "Earl Williams escapes custody and ends up hiding inside a roll-top desk in the pressroom. Hildy has to keep him hidden while the other reporters are in the room.",
+      "question": "Why does Hildy hide Earl instead of turning him in?",
+      "student_answer": "Hildy feels sorry for him.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": [
+        "not sympathy",
+        "exclusive",
+        "journalistic"
+      ],
+      "band_category": "wrong",
+      "notes": "Wrong: reduces Hildy's choice to sympathy when the core motive is the exclusive story."
+    },
+    {
+      "tuple_id": "hgf-029",
+      "scene_id": "escape-earl-roll-top-desk",
+      "scene_context": "Earl Williams escapes custody and ends up hiding inside a roll-top desk in the pressroom. Hildy has to keep him hidden while the other reporters are in the room.",
+      "question": "Why does Hildy hide Earl instead of turning him in?",
+      "student_answer": "She wants to help him.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["help", "misses", "exclusive"],
+      "band_category": "partial",
+      "notes": "Partial: identifies a motive but misses that the professional drive to own the story is doing the real work."
+    },
+    {
+      "tuple_id": "hgf-030",
+      "scene_id": "escape-earl-roll-top-desk",
+      "scene_context": "Earl Williams escapes custody and ends up hiding inside a roll-top desk in the pressroom. Hildy has to keep him hidden while the other reporters are in the room.",
+      "question": "Why does Hildy hide Earl instead of turning him in?",
+      "student_answer": "Hildy hides Earl because she wants the exclusive interview — sympathy and journalistic ambition align here, and the ambition is the primary motive, which is why she's suddenly committed again instead of leaving town.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "exclusive",
+        "ambition",
+        "primary motive"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the exclusive-story motive as primary and shows how it aligns with sympathy."
+    },
+    {
+      "tuple_id": "hgf-031",
+      "scene_id": "escape-earl-roll-top-desk",
+      "scene_context": "Earl Williams escapes custody and ends up hiding inside a roll-top desk in the pressroom. Hildy has to keep him hidden while the other reporters are in the room.",
+      "question": "Why does Hildy hide Earl instead of turning him in?",
+      "student_answer": "The roll-top desk is the film's cleverest visual thesis — Hildy literally locks a human being inside a piece of newsroom furniture, which is exactly what journalism does to its subjects, and the scene asks us to laugh about it rather than flinch.",
+      "expected_score": 3,
+      "expected_band": "high",
+      "expected_rationale_contains": ["visual thesis", "furniture", "subject"],
+      "band_category": "insightful",
+      "notes": "Insightful: reads the desk as a visual metaphor for journalism's reduction of people to stories, and names the tonal choice (laugh rather than flinch)."
+    },
+    {
+      "tuple_id": "hgf-032",
+      "scene_id": "mayor-sheriff-corruption",
+      "scene_context": "The mayor and the sheriff conspire in a back room about the timing of Earl's execution. A messenger arrives with a reprieve from the governor, which they try to hide.",
+      "question": "Why do the mayor and sheriff try to hide the reprieve?",
+      "student_answer": "They want to follow the original plan.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not plan", "election", "corruption"],
+      "band_category": "wrong",
+      "notes": "Wrong: reads the hide-the-reprieve move as procedural when the scene explicitly frames it as electoral corruption."
+    },
+    {
+      "tuple_id": "hgf-033",
+      "scene_id": "mayor-sheriff-corruption",
+      "scene_context": "The mayor and the sheriff conspire in a back room about the timing of Earl's execution. A messenger arrives with a reprieve from the governor, which they try to hide.",
+      "question": "Why do the mayor and sheriff try to hide the reprieve?",
+      "student_answer": "They're up for re-election.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["election", "misses", "willing to kill"],
+      "band_category": "partial",
+      "notes": "Partial: names the electoral stakes but misses that the film is dramatizing their willingness to execute a man for votes."
+    },
+    {
+      "tuple_id": "hgf-034",
+      "scene_id": "mayor-sheriff-corruption",
+      "scene_context": "The mayor and the sheriff conspire in a back room about the timing of Earl's execution. A messenger arrives with a reprieve from the governor, which they try to hide.",
+      "question": "Why do the mayor and sheriff try to hide the reprieve?",
+      "student_answer": "They need the execution to go through before the election so the tough-on-crime vote materializes — hiding a legal reprieve to kill a man for political gain is the film's clearest portrait of institutional corruption.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "before the election",
+        "kill a man",
+        "corruption"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the electoral-gain motive and frames it as the film's corruption portrait."
+    },
+    {
+      "tuple_id": "hgf-035",
+      "scene_id": "molly-jumps-window",
+      "scene_context": "When the reporters press Molly about where Earl is hiding, she jumps out of the pressroom window to draw their attention away from the roll-top desk.",
+      "question": "What does Molly's jump reveal about her role in the story?",
+      "student_answer": "She's trying to kill herself because she's upset.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not suicide", "sacrifice", "diversion"],
+      "band_category": "wrong",
+      "notes": "Wrong: reads the jump as suicide-from-despair when the scene frames it as a tactical sacrifice-diversion."
+    },
+    {
+      "tuple_id": "hgf-036",
+      "scene_id": "molly-jumps-window",
+      "scene_context": "When the reporters press Molly about where Earl is hiding, she jumps out of the pressroom window to draw their attention away from the roll-top desk.",
+      "question": "What does Molly's jump reveal about her role in the story?",
+      "student_answer": "Molly is trying to protect Earl.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["protect", "misses", "only outsider"],
+      "band_category": "partial",
+      "notes": "Partial: names the protective aim but misses that Molly is the only character willing to physically sacrifice for a principle."
+    },
+    {
+      "tuple_id": "hgf-037",
+      "scene_id": "molly-jumps-window",
+      "scene_context": "When the reporters press Molly about where Earl is hiding, she jumps out of the pressroom window to draw their attention away from the roll-top desk.",
+      "question": "What does Molly's jump reveal about her role in the story?",
+      "student_answer": "Molly is the only character who puts her body on the line for someone else — in a film full of manipulators, she's the moral anchor, and the jump is the scene asking who in this newsroom would do what she just did.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "body on the line",
+        "moral anchor",
+        "who would"
+      ],
+      "band_category": "right",
+      "notes": "Right: names Molly's distinct function (moral anchor via bodily sacrifice) and the contrast with the manipulators."
+    },
+    {
+      "tuple_id": "hgf-038",
+      "scene_id": "press-conference-earl",
+      "scene_context": "At the climactic press conference, Walter and Hildy reveal the hidden Earl Williams and the suppressed reprieve simultaneously, humiliating the mayor and the sheriff in front of the press corps.",
+      "question": "Why do Walter and Hildy choose to reveal everything at the press conference rather than privately?",
+      "student_answer": "Because that's when everyone is there.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": [
+        "not logistics",
+        "public humiliation",
+        "record"
+      ],
+      "band_category": "wrong",
+      "notes": "Wrong: treats the public reveal as logistical convenience instead of deliberate public humiliation."
+    },
+    {
+      "tuple_id": "hgf-039",
+      "scene_id": "press-conference-earl",
+      "scene_context": "At the climactic press conference, Walter and Hildy reveal the hidden Earl Williams and the suppressed reprieve simultaneously, humiliating the mayor and the sheriff in front of the press corps.",
+      "question": "Why do Walter and Hildy choose to reveal everything at the press conference rather than privately?",
+      "student_answer": "They want to humiliate the mayor publicly.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["humiliate", "misses", "on the record"],
+      "band_category": "partial",
+      "notes": "Partial: notes the humiliation goal but misses the press-corps-as-witness mechanic that makes the story uncover-able."
+    },
+    {
+      "tuple_id": "hgf-040",
+      "scene_id": "press-conference-earl",
+      "scene_context": "At the climactic press conference, Walter and Hildy reveal the hidden Earl Williams and the suppressed reprieve simultaneously, humiliating the mayor and the sheriff in front of the press corps.",
+      "question": "Why do Walter and Hildy choose to reveal everything at the press conference rather than privately?",
+      "student_answer": "Revealing it at the press conference forces every other reporter in the room to put the story on the record — the mayor can't suppress what the whole press corps just witnessed, so the public setting is a corruption-proofing tactic.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": ["on the record", "suppress", "witness"],
+      "band_category": "right",
+      "notes": "Right: names the witness-locks-the-story mechanic and frames it as corruption-proofing."
+    },
+    {
+      "tuple_id": "hgf-041",
+      "scene_id": "press-conference-earl",
+      "scene_context": "At the climactic press conference, Walter and Hildy reveal the hidden Earl Williams and the suppressed reprieve simultaneously, humiliating the mayor and the sheriff in front of the press corps.",
+      "question": "Why do Walter and Hildy choose to reveal everything at the press conference rather than privately?",
+      "student_answer": "The film is staging a paradox: the same press corps that manufactured the Molly-Earl romance is now the only institution powerful enough to lock the truth in, which lets Hawks argue that the press can be weaponized for good precisely because it is corrupt and vain.",
+      "expected_score": 3,
+      "expected_band": "high",
+      "expected_rationale_contains": ["paradox", "weaponized", "vain"],
+      "band_category": "insightful",
+      "notes": "Insightful: names the press-as-paradox argument (corruption makes it both useful and uncontrollable) and ties it to Hawks' larger claim about journalism."
+    },
+    {
+      "tuple_id": "hgf-042",
+      "scene_id": "hildy-typewriter-writes-again",
+      "scene_context": "In the pressroom, Hildy sits down at her typewriter to write the Earl Williams story. She types furiously and ignores Bruce's phone calls.",
+      "question": "What does Hildy's return to the typewriter signal about her choice between Bruce and Walter?",
+      "student_answer": "She's just writing an article.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not just article", "choosing", "signal"],
+      "band_category": "wrong",
+      "notes": "Wrong: reads the typewriter scene as neutral craft when it is the film's decision moment."
+    },
+    {
+      "tuple_id": "hgf-043",
+      "scene_id": "hildy-typewriter-writes-again",
+      "scene_context": "In the pressroom, Hildy sits down at her typewriter to write the Earl Williams story. She types furiously and ignores Bruce's phone calls.",
+      "question": "What does Hildy's return to the typewriter signal about her choice between Bruce and Walter?",
+      "student_answer": "She's picking journalism over marriage.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": [
+        "journalism over marriage",
+        "misses",
+        "already chosen"
+      ],
+      "band_category": "partial",
+      "notes": "Partial: names the binary but misses that the typewriter shows the choice has already happened — she chose before she sat down."
+    },
+    {
+      "tuple_id": "hgf-044",
+      "scene_id": "hildy-typewriter-writes-again",
+      "scene_context": "In the pressroom, Hildy sits down at her typewriter to write the Earl Williams story. She types furiously and ignores Bruce's phone calls.",
+      "question": "What does Hildy's return to the typewriter signal about her choice between Bruce and Walter?",
+      "student_answer": "The typewriter scene is the film showing that Hildy's choice is already made — ignoring Bruce's calls while typing the Earl story means she has already become a journalist again, and the wedding was never the real alternative.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "already made",
+        "ignoring",
+        "wedding was never"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the choice-as-already-made structure and the ignored-calls evidence."
+    },
+    {
+      "tuple_id": "hgf-045",
+      "scene_id": "hildy-typewriter-writes-again",
+      "scene_context": "In the pressroom, Hildy sits down at her typewriter to write the Earl Williams story. She types furiously and ignores Bruce's phone calls.",
+      "question": "What does Hildy's return to the typewriter signal about her choice between Bruce and Walter?",
+      "student_answer": "Hawks keeps Hildy's hands on the typewriter throughout the scene because the craft IS the character — her identity is located in the physical act of reporting, not in a speech about love, which is why the film never needs her to say she's staying.",
+      "expected_score": 3,
+      "expected_band": "high",
+      "expected_rationale_contains": [
+        "hands",
+        "craft is the character",
+        "never needs"
+      ],
+      "band_category": "insightful",
+      "notes": "Insightful: locates identity in physical craft, names the show-don't-tell choice, and explains why the film refuses a declarative moment."
+    },
+    {
+      "tuple_id": "hgf-046",
+      "scene_id": "phone-calls-montage",
+      "scene_context": "A sequence of overlapping phone calls shows Walter juggling multiple schemes simultaneously — talking to reporters, fixers, and Hildy without missing a beat.",
+      "question": "Why does Hawks use overlapping phone calls instead of showing one call at a time?",
+      "student_answer": "Because it's faster.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not pace", "character", "juggling"],
+      "band_category": "wrong",
+      "notes": "Wrong: reduces an overlapping-dialogue signature to pacing when it's a character-demonstration device."
+    },
+    {
+      "tuple_id": "hgf-047",
+      "scene_id": "phone-calls-montage",
+      "scene_context": "A sequence of overlapping phone calls shows Walter juggling multiple schemes simultaneously — talking to reporters, fixers, and Hildy without missing a beat.",
+      "question": "Why does Hawks use overlapping phone calls instead of showing one call at a time?",
+      "student_answer": "To show Walter is busy.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": ["busy", "misses", "competence"],
+      "band_category": "partial",
+      "notes": "Partial: names the what (busy) but misses that the overlap is performing Walter's competence across simultaneous manipulations."
+    },
+    {
+      "tuple_id": "hgf-048",
+      "scene_id": "phone-calls-montage",
+      "scene_context": "A sequence of overlapping phone calls shows Walter juggling multiple schemes simultaneously — talking to reporters, fixers, and Hildy without missing a beat.",
+      "question": "Why does Hawks use overlapping phone calls instead of showing one call at a time?",
+      "student_answer": "The overlap is a character-reveal — it shows Walter can run four manipulations in parallel without dropping any of them, which is both scary and the thing that draws Hildy back to him.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": ["parallel", "competence", "draws Hildy"],
+      "band_category": "right",
+      "notes": "Right: names the parallel-competence reveal and ties it to Hildy's attraction."
+    },
+    {
+      "tuple_id": "hgf-049",
+      "scene_id": "phone-calls-montage",
+      "scene_context": "A sequence of overlapping phone calls shows Walter juggling multiple schemes simultaneously — talking to reporters, fixers, and Hildy without missing a beat.",
+      "question": "Why does Hawks use overlapping phone calls instead of showing one call at a time?",
+      "student_answer": "Hawks uses overlapping phone calls as a cinematic argument that Walter's mind is a networked switchboard — the overlap lets the audience feel the texture of Walter's attention as a resource that is infinite for scheming but zero for anyone who wants an honest answer.",
+      "expected_score": 3,
+      "expected_band": "high",
+      "expected_rationale_contains": [
+        "switchboard",
+        "attention",
+        "honest answer"
+      ],
+      "band_category": "insightful",
+      "notes": "Insightful: turns the craft device into an argument about Walter's attention economy and its moral asymmetry."
+    },
+    {
+      "tuple_id": "hgf-050",
+      "scene_id": "closing-suitcase",
+      "scene_context": "At the end of the film, Hildy carries her own suitcase as she and Walter head to the train station together for another story, with Walter half-paying-attention to her struggle.",
+      "question": "What does Hildy carrying her own suitcase at the end say about the Hildy-Walter relationship?",
+      "student_answer": "Walter is busy with his phone.",
+      "expected_score": 0,
+      "expected_band": "low",
+      "expected_rationale_contains": ["not busy", "structure", "unchanged"],
+      "band_category": "wrong",
+      "notes": "Wrong: describes surface action but misses that the suitcase is the film's closing argument about the relationship's structure."
+    },
+    {
+      "tuple_id": "hgf-051",
+      "scene_id": "closing-suitcase",
+      "scene_context": "At the end of the film, Hildy carries her own suitcase as she and Walter head to the train station together for another story, with Walter half-paying-attention to her struggle.",
+      "question": "What does Hildy carrying her own suitcase at the end say about the Hildy-Walter relationship?",
+      "student_answer": "Walter still doesn't take care of her.",
+      "expected_score": 1,
+      "expected_band": "low",
+      "expected_rationale_contains": [
+        "take care",
+        "misses",
+        "knows and accepts"
+      ],
+      "band_category": "partial",
+      "notes": "Partial: names Walter's neglect but misses that the ending shows Hildy entering the relationship with full knowledge of it."
+    },
+    {
+      "tuple_id": "hgf-052",
+      "scene_id": "closing-suitcase",
+      "scene_context": "At the end of the film, Hildy carries her own suitcase as she and Walter head to the train station together for another story, with Walter half-paying-attention to her struggle.",
+      "question": "What does Hildy carrying her own suitcase at the end say about the Hildy-Walter relationship?",
+      "student_answer": "The suitcase is the film saying nothing has actually changed — Walter is still distracted, Hildy is still carrying her own weight, and she is remarrying him with full knowledge of that pattern, which makes the ending a knowing-eyes choice rather than a rescue.",
+      "expected_score": 2,
+      "expected_band": "med",
+      "expected_rationale_contains": [
+        "nothing has changed",
+        "full knowledge",
+        "knowing"
+      ],
+      "band_category": "right",
+      "notes": "Right: names the unchanged-structure reading and Hildy's informed re-entry into the relationship."
+    }
+  ]
+}

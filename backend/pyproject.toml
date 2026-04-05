@@ -111,3 +111,9 @@ dev = [
     "pytest-playwright (>=0.7.2,<0.8.0)",
     "deepeval (>=2.0)"
 ]
+
+[tool.pytest.ini_options]
+markers = [
+    "live: marks tests that hit live LLM APIs (deselect with -m 'not live')",
+]
+addopts = "-m 'not live'"
