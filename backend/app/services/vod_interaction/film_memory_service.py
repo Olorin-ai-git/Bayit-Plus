@@ -36,5 +36,34 @@ class FilmMemoryService:
         )
         return memory
 
+    def build_memory_context(self, memory: VODFilmMemory) -> str:
+        """Build the <memory> block injected into character prompts.
+
+        Returns empty string when memory has no summary AND no exchanges.
+        """
+        if not memory.summary and not memory.recent_exchanges:
+            return ""
+
+        parts = ["<memory>"]
+        if memory.summary:
+            parts.append(
+                "What's happened between you and this student earlier in the film:"
+            )
+            parts.append(memory.summary)
+
+        if memory.recent_exchanges:
+            if memory.summary:
+                parts.append("")
+            parts.append("Most recent exchanges (verbatim):")
+            for exch in memory.recent_exchanges:
+                parts.append(
+                    f"At {exch.moment_timestamp}s, speaking to {exch.character_name}:"
+                )
+                parts.append(f"  Student: {exch.user_message}")
+                parts.append(f"  {exch.character_name}: {exch.character_response}")
+
+        parts.append("</memory>")
+        return "\n".join(parts)
+
 
 film_memory_service = FilmMemoryService()
