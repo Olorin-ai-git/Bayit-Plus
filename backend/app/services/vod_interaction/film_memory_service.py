@@ -3,8 +3,16 @@
 Provides cross-moment character memory keyed by (user_id, profile_id, content_id).
 Additive to the existing per-moment VODInteractionSession model.
 """
+from datetime import datetime
+from typing import List
+
+from app.core.config import settings
 from app.core.logging_config import get_logger
-from app.models.film_memory import VODFilmMemory
+from app.models.film_memory import FilmMemoryExchange, VODFilmMemory
+from app.services.vod_interaction.film_memory_summarizer import (
+    SummarizerFailure,
+    film_memory_summarizer,
+)
 
 logger = get_logger(__name__)
 
@@ -64,6 +72,63 @@ class FilmMemoryService:
 
         parts.append("</memory>")
         return "\n".join(parts)
+
+    async def ingest_exchanges(
+        self,
+        memory: VODFilmMemory,
+        new_exchanges: List[FilmMemoryExchange],
+    ) -> VODFilmMemory:
+        """Append new exchanges, roll overflow into summary, persist."""
+        window = settings.VOD_FILM_MEMORY_VERBATIM_WINDOW
+        hard_cap = settings.VOD_FILM_MEMORY_MAX_RECENT_HARD_CAP
+        failure_threshold = settings.VOD_FILM_MEMORY_SUMMARIZER_FAILURE_THRESHOLD
+
+        memory.recent_exchanges.extend(new_exchanges)
+        memory.exchange_count += len(new_exchanges)
+        if new_exchanges:
+            memory.last_moment_timestamp = max(
+                memory.last_moment_timestamp,
+                max(e.moment_timestamp for e in new_exchanges),
+            )
+
+        overflow = len(memory.recent_exchanges) - window
+        breaker_tripped = memory.summarizer_failure_streak >= failure_threshold
+
+        if overflow > 0 and not breaker_tripped:
+            to_summarize = memory.recent_exchanges[:overflow]
+            try:
+                memory.summary = await film_memory_summarizer.summarize(
+                    existing_summary=memory.summary,
+                    new_exchanges=to_summarize,
+                )
+                memory.recent_exchanges = memory.recent_exchanges[overflow:]
+                memory.summarizer_failure_streak = 0
+            except SummarizerFailure:
+                memory.summarizer_failure_streak += 1
+                logger.warning(
+                    "Summarizer failure, keeping verbatim exchanges",
+                    extra={
+                        "user_id": memory.user_id,
+                        "content_id": memory.content_id,
+                        "streak": memory.summarizer_failure_streak,
+                    },
+                )
+
+        if len(memory.recent_exchanges) > hard_cap:
+            drop = len(memory.recent_exchanges) - hard_cap
+            memory.recent_exchanges = memory.recent_exchanges[drop:]
+            logger.warning(
+                "Hard cap reached on recent_exchanges, force-dropped oldest",
+                extra={
+                    "user_id": memory.user_id,
+                    "content_id": memory.content_id,
+                    "dropped": drop,
+                },
+            )
+
+        memory.updated_at = datetime.utcnow()
+        await memory.save()
+        return memory
 
 
 film_memory_service = FilmMemoryService()
