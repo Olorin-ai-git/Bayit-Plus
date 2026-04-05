@@ -130,5 +130,21 @@ class FilmMemoryService:
         await memory.save()
         return memory
 
+    async def reset_for_user_content(
+        self, user_id: str, profile_id: str, content_id: str,
+    ) -> None:
+        """Delete memory doc — used when user deliberately restarts film history."""
+        existing = await VODFilmMemory.find(
+            {"user_id": user_id, "profile_id": profile_id, "content_id": content_id},
+        ).first_or_none()
+        if existing is not None:
+            await existing.delete()
+            logger.info(
+                "VODFilmMemory reset",
+                extra={
+                    "user_id": user_id, "profile_id": profile_id, "content_id": content_id,
+                },
+            )
+
 
 film_memory_service = FilmMemoryService()

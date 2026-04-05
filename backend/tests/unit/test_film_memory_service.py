@@ -259,3 +259,23 @@ async def test_ingest_exchanges_resets_failure_streak_on_success():
         )
     assert result.summarizer_failure_streak == 0
     assert result.summary == "Summary."
+
+
+# ---------------------------------------------------------------------------
+# Task 8: reset_for_user_content
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_reset_for_user_content_deletes_memory_when_present():
+    mock_doc = AsyncMock()
+    service = FilmMemoryService()
+    with patch.object(VODFilmMemory, "find", new=_fake_find_returning(mock_doc)):
+        await service.reset_for_user_content("u", "p", "c")
+    mock_doc.delete.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_reset_for_user_content_noop_when_absent():
+    service = FilmMemoryService()
+    with patch.object(VODFilmMemory, "find", new=_fake_find_returning(None)):
+        await service.reset_for_user_content("u", "p", "c")
