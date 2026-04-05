@@ -4883,7 +4883,18 @@
     },
     "toggle": {
       "label": "புரிதல் பயன்முறை"
-    }
+    },
+    "resuming": "மீண்டும் தொடங்குகிறது...",
+    "a11y": {
+      "bubble_label": "{{character}} இடமிருந்து புரிதல் கேள்வி",
+      "character_speaking": "{{character}} பேசுகிறார்"
+    },
+    "modality": {
+      "text": "உரை",
+      "voice": "குரல்"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "பார்த்துக்கொண்டே இருங்கள்"
   },
   "content": {
     "play": "இயக்கு",

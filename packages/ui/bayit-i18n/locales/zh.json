@@ -4883,7 +4883,18 @@
     },
     "toggle": {
       "label": "理解模式"
-    }
+    },
+    "resuming": "正在恢复...",
+    "a11y": {
+      "bubble_label": "来自{{character}}的理解问题",
+      "character_speaking": "{{character}}正在说话"
+    },
+    "modality": {
+      "text": "文字",
+      "voice": "语音"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "继续观看"
   },
   "content": {
     "play": "播放",

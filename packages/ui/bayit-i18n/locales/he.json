@@ -4883,7 +4883,18 @@
     },
     "toggle": {
       "label": "מצב הבנה"
-    }
+    },
+    "resuming": "ממשיך...",
+    "a11y": {
+      "bubble_label": "שאלת הבנה מ-{{character}}",
+      "character_speaking": "{{character}} מדבר"
+    },
+    "modality": {
+      "text": "טקסט",
+      "voice": "קול"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "המשך לצפות"
   },
   "content": {
     "play": "נגן",

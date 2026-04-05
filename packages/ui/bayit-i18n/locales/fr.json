@@ -4883,7 +4883,18 @@
     },
     "toggle": {
       "label": "Mode Compréhension"
-    }
+    },
+    "resuming": "Reprise...",
+    "a11y": {
+      "bubble_label": "Question de compréhension de {{character}}",
+      "character_speaking": "{{character}} est en train de parler"
+    },
+    "modality": {
+      "text": "Texte",
+      "voice": "Voix"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "Continuer à regarder"
   },
   "content": {
     "play": "Lire",

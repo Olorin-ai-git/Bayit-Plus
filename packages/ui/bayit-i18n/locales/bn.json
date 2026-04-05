@@ -4883,7 +4883,18 @@
     },
     "toggle": {
       "label": "বোধশক্তি মোড"
-    }
+    },
+    "resuming": "পুনরায় শুরু হচ্ছে...",
+    "a11y": {
+      "bubble_label": "{{character}} থেকে বোঝার প্রশ্ন",
+      "character_speaking": "{{character}} কথা বলছেন"
+    },
+    "modality": {
+      "text": "লেখা",
+      "voice": "কণ্ঠস্বর"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "দেখতে থাকুন"
   },
   "content": {
     "play": "চালান",

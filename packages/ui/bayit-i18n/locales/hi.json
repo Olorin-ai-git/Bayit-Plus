@@ -4883,7 +4883,18 @@
     },
     "toggle": {
       "label": "समझ मोड"
-    }
+    },
+    "resuming": "फिर से शुरू हो रहा है...",
+    "a11y": {
+      "bubble_label": "{{character}} से समझ का प्रश्न",
+      "character_speaking": "{{character}} बोल रहे हैं"
+    },
+    "modality": {
+      "text": "पाठ",
+      "voice": "आवाज़"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "देखते रहें"
   },
   "content": {
     "play": "चलाएं",

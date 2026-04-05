@@ -4883,7 +4883,18 @@
     },
     "toggle": {
       "label": "理解モード"
-    }
+    },
+    "resuming": "再開しています...",
+    "a11y": {
+      "bubble_label": "{{character}}からの理解の質問",
+      "character_speaking": "{{character}}が話しています"
+    },
+    "modality": {
+      "text": "テキスト",
+      "voice": "音声"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "視聴を続ける"
   },
   "content": {
     "play": "再生",
