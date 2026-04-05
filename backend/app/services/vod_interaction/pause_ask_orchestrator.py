@@ -14,6 +14,7 @@ from typing import Optional
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.child_avatar import ChildAvatar
+from app.models.film_memory import FilmMemoryExchange
 from app.models.vod_interaction import (
     AnimatedResponse,
     DialogueExchange,
@@ -24,10 +25,12 @@ from app.services.vod_interaction.character_ai import character_ai_service
 from app.services.vod_interaction.character_animator import (
     character_animator_service,
 )
+from app.services.vod_interaction.film_memory_service import film_memory_service
 from app.services.vod_interaction.interaction_service import (
     BLOCKED_RESPONSE_PATTERNS,
     SAFE_FALLBACK_RESPONSE,
 )
+from app.services.vod_interaction.memory_reference_service import find_reference
 from app.services.vod_interaction.pause_ask_models import (
     PauseAskResult,
     PauseAskServiceError,
@@ -78,6 +81,14 @@ class PauseAskOrchestrator:
         scene_context = session.scene_context or ""
         char_desc = session.character_description or ""
 
+        # 2b. Load cross-moment film memory if enabled
+        memory_context = ""
+        if settings.VOD_FILM_MEMORY_ENABLED:
+            memory = await film_memory_service.get_or_create(
+                session.user_id, session.profile_id, session.content_id,
+            )
+            memory_context = film_memory_service.build_memory_context(memory)
+
         if voice_only or not avatar:
             user_anim_coro = self._no_animation()
         else:
@@ -96,6 +107,9 @@ class PauseAskOrchestrator:
             character_description=char_desc,
             movie_context=scene_context,
             child_name=session.child_first_name or "",
+            memory_context=memory_context,
+            persona_mode=session.persona_mode or "character",
+            audience_description=session.audience_description or "",
         )
 
         try:
@@ -106,6 +120,14 @@ class PauseAskOrchestrator:
             raise
         except Exception as exc:
             raise self._classify_error(exc, "anthropic", session_id) from exc
+
+        # 4. Compute memory reference against prior user turns in this session.
+        #    Must snapshot BEFORE appending the new user/character exchanges.
+        prior_user_messages = [
+            ex.message_text
+            for ex in session.dialogue_exchanges
+            if ex.speaker == "user"
+        ]
 
         # 4. Content moderation
         response_text = character_response.text
@@ -166,6 +188,22 @@ class PauseAskOrchestrator:
         session.updated_at = datetime.utcnow()
         await session.save()
 
+        # 6b. Ingest this pause-ask pair into cross-moment film memory
+        if settings.VOD_FILM_MEMORY_ENABLED:
+            film_exchange = FilmMemoryExchange(
+                moment_timestamp=session.moment_timestamp,
+                character_name=session.character_name,
+                user_message=user_message,
+                character_response=response_text,
+                created_at=character_exchange.timestamp,
+            )
+            memory = await film_memory_service.get_or_create(
+                session.user_id, session.profile_id, session.content_id,
+            )
+            await film_memory_service.ingest_exchanges(memory, [film_exchange])
+            session.memory_ingested_count = len(session.dialogue_exchanges)
+            await session.save()
+
         # 7. Charge credits (skip for demo content — demo.olorin.ai is free)
         is_demo_content = (
             settings.DEMO_CONTENT_ID
@@ -194,6 +232,8 @@ class PauseAskOrchestrator:
             },
         )
 
+        memory_metadata = find_reference(response_text, prior_user_messages)
+
         return PauseAskResult(
             user_polished_text=polished_text,
             user_audio_url=user_animated.audio_url if user_animated else "",
@@ -208,6 +248,7 @@ class PauseAskOrchestrator:
             character_audio_url=char_animated.audio_url,
             character_animated_video_url=char_animated.video_url,
             character_video_duration=char_animated.duration,
+            memory_metadata=memory_metadata,
         )
 
     async def _no_animation(self) -> Optional[AnimatedResponse]:

@@ -228,6 +228,22 @@ class Content(Document):
     )  # Characters available for free-form dialogue
     supports_avatar_interaction: bool = False  # Quick check for interaction support
 
+    # Character AI persona mode. "character" = fictional movie character
+    # addressing a child (default, HGF/BTTF). "speaker" = real historical
+    # speaker addressing an educational audience (EDU content like the Jobs
+    # Stanford 2005 speech). Drives prompt template selection in
+    # CharacterAIService. None defaults to "character".
+    persona_mode: Optional[str] = None
+    audience_description: Optional[str] = Field(
+        default=None,
+        description=(
+            "Free-text description of the intended audience for this "
+            "content's AI interactions. Only used when persona_mode='speaker'. "
+            "Example: 'adult learners interested in entrepreneurship, design, "
+            "and life philosophy'."
+        ),
+    )
+
     # Transcript (populated by non-TMDB extraction pipeline)
     transcript: Optional[str] = Field(
         default=None, description="Full video transcript text"

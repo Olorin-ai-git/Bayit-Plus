@@ -4,7 +4,36 @@ Pause & Ask Models
 Data models for the Dynamic Pause & Ask pipeline results.
 """
 
+from typing import Optional
+
 from pydantic import BaseModel, Field
+
+
+class MemoryReference(BaseModel):
+    """Server-authored indicator that the character's response referenced a
+    prior user turn in the same session.
+
+    Replaces the client-side 3-word n-gram heuristic in useMemoryInference.ts.
+    The client renders a yellow MEMORY badge on the referenced turn and
+    highlights the phrase within the character's response.
+    """
+
+    referenced_turn_index: int = Field(
+        ...,
+        ge=0,
+        description=(
+            "0-based index of the prior user turn being referenced. "
+            "Aligns with the client's state.exchanges[] ordering."
+        ),
+    )
+    highlighted_phrase: str = Field(
+        ...,
+        min_length=1,
+        description=(
+            "Exact substring of character_response_text to highlight. "
+            "Always 3+ words after whitespace normalization."
+        ),
+    )
 
 
 class PauseAskServiceError(Exception):
@@ -45,4 +74,12 @@ class PauseAskResult(BaseModel):
     )
     character_video_duration: float = Field(
         ..., description="Character video duration in seconds",
+    )
+    memory_metadata: Optional[MemoryReference] = Field(
+        default=None,
+        description=(
+            "Server-authored memory reference indicator. Populated when the "
+            "character's response echoes a phrase from a prior user turn in "
+            "this session. None when no reference was detected."
+        ),
     )
