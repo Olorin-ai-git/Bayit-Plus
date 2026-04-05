@@ -167,6 +167,7 @@ from app.models.whatsapp_contact import WhatsAppContact
 # Character data model (voice IDs, face URLs, franchise grouping)
 from app.models.character import Character
 from app.models.vod_interaction import VODInteractionSession
+from app.models.film_memory import VODFilmMemory
 # Guest demo usage tracking (unauthenticated pricing-page interactions)
 from app.models.guest_demo import GuestDemoUsage
 # Consumer submission model (lead capture from interactive demo)
@@ -479,6 +480,8 @@ async def connect_to_mongo():
         Character,
         # VOD interaction session model (Pause & Ask dialogue)
         VODInteractionSession,
+        # Cross-moment character memory (Phase 1)
+        VODFilmMemory,
         # BYOC AI-powered ingestion models
         ChannelIndexEntry,
         BYOCProvider,
