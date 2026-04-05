@@ -168,7 +168,7 @@ class FilmMemoryService:
 
     async def _save_with_version(self, memory: VODFilmMemory) -> bool:
         """Atomic versioned update. Returns True on success, False on conflict."""
-        collection = VODFilmMemory.get_motor_collection()
+        collection = VODFilmMemory.get_pymongo_collection()
         current_version = memory.version
         new_version = current_version + 1
 
