@@ -4864,7 +4864,37 @@
     "loading": "טוען שאלה...",
     "insufficient_credits": "אין מספיק קרדיטים לשאלת הבנה",
     "error": "שגיאה בטעינת שאלה",
-    "comprehensionCheck": "בדיקת הבנה"
+    "comprehensionCheck": "בדיקת הבנה",
+    "reaction": {
+      "correct": "בדיוק - ראית ישר מבעד לזה.",
+      "partial": "אתה מסתובב סביב זה. תן לי לנסח את זה אחרת.",
+      "incorrect": "לא בדיוק - תחשוב על מה שבאמת קרה שם."
+    },
+    "retry": {
+      "prompt": "נסה שוב - אני אנסח את זה אחרת הפעם."
+    },
+    "answer_reveal": {
+      "intro": "הנה למה התכוונתי:",
+      "closing": "בוא נמשיך לצפות."
+    },
+    "answer": {
+      "input_placeholder_text": "הקלד את תשובתך...",
+      "input_placeholder_voice": "לחץ והחזק כדי לדבר את תשובתך"
+    },
+    "toggle": {
+      "label": "מצב הבנה"
+    },
+    "resuming": "ממשיך...",
+    "a11y": {
+      "bubble_label": "שאלת הבנה מ-{{character}}",
+      "character_speaking": "{{character}} מדבר"
+    },
+    "modality": {
+      "text": "טקסט",
+      "voice": "קול"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "המשך לצפות"
   },
   "content": {
     "play": "נגן",

@@ -88,6 +88,11 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import cultural_context_user
     # Comprehension quiz routes
     from app.api.routes import comprehension
+    # Comprehension Mode DEV-ONLY turn-loop entry point (Phase 1 Plan 01-02)
+    from app.api.routes import comprehension_dev
+    # Phase 3 Comprehension Mode partner API + public share-link
+    from app.api.routes.comprehension import partner as comprehension_partner
+    from app.api.routes.comprehension import share as comprehension_share
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
     from app.api.routes.olorin import vanity_router as olorin_vanity_router
@@ -407,6 +412,24 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(quiz.router, prefix=f"{prefix}/quiz", tags=["quiz"])
     app.include_router(rewards.router, prefix=f"{prefix}/rewards", tags=["rewards"])
     app.include_router(comprehension.router, prefix=f"{prefix}/comprehension", tags=["comprehension"])
+    app.include_router(
+        comprehension_dev.router,
+        prefix=f"{prefix}/comprehension/dev",
+        tags=["comprehension-dev"],
+    )
+    # Phase 3 Comprehension Mode partner API + public share-link routes
+    # (teacher-facing comprehension_reports router is nested inside the
+    #  training_router above at /api/v1/training/comprehension-reports/*)
+    app.include_router(
+        comprehension_partner.router,
+        prefix=prefix,
+        tags=["partner-comprehension"],
+    )
+    app.include_router(
+        comprehension_share.router,
+        prefix=prefix,
+        tags=["comprehension-share"],
+    )
     app.include_router(
         cultural_context_user.router,
         prefix=prefix,

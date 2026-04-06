@@ -4864,7 +4864,37 @@
     "loading": "加载问题中...",
     "insufficient_credits": "理解力问题积分不足",
     "error": "加载问题时出错",
-    "comprehensionCheck": "理解力测试"
+    "comprehensionCheck": "理解力测试",
+    "reaction": {
+      "correct": "没错——你一眼就看透了。",
+      "partial": "你接近了。让我换个说法。",
+      "incorrect": "不太对——想想那里真正发生了什么。"
+    },
+    "retry": {
+      "prompt": "再试一次——这次我换个方式问。"
+    },
+    "answer_reveal": {
+      "intro": "我想说的是:",
+      "closing": "我们继续看吧。"
+    },
+    "answer": {
+      "input_placeholder_text": "输入你的答案...",
+      "input_placeholder_voice": "按住说出你的答案"
+    },
+    "toggle": {
+      "label": "理解模式"
+    },
+    "resuming": "正在恢复...",
+    "a11y": {
+      "bubble_label": "来自{{character}}的理解问题",
+      "character_speaking": "{{character}}正在说话"
+    },
+    "modality": {
+      "text": "文字",
+      "voice": "语音"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "继续观看"
   },
   "content": {
     "play": "播放",

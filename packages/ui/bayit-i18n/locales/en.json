@@ -4918,7 +4918,37 @@
     "loading": "Loading question...",
     "insufficient_credits": "Insufficient credits for comprehension question",
     "error": "Error loading question",
-    "comprehensionCheck": "Comprehension Check"
+    "comprehensionCheck": "Comprehension Check",
+    "reaction": {
+      "correct": "Exactly - you saw right through it.",
+      "partial": "You're circling it. Let me put it another way.",
+      "incorrect": "Not quite - think about what was really going on."
+    },
+    "retry": {
+      "prompt": "Try again - I'll phrase it differently this time."
+    },
+    "answer_reveal": {
+      "intro": "Here's what I was getting at:",
+      "closing": "Let's keep watching."
+    },
+    "answer": {
+      "input_placeholder_text": "Type your answer...",
+      "input_placeholder_voice": "Tap and hold to speak your answer"
+    },
+    "toggle": {
+      "label": "Comprehension Mode"
+    },
+    "resuming": "Resuming...",
+    "a11y": {
+      "bubble_label": "Comprehension question from {{character}}",
+      "character_speaking": "{{character}} is speaking"
+    },
+    "modality": {
+      "text": "Text",
+      "voice": "Voice"
+    },
+    "char_count": "{{count}} / 280",
+    "resume_playback": "Keep watching"
   },
   "content": {
     "play": "Play",
@@ -8314,11 +8344,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",
