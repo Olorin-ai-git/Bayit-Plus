@@ -1,11 +1,12 @@
 """
-Shared AI client factories for Anthropic API.
+Shared AI client factories for Anthropic and OpenAI APIs.
 Provides async clients with proper connection pooling and configuration.
 """
 
 from functools import lru_cache
 
 import anthropic
+from openai import AsyncOpenAI
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -31,6 +32,28 @@ def get_anthropic_client() -> anthropic.AsyncAnthropic:
         api_key=settings.ANTHROPIC_API_KEY,
         max_retries=2,  # Retry failed requests
         timeout=60.0,   # 60 second timeout
+    )
+
+
+@lru_cache(maxsize=1)
+def get_openai_client() -> AsyncOpenAI:
+    """
+    Get shared AsyncOpenAI client instance.
+
+    Uses LRU cache to ensure single instance (connection pooling).
+    All services needing OpenAI (Comprehension Mode trigger policy,
+    embeddings, etc.) should use this instead of creating clients inline.
+
+    Returns:
+        AsyncOpenAI: Configured async OpenAI client
+    """
+    if not settings.OPENAI_API_KEY:
+        logger.warning("OPENAI_API_KEY not configured, OpenAI features will fail")
+
+    return AsyncOpenAI(
+        api_key=settings.OPENAI_API_KEY,
+        max_retries=2,
+        timeout=60.0,
     )
 
 
