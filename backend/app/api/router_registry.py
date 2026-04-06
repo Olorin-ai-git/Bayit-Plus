@@ -79,7 +79,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_voice_clone_preview,
                                 admin_voice_cloning,
                                 vod_interaction_admin,
-                                vod_interaction_pause_ask)
+                                vod_interaction_pause_ask,
+                                vod_interaction_vision)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     # Quiz and rewards routes
@@ -573,6 +574,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         vod_interaction_pause_ask.router, prefix=prefix, tags=["vod-interaction-pause-ask"]
+    )
+    app.include_router(
+        vod_interaction_vision.router, prefix=prefix, tags=["vod-interaction-vision"]
     )
     logger.debug("Registered VOD avatar interaction routes")
 
