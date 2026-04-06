@@ -1,0 +1,110 @@
+[
+  {
+    "moment_timestamp": 45.0,
+    "index_in_moment": 0,
+    "text": "Why did you choose to tell just three stories?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 45.0,
+    "index_in_moment": 1,
+    "text": "How does it feel to finally attend a college graduation?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 45.0,
+    "index_in_moment": 2,
+    "text": "What made you confident enough to speak without a degree?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 180.0,
+    "index_in_moment": 0,
+    "text": "Did you know calligraphy would matter when you learned it?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 180.0,
+    "index_in_moment": 1,
+    "text": "What other 'useless' classes changed your life?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 180.0,
+    "index_in_moment": 2,
+    "text": "How do you recognize which dots will connect later?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 450.0,
+    "index_in_moment": 0,
+    "text": "How did getting fired actually set you free?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 450.0,
+    "index_in_moment": 1,
+    "text": "What was the hardest part about losing Apple?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 450.0,
+    "index_in_moment": 2,
+    "text": "Did you ever doubt you'd find your way back?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 660.0,
+    "index_in_moment": 0,
+    "text": "How did facing death change your daily decisions?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 660.0,
+    "index_in_moment": 1,
+    "text": "What would you tell someone just diagnosed with cancer?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 660.0,
+    "index_in_moment": 2,
+    "text": "Does knowing death is inevitable make you fearless?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 810.0,
+    "index_in_moment": 0,
+    "text": "What does 'Stay Foolish' mean to you personally?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 810.0,
+    "index_in_moment": 1,
+    "text": "How do you stay hungry after achieving so much?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": 810.0,
+    "index_in_moment": 2,
+    "text": "Why end with someone else's words instead of your own?",
+    "is_memory_demo": false
+  },
+  {
+    "moment_timestamp": null,
+    "index_in_moment": 0,
+    "text": "What do you think actually defines success?",
+    "is_memory_demo": true
+  },
+  {
+    "moment_timestamp": null,
+    "index_in_moment": 1,
+    "text": "You mentioned success - can you share a moment when you redefined it?",
+    "is_memory_demo": true
+  },
+  {
+    "moment_timestamp": null,
+    "index_in_moment": 2,
+    "text": "Does your definition of success change as you get older?",
+    "is_memory_demo": true
+  }
+]

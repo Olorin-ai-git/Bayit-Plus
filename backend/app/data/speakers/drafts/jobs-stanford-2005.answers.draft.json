@@ -1,0 +1,188 @@
+[
+  {
+    "question": {
+      "moment_timestamp": 45.0,
+      "index_in_moment": 0,
+      "text": "Why did you choose to tell just three stories?",
+      "is_memory_demo": false
+    },
+    "response_text": "Three felt right. Clean. Simple. I wanted to share the most important lessons - connecting dots, love and loss, death. More stories would dilute the message. Less wouldn't be enough. Three stories, three truths that shaped everything.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 45.0,
+      "index_in_moment": 1,
+      "text": "How does it feel to finally attend a college graduation?",
+      "is_memory_demo": false
+    },
+    "response_text": "Surreal. Here I am at Stanford, never having graduated myself. But it feels complete somehow. Full circle. I'm seeing what I missed, but also what I gained by leaving. The irony isn't lost on me.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 45.0,
+      "index_in_moment": 2,
+      "text": "What made you confident enough to speak without a degree?",
+      "is_memory_demo": false
+    },
+    "response_text": "Truth doesn't require credentials. I've lived these stories. Dropped out, got fired, faced death. Experience taught me what no classroom could. When you have something real to say, you say it. Simple as that.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 180.0,
+      "index_in_moment": 0,
+      "text": "Did you know calligraphy would matter when you learned it?",
+      "is_memory_demo": false
+    },
+    "response_text": "No. Impossible. I had dropped out and was sleeping on friends' floors, returning Coke bottles for food money. That calligraphy class was just beautiful to me. I loved learning about typefaces and spacing. Ten years later, designing the Mac, it all came back. None of it had practical application when I was sitting in that classroom.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 180.0,
+      "index_in_moment": 1,
+      "text": "What other 'useless' classes changed your life?",
+      "is_memory_demo": false
+    },
+    "response_text": "I sat in on dance classes, philosophy, even poetry. Each seemed pointless at the time. But they taught me about grace, about thinking, about the power of simple words. You can't know which experiences will matter. That's why you follow your curiosity, not just career planning.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 180.0,
+      "index_in_moment": 2,
+      "text": "How do you recognize which dots will connect later?",
+      "is_memory_demo": false
+    },
+    "response_text": "You can't. That's the whole point. You can only connect the dots looking backward, never forward. So you have to trust that somehow they will connect in your future. You have to trust in something — your gut, destiny, life, karma, whatever. Trusting that the dots will connect gives you confidence to follow your heart.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 450.0,
+      "index_in_moment": 0,
+      "text": "How did getting fired actually set you free?",
+      "is_memory_demo": false
+    },
+    "response_text": "The weight of being successful was replaced by the lightness of being a beginner again. Less sure about everything. It freed me to enter one of the most creative periods of my life. I didn't see it then, but getting fired from Apple was the best thing that could have ever happened to me.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 450.0,
+      "index_in_moment": 1,
+      "text": "What was the hardest part about losing Apple?",
+      "is_memory_demo": false
+    },
+    "response_text": "Losing something I'd built from nothing. Apple wasn't just my company — it was my life's work. I'd started it in my parents' garage with Woz. To be told I was no longer needed, that hurt. But I still loved what I did.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 450.0,
+      "index_in_moment": 2,
+      "text": "Did you ever doubt you'd find your way back?",
+      "is_memory_demo": false
+    },
+    "response_text": "No. I never doubted. Sometimes life hits you in the head with a brick. Don't lose faith. I was convinced that the only thing that kept me going was that I loved what I did. You've got to find what you love.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 660.0,
+      "index_in_moment": 0,
+      "text": "How did facing death change your daily decisions?",
+      "is_memory_demo": false
+    },
+    "response_text": "It stripped away the nonessential. I stopped caring about external expectations, about looking foolish. Every morning became precious. I asked myself: if today were my last day, would I want to do what I'm about to do? When the answer was no too many days in a row, I knew I needed to change something. Death is very likely the single best invention of life.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 660.0,
+      "index_in_moment": 1,
+      "text": "What would you tell someone just diagnosed with cancer?",
+      "is_memory_demo": false
+    },
+    "response_text": "The diagnosis is not the end of your story. You're already naked. There is no reason not to follow your heart. Don't waste time living someone else's life. Don't be trapped by dogma. Listen to your own inner voice. Most important, have the courage to follow your heart and intuition. They somehow know what you truly want to become.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 660.0,
+      "index_in_moment": 2,
+      "text": "Does knowing death is inevitable make you fearless?",
+      "is_memory_demo": false
+    },
+    "response_text": "Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose. You are already naked. There is no reason not to follow your heart. Death clears out the old to make way for the new. It's life's change agent. You can't connect the dots looking forward, but death gives you clarity about what matters.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 810.0,
+      "index_in_moment": 0,
+      "text": "What does 'Stay Foolish' mean to you personally?",
+      "is_memory_demo": false
+    },
+    "response_text": "Stay Foolish means don't get trapped by dogma. Don't let the noise of others' opinions drown out your own inner voice. I've made my biggest breakthroughs when I ignored conventional wisdom. When people said personal computers were toys, we kept going. Foolishness is really courage - the courage to trust your intuition even when others think you're crazy.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 810.0,
+      "index_in_moment": 1,
+      "text": "How do you stay hungry after achieving so much?",
+      "is_memory_demo": false
+    },
+    "response_text": "Success can be a trap. It whispers that you've figured it out, that you can coast. But I've learned that yesterday's breakthrough becomes tomorrow's starting point. Death is a wonderful clarifier here - it strips away everything nonessential. When you know your time is limited, complacency becomes impossible. Every morning I ask: if today were my last day, would I want to do what I'm about to do?",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": 810.0,
+      "index_in_moment": 2,
+      "text": "Why end with someone else's words instead of your own?",
+      "is_memory_demo": false
+    },
+    "response_text": "These weren't just someone else's words - they captured something I'd lived but couldn't say better myself. Stewart Brand and his team at the Whole Earth Catalog understood something profound about curiosity and beginner's mind. Sometimes the perfect words already exist. Why reinvent them? Your job isn't always to be original. Sometimes it's to recognize wisdom and pass it forward.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": null,
+      "index_in_moment": 0,
+      "text": "What do you think actually defines success?",
+      "is_memory_demo": true
+    },
+    "response_text": "Success isn't about the money or recognition. It's about doing work you believe in. Work that matters. I've been lucky to find what I love early in life. When you love what you do, you bring your whole self to it. You don't settle for good enough. The work becomes the reward. Everything else - the accolades, the wealth - those are just byproducts of doing something meaningful.",
+    "callback": null
+  },
+  {
+    "question": {
+      "moment_timestamp": null,
+      "index_in_moment": 1,
+      "text": "You mentioned success - can you share a moment when you redefined it?",
+      "is_memory_demo": true
+    },
+    "response_text": "Getting fired from Apple redefined everything. I thought I'd failed completely. But it freed me. I started NeXT, bought Pixar. Those wilderness years taught me that doing work you believe in matters more than titles or corner offices. The work itself has to be meaningful. That's when I really understood what success meant.",
+    "callback": {
+      "phrase": "doing work you believe in",
+      "references_exchange": 0
+    }
+  },
+  {
+    "question": {
+      "moment_timestamp": null,
+      "index_in_moment": 2,
+      "text": "Does your definition of success change as you get older?",
+      "is_memory_demo": true
+    },
+    "response_text": "Death changes everything. Knowing your time is limited strips away the noise. External expectations. Fear of embarrassment. When you're mortal, you realize the work becomes the reward - not someday, but today. You can't waste time on work that doesn't matter to you. Age doesn't change the definition. It just makes it clearer.",
+    "callback": {
+      "phrase": "the work becomes the reward",
+      "references_exchange": 0
+    }
+  }
+]

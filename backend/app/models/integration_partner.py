@@ -21,6 +21,7 @@ CapabilityType = Literal[
     "video_ingest",
     "subtitles",
     "trivia",
+    "comprehension_mode",
 ]
 UsageGranularity = Literal["hourly", "daily", "monthly"]
 WebhookEventType = Literal[
@@ -33,6 +34,8 @@ WebhookEventType = Literal[
     "translation.progress",
     "translation.completed",
     "translation.failed",
+    "comprehension.session.started",
+    "comprehension.turn.posted",
 ]
 
 
