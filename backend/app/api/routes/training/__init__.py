@@ -17,6 +17,9 @@ from app.api.routes.training.checkout import router as checkout_router
 from app.api.routes.training.comprehension_reports import (
     router as comprehension_reports_router,
 )
+from app.api.routes.training.pilot_metrics import (
+    router as pilot_metrics_router,
+)
 
 router = APIRouter(prefix="/training")
 
@@ -33,3 +36,4 @@ router.include_router(party_router)
 router.include_router(pause_ask_router)
 router.include_router(checkout_router)
 router.include_router(comprehension_reports_router)
+router.include_router(pilot_metrics_router)
