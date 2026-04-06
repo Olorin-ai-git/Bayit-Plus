@@ -176,6 +176,8 @@ from app.models.comprehension_report import ComprehensionReport
 from app.models.guest_demo import GuestDemoUsage
 # Consumer submission model (lead capture from interactive demo)
 from app.models.consumer_submission import ConsumerSubmission
+# Demo portal access codes (demo.olorin.ai private codes)
+from app.models.demo_code import DemoCode
 
 
 class Database:
@@ -497,6 +499,8 @@ async def connect_to_mongo():
         GuestDemoUsage,
         # Consumer submission model (lead capture from interactive demo)
         ConsumerSubmission,
+        # Demo portal access codes (demo.olorin.ai private codes)
+        DemoCode,
     ]
 
     # Conditionally add Olorin models based on database separation setting
