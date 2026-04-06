@@ -52,14 +52,13 @@ async def convert_trivia_to_quiz(
 
 def _get_localized_text(fact: TriviaFactModel, language: str) -> Optional[str]:
     """Get fact text in the preferred language."""
-    if language == "he":
-        return fact.text_he or fact.text or fact.text_en
-    elif language == "en":
-        return fact.text_en or fact.text or fact.text_he
-    elif language == "es":
-        return fact.text_es or fact.text_en or fact.text
-    else:
-        return fact.text or fact.text_en or fact.text_he
+    # Check direct attribute first, then translations dict, then fallbacks
+    direct = getattr(fact, f"text_{language}", None)
+    if direct:
+        return direct
+    if fact.translations and language in fact.translations:
+        return fact.translations[language]
+    return fact.text or getattr(fact, "text_en", None)
 
 
 async def _generate_question_from_fact(
@@ -155,7 +154,7 @@ async def _generate_question_from_fact(
     new_correct_index = shuffled_indices.index(correct_index)
 
     return {
-        "id": str(fact.id),
+        "id": str(fact.fact_id),
         "question": question_text,
         "text": question_text,
         "options": shuffled_options,

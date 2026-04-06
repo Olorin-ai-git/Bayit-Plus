@@ -52,6 +52,7 @@ class PauseAskOrchestrator:
         user_message: str,
         language_hint: str = "",
         voice_only: bool = False,
+        cancel_event: Optional[asyncio.Event] = None,
     ) -> PauseAskResult:
         """Process a Pause & Ask exchange through the full pipeline."""
         session_id = str(session.id)
@@ -83,6 +84,7 @@ class PauseAskOrchestrator:
 
         # 2b. Load cross-moment film memory if enabled
         memory_context = ""
+        memory = None
         if settings.VOD_FILM_MEMORY_ENABLED:
             memory = await film_memory_service.get_or_create(
                 session.user_id, session.profile_id, session.content_id,
@@ -121,13 +123,18 @@ class PauseAskOrchestrator:
         except Exception as exc:
             raise self._classify_error(exc, "anthropic", session_id) from exc
 
-        # 4. Compute memory reference against prior user turns in this session.
-        #    Must snapshot BEFORE appending the new user/character exchanges.
+        # 4. Compute memory reference against prior user turns in this session
+        #    AND cross-session film memory (so Hildy can reference Walter's exchange).
         prior_user_messages = [
             ex.message_text
             for ex in session.dialogue_exchanges
             if ex.speaker == "user"
         ]
+        if memory and memory.recent_exchanges:
+            film_user_messages = [
+                ex.user_message for ex in memory.recent_exchanges
+            ]
+            prior_user_messages = film_user_messages + prior_user_messages
 
         # 4. Content moderation
         response_text = character_response.text
@@ -159,6 +166,7 @@ class PauseAskOrchestrator:
                     dialogue_text=response_text,
                     character_frame_url=session.character_frame_url,
                     voice_id=voice_id,
+                    cancel_event=cancel_event,
                 )
         except Exception as exc:
             svc = "elevenlabs" if voice_only else "fal_ai"

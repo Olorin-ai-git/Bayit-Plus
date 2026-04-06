@@ -7,12 +7,12 @@ Separated from vod_interactions.py to respect the 200-line file limit.
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from app.core.logging_config import get_logger
 from app.core.security import get_current_user
-from app.api.dependencies.olorin_tier import require_share_clips
+from app.api.dependencies.olorin_tier import require_share_clips, is_demo_portal_request
 from app.models.user import User
 from app.services.vod_interaction.reel_compositor import (
     reel_compositor_service,
@@ -51,6 +51,7 @@ class ReelResponse(BaseModel):
 
 @router.post("/generate", response_model=ReelResponse)
 async def generate_reel(
+    http_request: Request,
     request: GenerateReelRequest,
     current_user: User = Depends(get_current_user),
 ):
@@ -60,7 +61,8 @@ async def generate_reel(
     Validates session ownership, composites videos via FFmpeg,
     uploads to GCS, and returns the reel metadata.
     """
-    require_share_clips(current_user)
+    if not is_demo_portal_request(http_request):
+        require_share_clips(current_user)
     try:
         reel = await reel_compositor_service.generate_reel(
             user_id=str(current_user.id),

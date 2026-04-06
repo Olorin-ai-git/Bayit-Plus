@@ -9,6 +9,7 @@ Animates movie characters using multiple providers:
 Provider selection is configurable via CHARACTER_ANIMATION_PROVIDER setting.
 """
 
+import asyncio
 import hashlib
 import os
 import subprocess
@@ -72,6 +73,7 @@ class CharacterAnimatorService:
         dialogue_text: str,
         character_frame_url: str,
         voice_id: str,
+        cancel_event: "asyncio.Event | None" = None,
     ) -> AnimatedResponse:
         """Generate animated character response with voice and lip-sync."""
         logger.info(
@@ -86,6 +88,7 @@ class CharacterAnimatorService:
         if self.provider == "aurora":
             return await self._animate_with_aurora(
                 character_name, dialogue_text, character_frame_url, voice_id,
+                cancel_event=cancel_event,
             )
         if self.provider in ("creatify", "elevenlabs"):
             return await self._animate_with_creatify(
@@ -99,6 +102,7 @@ class CharacterAnimatorService:
         dialogue_text: str,
         character_frame_url: str,
         voice_id: str,
+        cancel_event: "asyncio.Event | None" = None,
     ) -> AnimatedResponse:
         """Lip-sync via fal.ai Aurora using character's actual face image."""
         audio_url = await self._generate_tts(dialogue_text, voice_id, character_name)
@@ -110,6 +114,7 @@ class CharacterAnimatorService:
         video_url = await fal_aurora_client.create_lipsync(
             image_url=public_image,
             audio_url=public_audio,
+            cancel_event=cancel_event,
         )
 
         logger.info(

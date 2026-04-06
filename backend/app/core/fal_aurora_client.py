@@ -54,12 +54,13 @@ class FalAuroraClient:
         image_url: str,
         audio_url: str,
         prompt: str = "",
+        cancel_event: "asyncio.Event | None" = None,
     ) -> str:
         """
         Generate a lip-synced video from image + audio via Aurora.
 
-        Uses the synchronous fal.run endpoint which blocks until
-        the result is ready. Falls back to queue polling if needed.
+        Args:
+            cancel_event: If set, polling stops and the fal.ai job is cancelled.
 
         Returns:
             Storage URL of the generated lip-sync video
@@ -78,41 +79,40 @@ class FalAuroraClient:
         async with httpx.AsyncClient(
             timeout=self.timeout, follow_redirects=True,
         ) as client:
-            video_url = await self._run_sync(payload, client)
+            video_url = await self._run_sync(payload, client, cancel_event)
             return await self._upload_to_storage(video_url, image_url)
 
     async def _run_sync(
-        self, payload: dict, client: httpx.AsyncClient,
+        self,
+        payload: dict,
+        client: httpx.AsyncClient,
+        cancel_event: "asyncio.Event | None" = None,
     ) -> str:
-        """Call synchronous fal.run endpoint. Blocks until result ready."""
+        """Submit to queue endpoint and poll for result.
+
+        The sync fal.run endpoint is unreliable (hangs indefinitely),
+        so we always use the queue endpoint which returns immediately
+        with a request_id for polling.
+        """
         response = await client.post(
-            SYNC_ENDPOINT,
+            QUEUE_ENDPOINT,
             json=payload,
             headers=self._get_headers(),
         )
-
-        if response.status_code == 200:
-            result = response.json()
-            video_url = result["video"]["url"]
-            logger.info(
-                "Aurora sync completed",
-                extra={
-                    "duration": result["video"].get("duration"),
-                    "video_url": video_url,
-                },
-            )
-            return video_url
-
-        if response.status_code in (202, 409):
-            request_id = response.json().get("request_id")
-            logger.info(
-                "Aurora queued, falling back to poll",
-                extra={"request_id": request_id},
-            )
-            return await self._poll_result(request_id, client)
-
         response.raise_for_status()
-        return ""
+        data = response.json()
+        request_id = data.get("request_id")
+        if not request_id:
+            raise RuntimeError(f"Aurora queue returned no request_id: {data}")
+
+        cancel_url = data.get("cancel_url", "")
+        logger.info(
+            "Aurora job queued",
+            extra={"request_id": request_id},
+        )
+        return await self._poll_result(
+            request_id, client, cancel_event=cancel_event, cancel_url=cancel_url,
+        )
 
     async def _poll_result(
         self,
@@ -120,12 +120,20 @@ class FalAuroraClient:
         client: httpx.AsyncClient,
         max_attempts: int = 120,
         poll_interval: int = 5,
+        cancel_event: "asyncio.Event | None" = None,
+        cancel_url: str = "",
     ) -> str:
-        """Poll fal.ai queue until job completes."""
+        """Poll fal.ai queue until job completes or is cancelled."""
         status_url = f"{QUEUE_ENDPOINT}/requests/{request_id}/status"
         result_url = f"{QUEUE_ENDPOINT}/requests/{request_id}"
 
         for attempt in range(max_attempts):
+            if cancel_event and cancel_event.is_set():
+                await self._cancel_job(client, cancel_url, request_id)
+                raise asyncio.CancelledError(
+                    f"Aurora job {request_id} cancelled (client disconnected)"
+                )
+
             resp = await client.get(status_url, headers=self._get_headers())
             if resp.status_code == 200:
                 data = resp.json()
@@ -149,6 +157,23 @@ class FalAuroraClient:
             await asyncio.sleep(poll_interval)
 
         raise TimeoutError(f"Aurora job {request_id} timed out")
+
+    async def _cancel_job(
+        self, client: httpx.AsyncClient, cancel_url: str, request_id: str,
+    ) -> None:
+        """Cancel a queued fal.ai job."""
+        url = cancel_url or f"{QUEUE_ENDPOINT}/requests/{request_id}/cancel"
+        try:
+            resp = await client.put(url, headers=self._get_headers())
+            logger.info(
+                "Aurora job cancelled",
+                extra={"request_id": request_id, "status": resp.status_code},
+            )
+        except Exception as exc:
+            logger.warning(
+                "Aurora job cancel request failed",
+                extra={"request_id": request_id, "error": str(exc)},
+            )
 
     async def _upload_to_storage(
         self, video_url: str, image_url: str,

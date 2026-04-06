@@ -55,8 +55,9 @@ async def get_trivia(
         current_user: Optional authenticated user
     """
     if current_user is not None:
-        from app.api.dependencies.olorin_tier import require_trivia
-        require_trivia(current_user)
+        from app.api.dependencies.olorin_tier import require_trivia, is_demo_portal_request
+        if not is_demo_portal_request(request):
+            require_trivia(current_user)
 
     validated_id = validate_object_id(content_id)
 
@@ -107,8 +108,9 @@ async def get_vod_quiz(
         current_user: Optional authenticated user
     """
     if current_user is not None:
-        from app.api.dependencies.olorin_tier import require_trivia
-        require_trivia(current_user)
+        from app.api.dependencies.olorin_tier import require_trivia, is_demo_portal_request
+        if not is_demo_portal_request(request):
+            require_trivia(current_user)
 
     validated_id = validate_object_id(content_id)
 

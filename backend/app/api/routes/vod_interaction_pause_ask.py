@@ -6,6 +6,7 @@ avatar can pause a movie, select a character, ask a question, and receive
 animated lip-sync videos of both their avatar and the character's response.
 """
 
+import asyncio
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, status
@@ -153,14 +154,41 @@ async def pause_ask_exchange(
                 detail="Insufficient credits for Pause & Ask",
             )
 
+    cancel_event = asyncio.Event()
+
+    async def _monitor_disconnect() -> None:
+        while not cancel_event.is_set():
+            if await request.is_disconnected():
+                cancel_event.set()
+                logger.info(
+                    "Client disconnected, cancelling pipeline",
+                    extra={"session_id": session_id},
+                )
+                return
+            await asyncio.sleep(1)
+
+    monitor = asyncio.create_task(_monitor_disconnect())
     try:
         result: PauseAskResult = await pause_ask_orchestrator.process_exchange(
             session=session,
             user_message=body.message,
             language_hint=body.language_hint,
             voice_only=body.voice_only,
+            cancel_event=cancel_event,
         )
         return PauseAskResponseModel(**result.model_dump())
+
+    except asyncio.CancelledError:
+        logger.info(
+            "Pause & Ask cancelled (client disconnected)",
+            extra={"session_id": session_id},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_499_CLIENT_CLOSED_REQUEST
+            if hasattr(status, "HTTP_499_CLIENT_CLOSED_REQUEST")
+            else 499,
+            detail="Client disconnected",
+        )
 
     except ValueError as ve:
         logger.warning(
@@ -196,6 +224,9 @@ async def pause_ask_exchange(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Pause & Ask processing failed",
         )
+    finally:
+        cancel_event.set()
+        monitor.cancel()
 
 
 @router.post(

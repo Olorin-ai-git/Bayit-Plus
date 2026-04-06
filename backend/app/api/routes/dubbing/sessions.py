@@ -5,8 +5,8 @@ B2C endpoints for Chrome extension with JWT authentication
 Supports both audio dubbing and live subtitles
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from app.api.dependencies.olorin_tier import require_dubbing
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from app.api.dependencies.olorin_tier import require_dubbing, is_demo_portal_request
 
 from datetime import timedelta
 
@@ -32,6 +32,7 @@ router = APIRouter()
 
 @router.post("/sessions", response_model=SessionResponse, status_code=status.HTTP_201_CREATED)
 async def create_dubbing_session(
+    http_request: Request,
     request: CreateSessionRequest,
     current_user: User = Depends(get_current_active_user),
 ):
@@ -54,7 +55,8 @@ async def create_dubbing_session(
     - session_type: Enabled features (audio_dubbing, live_subtitles)
     """
     try:
-        require_dubbing(current_user)
+        if not is_demo_portal_request(http_request):
+            require_dubbing(current_user)
 
         # Create dubbing service
         dubbing_service = UserDubbingService(user=current_user)
