@@ -198,3 +198,25 @@ class InteractiveConfigMixin:
         env="VOD_FILM_MEMORY_SUMMARIZER_FAILURE_THRESHOLD",
         description="Consecutive summarizer failures before circuit breaker trips per-memory-doc",
     )
+
+    # Phase 3: Vision-Grounded Questions
+    VOD_VISION_GROUNDED_ENABLED: bool = Field(
+        default=False,
+        env="VOD_VISION_GROUNDED_ENABLED",
+        description="Enable vision-grounded questions on paused frames",
+    )
+    VOD_VISION_FRAME_MAX_BYTES: int = Field(
+        default=500_000, ge=50_000, le=2_000_000,
+        env="VOD_VISION_FRAME_MAX_BYTES",
+        description="Max decoded frame size in bytes (JPEG)",
+    )
+    VOD_VISION_FRAME_MAX_DIMENSION: int = Field(
+        default=1568, ge=512, le=4096,
+        env="VOD_VISION_FRAME_MAX_DIMENSION",
+        description="Max frame width/height in pixels (Claude vision sweet spot)",
+    )
+    VOD_VISION_DEFAULT_QUESTION: str = Field(
+        default="What can you tell me about what I'm pointing at?",
+        env="VOD_VISION_DEFAULT_QUESTION",
+        description="Default question when user taps without typing",
+    )
