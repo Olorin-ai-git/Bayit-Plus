@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr, Field
 from pymongo import ASCENDING, IndexModel
 
 
-TrainingRole = Literal["admin", "viewer", "teacher"]
+TrainingRole = Literal["admin", "viewer"]
 TrainingUserStatus = Literal["pending", "active", "deactivated"]
 
 
@@ -42,15 +42,6 @@ class TrainingConfig(BaseModel):
     )
     credits_used: int = Field(
         default=0, ge=0, description="Credits consumed this billing period"
-    )
-    credits_remaining: int = Field(
-        default=0,
-        ge=0,
-        description=(
-            "Credits remaining in this billing period — D-16; default=0 required "
-            "so existing TrainingConfig docs without this field deserialize without "
-            "AttributeError"
-        ),
     )
     stripe_customer_id: Optional[str] = Field(
         default=None, description="Stripe customer ID"

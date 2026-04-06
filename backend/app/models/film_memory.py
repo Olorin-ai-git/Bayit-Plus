@@ -10,8 +10,6 @@ from beanie import Document
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
-from app.schemas.comprehension import ExchangeType
-
 
 class FilmMemoryExchange(BaseModel):
     """A single verbatim exchange retained in the recent window."""
@@ -21,14 +19,6 @@ class FilmMemoryExchange(BaseModel):
     user_message: str = Field(..., description="User's message text")
     character_response: str = Field(..., description="Character's response text")
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    exchange_type: ExchangeType = Field(
-        default=ExchangeType.CHARACTER_CHAT,
-        description=(
-            "Distinguishes grader-origin from chat-origin exchanges (D-02). "
-            "Phase 1 character LLM reads only CHARACTER_CHAT. "
-            "Grader NEVER reads this field."
-        ),
-    )
 
 
 class VODFilmMemory(Document):

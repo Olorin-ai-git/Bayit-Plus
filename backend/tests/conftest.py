@@ -3,22 +3,12 @@ Pytest configuration and fixtures for Bayit+ backend tests.
 """
 
 import os
-import secrets
 import sys
 from pathlib import Path
 
 # Add backend directory to path
 backend_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_dir))
-
-# Bootstrap required env vars for test runs so app.core.config.Settings can
-# initialize without a real .env file present. Only sets defaults — does NOT
-# override values already provided by CI or a developer shell.
-os.environ.setdefault("SECRET_KEY", secrets.token_urlsafe(32))
-os.environ.setdefault("MONGODB_URI", "mongodb://localhost:27017/test_bayit_plus")
-os.environ.setdefault("MONGODB_URL", "mongodb://localhost:27017/test_bayit_plus")
-os.environ.setdefault("OPENAI_API_KEY", "test-openai-key")
-os.environ.setdefault("ANTHROPIC_API_KEY", "test-anthropic-key")
 
 from typing import Optional
 

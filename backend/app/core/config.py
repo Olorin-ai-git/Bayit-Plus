@@ -127,21 +127,6 @@ class Settings(
         description="Olorin.ai platform configuration (nested)",
     )
 
-    # Comprehension Mode B2B (Phase 3)
-    COMPREHENSION_TURN_CREDIT_COST: int = Field(
-        default=1,
-        ge=0,
-        description="Credits deducted per turn for comprehension_mode capability — D-16",
-    )
-    COMPREHENSION_SHARE_TOKEN_BYTES: int = Field(
-        default=24,
-        ge=16,
-        description=(
-            "secrets.token_urlsafe byte count for share tokens — D-09 "
-            "minimum 32 chars (24 bytes -> 32 url-safe chars)"
-        ),
-    )
-
     @field_validator("SECRET_KEY")
     @classmethod
     def validate_secret_key(cls, v: str) -> str:

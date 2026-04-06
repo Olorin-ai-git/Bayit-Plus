@@ -4864,37 +4864,7 @@
     "loading": "প্রশ্ন লোড হচ্ছে...",
     "insufficient_credits": "বোধগম্যতার প্রশ্নের জন্য অপর্যাপ্ত ক্রেডিট",
     "error": "প্রশ্ন লোড করতে ত্রুটি",
-    "comprehensionCheck": "বোধগম্যতা পরীক্ষা",
-    "reaction": {
-      "correct": "ঠিক তাই - তুমি সরাসরি দেখে ফেললে।",
-      "partial": "তুমি কাছাকাছি আছ। আমাকে অন্যভাবে বলতে দাও।",
-      "incorrect": "ঠিক না - ভাবো সেখানে সত্যিই কী ঘটছিল।"
-    },
-    "retry": {
-      "prompt": "আবার চেষ্টা কর - এবার আমি অন্যভাবে জিজ্ঞাসা করব।"
-    },
-    "answer_reveal": {
-      "intro": "আমি যা বলতে চাইছিলাম:",
-      "closing": "আসুন দেখা চালিয়ে যাই।"
-    },
-    "answer": {
-      "input_placeholder_text": "তোমার উত্তর টাইপ কর...",
-      "input_placeholder_voice": "উত্তর বলতে চেপে ধরে রাখো"
-    },
-    "toggle": {
-      "label": "বোধশক্তি মোড"
-    },
-    "resuming": "পুনরায় শুরু হচ্ছে...",
-    "a11y": {
-      "bubble_label": "{{character}} থেকে বোঝার প্রশ্ন",
-      "character_speaking": "{{character}} কথা বলছেন"
-    },
-    "modality": {
-      "text": "লেখা",
-      "voice": "কণ্ঠস্বর"
-    },
-    "char_count": "{{count}} / 280",
-    "resume_playback": "দেখতে থাকুন"
+    "comprehensionCheck": "বোধগম্যতা পরীক্ষা"
   },
   "content": {
     "play": "চালান",

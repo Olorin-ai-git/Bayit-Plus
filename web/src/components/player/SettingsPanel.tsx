@@ -9,7 +9,6 @@ import { X, Check } from "lucide-react";
 import { Icon } from "@olorin/shared-icons/web";
 import { colors, spacing, borderRadius } from "@olorin/design-tokens";
 import { GlassView } from "@bayit/shared/ui";
-import ComprehensionSettingsRow from "./ComprehensionSettingsRow";
 import type { QualityOption } from "./types";
 
 interface SettingsPanelProps {
@@ -21,9 +20,6 @@ interface SettingsPanelProps {
   availableQualities?: QualityOption[];
   currentQuality?: string;
   currentPlaybackSpeed?: number;
-  userId?: string;
-  profileId?: string;
-  contentId?: string;
   onClose: () => void;
   onLiveSubtitleLangChange?: (lang: string) => void;
   onQualityChange?: (quality: string) => void;
@@ -41,9 +37,6 @@ export default function SettingsPanel({
   availableQualities = [],
   currentQuality,
   currentPlaybackSpeed = 1,
-  userId,
-  profileId,
-  contentId,
   onClose,
   onLiveSubtitleLangChange,
   onQualityChange,
@@ -241,17 +234,6 @@ export default function SettingsPanel({
                 {t("player.openSubs.title")}
               </Text>
             </Pressable>
-          </View>
-        )}
-
-        {/* Comprehension Mode toggle (DEMO-01, UI-SPEC 6.1) */}
-        {userId && profileId && contentId && (
-          <View style={styles.section}>
-            <ComprehensionSettingsRow
-              userId={userId}
-              profileId={profileId}
-              contentId={contentId}
-            />
           </View>
         )}
       </View>

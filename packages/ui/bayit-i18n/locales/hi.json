@@ -4864,37 +4864,7 @@
     "loading": "प्रश्न लोड हो रहा है...",
     "insufficient_credits": "समझ के प्रश्न के लिए अपर्याप्त क्रेडिट",
     "error": "प्रश्न लोड करने में त्रुटि",
-    "comprehensionCheck": "समझ की जाँच",
-    "reaction": {
-      "correct": "बिल्कुल सही - तुमने सीधे समझ लिया।",
-      "partial": "तुम करीब हो। मुझे इसे अलग तरीके से कहने दो।",
-      "incorrect": "ठीक नहीं - सोचो कि वहाँ असल में क्या हो रहा था।"
-    },
-    "retry": {
-      "prompt": "फिर से कोशिश करो - इस बार मैं इसे अलग तरह से पूछूंगा।"
-    },
-    "answer_reveal": {
-      "intro": "मेरा मतलब यह था:",
-      "closing": "चलो देखना जारी रखें।"
-    },
-    "answer": {
-      "input_placeholder_text": "अपना उत्तर लिखें...",
-      "input_placeholder_voice": "अपना उत्तर बोलने के लिए दबाकर रखें"
-    },
-    "toggle": {
-      "label": "समझ मोड"
-    },
-    "resuming": "फिर से शुरू हो रहा है...",
-    "a11y": {
-      "bubble_label": "{{character}} से समझ का प्रश्न",
-      "character_speaking": "{{character}} बोल रहे हैं"
-    },
-    "modality": {
-      "text": "पाठ",
-      "voice": "आवाज़"
-    },
-    "char_count": "{{count}} / 280",
-    "resume_playback": "देखते रहें"
+    "comprehensionCheck": "समझ की जाँच"
   },
   "content": {
     "play": "चलाएं",
