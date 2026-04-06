@@ -20,6 +20,7 @@ from app.core.config_domains.hebrew_phase6 import HebrewPhase6ConfigMixin
 from app.core.config_domains.hebrew_phases10_11 import HebrewPhases10To11ConfigMixin
 from app.core.config_domains.interactive import InteractiveConfigMixin
 from app.core.config_domains.interactive_movies import InteractiveMoviesConfigMixin
+from app.core.config_domains.scorm import ScormConfigMixin
 from app.core.config_domains.kids_documentary import KidsDocumentaryConfigMixin
 from app.core.config_domains.kids_trivia import KidsTriviaConfigMixin
 from app.core.config_domains.live_quotas import LiveQuotasConfigMixin
@@ -77,6 +78,7 @@ class Settings(
     ZehAniConfigMixin,
     InteractiveConfigMixin,
     InteractiveMoviesConfigMixin,
+    ScormConfigMixin,
     ZehAniGrandparentConfigMixin,
     OlorinCompatConfigMixin,
     BaseSettings,
