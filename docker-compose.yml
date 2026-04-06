@@ -76,6 +76,8 @@ services:
       - OPENSUBTITLES_PASSWORD=${OPENSUBTITLES_PASSWORD}
       # AI Services
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # Phase 3: Vision-Grounded Questions
+      - VOD_VISION_GROUNDED_ENABLED=${VOD_VISION_GROUNDED_ENABLED:-true}
       # GCS Upload Configuration
       - GCS_UPLOAD_TIMEOUT_SECONDS=${GCS_UPLOAD_TIMEOUT_SECONDS:-600}
       - GCS_UPLOAD_CHUNK_SIZE_MB=${GCS_UPLOAD_CHUNK_SIZE_MB:-8}
@@ -88,6 +90,16 @@ services:
       - APPLE_KEY_PATH=${APPLE_KEY_PATH}
       - APPLE_BUNDLE_ID_IOS=${APPLE_BUNDLE_ID_IOS:-com.bayitplus.ios}
       - APPLE_BUNDLE_ID_TVOS=${APPLE_BUNDLE_ID_TVOS:-com.bayitplus.tvos}
+      # Auth Service (auth.olorin.ai)
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-https://auth.olorin.ai}
+      # Google OAuth
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      - GOOGLE_IOS_CLIENT_ID=${GOOGLE_IOS_CLIENT_ID}
+      # Apple OAuth
+      - APPLE_CLIENT_ID=${APPLE_CLIENT_ID}
+      - APPLE_PRIVATE_KEY=${APPLE_PRIVATE_KEY}
     env_file:
       - ./backend/.env
     depends_on:
