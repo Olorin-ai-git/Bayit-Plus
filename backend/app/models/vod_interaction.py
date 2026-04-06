@@ -152,6 +152,19 @@ class DialogueExchange(BaseModel):
     participant_name: Optional[str] = Field(
         None, description="Display name of participant in shared session",
     )
+    # Phase 3: Vision-Grounded Questions
+    tap_x: Optional[float] = Field(
+        None, ge=0.0, le=1.0,
+        description="Normalized tap X coordinate (vision exchanges only)",
+    )
+    tap_y: Optional[float] = Field(
+        None, ge=0.0, le=1.0,
+        description="Normalized tap Y coordinate (vision exchanges only)",
+    )
+    is_vision_grounded: bool = Field(
+        default=False,
+        description="Whether this exchange was triggered by a vision-grounded question",
+    )
 
 
 class SharedParticipant(BaseModel):
