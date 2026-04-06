@@ -653,6 +653,10 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import demo_proxy
     app.include_router(demo_proxy.router, prefix=prefix, tags=["demo"])
 
+    # Demo Portal Lead Tracking (demo.olorin.ai — Firebase-authed)
+    from app.api.routes import demo_tracking
+    app.include_router(demo_tracking.router, prefix=prefix, tags=["demo"])
+
     # Submission Queue Processor (Cloud Scheduler-triggered)
     from app.api.routes import submission_processor
     app.include_router(submission_processor.router, prefix=prefix, tags=["internal"])

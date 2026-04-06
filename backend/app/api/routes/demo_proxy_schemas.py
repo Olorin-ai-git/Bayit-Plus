@@ -50,3 +50,21 @@ class DemoRecapResponse(BaseModel):
     content_id: str
     summary: str
     key_points: List[str]
+
+
+class TrackUserRequest(BaseModel):
+    email: str = Field(..., min_length=1, max_length=254)
+    name: str = Field(..., min_length=1, max_length=256)
+    provider: str = Field(..., min_length=1, max_length=64)
+    utm_source: Optional[str] = Field(default=None, max_length=128)
+    utm_medium: Optional[str] = Field(default=None, max_length=128)
+    utm_campaign: Optional[str] = Field(default=None, max_length=256)
+
+
+class TrackProgressRequest(BaseModel):
+    stop_id: str = Field(..., min_length=1, max_length=128)
+    time_spent_seconds: int = Field(..., ge=0)
+
+
+class TrackStatusResponse(BaseModel):
+    status: str
