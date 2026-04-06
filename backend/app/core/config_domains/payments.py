@@ -32,6 +32,11 @@ class PaymentsConfigMixin:
         env="DEMO_CONTENT_ID",
         description="Content ID for the pre-loaded demo video (e.g. BTTF)"
     )
+    DEMO_PORTAL_ORIGINS: str = Field(
+        default="",
+        env="DEMO_PORTAL_ORIGINS",
+        description="Comma-separated origins for the demo portal (bypass tier gating)"
+    )
     GUEST_DEMO_MAX_INTERACTIONS: int = Field(
         default=10,
         env="GUEST_DEMO_MAX_INTERACTIONS",

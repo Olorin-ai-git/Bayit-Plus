@@ -2,10 +2,21 @@
 FastAPI dependencies for Olorin tier-based feature gating.
 """
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
+from app.core.config import settings
 from app.services.olorin.tier_service import OlorinTierService
 
 _tier_service = OlorinTierService()
+
+
+def is_demo_portal_request(request: Request) -> bool:
+    """Check if the request originates from the demo portal."""
+    raw = getattr(settings, "DEMO_PORTAL_ORIGINS", "") or ""
+    if not raw:
+        return False
+    allowed = {o.strip().rstrip("/") for o in raw.split(",") if o.strip()}
+    origin = (request.headers.get("origin") or "").rstrip("/")
+    return origin in allowed
 
 
 def require_lip_sync(user) -> None:
