@@ -63,7 +63,8 @@ class RestoredFieldsMixin(BaseSettings):
     )
     UPLOAD_SESSION_TIMEOUT_HOURS: int = 2  # Timeout for inactive upload sessions
     SENDGRID_API_KEY: str = ""
-    SENDGRID_FROM_EMAIL: str = "noreply@bayitplus.com"
+    SENDGRID_FROM_EMAIL: str = "noreply@olorin.ai"
+    RESEND_API_KEY: str = ""
     ADMIN_EMAIL_ADDRESSES: str = ""  # Comma-separated list of admin emails
     TMDB_API_KEY: str = ""
     TMDB_API_TOKEN: str = ""  # Bearer token for TMDB API v4

@@ -16,6 +16,9 @@ class EmailSettings(BaseSettings):
         description="Default sender email address"
     )
 
+    # Resend
+    resend_api_key: str = Field(default="", description="Resend API key")
+
     # SMTP (future)
     smtp_host: Optional[str] = Field(default=None, description="SMTP server host")
     smtp_port: int = Field(default=587, description="SMTP server port")
@@ -26,7 +29,7 @@ class EmailSettings(BaseSettings):
     # Provider selection
     email_provider: str = Field(
         default="sendgrid",
-        description="Email provider (sendgrid, smtp)"
+        description="Email provider (sendgrid, resend, smtp)"
     )
 
     class Config:

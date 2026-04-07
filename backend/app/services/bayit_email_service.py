@@ -9,12 +9,30 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from olorin_email import EmailService, EmailSettings, SendGridProvider, SendResult
+from olorin_email import (
+    EmailService, EmailSettings, ResendProvider, SendGridProvider, SendResult,
+)
 
 from app.core.config import settings
 from app.services.email_templates import get_template_renderer
 
 logger = logging.getLogger(__name__)
+
+
+def _create_email_provider(email_settings: EmailSettings):
+    """Select email provider based on config: resend > sendgrid > none."""
+    resend_key = getattr(settings, "RESEND_API_KEY", "")
+    if resend_key:
+        email_settings.resend_api_key = resend_key
+        logger.info("Email provider: Resend")
+        return ResendProvider(email_settings)
+    sendgrid_key = getattr(settings, "SENDGRID_API_KEY", "")
+    if sendgrid_key:
+        email_settings.sendgrid_api_key = sendgrid_key
+        logger.info("Email provider: SendGrid")
+        return SendGridProvider(email_settings)
+    logger.warning("No email provider configured (RESEND_API_KEY or SENDGRID_API_KEY)")
+    return SendGridProvider(email_settings)
 
 
 class BayitEmailService:
@@ -31,11 +49,10 @@ class BayitEmailService:
     def __init__(self):
         """Initialize Bayit+ email service with Olorin email core."""
         email_settings = EmailSettings(
-            sendgrid_api_key=getattr(settings, "SENDGRID_API_KEY", ""),
-            from_email=getattr(settings, "SENDGRID_FROM_EMAIL", "noreply@bayitplus.com"),
+            from_email=getattr(settings, "SENDGRID_FROM_EMAIL", "noreply@olorin.ai"),
         )
 
-        provider = SendGridProvider(email_settings)
+        provider = _create_email_provider(email_settings)
         self.core_service = EmailService(provider)
         self.template_renderer = get_template_renderer()
 
