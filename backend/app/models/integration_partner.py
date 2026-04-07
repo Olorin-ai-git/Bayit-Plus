@@ -36,6 +36,9 @@ WebhookEventType = Literal[
     "translation.failed",
     "comprehension.session.started",
     "comprehension.turn.posted",
+    "training.tier_upgraded",
+    "training.subscription_cancelled",
+    "training.video_completed",
 ]
 
 
