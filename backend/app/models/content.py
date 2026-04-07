@@ -284,6 +284,10 @@ class Content(Document):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     published_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = Field(
+        default=None,
+        description="Auto-delete time for ephemeral content (demo uploads). TTL-indexed.",
+    )
 
     class Settings:
         name = "content"
@@ -397,6 +401,13 @@ class Content(Document):
             ("collection_parent_id", "collection_order"),
             ("tmdb_collection_id", "is_published"),
             ("is_collection_parent", "is_published"),
+            # TTL index for ephemeral demo content auto-deletion
+            IndexModel(
+                [("expires_at", pymongo.ASCENDING)],
+                expireAfterSeconds=0,
+                sparse=True,
+                name="expires_at_ttl",
+            ),
             # Audiobook list query compound index (browse + featured sort)
             IndexModel(
                 [

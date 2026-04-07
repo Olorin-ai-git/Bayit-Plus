@@ -6,17 +6,16 @@ from typing import Optional
 from fastapi import (
     APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile, status,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.content import Content
 from app.models.ingest_job import IngestJob
-from app.models.integration_partner import IntegrationPartner
 from app.models.user import User
 from app.services import demo_usage_service
-from app.services.olorin.ingest_orchestrator import run_pipeline
+from app.services.demo_ingest_service import run_demo_pipeline_and_increment
 from app.services.olorin.storage_service import storage_service
 from app.services.video_probe_service import probe_duration, truncate_and_upload
 
@@ -88,6 +87,13 @@ class DemoIngestRequest(BaseModel):
     video_url: str = Field(..., description="Video URL (YouTube, Vimeo, or direct)")
     title: Optional[str] = Field(None, description="Optional title hint")
 
+    @field_validator("video_url")
+    @classmethod
+    def validate_url_scheme(cls, v: str) -> str:
+        if not v.startswith(("http://", "https://")):
+            raise ValueError("Only HTTP and HTTPS URLs are accepted")
+        return v
+
 
 class DemoIngestResponse(BaseModel):
     content_id: str
@@ -95,50 +101,6 @@ class DemoIngestResponse(BaseModel):
     status: str = "processing"
     truncated: bool = False
     processed_duration_seconds: Optional[float] = None
-
-
-# Invalid bcrypt hash sentinel — demo partner never authenticates via API key
-_INVALID_BCRYPT = "$2b$12$000000000000000000000000000000000000000000000000000"
-
-
-async def _ensure_demo_partner() -> None:
-    """Ensure a 'demo' IntegrationPartner exists for pipeline execution."""
-    existing = await IntegrationPartner.find_one(
-        IntegrationPartner.partner_id == "demo",
-    )
-    if existing:
-        return
-    partner = IntegrationPartner(
-        partner_id="demo",
-        name="Demo Portal",
-        name_en="Demo Portal",
-        api_key_hash=_INVALID_BCRYPT,
-        api_key_prefix="demo____",
-        contact_email="demo@olorin.ai",
-        capabilities={},
-        is_active=True,
-    )
-    await partner.insert()
-    logger.info("Demo IntegrationPartner seeded")
-
-
-async def _run_demo_pipeline_and_increment(
-    job: IngestJob, user_id: str,
-) -> None:
-    """Run ingest pipeline; increment usage only on success."""
-    try:
-        await _ensure_demo_partner()
-        await run_pipeline(job)
-        await demo_usage_service.increment(user_id, "video_ingest")
-        logger.info(
-            "Demo pipeline completed",
-            extra={"user_id": user_id, "job_id": job.job_id},
-        )
-    except Exception:
-        logger.exception(
-            "Demo pipeline failed",
-            extra={"user_id": user_id, "job_id": job.job_id},
-        )
 
 
 @router.post(
@@ -205,7 +167,7 @@ async def demo_ingest_video(
     )
     await job.insert()
 
-    background_tasks.add_task(_run_demo_pipeline_and_increment, job, user_id)
+    background_tasks.add_task(run_demo_pipeline_and_increment, job, user_id)
 
     logger.info(
         "Demo ingest started",

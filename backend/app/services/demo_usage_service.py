@@ -14,7 +14,7 @@ from app.models.demo_feature_usage import DemoFeatureUsage
 
 logger = get_logger(__name__)
 
-DEMO_FEATURES = ("pause_ask", "character_memory", "comprehension")
+DEMO_FEATURES = ("pause_ask", "character_memory", "comprehension", "video_ingest")
 
 
 async def get_usage(user_id: str) -> Dict[str, Dict[str, int]]:

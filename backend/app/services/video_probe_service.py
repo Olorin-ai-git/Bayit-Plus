@@ -14,6 +14,8 @@ _TEMP_DIR = Path("/tmp/olorin-demo-probe")
 
 async def probe_duration(video_url: str) -> float:
     """Probe video duration in seconds via FFprobe (stream-probes, no full download)."""
+    if not video_url.startswith(("http://", "https://")):
+        raise ValueError("Only HTTP and HTTPS URLs are accepted")
     cmd = [
         "ffprobe", "-v", "quiet",
         "-print_format", "json",

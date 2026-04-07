@@ -47,6 +47,16 @@ class PaymentsConfigMixin:
         env="DEMO_FEATURE_MAX_USES",
         description="Max uses per AI feature for registered demo portal users",
     )
+    DEMO_VIDEO_MAX_UPLOAD_MB: int = Field(
+        default=100,
+        env="DEMO_VIDEO_MAX_UPLOAD_MB",
+        description="Maximum video file upload size in MB for demo portal users",
+    )
+    DEMO_VIDEO_MAX_DURATION_SECONDS: int = Field(
+        default=600,
+        env="DEMO_VIDEO_MAX_DURATION_SECONDS",
+        description="Maximum video duration in seconds for demo processing (longer videos are truncated)",
+    )
 
     # Consumer URL Submission (unauthenticated)
     CONSUMER_DEMO_MAX_SUBMISSIONS: int = Field(
