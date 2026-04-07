@@ -1,0 +1,84 @@
+<h2>VOD Character Memory Demo — Exchange 2 of 3 (playing)</h2>
+<p class="subtitle">Hildy responds to Walter's prior answer. C+D indicators active: "MEMORY" badge on response + prior question highlighted.</p>
+
+<div class="mockup">
+  <div class="mockup-header">features page — Character Memory demo card (800 × 450)</div>
+  <div class="mockup-body" style="padding:0; background:#04000a; color:#d0c5e8; font-family: 'Courier New', monospace;">
+    <div style="display:flex; height:450px;">
+
+      <!-- LEFT: character panel -->
+      <div style="flex: 0 0 45%; background:#0a0318; border-right: 2px solid #6e2ba8; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;">
+        <div style="position:absolute; top:12px; left:12px; background:#6e2ba8; color:#fff; padding:3px 10px; font-size:10px; letter-spacing:1px;">● LIVE — HILDY JOHNSON</div>
+        <div style="width:180px; height:240px; background:linear-gradient(135deg,#9a7dd9 0%,#5a3388 100%); border:2px solid #b794e8; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; text-align:center; box-shadow: 0 0 24px #b794e866;">
+          [Hildy lipsync video<br/>playing]
+        </div>
+        <div style="margin-top:16px; font-size:13px; letter-spacing:1px; color:#b794e8;">▶ 00:04 / 00:09</div>
+      </div>
+
+      <!-- RIGHT: questions panel -->
+      <div style="flex:1; padding:18px 22px; display:flex; flex-direction:column;">
+
+        <!-- Exchange 1 (prior, HIGHLIGHTED — being called back) -->
+        <div style="border:2px solid #ffd666; border-radius:4px; padding:10px 12px; margin-bottom:10px; background:#3a2800; box-shadow: 0 0 16px #ffd66688; animation: pulse 1.5s infinite;">
+          <div style="font-size:9px; letter-spacing:1px; color:#ffd666; margin-bottom:4px;">◀ EXCHANGE 1 — WALTER · CALLBACK TARGET</div>
+          <div style="font-size:11px; color:#d0c5e8; margin-bottom:4px;">YOU: Why do you keep Hildy around?</div>
+          <div style="font-size:11px; color:#a899c9; font-style:italic;">Walter: "Because she's the best reporter I've got. Period."</div>
+        </div>
+
+        <!-- Exchange 2 (active, playing) -->
+        <div style="border:1px solid #b794e8; border-radius:4px; padding:10px 12px; margin-bottom:10px; background:#1a0d2e;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+            <div style="font-size:9px; letter-spacing:1px; color:#b794e8;">▶ EXCHANGE 2 — HILDY · ACTIVE</div>
+            <div style="background:#b794e8; color:#1a0d2e; padding:2px 8px; font-size:9px; letter-spacing:1.5px; font-weight:bold; border-radius:3px;">↑ MEMORY</div>
+          </div>
+          <div style="font-size:11px; color:#d0c5e8; margin-bottom:6px;">YOU: Walter says you're his best reporter. True?</div>
+          <div style="font-size:11px; color:#fff; line-height:1.5;">
+            Hildy: "When Walter says <span style="background:#ffd66655; padding:0 3px;">'best reporter'</span>, what he really means is 'most expendable.' Don't believe everything he tells you."<span style="color:#b794e8;">▌</span>
+          </div>
+        </div>
+
+        <!-- Exchange 3 (upcoming, dim) -->
+        <div style="border:1px dashed #3d2a5e; border-radius:4px; padding:10px 12px; opacity:0.45;">
+          <div style="font-size:9px; letter-spacing:1px; color:#6e5a94; margin-bottom:4px;">○ EXCHANGE 3 — WALTER · UPCOMING</div>
+          <div style="font-size:11px; color:#6e5a94;">YOU: Hildy says you mean 'expendable.' Do you?</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>What the indicators do</h3>
+  <ul>
+    <li><strong>Yellow glowing border on Exchange 1</strong> (indicator D) — pulses while Hildy's response is playing, showing "this is the moment being remembered." Fades when Hildy's response ends.</li>
+    <li><strong>"↑ MEMORY" badge on Exchange 2</strong> (indicator C) — appears only on responses that reference prior exchanges. Makes "AI remembering" unmissable.</li>
+    <li><strong>Highlighted phrase in response</strong> (bonus) — the exact callback phrase ("best reporter") gets a yellow tint matching the callback target's border, tying the two together.</li>
+    <li><strong>Character panel updates</strong> — Hildy replaces Walter on the left when the active character switches. Character name + photo change together.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Does this look right?</h3>
+  <div class="options">
+    <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content"><h3>Approve — build it this way</h3><p>Indicators are clear, character switch is explicit, callback phrase highlighted</p></div>
+    </div>
+    <div class="option" data-choice="simplify" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content"><h3>Too busy — simplify</h3><p>Drop the phrase highlight, keep only the badge + glowing prior question</p></div>
+    </div>
+    <div class="option" data-choice="more" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content"><h3>Not enough — add more</h3><p>Want connecting visual line between badge and callback target, or other addition</p></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 16px #ffd66688; }
+    50% { box-shadow: 0 0 24px #ffd666cc; }
+  }
+</style>
