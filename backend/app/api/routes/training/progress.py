@@ -13,6 +13,8 @@ from app.api.routes.training.dependencies import (
     get_current_training_user,
     require_training_admin,
 )
+from app.api.routes.olorin.webhooks import send_webhook_event
+from app.models.integration_partner import IntegrationPartner
 from app.models.content import Content
 from app.models.training_progress import TrainingProgress
 from app.models.training_user import TrainingUser
@@ -57,6 +59,17 @@ async def record_heartbeat(
     if watch_pct >= 0.9 and not record.completed:
         record.completed = True
         record.completed_at = now
+        partner = await IntegrationPartner.find_one(
+            {"partner_id": user.partner_id}
+        )
+        if partner:
+            await send_webhook_event(
+                partner, "training.video_completed", {
+                    "partner_id": user.partner_id,
+                    "user_id": str(user.id),
+                    "content_id": content_id,
+                }
+            )
 
     await record.save()
     return {"ok": True, "watch_percentage": record.watch_percentage}

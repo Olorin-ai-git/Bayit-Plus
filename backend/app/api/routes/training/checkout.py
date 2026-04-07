@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.api.routes.training.dependencies import require_training_admin
+from app.api.routes.olorin.webhooks import send_webhook_event
 from app.models.training_user import TrainingUser
 
 logger = logging.getLogger(__name__)
@@ -155,6 +156,13 @@ async def _handle_checkout_completed(session: dict) -> None:
         "training_config.credits_used": 0,
     }})
     logger.info("Training tier upgraded: %s -> %s", partner_id, tier)
+    partner = await IntegrationPartner.find_one({"partner_id": partner_id})
+    if partner:
+        await send_webhook_event(partner, "training.tier_upgraded", {
+            "partner_id": partner_id,
+            "tier": tier,
+            "credits": credits,
+        })
 
 
 async def _handle_subscription_deleted(subscription: dict) -> None:
@@ -172,3 +180,8 @@ async def _handle_subscription_deleted(subscription: dict) -> None:
         "training_config.credit_limit_monthly": 500,
     }})
     logger.info("Training subscription cancelled: %s", partner_id)
+    partner = await IntegrationPartner.find_one({"partner_id": partner_id})
+    if partner:
+        await send_webhook_event(partner, "training.subscription_cancelled", {
+            "partner_id": partner_id,
+        })
