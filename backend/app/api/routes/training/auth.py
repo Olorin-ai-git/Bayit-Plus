@@ -17,6 +17,8 @@ from app.api.routes.training.dependencies import (
 )
 from app.services.olorin.partner_service import partner_service
 from app.services.training.sample_content import seed_sample_content
+from starlette.requests import Request
+from app.core.rate_limiter import limiter, RATE_LIMITS
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +63,8 @@ class AppleOAuthRequest(BaseModel):
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterRequest):
+@limiter.limit(RATE_LIMITS.get("register", "3/hour"))
+async def register(request: Request, body: RegisterRequest):
     """Register a new training organization and admin user."""
     slug = body.org_name.lower().replace(" ", "-")[:30]
     partner_id = f"training-{slug}-{secrets.token_hex(4)}"
@@ -110,7 +113,8 @@ async def register(body: RegisterRequest):
     }}
 
 @router.post("/login")
-async def login(body: LoginRequest):
+@limiter.limit(RATE_LIMITS.get("login", "5/minute"))
+async def login(request: Request, body: LoginRequest):
     """Login an existing training user."""
     user = await TrainingUser.find_one({"email": body.email})
     if not user or not verify_password(body.password, user.password_hash):
@@ -264,7 +268,8 @@ async def _oauth_register(
 
 
 @router.post("/google")
-async def login_google(body: GoogleOAuthRequest):
+@limiter.limit(RATE_LIMITS.get("oauth_callback", "10/minute"))
+async def login_google(request: Request, body: GoogleOAuthRequest):
     """Login or register with a Google ID token from Firebase popup."""
     async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.get(
@@ -299,7 +304,8 @@ async def login_google(body: GoogleOAuthRequest):
 
 
 @router.post("/apple")
-async def login_apple(body: AppleOAuthRequest):
+@limiter.limit(RATE_LIMITS.get("oauth_callback", "10/minute"))
+async def login_apple(request: Request, body: AppleOAuthRequest):
     """Login or register with an Apple identity token from Firebase popup."""
     try:
         parts = body.identity_token.split(".")
