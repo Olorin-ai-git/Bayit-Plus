@@ -16,6 +16,7 @@ from app.api.routes.training.dependencies import (
     create_training_token, get_current_training_user, require_training_admin,
 )
 from app.services.olorin.partner_service import partner_service
+from app.services.training.sample_content import seed_sample_content
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +84,7 @@ async def register(body: RegisterRequest):
     partner.training_config = training_config  # type: ignore[attr-defined]
     partner.capabilities = partner_service.get_training_tier_defaults()
     await partner.save()
+    await seed_sample_content(partner_id, partner)
 
     user = TrainingUser(
         email=body.email,
@@ -229,6 +231,7 @@ async def _oauth_register(
     partner.training_config = training_config  # type: ignore[attr-defined]
     partner.capabilities = partner_service.get_training_tier_defaults()
     await partner.save()
+    await seed_sample_content(partner_id, partner)
 
     user = TrainingUser(
         email=email,

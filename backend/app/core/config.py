@@ -112,6 +112,14 @@ class Settings(
         default="",
         description="Training portal URL for password reset links (e.g. https://training.olorin.ai)",
     )
+    TRAINING_SAMPLE_VIDEO_URL: str = Field(
+        default="",
+        description="URL of sample video to seed for new training orgs (empty = skip)",
+    )
+    TRAINING_SAMPLE_VIDEO_TITLE: str = Field(
+        default="Welcome to Olorin Training",
+        description="Title for the sample training video",
+    )
 
     # MongoDB
     MONGODB_URI: str
