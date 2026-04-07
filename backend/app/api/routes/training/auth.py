@@ -13,7 +13,9 @@ from app.core.security import get_password_hash, verify_password
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingConfig, TrainingUser
 from app.api.routes.training.dependencies import (
-    create_training_token, get_current_training_user, require_training_admin,
+    create_training_token, create_training_refresh_token,
+    validate_refresh_token,
+    get_current_training_user, require_training_admin,
 )
 from app.services.olorin.partner_service import partner_service
 from app.services.training.sample_content import seed_sample_content
@@ -61,6 +63,9 @@ class AppleOAuthRequest(BaseModel):
     org_name: str | None = Field(default=None, min_length=2, max_length=100)
     display_name: str | None = Field(default=None, max_length=100)
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 @limiter.limit(RATE_LIMITS.get("register", "3/hour"))
@@ -101,16 +106,21 @@ async def register(request: Request, body: RegisterRequest):
     await user.insert()
     logger.info("Training org registered: %s", partner_id)
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user), "organization": {
-        "partner_id": partner_id, "org_name": body.org_name,
-        "tier": training_config.org_tier,
-        "credits_remaining": training_config.credit_limit_monthly,
-        "trial_ends_at": (
-            training_config.trial_ends_at.isoformat()
-            if training_config.trial_ends_at else None
-        ),
-        "stripe_subscription_id": None,
-    }}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+        "organization": {
+            "partner_id": partner_id, "org_name": body.org_name,
+            "tier": training_config.org_tier,
+            "credits_remaining": training_config.credit_limit_monthly,
+            "trial_ends_at": (
+                training_config.trial_ends_at.isoformat()
+                if training_config.trial_ends_at else None
+            ),
+            "stripe_subscription_id": None,
+        },
+    }
 
 @router.post("/login")
 @limiter.limit(RATE_LIMITS.get("login", "5/minute"))
@@ -131,7 +141,11 @@ async def login(request: Request, body: LoginRequest):
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user)}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
 
 @router.post("/invite", status_code=status.HTTP_201_CREATED)
 async def invite_employees(
@@ -184,7 +198,24 @@ async def accept_invite(body: AcceptInviteRequest):
     user.activated_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user)}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
+
+
+@router.post("/refresh")
+async def refresh_token(body: RefreshRequest):
+    """Issue new access + refresh tokens from a valid refresh token."""
+    user = await validate_refresh_token(body.refresh_token)
+    user.last_login_at = datetime.now(timezone.utc)
+    await user.save()
+    return {
+        "token": create_training_token(user),
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
 
 
 async def _oauth_login(email: str) -> dict:
@@ -203,7 +234,11 @@ async def _oauth_login(email: str) -> dict:
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user)}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
 
 
 async def _oauth_register(
@@ -251,6 +286,7 @@ async def _oauth_register(
     token = create_training_token(user)
     return {
         "token": token,
+        "refresh_token": create_training_refresh_token(user),
         "user": _user_response(user),
         "organization": {
             "partner_id": partner_id,
