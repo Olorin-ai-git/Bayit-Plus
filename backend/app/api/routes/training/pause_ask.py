@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["training-pause-ask"])
 
 LIP_SYNC_CREDIT_COST = 3
+VOICE_CREDIT_COST = 1
 ORG_TIER_REQUIRED = "organization"
 
 
@@ -52,20 +53,21 @@ async def training_pause_ask(
 
     tc = partner.training_config or {}
     is_lip_sync = body.mode == "lip_sync"
+    credit_cost = LIP_SYNC_CREDIT_COST if is_lip_sync else VOICE_CREDIT_COST
 
-    if is_lip_sync:
-        if tc.get("org_tier", "team") != ORG_TIER_REQUIRED:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Lip-sync requires Organization tier",
-            )
-        cap = tc.get("credit_limit_monthly", 0)
-        used = tc.get("credits_used", 0)
-        if (cap - used) < LIP_SYNC_CREDIT_COST:
-            raise HTTPException(
-                status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                detail="Insufficient credits",
-            )
+    if is_lip_sync and tc.get("org_tier", "team") != ORG_TIER_REQUIRED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Lip-sync requires Organization tier",
+        )
+
+    cap = tc.get("credit_limit_monthly", 0)
+    used = tc.get("credits_used", 0)
+    if (cap - used) < credit_cost:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Insufficient credits for this interaction",
+        )
 
     session = VODInteractionSession(
         user_id=str(user.id),
@@ -98,16 +100,16 @@ async def training_pause_ask(
         session.status = "completed"
         await session.save()
 
-    if is_lip_sync:
-        tc["credits_used"] = tc.get("credits_used", 0) + LIP_SYNC_CREDIT_COST
-        partner.training_config = tc
-        await partner.save()
-        logger.info(
-            "Lip-sync credits deducted",
-            extra={
-                "partner_id": user.partner_id,
-                "cost": LIP_SYNC_CREDIT_COST,
-            },
-        )
+    tc["credits_used"] = tc.get("credits_used", 0) + credit_cost
+    partner.training_config = tc
+    await partner.save()
+    logger.info(
+        "Pause & Ask credits deducted",
+        extra={
+            "partner_id": user.partner_id,
+            "cost": credit_cost,
+            "mode": body.mode,
+        },
+    )
 
     return result.model_dump()
