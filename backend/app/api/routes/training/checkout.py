@@ -127,6 +127,10 @@ async def training_stripe_webhook(request: Request):
             await _handle_checkout_completed(event["data"]["object"])
         elif event_type == "customer.subscription.deleted":
             await _handle_subscription_deleted(event["data"]["object"])
+        elif event_type == "invoice.payment_failed":
+            await _handle_invoice_payment_failed(event["data"]["object"])
+        elif event_type == "customer.subscription.updated":
+            await _handle_subscription_updated(event["data"]["object"])
         else:
             logger.info("Unhandled training webhook event: %s", event_type)
     except Exception:
@@ -172,3 +176,44 @@ async def _handle_subscription_deleted(subscription: dict) -> None:
         "training_config.credit_limit_monthly": 500,
     }})
     logger.info("Training subscription cancelled: %s", partner_id)
+
+
+async def _handle_invoice_payment_failed(invoice: dict) -> None:
+    """Mark org as past-due when invoice payment fails."""
+    sub_id = invoice.get("subscription")
+    if not sub_id:
+        return
+    partner = await IntegrationPartner.find_one(
+        {"training_config.stripe_subscription_id": sub_id}
+    )
+    if not partner:
+        logger.warning("Invoice payment failed for unknown subscription: %s", sub_id)
+        return
+    await IntegrationPartner.find_one(
+        {"partner_id": partner.partner_id}
+    ).update({"$set": {"training_config.payment_status": "past_due"}})
+    logger.warning("Payment failed for %s, marked past_due", partner.partner_id)
+
+
+async def _handle_subscription_updated(subscription: dict) -> None:
+    """Sync tier/credits when subscription changes externally."""
+    partner_id = subscription.get("metadata", {}).get("partner_id")
+    if not partner_id:
+        return
+    tier = subscription.get("metadata", {}).get("tier")
+    if not tier or tier not in TIER_CREDITS_MAP:
+        return
+    credits = TIER_CREDITS_MAP[tier]
+    status_val = subscription.get("status", "active")
+    update_fields: dict = {
+        "training_config.org_tier": tier,
+        "training_config.credit_limit_monthly": credits,
+    }
+    if status_val == "active":
+        update_fields["training_config.payment_status"] = "current"
+    await IntegrationPartner.find_one(
+        {"partner_id": partner_id}
+    ).update({"$set": update_fields})
+    logger.info(
+        "Subscription updated for %s: tier=%s status=%s", partner_id, tier, status_val
+    )
