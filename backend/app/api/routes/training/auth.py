@@ -243,11 +243,11 @@ async def _oauth_login(email: str) -> dict:
 
 async def _oauth_register(
     email: str, org_name: str, display_name: str
-) -> dict:
+) -> tuple[dict, bool]:
     """Create a new training org via OAuth. If user exists, fall back to login."""
     existing = await TrainingUser.find_one({"email": email})
     if existing:
-        return await _oauth_login(email)
+        return await _oauth_login(email), False
 
     slug = org_name.lower().replace(" ", "-")[:30]
     partner_id = f"training-{slug}-{secrets.token_hex(4)}"
@@ -300,7 +300,7 @@ async def _oauth_register(
             ),
             "stripe_subscription_id": None,
         },
-    }
+    }, True
 
 
 @router.post("/google")
@@ -332,11 +332,18 @@ async def login_google(request: Request, body: GoogleOAuthRequest):
                 detail="org_name is required for registration",
             )
         display = body.display_name or token_info.get("name", email.split("@")[0])
-        result = await _oauth_register(email, body.org_name, display)
+        result, is_new = await _oauth_register(email, body.org_name, display)
         from starlette.responses import JSONResponse
-        return JSONResponse(content=result, status_code=status.HTTP_201_CREATED)
+        return JSONResponse(
+            content=result,
+            status_code=status.HTTP_201_CREATED if is_new else status.HTTP_200_OK,
+        )
 
-    return await _oauth_login(email)
+    result = await _oauth_login(email)
+    await TrainingUser.find_one({"email": email}).update(
+        {"$set": {"last_oauth_provider": "google"}}
+    )
+    return result
 
 
 @router.post("/apple")
@@ -376,11 +383,18 @@ async def login_apple(request: Request, body: AppleOAuthRequest):
                 detail="org_name is required for registration",
             )
         display = body.display_name or body.full_name or email.split("@")[0]
-        result = await _oauth_register(email, body.org_name, display)
+        result, is_new = await _oauth_register(email, body.org_name, display)
         from starlette.responses import JSONResponse
-        return JSONResponse(content=result, status_code=status.HTTP_201_CREATED)
+        return JSONResponse(
+            content=result,
+            status_code=status.HTTP_201_CREATED if is_new else status.HTTP_200_OK,
+        )
 
-    return await _oauth_login(email)
+    result = await _oauth_login(email)
+    await TrainingUser.find_one({"email": email}).update(
+        {"$set": {"last_oauth_provider": "apple"}}
+    )
+    return result
 
 
 @router.get("/me")
