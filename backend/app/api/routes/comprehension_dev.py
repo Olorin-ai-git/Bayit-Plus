@@ -75,6 +75,9 @@ class ComprehensionDevTurnResponse(BaseModel):
     adapt_level: AdaptLevel
     memory_retry_pending: bool
     session_id: str
+    character_audio_url: str = ""
+    character_animated_video_url: str = ""
+    character_video_duration: float = 0.0
 
 
 async def _find_or_create_session(
@@ -149,4 +152,7 @@ async def run_turn(
         adapt_level=result["adapt_level"],
         memory_retry_pending=result["memory_retry_pending"],
         session_id=str(session.id),
+        character_audio_url=result.get("character_audio_url", ""),
+        character_animated_video_url=result.get("character_animated_video_url", ""),
+        character_video_duration=result.get("character_video_duration", 0.0),
     )

@@ -29,6 +29,9 @@ from app.services.olorin.comprehension.question_generator import (
     comprehension_question_generator,
 )
 from app.services.olorin.comprehension.scorer import rubric_scoring_service
+from app.services.vod_interaction.character_animator import (
+    character_animator_service,
+)
 from app.services.vod_interaction.film_memory_service import film_memory_service
 
 logger = get_logger(__name__)
@@ -168,7 +171,44 @@ class ComprehensionSessionOrchestrator:
             prior_question=question_text,
         )
 
-        # 7. Persist session.
+        # 7. Generate character video response (TTS + lipsync).
+        character_audio_url = ""
+        character_animated_video_url = ""
+        character_video_duration = 0.0
+        voice_id = session.character_voice_id
+        frame_url = session.character_frame_url
+        if not voice_id:
+            from app.models.character import Character
+            char = await Character.find_one(Character.name == character_name)
+            if char:
+                voice_id = char.voice_id
+                if not frame_url and char.frame_url:
+                    frame_url = char.frame_url
+        if voice_id and follow_up.in_character_phrasing:
+            try:
+                if frame_url:
+                    animated = await character_animator_service.animate_character_response(
+                        character_name=character_name,
+                        dialogue_text=follow_up.in_character_phrasing,
+                        character_frame_url=frame_url,
+                        voice_id=voice_id,
+                    )
+                else:
+                    animated = await character_animator_service.generate_audio_only(
+                        character_name=character_name,
+                        dialogue_text=follow_up.in_character_phrasing,
+                        voice_id=voice_id,
+                    )
+                character_audio_url = animated.audio_url
+                character_animated_video_url = animated.video_url
+                character_video_duration = animated.duration
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "Comprehension video generation failed; returning text-only",
+                    extra={"error": str(exc)},
+                )
+
+        # 8. Persist session.
         session.updated_at = datetime.utcnow()
         session.last_trigger_at_playback_seconds = playback_seconds
         await session.save()
@@ -178,6 +218,9 @@ class ComprehensionSessionOrchestrator:
             "follow_up": follow_up,
             "adapt_level": new_adapt,
             "memory_retry_pending": scored.memory_retry_pending,
+            "character_audio_url": character_audio_url,
+            "character_animated_video_url": character_animated_video_url,
+            "character_video_duration": character_video_duration,
         }
 
 
