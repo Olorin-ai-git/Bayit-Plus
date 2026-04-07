@@ -1,8 +1,11 @@
 """Training platform authentication routes."""
+import base64
+import json
 import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
 
@@ -40,6 +43,14 @@ class AcceptInviteRequest(BaseModel):
     token: str
     password: str = Field(min_length=8)
     display_name: str = Field(min_length=1, max_length=100)
+
+class GoogleOAuthRequest(BaseModel):
+    id_token: str
+
+class AppleOAuthRequest(BaseModel):
+    identity_token: str
+    full_name: str | None = None
+    email: str | None = None
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -162,6 +173,80 @@ async def accept_invite(body: AcceptInviteRequest):
     await user.save()
     token = create_training_token(user)
     return {"token": token, "user": _user_response(user)}
+
+
+async def _oauth_login(email: str) -> dict:
+    """Shared logic for OAuth login: find TrainingUser by email, issue token."""
+    user = await TrainingUser.find_one({"email": email})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No training account found for this email. Please register first.",
+        )
+    if user.status == "deactivated":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account deactivated",
+        )
+    user.last_login_at = datetime.now(timezone.utc)
+    await user.save()
+    token = create_training_token(user)
+    return {"token": token, "user": _user_response(user)}
+
+
+@router.post("/google")
+async def login_google(body: GoogleOAuthRequest):
+    """Login with a Google ID token from Firebase popup."""
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.get(
+            "https://oauth2.googleapis.com/tokeninfo",
+            params={"id_token": body.id_token},
+        )
+    if resp.status_code != 200:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Google ID token",
+        )
+    token_info = resp.json()
+    email = token_info.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account has no email",
+        )
+    return await _oauth_login(email)
+
+
+@router.post("/apple")
+async def login_apple(body: AppleOAuthRequest):
+    """Login with an Apple identity token from Firebase popup."""
+    try:
+        parts = body.identity_token.split(".")
+        if len(parts) != 3:
+            raise ValueError("Invalid JWT structure")
+        payload_b64 = parts[1]
+        padding = 4 - len(payload_b64) % 4
+        if padding != 4:
+            payload_b64 += "=" * padding
+        claims = json.loads(base64.urlsafe_b64decode(payload_b64))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Apple identity token",
+        )
+    if claims.get("iss") != "https://appleid.apple.com":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token issuer",
+        )
+    email = claims.get("email") or body.email
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Apple account has no email",
+        )
+    return await _oauth_login(email)
+
 
 @router.get("/me")
 async def get_me(
