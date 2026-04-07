@@ -46,11 +46,17 @@ class AcceptInviteRequest(BaseModel):
 
 class GoogleOAuthRequest(BaseModel):
     id_token: str
+    mode: str = Field(default="login", pattern=r"^(login|register)$")
+    org_name: str | None = Field(default=None, min_length=2, max_length=100)
+    display_name: str | None = Field(default=None, max_length=100)
 
 class AppleOAuthRequest(BaseModel):
     identity_token: str
     full_name: str | None = None
     email: str | None = None
+    mode: str = Field(default="login", pattern=r"^(login|register)$")
+    org_name: str | None = Field(default=None, min_length=2, max_length=100)
+    display_name: str | None = Field(default=None, max_length=100)
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -194,9 +200,69 @@ async def _oauth_login(email: str) -> dict:
     return {"token": token, "user": _user_response(user)}
 
 
+async def _oauth_register(
+    email: str, org_name: str, display_name: str
+) -> dict:
+    """Create a new training org via OAuth. If user exists, fall back to login."""
+    existing = await TrainingUser.find_one({"email": email})
+    if existing:
+        return await _oauth_login(email)
+
+    slug = org_name.lower().replace(" ", "-")[:30]
+    partner_id = f"training-{slug}-{secrets.token_hex(4)}"
+
+    partner, _api_key = await partner_service.create_partner(
+        partner_id=partner_id,
+        name=org_name,
+        name_en=org_name,
+        contact_email=email,
+        billing_tier="training",
+        capabilities=["video_ingest", "pause_ask", "subtitles", "trivia"],
+    )
+
+    training_config = TrainingConfig(
+        org_display_name=org_name,
+        trial_ends_at=datetime.now(timezone.utc) + timedelta(days=TRIAL_DURATION_DAYS),
+        credit_limit_monthly=TRIAL_CREDIT_LIMIT,
+        seat_limit=TRIAL_SEAT_LIMIT,
+    )
+    partner.training_config = training_config  # type: ignore[attr-defined]
+    partner.capabilities = partner_service.get_training_tier_defaults()
+    await partner.save()
+
+    user = TrainingUser(
+        email=email,
+        password_hash="oauth",
+        partner_id=partner_id,
+        role="admin",
+        display_name=display_name,
+        status="active",
+        activated_at=datetime.now(timezone.utc),
+    )
+    await user.insert()
+    logger.info("Training org registered via OAuth: %s", partner_id)
+    token = create_training_token(user)
+    return {
+        "token": token,
+        "user": _user_response(user),
+        "organization": {
+            "partner_id": partner_id,
+            "org_name": org_name,
+            "tier": training_config.org_tier,
+            "credits_remaining": training_config.credit_limit_monthly,
+            "trial_ends_at": (
+                training_config.trial_ends_at.isoformat()
+                if training_config.trial_ends_at
+                else None
+            ),
+            "stripe_subscription_id": None,
+        },
+    }
+
+
 @router.post("/google")
 async def login_google(body: GoogleOAuthRequest):
-    """Login with a Google ID token from Firebase popup."""
+    """Login or register with a Google ID token from Firebase popup."""
     async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.get(
             "https://oauth2.googleapis.com/tokeninfo",
@@ -214,12 +280,24 @@ async def login_google(body: GoogleOAuthRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Google account has no email",
         )
+
+    if body.mode == "register":
+        if not body.org_name:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="org_name is required for registration",
+            )
+        display = body.display_name or token_info.get("name", email.split("@")[0])
+        result = await _oauth_register(email, body.org_name, display)
+        from starlette.responses import JSONResponse
+        return JSONResponse(content=result, status_code=status.HTTP_201_CREATED)
+
     return await _oauth_login(email)
 
 
 @router.post("/apple")
 async def login_apple(body: AppleOAuthRequest):
-    """Login with an Apple identity token from Firebase popup."""
+    """Login or register with an Apple identity token from Firebase popup."""
     try:
         parts = body.identity_token.split(".")
         if len(parts) != 3:
@@ -245,6 +323,18 @@ async def login_apple(body: AppleOAuthRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Apple account has no email",
         )
+
+    if body.mode == "register":
+        if not body.org_name:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="org_name is required for registration",
+            )
+        display = body.display_name or body.full_name or email.split("@")[0]
+        result = await _oauth_register(email, body.org_name, display)
+        from starlette.responses import JSONResponse
+        return JSONResponse(content=result, status_code=status.HTTP_201_CREATED)
+
     return await _oauth_login(email)
 
 
