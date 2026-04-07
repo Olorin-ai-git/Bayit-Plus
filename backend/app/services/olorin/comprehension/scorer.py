@@ -19,7 +19,7 @@ from app.schemas.comprehension import RubricScore
 
 logger = get_logger(__name__)
 
-SCORER_MODEL = "claude-3-5-haiku-20241022"
+SCORER_MODEL = "claude-haiku-4-5-20251001"
 SCORER_TEMPERATURE = 0  # D-10 pinned to 0 to prevent leniency drift
 SCORER_MAX_TOKENS = 512
 

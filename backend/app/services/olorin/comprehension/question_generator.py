@@ -15,7 +15,7 @@ from app.schemas.comprehension import AdaptLevel, FollowUpQuestion
 
 logger = get_logger(__name__)
 
-QGEN_MODEL = "claude-3-5-haiku-20241022"
+QGEN_MODEL = "claude-haiku-4-5-20251001"
 QGEN_TEMPERATURE = 0.7  # in-character warmth
 QGEN_MAX_TOKENS = 700
 
