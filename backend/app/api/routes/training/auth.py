@@ -235,7 +235,7 @@ async def _oauth_register(
 
     user = TrainingUser(
         email=email,
-        password_hash="oauth",
+        password_hash="!oauth",
         partner_id=partner_id,
         role="admin",
         display_name=display_name,

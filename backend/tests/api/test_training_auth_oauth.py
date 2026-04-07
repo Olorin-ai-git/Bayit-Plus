@@ -43,6 +43,10 @@ class TestGoogleOAuthRegister:
             patch(
                 "app.api.routes.training.auth.partner_service"
             ) as mock_ps,
+            patch(
+                "app.api.routes.training.auth.seed_sample_content",
+                new_callable=AsyncMock,
+            ),
         ):
             # Mock Google token validation
             mock_resp = MagicMock()
