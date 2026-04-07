@@ -13,6 +13,7 @@ from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.content import Content
 from app.models.ingest_job import IngestJob
+from app.models.integration_partner import IntegrationPartner
 from app.models.user import User
 from app.services import demo_usage_service
 from app.services.olorin.ingest_orchestrator import run_pipeline
@@ -96,11 +97,37 @@ class DemoIngestResponse(BaseModel):
     processed_duration_seconds: Optional[float] = None
 
 
+# Invalid bcrypt hash sentinel — demo partner never authenticates via API key
+_INVALID_BCRYPT = "$2b$12$000000000000000000000000000000000000000000000000000"
+
+
+async def _ensure_demo_partner() -> None:
+    """Ensure a 'demo' IntegrationPartner exists for pipeline execution."""
+    existing = await IntegrationPartner.find_one(
+        IntegrationPartner.partner_id == "demo",
+    )
+    if existing:
+        return
+    partner = IntegrationPartner(
+        partner_id="demo",
+        name="Demo Portal",
+        name_en="Demo Portal",
+        api_key_hash=_INVALID_BCRYPT,
+        api_key_prefix="demo____",
+        contact_email="demo@olorin.ai",
+        capabilities={},
+        is_active=True,
+    )
+    await partner.insert()
+    logger.info("Demo IntegrationPartner seeded")
+
+
 async def _run_demo_pipeline_and_increment(
     job: IngestJob, user_id: str,
 ) -> None:
     """Run ingest pipeline; increment usage only on success."""
     try:
+        await _ensure_demo_partner()
         await run_pipeline(job)
         await demo_usage_service.increment(user_id, "video_ingest")
         logger.info(
