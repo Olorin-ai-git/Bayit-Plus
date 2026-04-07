@@ -182,8 +182,8 @@ class ComprehensionSessionOrchestrator:
             char = await Character.find_one(Character.name == character_name)
             if char:
                 voice_id = char.voice_id
-                if not frame_url and char.frame_url:
-                    frame_url = char.frame_url
+                if not frame_url and char.face_url:
+                    frame_url = char.face_url
         if voice_id and follow_up.in_character_phrasing:
             try:
                 if frame_url:
