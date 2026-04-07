@@ -19,6 +19,7 @@ from app.api.routes.demo_proxy_schemas import (TrackProgressRequest,
 from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.user import User
+from app.services import demo_usage_service
 
 logger = get_logger(__name__)
 
@@ -109,3 +110,14 @@ async def track_demo_progress(
     )
 
     return TrackStatusResponse(status="ok")
+
+
+@router.get(
+    "/usage",
+    summary="Get remaining AI feature uses for the current demo user",
+)
+async def get_demo_usage(
+    user: User = Depends(get_current_user),
+) -> dict:
+    """Return per-feature usage counts and remaining allowance."""
+    return await demo_usage_service.get_usage(str(user.id))

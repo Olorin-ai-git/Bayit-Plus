@@ -15,8 +15,10 @@ from app.models.profile import Profile
 from app.models.vod_interaction import ContentCharacter, VODInteractionSession, DialogueExchange
 from app.services.vod_interaction.interaction_service import vod_interaction_service
 from app.core.security import get_current_user
+from app.api.dependencies.olorin_tier import is_demo_portal_request
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
+from app.services import demo_usage_service
 
 logger = get_logger(__name__)
 
@@ -39,6 +41,10 @@ class StartFreeInteractionRequest(BaseModel):
     content_id: str = Field(..., description="Content ID")
     character_name: str = Field(..., description="Character to talk to")
     current_timestamp: float = Field(default=0.0, description="Current playback position")
+    demo_feature: Optional[str] = Field(
+        None,
+        description="Demo feature key (pause_ask or character_memory) — sent by demo portal for usage tracking",
+    )
 
 
 class SessionCreatedResponse(BaseModel):
@@ -142,6 +148,24 @@ async def start_free_interaction_session(
     Returns:
         Created interaction session
     """
+    # Demo portal usage enforcement
+    if is_demo_portal_request(request) and body.demo_feature:
+        feature = body.demo_feature
+        if feature not in ("pause_ask", "character_memory"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid demo_feature: {feature}",
+            )
+        allowed = await demo_usage_service.check_limit(
+            str(current_user.id), feature,
+        )
+        if not allowed:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Demo limit reached for {feature}",
+            )
+        await demo_usage_service.increment(str(current_user.id), feature)
+
     try:
         if body.profile_id:
             profile = await Profile.get(body.profile_id)

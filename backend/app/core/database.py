@@ -175,6 +175,8 @@ from app.models.comprehension_session import ComprehensionSession
 from app.models.comprehension_report import ComprehensionReport
 # Guest demo usage tracking (unauthenticated pricing-page interactions)
 from app.models.guest_demo import GuestDemoUsage
+# Demo feature usage tracking (registered demo portal users, per-feature caps)
+from app.models.demo_feature_usage import DemoFeatureUsage
 # Consumer submission model (lead capture from interactive demo)
 from app.models.consumer_submission import ConsumerSubmission
 # Demo portal access codes (demo.olorin.ai private codes)
@@ -498,6 +500,8 @@ async def connect_to_mongo():
         BYOCProvider,
         # Guest demo usage tracking (unauthenticated pricing-page interactions)
         GuestDemoUsage,
+        # Demo feature usage tracking (registered demo portal users, per-feature caps)
+        DemoFeatureUsage,
         # Consumer submission model (lead capture from interactive demo)
         ConsumerSubmission,
         # Demo portal access codes (demo.olorin.ai private codes)

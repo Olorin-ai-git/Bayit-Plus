@@ -14,12 +14,14 @@ shape). Phase 2 will add a student-facing route that strips it.
 """
 from typing import List, Optional
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
+from app.api.dependencies.olorin_tier import is_demo_portal_request
 from app.core.logging_config import get_logger
 from app.models.comprehension_session import ComprehensionSession
 from app.schemas.comprehension import AdaptLevel
+from app.services import demo_usage_service
 from app.services.olorin.comprehension.orchestrator import (
     comprehension_session_orchestrator,
 )
@@ -116,13 +118,35 @@ async def _find_or_create_session(
     summary="DEV-ONLY single-turn entry point for Comprehension Mode loop",
 )
 async def run_turn(
+    request: Request,
     req: ComprehensionDevTurnRequest,
 ) -> ComprehensionDevTurnResponse:
     """Drive one comprehension turn and return score + next follow-up.
 
-    DEV-ONLY: no auth in Phase 1. Phase 2 consumer route will layer
-    Firebase auth and strip the numeric score for student responses (D-14).
+    Demo portal requests are subject to per-user usage limits.
     """
+    # Check demo portal usage limits on new session creation
+    is_demo = is_demo_portal_request(request)
+    is_new_session = not await ComprehensionSession.find(
+        {
+            "user_id": req.user_id,
+            "profile_id": req.profile_id,
+            "content_id": req.content_id,
+            "status": "active",
+        },
+    ).first_or_none()
+
+    if is_demo and is_new_session:
+        allowed = await demo_usage_service.check_limit(
+            req.user_id, "comprehension",
+        )
+        if not allowed:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Demo limit reached for comprehension",
+            )
+        await demo_usage_service.increment(req.user_id, "comprehension")
+
     session = await _find_or_create_session(req)
     result = await comprehension_session_orchestrator.run_turn(
         session=session,

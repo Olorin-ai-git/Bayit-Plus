@@ -42,6 +42,11 @@ class PaymentsConfigMixin:
         env="GUEST_DEMO_MAX_INTERACTIONS",
         description="Maximum lifetime interactions for unauthenticated demo users"
     )
+    DEMO_FEATURE_MAX_USES: int = Field(
+        default=3,
+        env="DEMO_FEATURE_MAX_USES",
+        description="Max uses per AI feature for registered demo portal users",
+    )
 
     # Consumer URL Submission (unauthenticated)
     CONSUMER_DEMO_MAX_SUBMISSIONS: int = Field(
