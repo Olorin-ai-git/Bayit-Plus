@@ -47,6 +47,10 @@ class IngestResponse(BaseModel):
     content_id: str
     status: str
     capabilities: dict
+    estimated_seconds: int = Field(
+        default=120,
+        description="Estimated processing time in seconds",
+    )
 
 
 @router.post("/ingest", status_code=status.HTTP_202_ACCEPTED)
@@ -77,9 +81,15 @@ async def ingest_content(
         capabilities=body.capabilities, direct=True,
     )
     background_tasks.add_task(run_pipeline, job)
+    cap_count = len(body.capabilities)
+    estimated = 60 + (cap_count * 45)  # base + per-capability overhead
+
     return IngestResponse(
-        job_id=job.job_id, content_id=str(content.id),
-        status=job.overall_status, capabilities=job.capabilities,
+        job_id=job.job_id,
+        content_id=str(content.id),
+        status=job.overall_status,
+        capabilities=job.capabilities,
+        estimated_seconds=estimated,
     )
 
 
@@ -129,12 +139,13 @@ async def get_content_status(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
     job = await IngestJob.find_one({"content_id": content_id}, sort=[("created_at", -1)])
     if not job:
-        return {"content_id": content_id, "status": "ready", "capabilities": {}}
+        return {"content_id": content_id, "status": "ready", "capabilities": {}, "estimated_seconds": 0}
     return {
         "content_id": content_id,
         "job_id": job.job_id,
         "status": job.overall_status,
         "capabilities": job.capabilities,
+        "estimated_seconds": 60 + (len(job.capabilities) * 45),
     }
 
 
