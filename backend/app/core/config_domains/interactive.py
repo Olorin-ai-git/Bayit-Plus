@@ -168,7 +168,7 @@ class InteractiveConfigMixin:
         default=60, env="PAUSE_ASK_JOB_REAPER_INTERVAL_SECONDS",
     )
     PAUSE_ASK_AURORA_TIMEOUT_SECONDS: int = Field(
-        default=180, env="PAUSE_ASK_AURORA_TIMEOUT_SECONDS",
+        default=300, env="PAUSE_ASK_AURORA_TIMEOUT_SECONDS",
     )
     PAUSE_ASK_TTS_RETRIES: int = Field(
         default=2, env="PAUSE_ASK_TTS_RETRIES",
