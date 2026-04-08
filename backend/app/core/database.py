@@ -168,6 +168,7 @@ from app.models.whatsapp_contact import WhatsAppContact
 # Character data model (voice IDs, face URLs, franchise grouping)
 from app.models.character import Character
 from app.models.vod_interaction import VODInteractionSession
+from app.models.pause_ask_job import PauseAskJob
 from app.models.film_memory import VODFilmMemory
 # Phase 2: Comprehension Mode scored-turn persistence
 from app.models.comprehension_session import ComprehensionSession
@@ -489,6 +490,8 @@ async def connect_to_mongo():
         Character,
         # VOD interaction session model (Pause & Ask dialogue)
         VODInteractionSession,
+        # Async Pause & Ask pipeline job tracking
+        PauseAskJob,
         # Cross-moment character memory (Phase 1)
         VODFilmMemory,
         # Comprehension Mode scored-turn persistence (Phase 2)
