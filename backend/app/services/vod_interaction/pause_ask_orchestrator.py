@@ -31,6 +31,14 @@ from app.services.vod_interaction.interaction_service import (
     SAFE_FALLBACK_RESPONSE,
 )
 from app.services.vod_interaction.memory_reference_service import find_reference
+from app.models.pause_ask_job import (
+    JobError,
+    JobResult,
+    JobStatus,
+    PauseAskJob,
+    STAGE_MESSAGES,
+    TERMINAL_STATUSES,
+)
 from app.services.vod_interaction.pause_ask_models import (
     PauseAskResult,
     PauseAskServiceError,
@@ -42,6 +50,332 @@ logger = get_logger(__name__)
 
 class PauseAskOrchestrator:
     """Orchestrates the full Pause & Ask pipeline with parallel execution."""
+
+    async def run_job(self, job: PauseAskJob) -> None:
+        """Execute the pipeline as a background job, updating job state."""
+        try:
+            job.status = JobStatus.accepted
+            job.started_at = datetime.utcnow()
+            await job.save()
+
+            await self._execute_job_pipeline(job)
+        except Exception as exc:
+            await self._fail_job(job, exc)
+
+    async def _execute_job_pipeline(self, job: PauseAskJob) -> None:
+        """Run pipeline stages, updating job document at each stage."""
+        from app.models.content import Content
+        from app.models.integration_partner import IntegrationPartner
+        from beanie import PydanticObjectId
+
+        # Look up content and character
+        content = await Content.get(PydanticObjectId(job.content_id))
+        if not content:
+            raise ValueError(f"Content not found: {job.content_id}")
+
+        chars = getattr(content, "interactive_characters", []) or []
+        character = None
+        for c in chars:
+            if c.name.lower() == job.character.lower():
+                character = c
+                break
+        if not character:
+            raise ValueError(f"Character not found: {job.character}")
+
+        # Create ephemeral session
+        session = VODInteractionSession(
+            user_id=job.user_id,
+            profile_id=job.user_id,
+            content_id=job.content_id,
+            character_name=character.name,
+            character_description=character.description,
+            character_voice_id=character.voice_id,
+            character_frame_url=character.frame_url,
+            scene_context=character.movie_context,
+            persona_mode=getattr(content, "persona_mode", "character"),
+            audience_description=getattr(content, "audience_description", ""),
+            status="active",
+        )
+        await session.insert()
+        job.session_id = str(session.id)
+        await job.save()
+
+        voice_only = job.mode == "voice"
+
+        try:
+            result = await self._run_staged_pipeline(
+                job, session, voice_only,
+            )
+
+            # Determine final status
+            if result.voice_only_fallback:
+                job.status = JobStatus.completed_voice_only
+                refund_amount = (
+                    settings.CREDIT_RATE_VOD_PAUSE_ASK
+                    - settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
+                )
+                if refund_amount > 0 and job.credits_charged > 0:
+                    from app.services.beta.credit_service import credit_service
+                    await credit_service.refund_credits(
+                        user_id=job.user_id,
+                        amount=refund_amount,
+                        reason="pause_ask_voice_only_fallback",
+                        metadata={"job_id": job.job_id},
+                    )
+                    job.credits_refunded = refund_amount
+            else:
+                job.status = JobStatus.completed
+
+            job.result = JobResult(
+                video_url=result.character_animated_video_url,
+                audio_url=result.character_audio_url,
+                frame_url=result.character_frame_url,
+                response_text=result.character_response_text,
+                character_name=result.character_name,
+                duration=result.character_video_duration,
+            )
+            job.completed_at = datetime.utcnow()
+            job.progress_message = "Ready"
+            await job.save()
+
+        finally:
+            session.status = "completed"
+            await session.save()
+
+    async def _run_staged_pipeline(
+        self,
+        job: PauseAskJob,
+        session: VODInteractionSession,
+        voice_only: bool,
+    ) -> PauseAskResult:
+        """Run the pipeline with stage tracking and Aurora fallback."""
+
+        # Stage: polishing
+        await self._update_stage(job, JobStatus.polishing)
+
+        polished_text = await text_polisher.polish(
+            job.question, language_hint=job.language_hint,
+        )
+
+        # Stage: generating response
+        await self._update_stage(job, JobStatus.generating_response)
+
+        scene_context = session.scene_context or ""
+        char_desc = session.character_description or ""
+
+        memory_context = ""
+        memory = None
+        if settings.VOD_FILM_MEMORY_ENABLED:
+            memory = await film_memory_service.get_or_create(
+                session.user_id, session.profile_id, session.content_id,
+            )
+            memory_context = film_memory_service.build_memory_context(memory)
+
+        character_response = await character_ai_service.generate_response(
+            character_name=session.character_name,
+            scene_context=scene_context,
+            user_message=polished_text,
+            conversation_history=session.dialogue_exchanges,
+            character_description=char_desc,
+            movie_context=scene_context,
+            child_name=session.child_first_name or "",
+            memory_context=memory_context,
+            persona_mode=session.persona_mode or "character",
+            audience_description=session.audience_description or "",
+        )
+
+        # Content moderation
+        response_text = character_response.text
+        if BLOCKED_RESPONSE_PATTERNS.search(response_text):
+            logger.warning(
+                "Character response blocked by content filter",
+                extra={"job_id": job.job_id},
+            )
+            response_text = SAFE_FALLBACK_RESPONSE
+
+        # Stage: voice / animation
+        voice_id = (
+            session.character_voice_id or settings.CHARACTER_VOICE_DEFAULT
+        )
+        voice_only_fallback = False
+        character_frame_url = session.character_frame_url or ""
+
+        if voice_only:
+            # Voice-only: TTS only, no lip-sync
+            await self._update_stage(job, JobStatus.generating_voice)
+            char_animated = await character_animator_service.generate_audio_only(
+                character_name=session.character_name,
+                dialogue_text=response_text,
+                voice_id=voice_id,
+            )
+        else:
+            # Lip-sync: TTS + Aurora in one call (animate_character_response
+            # calls _generate_tts internally, so we skip generate_audio_only
+            # to avoid double TTS generation)
+            await self._update_stage(job, JobStatus.animating)
+            try:
+                char_animated = await character_animator_service.animate_character_response(
+                    character_name=session.character_name,
+                    dialogue_text=response_text,
+                    character_frame_url=character_frame_url,
+                    voice_id=voice_id,
+                )
+            except (TimeoutError, RuntimeError, Exception) as exc:
+                logger.warning(
+                    "Aurora lip-sync failed, falling back to voice-only",
+                    extra={
+                        "job_id": job.job_id,
+                        "error": str(exc),
+                    },
+                )
+                voice_only_fallback = True
+                # Fallback: generate audio-only (TTS without Aurora)
+                await self._update_stage(job, JobStatus.generating_voice)
+                char_animated = await character_animator_service.generate_audio_only(
+                    character_name=session.character_name,
+                    dialogue_text=response_text,
+                    voice_id=voice_id,
+                )
+
+        # Save exchanges to session
+        user_exchange = DialogueExchange(
+            speaker="user",
+            message_text=job.question,
+            polished_text=polished_text,
+            timestamp=datetime.utcnow(),
+        )
+        character_exchange = DialogueExchange(
+            speaker="character",
+            message_text=response_text,
+            audio_url=char_animated.audio_url,
+            animated_video_url=char_animated.video_url or None,
+            character_name=session.character_name,
+            timestamp=datetime.utcnow(),
+        )
+        session.dialogue_exchanges.append(user_exchange)
+        session.dialogue_exchanges.append(character_exchange)
+        session.updated_at = datetime.utcnow()
+        await session.save()
+
+        # Film memory
+        if settings.VOD_FILM_MEMORY_ENABLED:
+            film_exchange = FilmMemoryExchange(
+                moment_timestamp=session.moment_timestamp,
+                character_name=session.character_name,
+                user_message=job.question,
+                character_response=response_text,
+                created_at=character_exchange.timestamp,
+            )
+            memory = await film_memory_service.get_or_create(
+                session.user_id, session.profile_id, session.content_id,
+            )
+            await film_memory_service.ingest_exchanges(memory, [film_exchange])
+
+        # Memory reference
+        prior_user_messages = [
+            ex.message_text
+            for ex in session.dialogue_exchanges
+            if ex.speaker == "user"
+        ]
+        memory_metadata = find_reference(response_text, prior_user_messages)
+
+        return PauseAskResult(
+            user_polished_text=polished_text,
+            character_name=session.character_name,
+            character_response_text=response_text,
+            character_audio_url=char_animated.audio_url,
+            character_animated_video_url=char_animated.video_url or "",
+            character_frame_url=character_frame_url,
+            character_video_duration=char_animated.duration,
+            voice_only_fallback=voice_only_fallback,
+            memory_metadata=memory_metadata,
+        )
+
+    async def _update_stage(
+        self, job: PauseAskJob, status: JobStatus,
+    ) -> None:
+        """Update job stage and progress message."""
+        job.status = status
+        job.stage = status.value
+        job.progress_message = STAGE_MESSAGES.get(status, "Processing...")
+        await job.save()
+
+    async def _fail_job(
+        self, job: PauseAskJob, exc: Exception,
+    ) -> None:
+        """Mark job as failed, classify error, refund credits."""
+        error_type, user_message, can_retry = self._classify_job_error(exc)
+
+        job.status = JobStatus.failed
+        job.error = JobError(
+            error_type=error_type,
+            user_message=user_message,
+            can_retry=can_retry,
+        )
+        job.completed_at = datetime.utcnow()
+        job.progress_message = user_message
+        await job.save()
+
+        # Refund credits on failure
+        if job.credits_charged > 0:
+            from app.services.beta.credit_service import credit_service
+            await credit_service.refund_credits(
+                user_id=job.user_id,
+                amount=job.credits_charged,
+                reason=f"pause_ask_failed:{error_type}",
+                metadata={"job_id": job.job_id},
+            )
+            job.credits_refunded = job.credits_charged
+            await job.save()
+
+        logger.error(
+            "Pause & Ask job failed",
+            extra={
+                "job_id": job.job_id,
+                "error_type": error_type,
+                "error": str(exc),
+            },
+        )
+
+    def _classify_job_error(
+        self, exc: Exception,
+    ) -> tuple[str, str, bool]:
+        """Classify exception into (error_type, user_message, can_retry)."""
+        error_lower = str(exc).lower()
+
+        if isinstance(exc, ValueError):
+            return (
+                "content_not_ready",
+                str(exc),
+                False,
+            )
+
+        if "anthropic" in error_lower or "claude" in error_lower:
+            return (
+                "ai_response_failed",
+                "Character couldn't respond. Please try again.",
+                True,
+            )
+
+        if "elevenlabs" in error_lower or "tts" in error_lower:
+            return (
+                "voice_generation_failed",
+                "Voice generation failed. Please try again.",
+                True,
+            )
+
+        if "whisper" in error_lower or "transcri" in error_lower:
+            return (
+                "transcription_failed",
+                "Couldn't understand the audio. Please try again.",
+                True,
+            )
+
+        return (
+            "unknown",
+            "Something went wrong. Please try again.",
+            True,
+        )
 
     async def process_exchange(
         self,
