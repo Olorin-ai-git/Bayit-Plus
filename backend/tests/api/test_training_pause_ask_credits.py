@@ -3,10 +3,12 @@
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.api.routes.training.dependencies import get_current_training_user
 from app.main import app
+
+_VALID_CONTENT_ID = "aaaaaaaaaaaaaaaaaaaaaaaa"  # 24-char valid ObjectId string
 
 
 def _make_user(partner_id="training-test-abc12345"):
@@ -42,15 +44,21 @@ async def test_voice_pause_ask_rejects_when_credits_exhausted(client):
         "org_tier": "team",
     }
 
-    with patch(
-        "app.api.routes.training.pause_ask.IntegrationPartner"
-    ) as mock_ip:
+    # E6: content must pass ownership check before credit check is reached
+    owned_content = MagicMock()
+    owned_content.partner_id = "training-test-abc12345"
+
+    with (
+        patch("app.api.routes.training.pause_ask.IntegrationPartner") as mock_ip,
+        patch("app.api.routes.training.pause_ask.Content") as mock_content,
+    ):
         mock_ip.find_one = AsyncMock(return_value=partner)
+        mock_content.get = AsyncMock(return_value=owned_content)
 
         resp = await client.post(
             "/api/v1/training/pause-ask",
             json={
-                "content_id": "abc123",
+                "content_id": _VALID_CONTENT_ID,
                 "character": "Speaker",
                 "question": "What is this about?",
                 "mode": "voice",
