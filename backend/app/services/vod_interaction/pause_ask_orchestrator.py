@@ -595,18 +595,13 @@ class PauseAskOrchestrator:
 
         return PauseAskResult(
             user_polished_text=polished_text,
-            user_audio_url=user_animated.audio_url if user_animated else "",
-            user_animated_video_url=(
-                user_animated.video_url if user_animated else ""
-            ),
-            user_video_duration=(
-                user_animated.duration if user_animated else 0.0
-            ),
             character_name=session.character_name,
             character_response_text=response_text,
             character_audio_url=char_animated.audio_url,
-            character_animated_video_url=char_animated.video_url,
+            character_animated_video_url=char_animated.video_url or "",
+            character_frame_url=session.character_frame_url or "",
             character_video_duration=char_animated.duration,
+            voice_only_fallback=voice_only,
             memory_metadata=memory_metadata,
         )
 

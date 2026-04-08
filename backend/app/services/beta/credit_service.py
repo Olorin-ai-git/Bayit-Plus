@@ -612,7 +612,9 @@ class CreditServiceWrapper:
         if not credit_doc:
             return (False, 0)
 
-        credit_doc.credits_remaining += int(amount)
+        credit_doc.remaining_credits += int(amount)
+        credit_doc.used_credits = max(0, credit_doc.used_credits - int(amount))
+        credit_doc.updated_at = datetime.utcnow()
         await credit_doc.save()
 
         logger.info(
@@ -621,11 +623,11 @@ class CreditServiceWrapper:
                 "user_id": user_id,
                 "amount": amount,
                 "reason": reason,
-                "new_balance": credit_doc.credits_remaining,
+                "new_balance": credit_doc.remaining_credits,
                 **(metadata or {}),
             },
         )
-        return (True, credit_doc.credits_remaining)
+        return (True, credit_doc.remaining_credits)
 
 
 # Default instance (will be initialized when database is ready)

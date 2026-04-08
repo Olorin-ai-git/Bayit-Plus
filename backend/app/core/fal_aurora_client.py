@@ -128,10 +128,10 @@ class FalAuroraClient:
         """Poll fal.ai queue until job completes, fails, or times out."""
         status_url = f"{QUEUE_ENDPOINT}/requests/{request_id}/status"
         result_url = f"{QUEUE_ENDPOINT}/requests/{request_id}"
-        deadline = asyncio.get_event_loop().time() + self.hard_timeout
+        deadline = asyncio.get_running_loop().time() + self.hard_timeout
         attempt = 0
 
-        while asyncio.get_event_loop().time() < deadline:
+        while asyncio.get_running_loop().time() < deadline:
             if cancel_event and cancel_event.is_set():
                 await self._cancel_job(client, cancel_url, request_id)
                 raise asyncio.CancelledError(

@@ -232,6 +232,7 @@ async def retry_job(
     response_model=SubmitJobResponse,
     status_code=status.HTTP_202_ACCEPTED,
 )
+@limiter.limit(RATE_LIMITS.get("vod_interaction_pause_ask", "10/minute"))
 async def submit_b2b_job(
     request: Request,
     body: SubmitJobRequest,
