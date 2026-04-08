@@ -36,9 +36,6 @@ from app.services.vod_interaction.pause_ask_models import (
     PauseAskServiceError,
 )
 from app.services.vod_interaction.text_polisher import text_polisher
-from app.services.vod_interaction.user_avatar_animator import (
-    user_avatar_animator,
-)
 
 logger = get_logger(__name__)
 
@@ -91,16 +88,7 @@ class PauseAskOrchestrator:
             )
             memory_context = film_memory_service.build_memory_context(memory)
 
-        if voice_only or not avatar:
-            user_anim_coro = self._no_animation()
-        else:
-            fallback_voice = settings.MOVIE_INTERACTION_DEFAULT_VOICE_MALE
-            has_face = bool(avatar.creatify_avatar_image_url or avatar.primary_avatar_gcs_path)
-            if avatar.has_voice_clone or (has_face and fallback_voice):
-                fb = "" if avatar.has_voice_clone else fallback_voice
-                user_anim_coro = self._animate_user_safe(polished_text, avatar, fb)
-            else:
-                user_anim_coro = self._no_animation()
+        user_anim_coro = self._no_animation()
         char_response_coro = character_ai_service.generate_response(
             character_name=session.character_name,
             scene_context=scene_context,
@@ -262,24 +250,6 @@ class PauseAskOrchestrator:
     async def _no_animation(self) -> Optional[AnimatedResponse]:
         """Return None immediately when voice clone is unavailable."""
         return None
-
-    async def _animate_user_safe(
-        self, polished_text: str, avatar: ChildAvatar, fallback_voice_id: str = "",
-    ) -> Optional[AnimatedResponse]:
-        """Animate user avatar with graceful fallback on failure."""
-        try:
-            return await user_avatar_animator.animate_user_avatar(
-                polished_text, avatar, fallback_voice_id,
-            )
-        except Exception as exc:
-            logger.warning(
-                "User avatar animation failed, continuing without",
-                extra={
-                    "avatar_id": str(avatar.id),
-                    "error": str(exc),
-                },
-            )
-            return None
 
     def _classify_error(
         self, exc: Exception, default_service: str, session_id: str,
