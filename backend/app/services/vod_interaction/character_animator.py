@@ -170,7 +170,10 @@ class CharacterAnimatorService:
         return settings.CREATIFY_PERSONA_MALE
 
     async def _ensure_public_url(self, url: str) -> str:
-        """Ensure a storage URL is publicly accessible for external APIs."""
+        """Ensure a URL is publicly accessible for external APIs.
+
+        Local files are uploaded to GCS. HTTP URLs are returned as-is.
+        """
         if url.startswith("http"):
             return url
 
@@ -178,50 +181,91 @@ class CharacterAnimatorService:
         if not local_path.exists():
             raise FileNotFoundError(f"Local file not found: {local_path}")
 
-        async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
-            files = {"file": (local_path.name, local_path.read_bytes())}
-            resp = await client.post(settings.TEMP_FILE_HOST_URL, files=files)
-            resp.raise_for_status()
-            page_url = resp.json()["data"]["url"]
-            parts = page_url.split("tmpfiles.org/", 1)
-            public_url = f"https://tmpfiles.org/dl/{parts[1]}"
-            logger.info(
-                "Uploaded local file to temp host",
-                extra={"local": url, "public": public_url},
-            )
-            return public_url
+        content_type = (
+            "image/png" if local_path.suffix == ".png"
+            else "image/jpeg" if local_path.suffix in (".jpg", ".jpeg")
+            else "audio/mpeg" if local_path.suffix == ".mp3"
+            else "video/mp4" if local_path.suffix == ".mp4"
+            else "application/octet-stream"
+        )
+        gcs_path = (
+            f"vod-interactions/public-assets/"
+            f"{hashlib.md5(str(local_path).encode()).hexdigest()[:12]}"
+            f"{local_path.suffix}"
+        )
+        public_url = await storage_service.upload_bytes(
+            local_path.read_bytes(), gcs_path, content_type=content_type,
+        )
+        logger.info(
+            "Local file uploaded to GCS for external API access",
+            extra={"local": url, "gcs": public_url},
+        )
+        return public_url
 
     async def _generate_tts(
         self, text: str, voice_id: str, character_name: str,
     ) -> str:
-        """Generate speech audio using ElevenLabs TTS. Returns storage URL."""
-        async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
-            response = await client.post(
-                f"{self.elevenlabs_api_url}/v1/text-to-speech/{voice_id}",
-                json={
-                    "text": text,
-                    "model_id": "eleven_multilingual_v2",
-                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
-                },
-                headers={
-                    "xi-api-key": self.elevenlabs_api_key,
-                    "Content-Type": "application/json",
-                },
-            )
-            response.raise_for_status()
+        """Generate speech audio using ElevenLabs TTS with retry. Returns storage URL."""
+        max_retries = settings.PAUSE_ASK_TTS_RETRIES
+        timeout = httpx.Timeout(float(settings.PAUSE_ASK_TTS_TIMEOUT_SECONDS))
+        last_exc = None
 
-            text_hash = hashlib.md5(text.encode()).hexdigest()[:8]
-            safe_name = character_name.replace(" ", "_").lower()
-            gcs_path = f"vod-interactions/character-audio/{safe_name}_{text_hash}.mp3"
+        for attempt in range(max_retries + 1):
+            try:
+                async with httpx.AsyncClient(timeout=timeout) as client:
+                    response = await client.post(
+                        f"{self.elevenlabs_api_url}/v1/text-to-speech/{voice_id}",
+                        json={
+                            "text": text,
+                            "model_id": "eleven_multilingual_v2",
+                            "voice_settings": {
+                                "stability": 0.5,
+                                "similarity_boost": 0.75,
+                            },
+                        },
+                        headers={
+                            "xi-api-key": self.elevenlabs_api_key,
+                            "Content-Type": "application/json",
+                        },
+                    )
+                    response.raise_for_status()
 
-            audio_url = await storage_service.upload_bytes(
-                response.content, gcs_path, content_type="audio/mpeg",
-            )
-            logger.info(
-                "TTS audio generated",
-                extra={"character_name": character_name, "audio_url": audio_url},
-            )
-            return audio_url
+                    text_hash = hashlib.md5(text.encode()).hexdigest()[:8]
+                    safe_name = character_name.replace(" ", "_").lower()
+                    gcs_path = (
+                        f"vod-interactions/character-audio/"
+                        f"{safe_name}_{text_hash}.mp3"
+                    )
+                    audio_url = await storage_service.upload_bytes(
+                        response.content, gcs_path, content_type="audio/mpeg",
+                    )
+                    logger.info(
+                        "TTS audio generated",
+                        extra={
+                            "character_name": character_name,
+                            "audio_url": audio_url,
+                            "attempt": attempt,
+                        },
+                    )
+                    return audio_url
+            except (httpx.TimeoutException, httpx.HTTPStatusError) as exc:
+                last_exc = exc
+                if isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code < 500:
+                    raise
+                if attempt < max_retries:
+                    backoff = 2.0 ** attempt
+                    logger.warning(
+                        "ElevenLabs TTS failed, retrying",
+                        extra={
+                            "character_name": character_name,
+                            "attempt": attempt,
+                            "backoff": backoff,
+                            "error": str(exc),
+                        },
+                    )
+                    await asyncio.sleep(backoff)
+
+        raise last_exc
 
     async def _get_audio_duration(self, audio_url: str) -> float:
         """Get duration of audio file in seconds via ffprobe."""
