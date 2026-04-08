@@ -55,13 +55,6 @@ class PauseAskResult(BaseModel):
     """Complete result of a Pause & Ask exchange."""
 
     user_polished_text: str = Field(..., description="Polished user question")
-    user_audio_url: str = Field(..., description="User avatar TTS audio URL")
-    user_animated_video_url: str = Field(
-        ..., description="User avatar lip-sync video URL",
-    )
-    user_video_duration: float = Field(
-        ..., description="User video duration in seconds",
-    )
     character_name: str = Field(..., description="Character who responded")
     character_response_text: str = Field(
         ..., description="Character AI response text",
@@ -70,10 +63,17 @@ class PauseAskResult(BaseModel):
         ..., description="Character TTS audio URL",
     )
     character_animated_video_url: str = Field(
-        ..., description="Character lip-sync video URL",
+        default="", description="Character lip-sync video URL (empty if voice-only)",
+    )
+    character_frame_url: str = Field(
+        default="", description="Character still image URL (for voice-only fallback)",
     )
     character_video_duration: float = Field(
-        ..., description="Character video duration in seconds",
+        ..., description="Character audio/video duration in seconds",
+    )
+    voice_only_fallback: bool = Field(
+        default=False,
+        description="True if lip-sync failed and fell back to voice-only",
     )
     memory_metadata: Optional[MemoryReference] = Field(
         default=None,
