@@ -286,7 +286,9 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(ensure_ttl_indexes_background())
     asyncio.create_task(_warm_content_caches())
     asyncio.create_task(_init_embedding_classifier())
-    logger.info("Background tasks scheduled: data seeding, TTL index creation, cache warm-up")
+    from app.services.vod_interaction.job_reaper import run_reaper_loop
+    asyncio.create_task(run_reaper_loop(), name="pause-ask-job-reaper")
+    logger.info("Background tasks scheduled: data seeding, TTL index creation, cache warm-up, job reaper")
 
     # Upload queue processor is now manual-only (triggered from UI)
     from app.services.upload_service import upload_service  # noqa: F401
