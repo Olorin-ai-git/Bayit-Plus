@@ -27,7 +27,11 @@ class FalAuroraClient:
 
     def __init__(self) -> None:
         self.resolution = settings.FAL_AURORA_RESOLUTION
-        self.timeout = httpx.Timeout(600.0, connect=15.0)
+        self.hard_timeout = settings.PAUSE_ASK_AURORA_TIMEOUT_SECONDS
+        self.poll_interval = settings.PAUSE_ASK_POLL_INTERVAL_SECONDS
+        self.timeout = httpx.Timeout(
+            float(self.hard_timeout) + 30.0, connect=15.0,
+        )
 
     def _get_headers(self) -> dict:
         return {
@@ -118,45 +122,64 @@ class FalAuroraClient:
         self,
         request_id: str,
         client: httpx.AsyncClient,
-        max_attempts: int = 120,
-        poll_interval: int = 5,
         cancel_event: "asyncio.Event | None" = None,
         cancel_url: str = "",
     ) -> str:
-        """Poll fal.ai queue until job completes or is cancelled."""
+        """Poll fal.ai queue until job completes, fails, or times out."""
         status_url = f"{QUEUE_ENDPOINT}/requests/{request_id}/status"
         result_url = f"{QUEUE_ENDPOINT}/requests/{request_id}"
+        deadline = asyncio.get_event_loop().time() + self.hard_timeout
+        attempt = 0
 
-        for attempt in range(max_attempts):
+        while asyncio.get_event_loop().time() < deadline:
             if cancel_event and cancel_event.is_set():
                 await self._cancel_job(client, cancel_url, request_id)
                 raise asyncio.CancelledError(
                     f"Aurora job {request_id} cancelled (client disconnected)"
                 )
 
-            resp = await client.get(status_url, headers=self._get_headers())
-            if resp.status_code == 200:
-                data = resp.json()
-                status = data.get("status")
-                if status == "COMPLETED":
-                    res = await client.get(
-                        result_url, headers=self._get_headers(),
-                    )
-                    res.raise_for_status()
-                    return res.json()["video"]["url"]
-                if status in ("FAILED", "CANCELLED"):
-                    raise RuntimeError(
-                        f"Aurora job {request_id} failed: "
-                        f"{data.get('error', 'Unknown')}"
-                    )
+            try:
+                resp = await client.get(status_url, headers=self._get_headers())
+                if resp.status_code == 200:
+                    data = resp.json()
+                    poll_status = data.get("status")
+                    if poll_status == "COMPLETED":
+                        res = await client.get(
+                            result_url, headers=self._get_headers(),
+                        )
+                        res.raise_for_status()
+                        return res.json()["video"]["url"]
+                    if poll_status in ("FAILED", "CANCELLED"):
+                        raise RuntimeError(
+                            f"Aurora job {request_id} failed: "
+                            f"{data.get('error', 'Unknown')}"
+                        )
+            except (httpx.TimeoutException, httpx.ConnectError) as exc:
+                logger.warning(
+                    "Aurora poll request failed, retrying",
+                    extra={
+                        "request_id": request_id,
+                        "attempt": attempt,
+                        "error": str(exc),
+                    },
+                )
+
             if attempt % 6 == 0:
                 logger.info(
                     "Aurora job polling",
                     extra={"request_id": request_id, "attempt": attempt},
                 )
-            await asyncio.sleep(poll_interval)
 
-        raise TimeoutError(f"Aurora job {request_id} timed out")
+            interval = min(
+                self.poll_interval * (1.5 ** min(attempt, 4)),
+                15.0,
+            )
+            await asyncio.sleep(interval)
+            attempt += 1
+
+        raise TimeoutError(
+            f"Aurora job {request_id} timed out after {self.hard_timeout}s"
+        )
 
     async def _cancel_job(
         self, client: httpx.AsyncClient, cancel_url: str, request_id: str,
