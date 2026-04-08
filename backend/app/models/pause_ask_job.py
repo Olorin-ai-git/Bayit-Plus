@@ -102,3 +102,8 @@ class PauseAskJob(Document):
     class Settings:
         name = "pause_ask_jobs"
         use_state_management = True
+        indexes = [
+            "job_id",
+            [("created_at", 1)],
+            [("status", 1), ("created_at", 1)],
+        ]
