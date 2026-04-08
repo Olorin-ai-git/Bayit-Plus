@@ -1,0 +1,222 @@
+"""
+Pause & Ask Job API
+
+Unified async job endpoints for all portals (training, demo, B2B).
+Replaces the three portal-specific synchronous pause-ask endpoints.
+"""
+
+import asyncio
+import uuid
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
+
+from app.core.config import settings
+from app.core.logging_config import get_logger
+from app.core.rate_limiter import RATE_LIMITS, limiter
+from app.core.security import get_current_user
+from app.models.pause_ask_job import (
+    JobStatus,
+    PauseAskJob,
+    TERMINAL_STATUSES,
+)
+from app.models.user import User
+from app.services.beta.credit_service import credit_service
+from app.services.vod_interaction.pause_ask_orchestrator import (
+    pause_ask_orchestrator,
+)
+
+logger = get_logger(__name__)
+
+router = APIRouter(
+    prefix="/pause-ask",
+    tags=["Pause & Ask Jobs"],
+)
+
+
+class SubmitJobRequest(BaseModel):
+    """Request body to submit a Pause & Ask job."""
+
+    content_id: str = Field(..., min_length=1)
+    character: str = Field(..., min_length=1, max_length=200)
+    question: str = Field(..., min_length=1, max_length=500)
+    mode: str = Field(default="lip_sync", pattern="^(lip_sync|voice)$")
+    language_hint: str = Field(default="", max_length=10)
+
+
+class SubmitJobResponse(BaseModel):
+    """Response after submitting a job."""
+
+    job_id: str
+    status: str
+
+
+class JobStatusResponse(BaseModel):
+    """Response for job status polling."""
+
+    job_id: str
+    status: str
+    stage: str
+    progress_message: str
+    result: Optional[dict] = None
+    error: Optional[dict] = None
+
+
+@router.post(
+    "/jobs",
+    response_model=SubmitJobResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+@limiter.limit(RATE_LIMITS.get("vod_interaction_pause_ask", "10/minute"))
+async def submit_job(
+    request: Request,
+    body: SubmitJobRequest,
+    current_user: User = Depends(get_current_user),
+) -> SubmitJobResponse:
+    """Submit a Pause & Ask job for async processing."""
+    if not settings.VOD_INTERACTION_PAUSE_ASK_ENABLED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Pause & Ask feature is disabled",
+        )
+
+    # Credit check and deduction
+    is_lip_sync = body.mode == "lip_sync"
+    credit_amount = (
+        settings.CREDIT_RATE_VOD_PAUSE_ASK
+        if is_lip_sync
+        else settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
+    )
+
+    has_balance = await credit_service.has_sufficient_credits(
+        user_id=str(current_user.id),
+        amount=credit_amount,
+    )
+    if not has_balance:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Insufficient credits",
+        )
+
+    charged, _ = await credit_service.charge_credits(
+        user_id=str(current_user.id),
+        amount=credit_amount,
+        reason="pause_ask_job_submit",
+        metadata={"content_id": body.content_id, "mode": body.mode},
+    )
+    if not charged:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Credit deduction failed",
+        )
+
+    # Create job
+    job_id = str(uuid.uuid4())
+    job = PauseAskJob(
+        job_id=job_id,
+        content_id=body.content_id,
+        character=body.character,
+        question=body.question,
+        mode=body.mode,
+        language_hint=body.language_hint,
+        portal="consumer",
+        user_id=str(current_user.id),
+        credits_charged=credit_amount,
+    )
+    await job.insert()
+
+    # Spawn background task
+    asyncio.create_task(
+        pause_ask_orchestrator.run_job(job),
+        name=f"pause-ask-job-{job_id}",
+    )
+
+    logger.info(
+        "Pause & Ask job submitted",
+        extra={"job_id": job_id, "user_id": str(current_user.id)},
+    )
+
+    return SubmitJobResponse(job_id=job_id, status="accepted")
+
+
+@router.get(
+    "/jobs/{job_id}",
+    response_model=JobStatusResponse,
+)
+async def get_job_status(
+    job_id: str,
+    current_user: User = Depends(get_current_user),
+) -> JobStatusResponse:
+    """Poll job status."""
+    job = await PauseAskJob.find_one({"job_id": job_id})
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found",
+        )
+    if job.user_id != str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Job does not belong to this user",
+        )
+
+    response = JobStatusResponse(
+        job_id=job.job_id,
+        status=job.status.value,
+        stage=job.stage,
+        progress_message=job.progress_message,
+    )
+
+    if job.status in TERMINAL_STATUSES:
+        if job.result:
+            response.result = job.result.model_dump()
+        if job.error:
+            response.error = job.error.model_dump()
+
+    return response
+
+
+@router.post(
+    "/jobs/{job_id}/retry",
+    response_model=SubmitJobResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+@limiter.limit(RATE_LIMITS.get("vod_interaction_pause_ask", "10/minute"))
+async def retry_job(
+    request: Request,
+    job_id: str,
+    current_user: User = Depends(get_current_user),
+) -> SubmitJobResponse:
+    """Retry a failed job by creating a new one with the same parameters."""
+    original = await PauseAskJob.find_one({"job_id": job_id})
+    if not original:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found",
+        )
+    if original.user_id != str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Job does not belong to this user",
+        )
+    if original.status not in TERMINAL_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Job is still running",
+        )
+    if original.error and not original.error.can_retry:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This job cannot be retried",
+        )
+
+    # Submit new job with same parameters
+    body = SubmitJobRequest(
+        content_id=original.content_id,
+        character=original.character,
+        question=original.question,
+        mode=original.mode,
+        language_hint=original.language_hint,
+    )
+    return await submit_job(request, body, current_user)

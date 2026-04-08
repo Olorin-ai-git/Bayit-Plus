@@ -153,6 +153,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import discover_characters
     # Training platform routes (Olorin for Training)
     from app.api.routes.training import router as training_router
+    # Unified Pause & Ask async job endpoints (submit, poll, retry)
+    from app.api.routes.pause_ask_jobs import router as pause_ask_jobs_router
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -577,6 +579,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         vod_interaction_vision.router, prefix=prefix, tags=["vod-interaction-vision"]
+    )
+    app.include_router(
+        pause_ask_jobs_router, prefix=prefix, tags=["pause-ask-jobs"]
     )
     logger.debug("Registered VOD avatar interaction routes")
 
