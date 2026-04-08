@@ -540,11 +540,11 @@ class CreditServiceWrapper:
             Tuple of (success: bool, remaining_credits: int)
         """
         if self._service is None:
-            logger.warning(
-                "Credit service not initialized - skipping credit charge",
-                extra={"user_id": user_id, "reason": reason, "amount": amount}
+            logger.error(
+                "Credit service not initialized - charge rejected",
+                extra={"user_id": user_id, "reason": reason, "amount": amount},
             )
-            return (True, 0)  # Return success to not block functionality during development
+            return (False, 0)
 
         return await self._service.deduct_credits(
             user_id=user_id,
@@ -569,16 +569,63 @@ class CreditServiceWrapper:
             True if user has sufficient credits (or service uninitialized)
         """
         if self._service is None:
-            logger.warning(
-                "Credit service not initialized - allowing operation",
+            logger.error(
+                "Credit service not initialized - denying operation",
                 extra={"user_id": user_id, "amount": amount},
             )
-            return True
+            return False
 
         balance = await self._service.get_balance(user_id)
         if balance is None:
             return True
         return balance >= amount
+
+    async def refund_credits(
+        self,
+        user_id: str,
+        amount: float,
+        reason: str,
+        metadata: dict = None,
+    ) -> Tuple[bool, int]:
+        """
+        Refund credits to a user after a failed job.
+
+        Returns:
+            Tuple of (success: bool, new_balance: int)
+        """
+        if self._service is None:
+            logger.error(
+                "Credit service not initialized - cannot refund",
+                extra={"user_id": user_id, "reason": reason, "amount": amount},
+            )
+            return (False, 0)
+
+        doc = await self._service.get_balance(user_id)
+        if doc is None:
+            logger.warning(
+                "No credit document found for refund",
+                extra={"user_id": user_id, "amount": amount},
+            )
+            return (False, 0)
+
+        credit_doc = await BetaCredit.find_one({"user_id": user_id})
+        if not credit_doc:
+            return (False, 0)
+
+        credit_doc.credits_remaining += int(amount)
+        await credit_doc.save()
+
+        logger.info(
+            "Credits refunded",
+            extra={
+                "user_id": user_id,
+                "amount": amount,
+                "reason": reason,
+                "new_balance": credit_doc.credits_remaining,
+                **(metadata or {}),
+            },
+        )
+        return (True, credit_doc.credits_remaining)
 
 
 # Default instance (will be initialized when database is ready)
