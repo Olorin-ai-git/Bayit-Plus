@@ -244,6 +244,60 @@ class AuthServiceClient:
                 logger.error("auth_service_request_error", error=str(e))
                 raise ValueError(f"Failed to connect to auth service: {str(e)}")
 
+    async def issue_token_internal(self, email: str) -> dict:
+        """
+        Issue tokens for an existing user by email (service-to-service).
+
+        Bypasses password auth — used by demo-token flow for existing users
+        who registered via Google/Apple/password.
+
+        Requires AUTH_INTERNAL_API_KEY to be configured.
+
+        Returns:
+            Dict with user_id, email, name, role, access_token, refresh_token
+
+        Raises:
+            ValueError: If token issuance fails or user not found
+        """
+        from app.core.config import settings as app_settings
+
+        internal_key = getattr(app_settings, "AUTH_INTERNAL_API_KEY", "")
+        if not internal_key:
+            raise ValueError("AUTH_INTERNAL_API_KEY not configured")
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    f"{self.base_url}/api/v1/internal/issue-token",
+                    json={
+                        "email": email,
+                        "tenant_id": self.tenant_id,
+                    },
+                    headers={
+                        **self._get_auth_headers(),
+                        "X-Internal-Api-Key": internal_key,
+                    },
+                    timeout=self.timeout,
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info(
+                        "auth_service_internal_token_issued",
+                        user_id=data.get("user_id"),
+                        email=email,
+                    )
+                    return data
+                else:
+                    error_detail = self._extract_error(
+                        response, "Internal token issuance failed"
+                    )
+                    raise ValueError(error_detail)
+
+            except httpx.RequestError as e:
+                logger.error("auth_service_request_error", error=str(e))
+                raise ValueError(f"Failed to connect to auth service: {str(e)}")
+
     async def login_apple(
         self,
         id_token: str,

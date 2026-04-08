@@ -108,24 +108,21 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
             )
         except ValueError:
             # User exists but was registered via Google/Apple/manual
-            # password, not via demo-token. Re-register at auth service
-            # with the demo password — auth service will return existing
-            # user if email matches, or we handle the conflict.
+            # password, not via demo-token. Use internal token issuance
+            # to bypass password auth for existing users.
             try:
-                auth_response = await auth_client.register(
+                auth_response = await auth_client.issue_token_internal(
                     email=email,
-                    password=password,
-                    name=existing_user.name,
                 )
-            except ValueError as reg_err:
+            except ValueError as token_err:
                 logger.warning(
-                    "Demo token auth failed for existing user",
-                    extra={"email": email, "error": str(reg_err)},
+                    "Demo token internal issuance failed for existing user",
+                    extra={"email": email, "error": str(token_err)},
                 )
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Authentication failed. Try signing in through the app.",
-                ) from reg_err
+                ) from token_err
 
         # Sync auth_service_user_id
         if auth_response.get("user_id"):
