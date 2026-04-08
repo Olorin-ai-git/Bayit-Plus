@@ -25,6 +25,9 @@ from app.api.routes.training.scorm_interact import (
     router as scorm_interact_router,
 )
 from app.api.routes.training.onboarding import router as onboarding_router
+from app.api.routes.training.analytics_export import (
+    router as analytics_export_router,
+)
 
 router = APIRouter(prefix="/training")
 
@@ -45,3 +48,4 @@ router.include_router(pilot_metrics_router)
 router.include_router(exports_router)
 router.include_router(scorm_interact_router)
 router.include_router(onboarding_router)
+router.include_router(analytics_export_router)
