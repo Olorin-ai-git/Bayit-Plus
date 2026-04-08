@@ -12,10 +12,15 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
+from app.api.routes.olorin.dependencies import (
+    get_current_partner,
+    verify_capability,
+)
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
+from app.models.integration_partner import IntegrationPartner
 from app.models.pause_ask_job import (
     JobStatus,
     PauseAskJob,
@@ -220,3 +225,86 @@ async def retry_job(
         language_hint=original.language_hint,
     )
     return await submit_job(request, body, current_user)
+
+
+@router.post(
+    "/jobs/b2b",
+    response_model=SubmitJobResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def submit_b2b_job(
+    request: Request,
+    body: SubmitJobRequest,
+    partner: IntegrationPartner = Depends(get_current_partner),
+) -> SubmitJobResponse:
+    """Submit a B2B Pause & Ask job."""
+    await verify_capability(partner, "pause_ask")
+
+    job_id = str(uuid.uuid4())
+    job = PauseAskJob(
+        job_id=job_id,
+        content_id=body.content_id,
+        character=body.character,
+        question=body.question,
+        mode=body.mode,
+        language_hint=body.language_hint,
+        portal="b2b",
+        user_id=f"partner:{partner.partner_id}",
+        partner_id=partner.partner_id,
+        credits_charged=0,
+    )
+    await job.insert()
+
+    asyncio.create_task(
+        pause_ask_orchestrator.run_job(job),
+        name=f"pause-ask-job-{job_id}",
+    )
+
+    from app.services.olorin.metering_service import metering_service
+    await metering_service.record_usage(
+        partner_id=partner.partner_id,
+        capability="pause_ask",
+        metadata={"content_id": body.content_id, "job_id": job_id},
+    )
+
+    logger.info(
+        "B2B Pause & Ask job submitted",
+        extra={"job_id": job_id, "partner_id": partner.partner_id},
+    )
+
+    return SubmitJobResponse(job_id=job_id, status="accepted")
+
+
+@router.get(
+    "/jobs/b2b/{job_id}",
+    response_model=JobStatusResponse,
+)
+async def get_b2b_job_status(
+    job_id: str,
+    partner: IntegrationPartner = Depends(get_current_partner),
+) -> JobStatusResponse:
+    """Poll B2B job status."""
+    job = await PauseAskJob.find_one({"job_id": job_id})
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found",
+        )
+    if job.partner_id != partner.partner_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Job does not belong to this partner",
+        )
+
+    response = JobStatusResponse(
+        job_id=job.job_id,
+        status=job.status.value,
+        stage=job.stage,
+        progress_message=job.progress_message,
+    )
+    if job.status in TERMINAL_STATUSES:
+        if job.result:
+            response.result = job.result.model_dump()
+        if job.error:
+            response.error = job.error.model_dump()
+    return response

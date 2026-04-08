@@ -138,6 +138,35 @@ class PauseAskOrchestrator:
             job.progress_message = "Ready"
             await job.save()
 
+            # Fire B2B webhook if applicable
+            if job.portal == "b2b" and job.partner_id:
+                try:
+                    from app.api.routes.olorin.webhooks import send_webhook_event
+                    from fastapi import BackgroundTasks
+
+                    partner = await IntegrationPartner.find_one(
+                        {"partner_id": job.partner_id},
+                    )
+                    if partner:
+                        bg = BackgroundTasks()
+                        await send_webhook_event(
+                            partner,
+                            "session.ended",
+                            {
+                                "capability": "pause_ask",
+                                "job_id": job.job_id,
+                                "content_id": job.content_id,
+                                "character": job.character,
+                                "status": job.status.value,
+                            },
+                            bg,
+                        )
+                except Exception as exc:
+                    logger.warning(
+                        "B2B webhook dispatch failed",
+                        extra={"job_id": job.job_id, "error": str(exc)},
+                    )
+
         finally:
             session.status = "completed"
             await session.save()
