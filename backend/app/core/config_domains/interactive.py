@@ -156,6 +156,30 @@ class InteractiveConfigMixin:
         env="CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY",
         description="Credits per Pause & Ask exchange in voice-only mode (no animation)",
     )
+
+    # Pause & Ask Job Pipeline
+    PAUSE_ASK_JOB_TTL_HOURS: int = Field(
+        default=24, env="PAUSE_ASK_JOB_TTL_HOURS",
+    )
+    PAUSE_ASK_JOB_STALE_TIMEOUT_SECONDS: int = Field(
+        default=600, env="PAUSE_ASK_JOB_STALE_TIMEOUT_SECONDS",
+    )
+    PAUSE_ASK_JOB_REAPER_INTERVAL_SECONDS: int = Field(
+        default=60, env="PAUSE_ASK_JOB_REAPER_INTERVAL_SECONDS",
+    )
+    PAUSE_ASK_AURORA_TIMEOUT_SECONDS: int = Field(
+        default=180, env="PAUSE_ASK_AURORA_TIMEOUT_SECONDS",
+    )
+    PAUSE_ASK_TTS_RETRIES: int = Field(
+        default=2, env="PAUSE_ASK_TTS_RETRIES",
+    )
+    PAUSE_ASK_TTS_TIMEOUT_SECONDS: int = Field(
+        default=30, env="PAUSE_ASK_TTS_TIMEOUT_SECONDS",
+    )
+    PAUSE_ASK_POLL_INTERVAL_SECONDS: int = Field(
+        default=5, env="PAUSE_ASK_POLL_INTERVAL_SECONDS",
+    )
+
     CREDIT_RATE_VOD_FEATURE_UNLOCK: int = Field(
         default=1, ge=0,
         env="CREDIT_RATE_VOD_FEATURE_UNLOCK",
