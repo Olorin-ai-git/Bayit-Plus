@@ -32,7 +32,7 @@ class InteractiveConfigMixin:
         description="Claude model for character dialogue generation",
     )
     VOD_INTERACTION_AI_MAX_TOKENS: int = Field(
-        default=200, ge=50, le=1000,
+        default=80, ge=50, le=1000,
         env="VOD_INTERACTION_AI_MAX_TOKENS",
         description="Max tokens for character dialogue response",
     )

@@ -156,7 +156,7 @@ Scene Context: {scene_context}{description_block}{context_block}{memory_block}
 - Speaking naturally and warmly to a child (simple Hebrew or English)
 - Address the child by their name when it feels natural
 - Being educational and encouraging when appropriate
-- Keeping responses under 2 sentences for natural speech
+- Keeping responses to 1 sentence, maximum 20 words — short and punchy for lipsync video
 - Never breaking character or acknowledging you are an AI
 - Output ONLY the spoken dialogue text. No action descriptions, no stage directions, no gestures, no narration (e.g. never write "*waves hand*", "smiles and says", "leans forward" etc.)
 
@@ -208,7 +208,7 @@ Respond as {character_name}:"""
 - Your real-life worldview, values, and the thesis of the speech you just gave
 - The specific argument of the passage being discussed
 - A reflective, conversational, educational tone
-- Responses of 2-3 sentences maximum — natural spoken length
+- Responses of 1 sentence, maximum 20 words — short and punchy for lipsync video
 - Never breaking persona or acknowledging you are an AI
 - Output ONLY the spoken dialogue text. No stage directions, no narration, no action descriptions
 
