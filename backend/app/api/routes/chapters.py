@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 
 from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.api.dependencies.training_context import deduct_training_credits_if_applicable
 from app.core.security import get_current_active_user, get_optional_user
 from app.services.beta.credit_service import BetaCreditService
 from app.models.chapters import ChapterItemModel, VideoChapters
@@ -42,6 +43,9 @@ async def get_chapters(
     # No chapters exist - generation requires AI access
     if not current_user:
         raise HTTPException(status_code=401, detail="Authentication required for chapter generation")
+
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(current_user, "recap")
 
     if not current_user.is_admin_role() and not current_user.can_access_premium_features():
         raise HTTPException(status_code=403, detail="ai_feature_requires_plus")
@@ -118,6 +122,9 @@ async def generate_chapters(
     Generate or regenerate chapters for content.
     Requires authentication. If transcript is provided, uses it for more accurate chapters.
     """
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(current_user, "recap")
+
     # Check if content exists
     content = await Content.get(content_id)
     if not content:

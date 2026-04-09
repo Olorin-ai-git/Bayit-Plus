@@ -11,6 +11,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.api.dependencies.training_context import deduct_training_credits_if_applicable
 from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.cultural_reference import (
@@ -42,6 +43,9 @@ async def detect_cultural_references(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Detect cultural references in subtitle text."""
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(user, "cultural")
+
     if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
@@ -87,6 +91,9 @@ async def get_phrase_breakdown(
     credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Get TikTok-style breakdown of a Hebrew phrase."""
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(user, "cultural")
+
     if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(
             user_id=str(user.id),
