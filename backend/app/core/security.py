@@ -79,6 +79,27 @@ async def get_current_user(
     if user is None:
         # Fallback: try by Bayit+ document _id (legacy tokens)
         user = await User.get(user_id)
+
+    # Training portal users: HS256 token with iss=training.olorin.ai
+    # They have TrainingUser docs, not User docs. Create a transient
+    # User proxy (never persisted) so downstream routes work unchanged.
+    if user is None and payload.get("iss") == "training.olorin.ai":
+        from app.models.training_user import TrainingUser as TU
+
+        tu = await TU.get(user_id)
+        if tu:
+            user = User(
+                email=tu.email,
+                name=tu.display_name,
+                auth_service_user_id=f"training:{user_id}",
+                auth_provider="training",
+                is_active=True,
+                role="user",
+            )
+            # Marker for route-level training credit deduction.
+            # This User is NOT saved -- it exists only for this request.
+            user._training_partner_id = tu.partner_id
+
     if user is None:
         raise credentials_exception
 
