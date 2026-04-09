@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.api.dependencies.training_context import deduct_training_credits_if_applicable
 from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.talk_back_attempt import (
@@ -85,6 +86,9 @@ async def submit_response(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="profile_id is required for Talk Back",
         )
+
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(user, "talk_back")
 
     if not user.can_access_premium_features():
         success, remaining = await credit_service.deduct_credits(

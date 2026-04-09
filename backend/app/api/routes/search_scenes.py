@@ -20,6 +20,7 @@ from app.models.content import Content
 from app.models.content_embedding import SceneSearchQuery
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
+from app.api.dependencies.training_context import deduct_training_credits_if_applicable
 from app.services.feature_flags import is_feature_enabled
 from app.services.olorin.search.searcher import scene_search
 
@@ -68,6 +69,10 @@ async def search_scenes(
     # Apply tiered rate limiting
     rate_limit = get_rate_limit_for_user(current_user)
     await limiter.check_limit(http_request, rate_limit)
+
+    # Training portal credit deduction (no-op for B2C users)
+    if current_user:
+        await deduct_training_credits_if_applicable(current_user, "search")
 
     try:
         # Feature flag check - scene search must be enabled

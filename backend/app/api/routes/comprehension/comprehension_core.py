@@ -6,6 +6,7 @@ Endpoints for scene-triggered comprehension questions.
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
+from app.api.dependencies.training_context import deduct_training_credits_if_applicable
 from app.core.config import settings
 from app.core.database import db
 from app.core.logging_config import get_logger
@@ -63,6 +64,9 @@ async def get_comprehension_question(
         HTTPException: 503 if feature disabled
     """
     check_comprehension_enabled()
+
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(user, "comprehension")
 
     # Check credits for non-premium users
     if not user.can_access_premium_features():

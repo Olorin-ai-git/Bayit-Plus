@@ -27,6 +27,7 @@ from app.models.pause_ask_job import (
     TERMINAL_STATUSES,
 )
 from app.models.user import User
+from app.api.dependencies.training_context import deduct_training_credits_if_applicable
 from app.services.beta.credit_service import credit_service
 from app.services.vod_interaction.pause_ask_orchestrator import (
     pause_ask_orchestrator,
@@ -85,6 +86,12 @@ async def submit_job(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Pause & Ask feature is disabled",
         )
+
+    # Training portal credit deduction (no-op for B2C users)
+    training_feature = (
+        "pause_ask_lipsync" if body.mode == "lip_sync" else "pause_ask_voice"
+    )
+    await deduct_training_credits_if_applicable(current_user, training_feature)
 
     # Credit check and deduction
     is_lip_sync = body.mode == "lip_sync"
