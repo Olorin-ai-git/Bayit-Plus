@@ -53,6 +53,12 @@ class AcceptInviteRequest(BaseModel):
     password: str = Field(min_length=8)
     display_name: str = Field(min_length=1, max_length=100)
 
+class AcceptInviteOAuthRequest(BaseModel):
+    token: str
+    id_token: str
+    provider: str = Field(pattern=r"^(google|apple)$")
+    display_name: str | None = Field(default=None, max_length=100)
+
 class GoogleOAuthRequest(BaseModel):
     id_token: str
     mode: str = Field(default="login", pattern=r"^(login|register)$")
@@ -232,6 +238,50 @@ async def accept_invite(body: AcceptInviteRequest):
     }
 
 
+@router.post("/accept-invite-oauth")
+async def accept_invite_oauth(body: AcceptInviteOAuthRequest):
+    """Accept an invitation using Google or Apple OAuth."""
+    user = await TrainingUser.find_one({"invite_token": body.token})
+    if not user or user.status != "pending":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired invite token",
+        )
+
+    if user.invited_at and (
+        datetime.now(timezone.utc) - user.invited_at
+    ).days > INVITE_EXPIRE_DAYS:
+        user.invite_token = None
+        await user.save()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invitation has expired. Ask your admin to resend.",
+        )
+
+    oauth_email = await _verify_oauth_email(body.provider, body.id_token)
+
+    if oauth_email.lower() != user.email.lower():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Please sign in with the email address this invitation was sent to.",
+        )
+
+    user.password_hash = "!oauth"
+    user.display_name = body.display_name or user.display_name
+    user.status = "active"
+    user.invite_token = None
+    user.activated_at = datetime.now(timezone.utc)
+    user.last_oauth_provider = body.provider
+    await user.save()
+    logger.info("Training invite accepted via OAuth (%s): %s", body.provider, user.email)
+    token = create_training_token(user)
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
+
+
 @router.post("/resend-invite/{user_id}")
 async def resend_invite(
     user_id: str,
@@ -307,6 +357,56 @@ async def _send_invite_email(
         subject=f"{inviter_name} invited you to {org_name}",
         html_content=html_content,
     )
+
+
+async def _verify_oauth_email(provider: str, id_token: str) -> str:
+    """Verify an OAuth token and return the authenticated email."""
+    if provider == "google":
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.get(
+                "https://oauth2.googleapis.com/tokeninfo",
+                params={"id_token": id_token},
+            )
+        if resp.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Google ID token",
+            )
+        email = resp.json().get("email")
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Google account has no email",
+            )
+        return email
+
+    # Apple: decode JWT payload (same logic as login_apple)
+    try:
+        parts = id_token.split(".")
+        if len(parts) != 3:
+            raise ValueError("Invalid JWT structure")
+        payload_b64 = parts[1]
+        padding = 4 - len(payload_b64) % 4
+        if padding != 4:
+            payload_b64 += "=" * padding
+        claims = json.loads(base64.urlsafe_b64decode(payload_b64))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Apple identity token",
+        )
+    if claims.get("iss") != "https://appleid.apple.com":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token issuer",
+        )
+    email = claims.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Apple account has no email",
+        )
+    return email
 
 
 @router.post("/refresh")
