@@ -20,7 +20,12 @@ COPY packages ./packages
 COPY backend ./backend
 
 WORKDIR /app/backend
-RUN poetry config virtualenvs.create false && \
+# Strip GPU/ML deps (torch, CUDA) that the training service does not need.
+# Pin beanie to 2.0.x to stay compatible with motor 3.x.
+RUN sed -i '/demucs/d; /torchcodec/d; /spacy/d' pyproject.toml && \
+    sed -i 's/beanie (>=2.0.1,<3.0.0)/beanie (>=2.0.1,<2.1.0)/' pyproject.toml && \
+    rm -f poetry.lock && \
+    poetry config virtualenvs.create false && \
     poetry install --only main --no-interaction --no-ansi
 
 FROM python:3.11-slim

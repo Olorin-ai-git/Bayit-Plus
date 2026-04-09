@@ -17,14 +17,17 @@ from app.api.routes.training.dependencies import (
     validate_refresh_token,
     get_current_training_user, require_training_admin,
 )
+from app.core.config import settings
 from app.services.olorin.partner_service import partner_service
 from app.services.training.sample_content import seed_sample_content
+from app.services.bayit_email_service import get_bayit_email_service
 from starlette.requests import Request
 from app.core.rate_limiter import limiter, RATE_LIMITS
 
 logger = logging.getLogger(__name__)
 
 TRIAL_DURATION_DAYS, TRIAL_CREDIT_LIMIT, TRIAL_SEAT_LIMIT = 14, 50, 25
+INVITE_EXPIRE_DAYS = 7
 
 router = APIRouter(prefix="/auth", tags=["training-auth"])
 
@@ -177,6 +180,7 @@ async def invite_employees(
             invited_at=datetime.now(timezone.utc),
         )
         await user.insert()
+        await _send_invite_email(email, invite_token, admin.display_name)
         invited.append({"email": email, "status": "pending"})
         logger.info("Training invite sent: %s -> %s", email, admin.partner_id)
 
@@ -192,6 +196,16 @@ async def accept_invite(body: AcceptInviteRequest):
             detail="Invalid or expired invite token",
         )
 
+    if user.invited_at and (
+        datetime.now(timezone.utc) - user.invited_at
+    ).days > INVITE_EXPIRE_DAYS:
+        user.invite_token = None
+        await user.save()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invitation has expired. Ask your admin to resend.",
+        )
+
     user.password_hash = get_password_hash(body.password)
     user.display_name = body.display_name
     user.status = "active"
@@ -204,6 +218,73 @@ async def accept_invite(body: AcceptInviteRequest):
         "refresh_token": create_training_refresh_token(user),
         "user": _user_response(user),
     }
+
+
+@router.post("/resend-invite/{user_id}")
+async def resend_invite(
+    user_id: str,
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Resend an invitation email with a fresh token."""
+    from beanie import PydanticObjectId
+
+    member = await TrainingUser.get(PydanticObjectId(user_id))
+    if not member or member.partner_id != admin.partner_id:
+        raise HTTPException(status_code=404, detail="Member not found")
+    if member.status != "pending":
+        raise HTTPException(status_code=400, detail="User is not pending")
+
+    member.invite_token = secrets.token_urlsafe(32)
+    member.invited_at = datetime.now(timezone.utc)
+    await member.save()
+    await _send_invite_email(member.email, member.invite_token, admin.display_name)
+    logger.info("Training invite resent: %s", member.email)
+    return {"resent": True}
+
+
+@router.post("/revoke-invite/{user_id}")
+async def revoke_invite(
+    user_id: str,
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Revoke a pending invitation (deletes the user record)."""
+    from beanie import PydanticObjectId
+
+    member = await TrainingUser.get(PydanticObjectId(user_id))
+    if not member or member.partner_id != admin.partner_id:
+        raise HTTPException(status_code=404, detail="Member not found")
+    if member.status != "pending":
+        raise HTTPException(status_code=400, detail="User is not pending")
+
+    await member.delete()
+    logger.info("Training invite revoked: %s", member.email)
+    return {"revoked": True}
+
+
+async def _send_invite_email(
+    email: str, invite_token: str, inviter_name: str
+) -> None:
+    """Send invitation email via Resend."""
+    portal_url = settings.TRAINING_PORTAL_URL
+    if not portal_url:
+        logger.warning("TRAINING_PORTAL_URL not set, skipping invite email")
+        return
+    accept_url = f"{portal_url}/accept-invite?token={invite_token}"
+    email_svc = get_bayit_email_service()
+    await email_svc.send_generic_email(
+        to_emails=[email],
+        subject=f"{inviter_name} invited you to Olorin Training",
+        html_content=(
+            f"<p>{inviter_name} has invited you to join their team on "
+            f"<strong>Olorin Training</strong>.</p>"
+            f"<p><a href='{accept_url}' style='display:inline-block;"
+            f"padding:12px 24px;background:#a855f7;color:white;"
+            f"border-radius:8px;text-decoration:none;font-weight:bold'>"
+            f"Accept Invitation</a></p>"
+            f"<p style='color:#888;font-size:12px'>"
+            f"This invitation expires in {INVITE_EXPIRE_DAYS} days.</p>"
+        ),
+    )
 
 
 @router.post("/refresh")
