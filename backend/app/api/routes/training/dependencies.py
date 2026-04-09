@@ -165,3 +165,43 @@ async def require_training_teacher_or_admin(
             detail="Teacher or admin access required",
         )
     return user
+
+
+from app.services.training.credit_service import TrainingCreditService
+
+_credit_service: TrainingCreditService | None = None
+
+
+def _get_credit_service() -> TrainingCreditService:
+    """Lazy-init singleton credit service."""
+    global _credit_service
+    if _credit_service is None:
+        _credit_service = TrainingCreditService(settings)
+    return _credit_service
+
+
+async def deduct_training_credits(
+    feature: str,
+    user: TrainingUser,
+) -> int:
+    """
+    Deduct AI credits for a training feature.
+
+    Call this inside route handlers after auth but before
+    the expensive AI operation. Returns credits_remaining.
+
+    Raises:
+        HTTPException 402 if insufficient credits.
+    """
+    svc = _get_credit_service()
+    success, remaining = await svc.deduct(
+        partner_id=user.partner_id,
+        feature=feature,
+    )
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Insufficient AI credits. Upgrade your plan for more credits.",
+            headers={"X-Credits-Remaining": "0"},
+        )
+    return remaining
