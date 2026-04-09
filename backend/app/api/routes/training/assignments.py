@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from app.api.routes.training.dependencies import (
@@ -28,6 +28,7 @@ class CreateAssignmentRequest(BaseModel):
     required: bool = False
     due_date: Optional[datetime] = None
     tags: List[str] = Field(default_factory=list)
+    format_id: Optional[str] = None
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -45,6 +46,7 @@ async def create_assignment(
         existing.required = body.required
         existing.due_date = body.due_date
         existing.tags = body.tags
+        existing.format_id = body.format_id
         existing.updated_at = datetime.now(timezone.utc)
         await existing.save()
         return _assignment_response(existing)
@@ -56,6 +58,7 @@ async def create_assignment(
         required=body.required,
         due_date=body.due_date,
         tags=body.tags,
+        format_id=body.format_id,
         created_by=str(admin.id),
     )
     await assignment.insert()
@@ -80,6 +83,31 @@ async def list_assignments(
 
     return {
         "assignments": [_assignment_response(a) for a in assignments],
+    }
+
+
+@router.get("/me")
+async def get_my_assignments(
+    user: TrainingUser = Depends(get_current_training_user),
+    content_id: Optional[str] = Query(default=None),
+):
+    """Get assignments for the current viewer, optionally filtered."""
+    query: dict = {"partner_id": user.partner_id}
+    if content_id:
+        query["content_id"] = content_id
+
+    assignments = await TrainingAssignment.find(query).to_list()
+
+    user_id = str(user.id)
+    visible = [
+        a for a in assignments
+        if a.assigned_to == "all"
+        or (isinstance(a.assigned_to, list) and user_id in a.assigned_to)
+    ]
+
+    return {
+        "assignments": [_assignment_response(a) for a in visible],
+        "total": len(visible),
     }
 
 
@@ -110,6 +138,7 @@ def _assignment_response(a: TrainingAssignment) -> dict:
         "required": a.required,
         "due_date": a.due_date.isoformat() if a.due_date else None,
         "tags": a.tags,
+        "format_id": a.format_id,
         "created_by": a.created_by,
         "created_at": a.created_at.isoformat(),
     }

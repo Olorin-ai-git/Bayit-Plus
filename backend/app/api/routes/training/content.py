@@ -109,23 +109,41 @@ async def list_content(
             status_map[job.content_id] = job.overall_status
     return {
         "content": [
-            {
-                "content_id": str(c.id),
-                "title": c.title,
-                "description": c.description or "",
-                "tags": c.topic_tags,
-                "stream_url": c.stream_url,
-                "duration": c.duration,
-                "has_subtitles": c.has_subtitles,
-                "thumbnail": c.thumbnail or c.poster_url,
-                "status": _STATUS_DISPLAY_MAP.get(
-                    status_map.get(str(c.id), ""), "ready",
-                ),
-            }
-            for c in items
+            _content_response(c, status_map) for c in items
         ],
         "total": len(items),
     }
+
+
+def _content_response(c: Content, status_map: dict[str, str] | None = None) -> dict:
+    """Serialize a Content document for the training API."""
+    resp = {
+        "content_id": str(c.id),
+        "title": c.title,
+        "description": c.description or "",
+        "tags": c.topic_tags,
+        "stream_url": c.stream_url,
+        "duration": c.duration,
+        "has_subtitles": c.has_subtitles,
+        "thumbnail": c.thumbnail or c.poster_url,
+    }
+    if status_map is not None:
+        resp["status"] = _STATUS_DISPLAY_MAP.get(
+            status_map.get(str(c.id), ""), "ready",
+        )
+    return resp
+
+
+@router.get("/{content_id}")
+async def get_content_item(
+    content_id: str,
+    user: TrainingUser = Depends(get_current_training_user),
+):
+    """Get a single content item by ID."""
+    content = await Content.get(content_id)
+    if not content or content.partner_id != user.partner_id:
+        raise HTTPException(status_code=404, detail="Content not found")
+    return _content_response(content)
 
 
 @router.get("/{content_id}/status")
@@ -182,3 +200,28 @@ async def get_content_chapters(
             for ch in video_chapters.chapters
         ],
     }
+
+
+@router.get("/{content_id}/characters")
+async def get_content_characters(
+    content_id: str,
+    user: TrainingUser = Depends(get_current_training_user),
+):
+    """Get extracted characters/speakers for a content item."""
+    content = await Content.get(content_id)
+    if not content or content.partner_id != user.partner_id:
+        raise HTTPException(status_code=404, detail="Content not found")
+
+    characters = content.interactive_characters or []
+    return {
+        "characters": [
+            _serialize_character(i, c) for i, c in enumerate(characters)
+        ]
+    }
+
+
+def _serialize_character(idx: int, c) -> dict:
+    """Serialize a character from Content.interactive_characters."""
+    if isinstance(c, dict):
+        return {"id": str(idx), "name": c.get("name", ""), "role": c.get("role", "")}
+    return {"id": str(idx), "name": getattr(c, "name", ""), "role": getattr(c, "role", "")}

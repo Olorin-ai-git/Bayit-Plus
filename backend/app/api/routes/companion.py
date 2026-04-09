@@ -72,6 +72,30 @@ class CompanionQuizResponse(BaseModel):
     questions: list[QuizQuestion] = []
 
 
+class VocabularyItem(BaseModel):
+    id: str
+    term: str
+    definition: str
+    usage_example: Optional[str] = None
+    category: Optional[str] = None
+
+
+class CompanionVocabularyResponse(BaseModel):
+    terms: list[VocabularyItem] = []
+
+
+class CulturalReference(BaseModel):
+    id: str
+    term: str
+    explanation: str
+    category: Optional[str] = None
+    origin: Optional[str] = None
+
+
+class CompanionCulturalResponse(BaseModel):
+    references: list[CulturalReference] = []
+
+
 async def _fetch_content(content_id: str) -> Content:
     try:
         content = await Content.get(PydanticObjectId(content_id))
@@ -197,4 +221,101 @@ async def get_companion_quiz(
         return CompanionQuizResponse()
     except anthropic.APIError as e:
         logger.error("Companion quiz AI error", extra={"error": str(e)})
+        raise HTTPException(status_code=502, detail="AI service unavailable")
+
+
+@router.post("/vocabulary", response_model=CompanionVocabularyResponse)
+async def get_companion_vocabulary(
+    request: CompanionRequest,
+    current_user: User = Depends(get_current_active_user),
+) -> CompanionVocabularyResponse:
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(current_user, "companion")
+
+    content = await _fetch_content(request.content_id)
+    summary = _build_content_summary(content)
+
+    prompt = (
+        f"Based on this content:\n{summary}\n\n"
+        "Generate 5-8 key vocabulary terms a viewer should know. "
+        "Return valid JSON with this exact structure:\n"
+        '{"terms": [{"id": "unique-id", "term": "Term",'
+        ' "definition": "Clear definition",'
+        ' "usage_example": "Example sentence using the term",'
+        ' "category": "cultural|historical|linguistic|technical"}]}\n'
+        "Focus on culturally significant words, proper nouns, "
+        "historical references, and domain-specific terminology. "
+        f"Respond in {request.language}. Return ONLY the JSON, no markdown."
+    )
+
+    try:
+        client = _get_client()
+        resp = client.messages.create(
+            model=settings.CLAUDE_MODEL,
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        raw = next((b.text for b in resp.content if b.type == "text"), "{}")
+        data = json.loads(raw)
+        terms = []
+        for t in data.get("terms", []):
+            if not t.get("id"):
+                t["id"] = str(uuid.uuid4())[:8]
+            terms.append(VocabularyItem(**t))
+        return CompanionVocabularyResponse(terms=terms)
+    except json.JSONDecodeError:
+        logger.warning("Companion vocabulary: invalid JSON from AI", extra={
+            "content_id": request.content_id,
+        })
+        return CompanionVocabularyResponse()
+    except anthropic.APIError as e:
+        logger.error("Companion vocabulary AI error", extra={"error": str(e)})
+        raise HTTPException(status_code=502, detail="AI service unavailable")
+
+
+@router.post("/cultural", response_model=CompanionCulturalResponse)
+async def get_cultural_context(
+    request: CompanionRequest,
+    current_user: User = Depends(get_current_active_user),
+) -> CompanionCulturalResponse:
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(current_user, "cultural")
+
+    content = await _fetch_content(request.content_id)
+    summary = _build_content_summary(content)
+
+    prompt = (
+        f"Based on this content:\n{summary}\n\n"
+        "Identify 3-6 cultural references, traditions, or customs "
+        "that appear in this content. "
+        "Return valid JSON with this exact structure:\n"
+        '{"references": [{"id": "unique-id", "term": "Cultural Term",'
+        ' "explanation": "What this means and why it matters",'
+        ' "category": "religious|historical|linguistic|social|culinary|musical",'
+        ' "origin": "Brief origin or background"}]}\n'
+        "Focus on Jewish, Israeli, and Middle Eastern cultural elements. "
+        f"Respond in {request.language}. Return ONLY the JSON, no markdown."
+    )
+
+    try:
+        client = _get_client()
+        resp = client.messages.create(
+            model=settings.CLAUDE_MODEL,
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        raw = next((b.text for b in resp.content if b.type == "text"), "{}")
+        data = json.loads(raw)
+        refs = []
+        for r in data.get("references", []):
+            if not r.get("id"):
+                r["id"] = str(uuid.uuid4())[:8]
+            refs.append(CulturalReference(**r))
+        return CompanionCulturalResponse(references=refs)
+    except json.JSONDecodeError:
+        logger.warning("Companion cultural: invalid JSON from AI",
+                       extra={"content_id": request.content_id})
+        return CompanionCulturalResponse()
+    except anthropic.APIError as e:
+        logger.error("Companion cultural AI error", extra={"error": str(e)})
         raise HTTPException(status_code=502, detail="AI service unavailable")

@@ -26,6 +26,9 @@ class TrainingAssignment(Document):
         description="Completion deadline (None = no deadline)",
     )
     tags: List[str] = Field(default_factory=list)
+    format_id: Optional[str] = Field(
+        default=None, description="Lesson format ID"
+    )
 
     created_by: str = Field(
         ..., description="Admin TrainingUser ID who created this"

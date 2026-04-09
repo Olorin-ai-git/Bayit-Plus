@@ -41,8 +41,14 @@ def register_routes(app: FastAPI) -> None:
     prefix = settings.API_V1_PREFIX
 
     from app.api.routes.training import router as training_router
+    from app.api.routes.companion import router as companion_router
 
     app.include_router(training_router, prefix=prefix, tags=["training"])
+    app.include_router(
+        companion_router,
+        prefix=f"{prefix}/training/companion",
+        tags=["companion"],
+    )
 
     logger.info(
         "Training routes registered",
