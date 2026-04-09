@@ -83,7 +83,7 @@ class DubbingConfigMixin:
     @classmethod
     def validate_animation_provider(cls, v: str) -> str:
         """Validate CHARACTER_ANIMATION_PROVIDER is a supported provider."""
-        valid_providers = ["aurora", "wavespeed", "elevenlabs", "creatify"]
+        valid_providers = ["aurora", "creatify-aurora", "wavespeed", "elevenlabs", "creatify"]
         if v.lower() not in valid_providers:
             raise ValueError(
                 f"CHARACTER_ANIMATION_PROVIDER must be one of {valid_providers}, got '{v}'"
