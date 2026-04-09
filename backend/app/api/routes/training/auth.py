@@ -269,7 +269,7 @@ async def _send_invite_email(
     if not portal_url:
         logger.warning("TRAINING_PORTAL_URL not set, skipping invite email")
         return
-    accept_url = f"{portal_url}/accept-invite?token={invite_token}"
+    accept_url = f"{portal_url}/invite/accept?token={invite_token}"
     email_svc = get_bayit_email_service()
     await email_svc.send_generic_email(
         to_emails=[email],
