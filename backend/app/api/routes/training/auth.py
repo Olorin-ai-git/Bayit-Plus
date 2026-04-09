@@ -85,6 +85,7 @@ async def register(request: Request, body: RegisterRequest):
 
     training_config = TrainingConfig(
         org_display_name=body.org_name,
+        org_tier="trial",
         trial_ends_at=datetime.now(timezone.utc) + timedelta(days=TRIAL_DURATION_DAYS),
         credit_limit_monthly=TRIAL_CREDIT_LIMIT,
         seat_limit=TRIAL_SEAT_LIMIT,
@@ -271,6 +272,7 @@ async def _oauth_register(
 
     training_config = TrainingConfig(
         org_display_name=resolved_org,
+        org_tier="trial",
         trial_ends_at=datetime.now(timezone.utc) + timedelta(days=TRIAL_DURATION_DAYS),
         credit_limit_monthly=TRIAL_CREDIT_LIMIT,
         seat_limit=TRIAL_SEAT_LIMIT,

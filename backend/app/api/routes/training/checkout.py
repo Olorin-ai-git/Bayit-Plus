@@ -97,7 +97,7 @@ async def create_checkout_session(
         logger.error("Stripe session creation failed: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Failed to create checkout session",
+            detail=f"Stripe error: {exc.user_message or str(exc)}",
         )
 
     return {"checkout_url": checkout_session.url}
