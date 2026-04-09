@@ -162,8 +162,11 @@ async def invite_employees(
         {"partner_id": admin.partner_id}
     )
     org_name = "Olorin Training"
-    if partner and getattr(partner, "training_config", None):
-        org_name = partner.training_config.org_display_name or org_name
+    tc = getattr(partner, "training_config", None) if partner else None
+    if isinstance(tc, dict):
+        org_name = tc.get("org_display_name") or org_name
+    elif tc is not None:
+        org_name = getattr(tc, "org_display_name", None) or org_name
     invited = []
     for email in body.emails:
         existing = await TrainingUser.find_one(
@@ -250,8 +253,11 @@ async def resend_invite(
         {"partner_id": admin.partner_id}
     )
     org_name = "Olorin Training"
-    if partner and getattr(partner, "training_config", None):
-        org_name = partner.training_config.org_display_name or org_name
+    tc = getattr(partner, "training_config", None) if partner else None
+    if isinstance(tc, dict):
+        org_name = tc.get("org_display_name") or org_name
+    elif tc is not None:
+        org_name = getattr(tc, "org_display_name", None) or org_name
     await _send_invite_email(
         member.email, member.invite_token, admin.display_name, org_name,
     )
