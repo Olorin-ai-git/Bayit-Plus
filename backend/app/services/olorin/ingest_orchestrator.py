@@ -7,12 +7,15 @@ trivia + search indexing, all tracked per-capability in an IngestJob.
 
 import asyncio
 import uuid
+from datetime import datetime, timezone
 
+from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.content import Content
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.metering_service import metering_service
+from app.services.olorin.video_transcriber import transcribe_video
 
 logger = get_logger(__name__)
 
@@ -133,11 +136,57 @@ async def _run_transcription(
     content: Content,
     partner: IntegrationPartner,
 ) -> str:
-    """Stage 0: Transcribe video via ElevenLabs Scribe."""
-    from app.services.olorin.video_transcriber import transcribe_video
+    """Stage 0: Transcribe video via ElevenLabs Scribe.
 
+    Also enforces per-tier duration limits:
+      trial        -> TRAINING_MAX_DURATION_TRIAL_SECONDS (default 1800)
+      team         -> TRAINING_MAX_DURATION_TEAM_SECONDS  (default 7200)
+      organization -> unlimited (0)
+
+    If duration exceeds the limit, all capabilities are marked failed and "" is
+    returned so the pipeline stops. The caller (run_pipeline) must NOT increment
+    credits_used in this case.
+    """
     try:
         result = await transcribe_video(job.video_url)
+
+        # Duration gate -- check after transcription because that's when we
+        # first know the real duration. ElevenLabs is billed for this call
+        # regardless, but all downstream LLM stages are skipped on failure.
+        tc = partner.training_config
+        tier = (
+            tc.get("org_tier", "trial") if isinstance(tc, dict)
+            else getattr(tc, "org_tier", "trial")
+        )
+        _TIER_LIMITS = {
+            "trial": settings.TRAINING_MAX_DURATION_TRIAL_SECONDS,
+            "team": settings.TRAINING_MAX_DURATION_TEAM_SECONDS,
+        }
+        max_seconds = _TIER_LIMITS.get(tier, 0)  # 0 = unlimited (organization)
+
+        if max_seconds > 0 and result.duration_seconds > max_seconds:
+            limit_min = max_seconds // 60
+            actual_min = int(result.duration_seconds / 60)
+            job.error_detail = (
+                f"Video too long ({actual_min} min). "
+                f"{tier.title()} tier limit: {limit_min} min. "
+                "Upgrade your plan or use a shorter video."
+            )
+            for cap in job.capabilities:
+                job.capabilities[cap] = "failed"
+            job.updated_at = datetime.now(timezone.utc)
+            await job.save()
+            logger.warning(
+                "Video rejected: duration exceeds tier limit",
+                extra={
+                    "job_id": job.job_id,
+                    "duration_seconds": result.duration_seconds,
+                    "max_seconds": max_seconds,
+                    "tier": tier,
+                },
+            )
+            return ""
+
         if result.full_text:
             content.transcript = result.full_text
             content.transcript_segments = [
