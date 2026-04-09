@@ -178,3 +178,45 @@ def _avg_quiz(record: TrainingProgress) -> float | None:
         if s.max_score > 0
     ]
     return round(sum(scores) / len(scores), 2) if scores else None
+
+
+def _aggregate_departments(
+    employees: list[dict],
+) -> list[dict]:
+    """Aggregate employee analytics by department."""
+    dept_map: dict[str, list[dict]] = {}
+    for emp in employees:
+        dept = emp.get("department") or "Unassigned"
+        dept_map.setdefault(dept, []).append(emp)
+
+    departments = []
+    for dept_name, members in sorted(dept_map.items()):
+        quiz_scores = [
+            m["avg_quiz_score"]
+            for m in members
+            if m.get("avg_quiz_score") is not None
+        ]
+        departments.append({
+            "name": dept_name,
+            "employee_count": len(members),
+            "videos_started": sum(m["videos_started"] for m in members),
+            "videos_completed": sum(m["videos_completed"] for m in members),
+            "avg_quiz_score": (
+                round(sum(quiz_scores) / len(quiz_scores), 2)
+                if quiz_scores else None
+            ),
+            "total_watch_time_seconds": sum(
+                m["total_watch_time_seconds"] for m in members
+            ),
+        })
+    return departments
+
+
+@router.get("/analytics/departments")
+async def get_department_analytics(
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Get department-level aggregated analytics."""
+    analytics = await get_analytics(admin)
+    departments = _aggregate_departments(analytics["employees"])
+    return {"departments": departments}
