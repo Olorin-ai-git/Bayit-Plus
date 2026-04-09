@@ -21,6 +21,7 @@ import httpx
 from app.core.config import settings
 from app.core.creatify_client import creatify_client
 from app.core.fal_aurora_client import fal_aurora_client
+from app.core.wavespeed_client import wavespeed_client
 from app.core.logging_config import get_logger
 from app.core.storage import storage_service
 from app.models.vod_interaction import AnimatedResponse
@@ -90,6 +91,11 @@ class CharacterAnimatorService:
                 character_name, dialogue_text, character_frame_url, voice_id,
                 cancel_event=cancel_event,
             )
+        if self.provider == "wavespeed":
+            return await self._animate_with_wavespeed(
+                character_name, dialogue_text, character_frame_url, voice_id,
+                cancel_event=cancel_event,
+            )
         if self.provider in ("creatify", "elevenlabs"):
             return await self._animate_with_creatify(
                 character_name, dialogue_text, character_frame_url, voice_id,
@@ -119,6 +125,39 @@ class CharacterAnimatorService:
 
         logger.info(
             "Aurora character animation completed",
+            extra={
+                "character_name": character_name,
+                "duration": duration,
+                "video_url": video_url,
+            },
+        )
+        return AnimatedResponse(
+            audio_url=audio_url, video_url=video_url, duration=duration,
+        )
+
+    async def _animate_with_wavespeed(
+        self,
+        character_name: str,
+        dialogue_text: str,
+        character_frame_url: str,
+        voice_id: str,
+        cancel_event: "asyncio.Event | None" = None,
+    ) -> AnimatedResponse:
+        """Lip-sync via WaveSpeedAI daVinci-MagiHuman."""
+        audio_url = await self._generate_tts(dialogue_text, voice_id, character_name)
+        duration = await self._get_audio_duration(audio_url)
+
+        public_audio = await self._ensure_public_url(audio_url)
+        public_image = await self._ensure_public_url(character_frame_url)
+
+        video_url = await wavespeed_client.create_lipsync(
+            image_url=public_image,
+            audio_url=public_audio,
+            cancel_event=cancel_event,
+        )
+
+        logger.info(
+            "WaveSpeed character animation completed",
             extra={
                 "character_name": character_name,
                 "duration": duration,
