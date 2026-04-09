@@ -202,28 +202,36 @@ async def _oauth_login(email: str) -> dict:
     return {"token": token, "user": _user_response(user)}
 
 
+def _org_name_from_email(email: str) -> str:
+    """Derive a default org name from email domain."""
+    domain = email.split("@")[1] if "@" in email else email
+    name_part = domain.split(".")[0]
+    return name_part.capitalize()
+
+
 async def _oauth_register(
-    email: str, org_name: str, display_name: str
+    email: str, org_name: str | None, display_name: str
 ) -> dict:
     """Create a new training org via OAuth. If user exists, fall back to login."""
     existing = await TrainingUser.find_one({"email": email})
     if existing:
         return await _oauth_login(email)
 
-    slug = org_name.lower().replace(" ", "-")[:30]
+    resolved_org = org_name or _org_name_from_email(email)
+    slug = resolved_org.lower().replace(" ", "-")[:30]
     partner_id = f"training-{slug}-{secrets.token_hex(4)}"
 
     partner, _api_key = await partner_service.create_partner(
         partner_id=partner_id,
-        name=org_name,
-        name_en=org_name,
+        name=resolved_org,
+        name_en=resolved_org,
         contact_email=email,
         billing_tier="training",
         capabilities=["video_ingest", "pause_ask", "subtitles", "trivia"],
     )
 
     training_config = TrainingConfig(
-        org_display_name=org_name,
+        org_display_name=resolved_org,
         trial_ends_at=datetime.now(timezone.utc) + timedelta(days=TRIAL_DURATION_DAYS),
         credit_limit_monthly=TRIAL_CREDIT_LIMIT,
         seat_limit=TRIAL_SEAT_LIMIT,
@@ -250,7 +258,7 @@ async def _oauth_register(
         "user": _user_response(user),
         "organization": {
             "partner_id": partner_id,
-            "org_name": org_name,
+            "org_name": resolved_org,
             "tier": training_config.org_tier,
             "credits_remaining": training_config.credit_limit_monthly,
             "trial_ends_at": (
@@ -285,11 +293,6 @@ async def login_google(body: GoogleOAuthRequest):
         )
 
     if body.mode == "register":
-        if not body.org_name:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="org_name is required for registration",
-            )
         display = body.display_name or token_info.get("name", email.split("@")[0])
         result = await _oauth_register(email, body.org_name, display)
         from starlette.responses import JSONResponse
@@ -328,11 +331,6 @@ async def login_apple(body: AppleOAuthRequest):
         )
 
     if body.mode == "register":
-        if not body.org_name:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="org_name is required for registration",
-            )
         display = body.display_name or body.full_name or email.split("@")[0]
         result = await _oauth_register(email, body.org_name, display)
         from starlette.responses import JSONResponse
