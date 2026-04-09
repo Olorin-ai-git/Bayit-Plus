@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.core.security import get_password_hash
 from app.models.training_user import TrainingUser
 from app.services.bayit_email_service import get_bayit_email_service
+from app.services.email_templates import get_template_renderer
 
 logger = logging.getLogger(__name__)
 
@@ -42,15 +43,18 @@ async def forgot_password(body: ForgotPasswordRequest):
 
         portal_url = settings.TRAINING_PORTAL_URL
         if portal_url:
-            email_svc = get_bayit_email_service()
             reset_url = f"{portal_url}/reset-password?token={reset_token}"
+            renderer = get_template_renderer()
+            html_content = renderer.render("training_password_reset.html", {
+                "reset_url": reset_url,
+                "expire_hours": RESET_TOKEN_EXPIRE_HOURS,
+                "current_year": datetime.now(timezone.utc).year,
+            })
+            email_svc = get_bayit_email_service()
             await email_svc.send_generic_email(
                 to_emails=[user.email],
                 subject="Reset your Olorin Training password",
-                html_content=(
-                    f"<p>Click <a href='{reset_url}'>here</a> to reset your password. "
-                    f"This link expires in {RESET_TOKEN_EXPIRE_HOURS} hours.</p>"
-                ),
+                html_content=html_content,
             )
         logger.info("Password reset requested for training user", extra={"email": body.email})
     return {"message": "If this email is registered, a reset link has been sent."}

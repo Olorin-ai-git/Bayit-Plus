@@ -21,6 +21,7 @@ from app.core.config import settings
 from app.services.olorin.partner_service import partner_service
 from app.services.training.sample_content import seed_sample_content
 from app.services.bayit_email_service import get_bayit_email_service
+from app.services.email_templates import get_template_renderer
 from starlette.requests import Request
 from app.core.rate_limiter import limiter, RATE_LIMITS
 
@@ -157,6 +158,12 @@ async def invite_employees(
     admin: TrainingUser = Depends(require_training_admin),
 ):
     """Invite employees to the training organization."""
+    partner = await IntegrationPartner.find_one(
+        {"partner_id": admin.partner_id}
+    )
+    org_name = "Olorin Training"
+    if partner and getattr(partner, "training_config", None):
+        org_name = partner.training_config.org_display_name or org_name
     invited = []
     for email in body.emails:
         existing = await TrainingUser.find_one(
@@ -180,7 +187,9 @@ async def invite_employees(
             invited_at=datetime.now(timezone.utc),
         )
         await user.insert()
-        await _send_invite_email(email, invite_token, admin.display_name)
+        await _send_invite_email(
+            email, invite_token, admin.display_name, org_name,
+        )
         invited.append({"email": email, "status": "pending"})
         logger.info("Training invite sent: %s -> %s", email, admin.partner_id)
 
@@ -237,7 +246,15 @@ async def resend_invite(
     member.invite_token = secrets.token_urlsafe(32)
     member.invited_at = datetime.now(timezone.utc)
     await member.save()
-    await _send_invite_email(member.email, member.invite_token, admin.display_name)
+    partner = await IntegrationPartner.find_one(
+        {"partner_id": admin.partner_id}
+    )
+    org_name = "Olorin Training"
+    if partner and getattr(partner, "training_config", None):
+        org_name = partner.training_config.org_display_name or org_name
+    await _send_invite_email(
+        member.email, member.invite_token, admin.display_name, org_name,
+    )
     logger.info("Training invite resent: %s", member.email)
     return {"resent": True}
 
@@ -262,28 +279,27 @@ async def revoke_invite(
 
 
 async def _send_invite_email(
-    email: str, invite_token: str, inviter_name: str
+    email: str, invite_token: str, inviter_name: str, org_name: str,
 ) -> None:
-    """Send invitation email via Resend."""
+    """Send invitation email via Resend using the training_invitation template."""
     portal_url = settings.TRAINING_PORTAL_URL
     if not portal_url:
         logger.warning("TRAINING_PORTAL_URL not set, skipping invite email")
         return
     accept_url = f"{portal_url}/invite/accept?token={invite_token}"
+    renderer = get_template_renderer()
+    html_content = renderer.render("training_invitation.html", {
+        "inviter_name": inviter_name,
+        "org_name": org_name,
+        "accept_url": accept_url,
+        "expire_days": INVITE_EXPIRE_DAYS,
+        "current_year": datetime.now(timezone.utc).year,
+    })
     email_svc = get_bayit_email_service()
     await email_svc.send_generic_email(
         to_emails=[email],
-        subject=f"{inviter_name} invited you to Olorin Training",
-        html_content=(
-            f"<p>{inviter_name} has invited you to join their team on "
-            f"<strong>Olorin Training</strong>.</p>"
-            f"<p><a href='{accept_url}' style='display:inline-block;"
-            f"padding:12px 24px;background:#a855f7;color:white;"
-            f"border-radius:8px;text-decoration:none;font-weight:bold'>"
-            f"Accept Invitation</a></p>"
-            f"<p style='color:#888;font-size:12px'>"
-            f"This invitation expires in {INVITE_EXPIRE_DAYS} days.</p>"
-        ),
+        subject=f"{inviter_name} invited you to {org_name}",
+        html_content=html_content,
     )
 
 
