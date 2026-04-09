@@ -107,15 +107,65 @@ async def list_content(
     for job in jobs:
         if job.content_id not in status_map:
             status_map[job.content_id] = job.overall_status
+    # Build chapter count map for warnings
+    chapter_count_map: dict[str, int] = {}
+    for cid in content_ids:
+        vc = await VideoChapters.get_for_content(cid)
+        chapter_count_map[cid] = len(vc.chapters) if vc else 0
     return {
         "content": [
-            _content_response(c, status_map) for c in items
+            _content_response(c, status_map, chapter_count_map.get(str(c.id)))
+            for c in items
         ],
         "total": len(items),
     }
 
 
-def _content_response(c: Content, status_map: dict[str, str] | None = None) -> dict:
+def _parse_duration_seconds(duration_str: str | None) -> int:
+    """Parse 'H:MM:SS' or 'M:SS' duration string to total seconds."""
+    if not duration_str:
+        return 0
+    parts = duration_str.split(":")
+    try:
+        if len(parts) == 3:
+            return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+        if len(parts) == 2:
+            return int(parts[0]) * 60 + int(parts[1])
+    except (ValueError, IndexError):
+        pass
+    return 0
+
+
+def _compute_warnings(
+    chapter_count: int,
+    duration_str: str | None,
+) -> list[dict[str, str]]:
+    """Compute warning codes based on chapter count and video duration."""
+    warnings: list[dict[str, str]] = []
+    if chapter_count == 0:
+        warnings.append({
+            "code": "no_chapters",
+            "message": (
+                "This video produced no chapter markers. "
+                "Chapter-dependent features (chapter navigation, "
+                "chapter-locked progression, chapter-boundary quizzes) "
+                "will be disabled for trainees."
+            ),
+        })
+    elif chapter_count <= 2:
+        duration_s = _parse_duration_seconds(duration_str)
+        if duration_s > 600:  # > 10 minutes
+            warnings.append({
+                "code": "few_chapters",
+                "message": (
+                    "This video has very few chapter markers. "
+                    "Some lesson formats may not work as designed."
+                ),
+            })
+    return warnings
+
+
+def _content_response(c: Content, status_map: dict[str, str] | None = None, chapter_count: int | None = None) -> dict:
     """Serialize a Content document for the training API."""
     resp = {
         "content_id": str(c.id),
@@ -131,6 +181,10 @@ def _content_response(c: Content, status_map: dict[str, str] | None = None) -> d
         resp["status"] = _STATUS_DISPLAY_MAP.get(
             status_map.get(str(c.id), ""), "ready",
         )
+    if chapter_count is not None:
+        warnings = _compute_warnings(chapter_count, c.duration)
+        if warnings:
+            resp["warnings"] = warnings
     return resp
 
 
