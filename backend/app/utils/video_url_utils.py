@@ -28,8 +28,11 @@ _OEMBED_HOSTS = {
 _DIRECT_VIDEO_EXTS = {".mp4", ".webm", ".mov", ".avi", ".mkv"}
 
 
+_ALLOWED_VIDEO_HOSTS = set(_OEMBED_HOSTS.keys())
+
+
 def validate_video_url(url: str) -> Tuple[bool, str]:
-    """Validate a video URL — any http/https URL is accepted."""
+    """Validate a video URL — only known video platforms and direct video files."""
     if not url or not url.strip():
         return False, "URL is required"
     parsed = urlparse(url.strip())
@@ -38,7 +41,17 @@ def validate_video_url(url: str) -> Tuple[bool, str]:
     host = (parsed.hostname or "").lower()
     if not host:
         return False, "Invalid URL"
-    return True, ""
+    # Check known video platforms
+    if host in _ALLOWED_VIDEO_HOSTS:
+        return True, ""
+    # Check direct video file extensions (ignore query params)
+    path_lower = parsed.path.lower()
+    if any(path_lower.endswith(ext) for ext in _DIRECT_VIDEO_EXTS):
+        return True, ""
+    return False, (
+        "Only YouTube, Vimeo, Dailymotion, or direct video file URLs "
+        "(.mp4, .webm, .mov, .avi, .mkv) are accepted."
+    )
 
 
 def get_oembed_url(video_url: str) -> Optional[str]:
