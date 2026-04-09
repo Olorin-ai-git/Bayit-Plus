@@ -8,6 +8,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.core.config import settings
+from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingUser
 
 logger = logging.getLogger(__name__)
@@ -72,12 +73,32 @@ async def get_current_training_user(
 async def require_training_admin(
     user: TrainingUser = Depends(get_current_training_user),
 ) -> TrainingUser:
-    """Require the training user to be an admin."""
+    """Require admin role and an active trial or paid subscription."""
     if user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
         )
+    partner = await IntegrationPartner.find_one({"partner_id": user.partner_id})
+    if partner:
+        tc = partner.training_config or {}
+        trial_ends = (
+            tc.get("trial_ends_at") if isinstance(tc, dict)
+            else getattr(tc, "trial_ends_at", None)
+        )
+        subscription = (
+            tc.get("stripe_subscription_id") if isinstance(tc, dict)
+            else getattr(tc, "stripe_subscription_id", None)
+        )
+        if (
+            trial_ends is not None
+            and trial_ends < datetime.now(timezone.utc)
+            and not subscription
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail="Trial expired. Upgrade your plan to continue.",
+            )
     return user
 
 
