@@ -17,6 +17,7 @@ security = HTTPBearer()
 
 TRAINING_TOKEN_EXPIRE_HOURS = 24
 INVITE_TOKEN_EXPIRE_HOURS = 168  # 7 days
+REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 
 def create_training_token(user: TrainingUser) -> str:
@@ -35,6 +36,61 @@ def create_training_token(user: TrainingUser) -> str:
     return jwt.encode(
         payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
+
+
+def create_training_refresh_token(user: TrainingUser) -> str:
+    """Create a long-lived refresh JWT for a training platform user."""
+    expire = datetime.now(timezone.utc) + timedelta(
+        days=REFRESH_TOKEN_EXPIRE_DAYS
+    )
+    payload = {
+        "sub": str(user.id),
+        "partner_id": user.partner_id,
+        "iss": "training.olorin.ai",
+        "token_type": "refresh",
+        "exp": expire,
+    }
+    return jwt.encode(
+        payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
+
+
+async def validate_refresh_token(refresh_token: str) -> TrainingUser:
+    """Validate a refresh JWT and return the user."""
+    try:
+        payload = jwt.decode(
+            refresh_token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+        )
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+        )
+    if payload.get("iss") != "training.olorin.ai":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token issuer",
+        )
+    if payload.get("token_type") != "refresh":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not a refresh token",
+        )
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+        )
+    user = await TrainingUser.get(user_id)
+    if not user or user.status == "deactivated":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or deactivated",
+        )
+    return user
 
 
 async def get_current_training_user(

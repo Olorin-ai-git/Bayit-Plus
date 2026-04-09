@@ -13,10 +13,14 @@ from app.core.security import get_password_hash, verify_password
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingConfig, TrainingUser
 from app.api.routes.training.dependencies import (
-    create_training_token, get_current_training_user, require_training_admin,
+    create_training_token, create_training_refresh_token,
+    validate_refresh_token,
+    get_current_training_user, require_training_admin,
 )
 from app.services.olorin.partner_service import partner_service
 from app.services.training.sample_content import seed_sample_content
+from starlette.requests import Request
+from app.core.rate_limiter import limiter, RATE_LIMITS
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +63,13 @@ class AppleOAuthRequest(BaseModel):
     org_name: str | None = Field(default=None, min_length=2, max_length=100)
     display_name: str | None = Field(default=None, max_length=100)
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterRequest):
+@limiter.limit(RATE_LIMITS.get("register", "3/hour"))
+async def register(request: Request, body: RegisterRequest):
     """Register a new training organization and admin user."""
     slug = body.org_name.lower().replace(" ", "-")[:30]
     partner_id = f"training-{slug}-{secrets.token_hex(4)}"
@@ -98,19 +106,25 @@ async def register(body: RegisterRequest):
     await user.insert()
     logger.info("Training org registered: %s", partner_id)
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user), "organization": {
-        "partner_id": partner_id, "org_name": body.org_name,
-        "tier": training_config.org_tier,
-        "credits_remaining": training_config.credit_limit_monthly,
-        "trial_ends_at": (
-            training_config.trial_ends_at.isoformat()
-            if training_config.trial_ends_at else None
-        ),
-        "stripe_subscription_id": None,
-    }}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+        "organization": {
+            "partner_id": partner_id, "org_name": body.org_name,
+            "tier": training_config.org_tier,
+            "credits_remaining": training_config.credit_limit_monthly,
+            "trial_ends_at": (
+                training_config.trial_ends_at.isoformat()
+                if training_config.trial_ends_at else None
+            ),
+            "stripe_subscription_id": None,
+        },
+    }
 
 @router.post("/login")
-async def login(body: LoginRequest):
+@limiter.limit(RATE_LIMITS.get("login", "5/minute"))
+async def login(request: Request, body: LoginRequest):
     """Login an existing training user."""
     user = await TrainingUser.find_one({"email": body.email})
     if not user or not verify_password(body.password, user.password_hash):
@@ -127,7 +141,11 @@ async def login(body: LoginRequest):
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user)}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
 
 @router.post("/invite", status_code=status.HTTP_201_CREATED)
 async def invite_employees(
@@ -180,7 +198,24 @@ async def accept_invite(body: AcceptInviteRequest):
     user.activated_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user)}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
+
+
+@router.post("/refresh")
+async def refresh_token(body: RefreshRequest):
+    """Issue new access + refresh tokens from a valid refresh token."""
+    user = await validate_refresh_token(body.refresh_token)
+    user.last_login_at = datetime.now(timezone.utc)
+    await user.save()
+    return {
+        "token": create_training_token(user),
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
 
 
 async def _oauth_login(email: str) -> dict:
@@ -199,7 +234,11 @@ async def _oauth_login(email: str) -> dict:
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
-    return {"token": token, "user": _user_response(user)}
+    return {
+        "token": token,
+        "refresh_token": create_training_refresh_token(user),
+        "user": _user_response(user),
+    }
 
 
 def _org_name_from_email(email: str) -> str:
@@ -211,11 +250,11 @@ def _org_name_from_email(email: str) -> str:
 
 async def _oauth_register(
     email: str, org_name: str | None, display_name: str
-) -> dict:
+) -> tuple[dict, bool]:
     """Create a new training org via OAuth. If user exists, fall back to login."""
     existing = await TrainingUser.find_one({"email": email})
     if existing:
-        return await _oauth_login(email)
+        return await _oauth_login(email), False
 
     resolved_org = org_name or _org_name_from_email(email)
     slug = resolved_org.lower().replace(" ", "-")[:30]
@@ -255,6 +294,7 @@ async def _oauth_register(
     token = create_training_token(user)
     return {
         "token": token,
+        "refresh_token": create_training_refresh_token(user),
         "user": _user_response(user),
         "organization": {
             "partner_id": partner_id,
@@ -268,11 +308,12 @@ async def _oauth_register(
             ),
             "stripe_subscription_id": None,
         },
-    }
+    }, True
 
 
 @router.post("/google")
-async def login_google(body: GoogleOAuthRequest):
+@limiter.limit(RATE_LIMITS.get("oauth_callback", "10/minute"))
+async def login_google(request: Request, body: GoogleOAuthRequest):
     """Login or register with a Google ID token from Firebase popup."""
     async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.get(
@@ -294,15 +335,23 @@ async def login_google(body: GoogleOAuthRequest):
 
     if body.mode == "register":
         display = body.display_name or token_info.get("name", email.split("@")[0])
-        result = await _oauth_register(email, body.org_name, display)
+        result, is_new = await _oauth_register(email, body.org_name, display)
         from starlette.responses import JSONResponse
-        return JSONResponse(content=result, status_code=status.HTTP_201_CREATED)
+        return JSONResponse(
+            content=result,
+            status_code=status.HTTP_201_CREATED if is_new else status.HTTP_200_OK,
+        )
 
-    return await _oauth_login(email)
+    result = await _oauth_login(email)
+    await TrainingUser.find_one({"email": email}).update(
+        {"$set": {"last_oauth_provider": "google"}}
+    )
+    return result
 
 
 @router.post("/apple")
-async def login_apple(body: AppleOAuthRequest):
+@limiter.limit(RATE_LIMITS.get("oauth_callback", "10/minute"))
+async def login_apple(request: Request, body: AppleOAuthRequest):
     """Login or register with an Apple identity token from Firebase popup."""
     try:
         parts = body.identity_token.split(".")
@@ -332,11 +381,18 @@ async def login_apple(body: AppleOAuthRequest):
 
     if body.mode == "register":
         display = body.display_name or body.full_name or email.split("@")[0]
-        result = await _oauth_register(email, body.org_name, display)
+        result, is_new = await _oauth_register(email, body.org_name, display)
         from starlette.responses import JSONResponse
-        return JSONResponse(content=result, status_code=status.HTTP_201_CREATED)
+        return JSONResponse(
+            content=result,
+            status_code=status.HTTP_201_CREATED if is_new else status.HTTP_200_OK,
+        )
 
-    return await _oauth_login(email)
+    result = await _oauth_login(email)
+    await TrainingUser.find_one({"email": email}).update(
+        {"$set": {"last_oauth_provider": "apple"}}
+    )
+    return result
 
 
 @router.get("/me")
