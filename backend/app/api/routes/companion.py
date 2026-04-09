@@ -18,6 +18,7 @@ from pydantic import BaseModel
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
+from app.api.dependencies.training_context import deduct_training_credits_if_applicable
 from app.models.content import Content
 from app.models.user import User
 
@@ -107,6 +108,9 @@ async def get_companion_context(
     request: CompanionRequest,
     current_user: User = Depends(get_current_active_user),
 ) -> CompanionContextResponse:
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(current_user, "companion")
+
     content = await _fetch_content(request.content_id)
     summary = _build_content_summary(content)
 
@@ -153,6 +157,9 @@ async def get_companion_quiz(
     request: CompanionRequest,
     current_user: User = Depends(get_current_active_user),
 ) -> CompanionQuizResponse:
+    # Training portal credit deduction (no-op for B2C users)
+    await deduct_training_credits_if_applicable(current_user, "companion")
+
     content = await _fetch_content(request.content_id)
     summary = _build_content_summary(content)
 
