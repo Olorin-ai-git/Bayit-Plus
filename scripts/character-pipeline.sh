@@ -19,13 +19,14 @@ set -euo pipefail
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly ELEVENLABS_URL="${ELEVENLABS_API_URL:-https://api.elevenlabs.io/v1}"
 readonly FAL_QUEUE_URL="https://queue.fal.run/fal-ai/creatify/aurora"
+readonly CREATIFY_AURORA_URL="https://api.creatify.ai/api/aurora"
 readonly ANTHROPIC_URL="https://api.anthropic.com/v1/messages"
 readonly DEFAULT_MODEL="claude-haiku-4-5-20251001"
 readonly TMPFILES_URL="${TEMP_FILE_HOST_URL:-https://tmpfiles.org/api/v1/upload}"
 
-VIDEO="" IMAGE="" AUDIO_SAMPLE="" NAME="" QUESTION="" RESPONSE=""
+VIDEO="" IMAGE="" AUDIO_SAMPLE="" NAME="" CONTEXT="" QUESTION="" RESPONSE=""
 VOICE_ID="" OUTPUT_DIR="" RESOLUTION="480p" FRAME_SEC=2
-AI_MODEL="$DEFAULT_MODEL"
+AI_MODEL="$DEFAULT_MODEL" LIPSYNC_PROVIDER="creatify-aurora"
 WORK_DIR="" OPEN_RESULT=false SKIP_CROP=false
 
 die()  { echo "ERROR: $*" >&2; exit 1; }
@@ -43,6 +44,7 @@ Required:
 Optional:
   --image <path>           Portrait image (extracted from video if omitted)
   --name <string>          Character/speaker name (default: "Character")
+  --context <string>       Character context (who they are, background, personality)
   --question <string>      Question to ask the character
   --response <string>      Response text (auto-generated via Claude if omitted)
   --audio <path>           Voice sample MP3 for cloning (uses this instead of video audio)
@@ -51,6 +53,7 @@ Optional:
   --resolution <480p|720p> Lip-sync resolution (default: 480p)
   --frame-time <seconds>   Portrait frame time offset (default: 2)
   --model <model>          Claude model for response gen (default: haiku)
+  --provider <provider>    Lipsync provider: creatify-aurora (default), aurora (fal.ai)
   --no-crop                Skip auto face-crop on extracted portrait
   --open                   Open result video when done
   -h, --help               Show this help
@@ -65,6 +68,7 @@ parse_args() {
       --image)      IMAGE="$2"; shift 2 ;;
       --audio)      AUDIO_SAMPLE="$2"; shift 2 ;;
       --name)       NAME="$2"; shift 2 ;;
+      --context)    CONTEXT="$2"; shift 2 ;;
       --question)   QUESTION="$2"; shift 2 ;;
       --response)   RESPONSE="$2"; shift 2 ;;
       --voice-id)   VOICE_ID="$2"; shift 2 ;;
@@ -72,6 +76,7 @@ parse_args() {
       --resolution) RESOLUTION="$2"; shift 2 ;;
       --frame-time) FRAME_SEC="$2"; shift 2 ;;
       --model)      AI_MODEL="$2"; shift 2 ;;
+      --provider)   LIPSYNC_PROVIDER="$2"; shift 2 ;;
       --no-crop)    SKIP_CROP=true; shift ;;
       --open)       OPEN_RESULT=true; shift ;;
       -h|--help)    usage ;;
@@ -98,7 +103,13 @@ check_deps() {
     command -v "$cmd" >/dev/null || die "$cmd is required but not found"
   done
   [ -n "${ELEVENLABS_API_KEY:-}" ] || die "ELEVENLABS_API_KEY not set"
-  [ -n "${FAL_KEY:-}" ] || die "FAL_KEY not set"
+  case "$LIPSYNC_PROVIDER" in
+    creatify-aurora)
+      [ -n "${CREATIFY_API_ID:-}" ] || die "CREATIFY_API_ID not set"
+      [ -n "${CREATIFY_API_KEY:-}" ] || die "CREATIFY_API_KEY not set" ;;
+    aurora)
+      [ -n "${FAL_KEY:-}" ] || die "FAL_KEY not set" ;;
+  esac
 }
 
 setup() {
@@ -212,7 +223,11 @@ generate_response() {
   [ -n "${ANTHROPIC_API_KEY:-}" ] || die "ANTHROPIC_API_KEY needed for response generation (or pass --response)"
   local q="${QUESTION:-What is this scene about?}"
   info "Generating in-character response via Claude..."
-  local prompt="You are ${NAME} from a video. A viewer paused and asked: \"${q}\". Respond in character in 1 sentence, maximum 20 words. Short and punchy."
+  local ctx=""
+  if [ -n "$CONTEXT" ]; then
+    ctx=" Context about you: ${CONTEXT}."
+  fi
+  local prompt="You are ${NAME}.${ctx} Someone asked you: \"${q}\". Answer as ${NAME} would — stay in character, be natural and playful. Output ONLY the spoken reply, nothing else. Maximum 20 words, 1 sentence."
   local body
   body=$(jq -n --arg model "$AI_MODEL" --arg prompt "$prompt" \
     '{model: $model, max_tokens: 150, messages: [{role: "user", content: $prompt}]}')
@@ -246,7 +261,57 @@ run_lipsync() {
   image_url=$(upload_to_tmpfiles "$WORK_DIR/portrait.jpg")
   audio_url=$(upload_to_tmpfiles "$WORK_DIR/speech.mp3")
 
-  info "Submitting Aurora lip-sync job..."
+  case "$LIPSYNC_PROVIDER" in
+    creatify-aurora) run_lipsync_creatify "$image_url" "$audio_url" ;;
+    aurora)          run_lipsync_fal "$image_url" "$audio_url" ;;
+    *)               die "Unknown provider: $LIPSYNC_PROVIDER" ;;
+  esac
+}
+
+run_lipsync_creatify() {
+  local image_url="$1" audio_url="$2"
+  info "Submitting Creatify Aurora lip-sync job..."
+  local body
+  body=$(jq -n --arg img "$image_url" --arg aud "$audio_url" \
+    '{image: $img, audio: $aud, model_version: "aurora_v1_fast"}')
+  local resp
+  resp=$(curl -s -X POST "${CREATIFY_AURORA_URL}/" \
+    -H "X-API-ID: ${CREATIFY_API_ID}" \
+    -H "X-API-KEY: ${CREATIFY_API_KEY}" \
+    -H "Content-Type: application/json" \
+    -d "$body")
+  local job_id
+  job_id=$(echo "$resp" | jq -r '.id // empty')
+  [ -n "$job_id" ] || die "Creatify Aurora submission failed: $resp"
+
+  info "Polling for completion (up to 5 min)..."
+  local attempt=0 max_attempts=60
+  while [ $attempt -lt $max_attempts ]; do
+    sleep 5
+    resp=$(curl -s "${CREATIFY_AURORA_URL}/${job_id}/" \
+      -H "X-API-ID: ${CREATIFY_API_ID}" \
+      -H "X-API-KEY: ${CREATIFY_API_KEY}")
+    local job_status
+    job_status=$(echo "$resp" | jq -r '.status')
+    case "$job_status" in
+      done)
+        local video_url
+        video_url=$(echo "$resp" | jq -r '.video_output')
+        info "Downloading result video..."
+        curl -sL -o "$OUTPUT_DIR/lipsync_response.mp4" "$video_url"
+        return ;;
+      failed)
+        die "Creatify Aurora failed: $(echo "$resp" | jq -r '.failed_reason // "unknown"')" ;;
+    esac
+    attempt=$((attempt + 1))
+    printf "\r  Status: %-12s (attempt %d/%d)" "$job_status" "$attempt" "$max_attempts"
+  done
+  die "Creatify Aurora timed out after 5 minutes"
+}
+
+run_lipsync_fal() {
+  local image_url="$1" audio_url="$2"
+  info "Submitting fal.ai Aurora lip-sync job..."
   local body
   body=$(jq -n --arg img "$image_url" --arg aud "$audio_url" --arg res "$RESOLUTION" \
     '{image_url: $img, audio_url: $aud, resolution: $res, guidance_scale: 1, audio_guidance_scale: 2}')
@@ -257,16 +322,16 @@ run_lipsync() {
     -d "$body")
   local status_url
   status_url=$(echo "$resp" | jq -r '.status_url // empty')
-  [ -n "$status_url" ] || die "Aurora submission failed: $resp"
+  [ -n "$status_url" ] || die "fal.ai submission failed: $resp"
 
   info "Polling for completion (up to 5 min)..."
   local attempt=0 max_attempts=60
   while [ $attempt -lt $max_attempts ]; do
     sleep 5
     resp=$(curl -s "$status_url" -H "Authorization: Key ${FAL_KEY}")
-    local status
-    status=$(echo "$resp" | jq -r '.status')
-    case "$status" in
+    local fal_status
+    fal_status=$(echo "$resp" | jq -r '.status')
+    case "$fal_status" in
       COMPLETED)
         local response_url
         response_url=$(echo "$resp" | jq -r '.response_url')
@@ -277,12 +342,12 @@ run_lipsync() {
         curl -sL -o "$OUTPUT_DIR/lipsync_response.mp4" "$video_url"
         return ;;
       FAILED|CANCELLED)
-        die "Aurora failed: $(echo "$resp" | jq -r '.error // "unknown"')" ;;
+        die "fal.ai failed: $(echo "$resp" | jq -r '.error // "unknown"')" ;;
     esac
     attempt=$((attempt + 1))
-    printf "\r  Status: %-12s (attempt %d/%d)" "$status" "$attempt" "$max_attempts"
+    printf "\r  Status: %-12s (attempt %d/%d)" "$fal_status" "$attempt" "$max_attempts"
   done
-  die "Aurora timed out after 5 minutes"
+  die "fal.ai timed out after 5 minutes"
 }
 
 main() {
