@@ -45,21 +45,6 @@ async def import_source(
             detail="Organization not found",
         )
 
-    tc = partner.training_config or {}
-    credits_used = (
-        tc.get("credits_used", 0) if isinstance(tc, dict)
-        else getattr(tc, "credits_used", 0)
-    )
-    credit_limit = (
-        tc.get("credit_limit_monthly", 0) if isinstance(tc, dict)
-        else getattr(tc, "credit_limit_monthly", 0)
-    )
-    if credits_used >= credit_limit:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Credit limit reached. Upgrade your plan to continue importing.",
-        )
-
     source = B2BContentSource(
         partner_id=admin.partner_id,
         source_type=body.source_type,

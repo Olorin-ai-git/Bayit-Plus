@@ -68,14 +68,6 @@ async def ingest_content(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found",
         )
-    tc = partner.training_config or {}
-    credits_used = tc.get("credits_used", 0) if isinstance(tc, dict) else getattr(tc, "credits_used", 0)
-    credit_limit = tc.get("credit_limit_monthly", 0) if isinstance(tc, dict) else getattr(tc, "credit_limit_monthly", 0)
-    if credits_used >= credit_limit:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Credit limit reached. Upgrade your plan to continue processing.",
-        )
     content = Content(
         title=body.title,
         description=body.description,
@@ -89,9 +81,6 @@ async def ingest_content(
         capabilities=body.capabilities, direct=True,
     )
     background_tasks.add_task(run_pipeline, job)
-    await IntegrationPartner.find_one(
-        {"partner_id": admin.partner_id}
-    ).update({"$inc": {"training_config.credits_used": 1}})
     cap_count = len(body.capabilities)
     estimated = 60 + (cap_count * 45)  # base + per-capability overhead
 
