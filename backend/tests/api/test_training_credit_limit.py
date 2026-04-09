@@ -59,6 +59,23 @@ class TestCreditLimitEnforcement:
         mock_job.overall_status = "pending"
         mock_job.capabilities = {}
 
+        # find_one is used in two patterns:
+        #   1. await find_one(...)           → returns mock_partner
+        #   2. find_one(...).update(...)     → returns an awaitable
+        # A plain AsyncMock only handles pattern 1 (returns a coroutine when called,
+        # which has no .update attribute). This proxy handles both.
+        class _FindOneProxy:
+            def __init__(self, val: MagicMock) -> None:
+                self._val = val
+                self.update = AsyncMock()
+
+            def __await__(self):  # type: ignore[override]
+                async def _inner() -> MagicMock:
+                    return self._val
+                return _inner().__await__()
+
+        find_proxy = _FindOneProxy(mock_partner)
+
         with (
             patch(
                 "app.api.routes.training.content.IntegrationPartner"
@@ -76,8 +93,12 @@ class TestCreditLimitEnforcement:
                 new_callable=AsyncMock,
                 return_value=mock_job,
             ),
+            patch(
+                "app.api.routes.training.content.run_pipeline",
+                new_callable=AsyncMock,
+            ),
         ):
-            mock_ip.find_one = AsyncMock(return_value=mock_partner)
+            mock_ip.find_one = MagicMock(return_value=find_proxy)
 
             resp = await training_admin_client.post(
                 "/api/v1/training/content/ingest",
