@@ -44,6 +44,7 @@ class TestRequireTrainingAdmin:
             mock_ip.find_one = AsyncMock(return_value=partner)
             with pytest.raises(HTTPException) as exc_info:
                 await require_training_admin(user)
+            mock_ip.find_one.assert_called_once_with({"partner_id": "training-testorg-abc12345"})
 
         assert exc_info.value.status_code == 402
         assert "trial" in exc_info.value.detail.lower()
@@ -105,8 +106,12 @@ class TestRequireTrainingAdmin:
 
         user = _make_user("viewer")
 
-        with pytest.raises(HTTPException) as exc_info:
-            await require_training_admin(user)
+        with patch(
+            "app.api.routes.training.dependencies.IntegrationPartner"
+        ) as mock_ip:
+            with pytest.raises(HTTPException) as exc_info:
+                await require_training_admin(user)
+            mock_ip.find_one.assert_not_called()
 
         assert exc_info.value.status_code == 403
 
@@ -120,6 +125,22 @@ class TestRequireTrainingAdmin:
             "app.api.routes.training.dependencies.IntegrationPartner"
         ) as mock_ip:
             mock_ip.find_one = AsyncMock(return_value=None)
+            result = await require_training_admin(user)
+
+        assert result is user
+
+    async def test_training_config_none_passes(self):
+        """Partner exists but training_config is None — should not crash."""
+        from app.api.routes.training.dependencies import require_training_admin
+
+        user = _make_user("admin")
+        partner = MagicMock()
+        partner.training_config = None
+
+        with patch(
+            "app.api.routes.training.dependencies.IntegrationPartner"
+        ) as mock_ip:
+            mock_ip.find_one = AsyncMock(return_value=partner)
             result = await require_training_admin(user)
 
         assert result is user

@@ -81,24 +81,21 @@ async def require_training_admin(
         )
     partner = await IntegrationPartner.find_one({"partner_id": user.partner_id})
     if partner:
-        tc = partner.training_config or {}
-        trial_ends = (
-            tc.get("trial_ends_at") if isinstance(tc, dict)
-            else getattr(tc, "trial_ends_at", None)
-        )
-        subscription = (
-            tc.get("stripe_subscription_id") if isinstance(tc, dict)
-            else getattr(tc, "stripe_subscription_id", None)
-        )
-        if (
-            trial_ends is not None
-            and trial_ends < datetime.now(timezone.utc)
-            and not subscription
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                detail="Trial expired. Upgrade your plan to continue.",
-            )
+        tc = partner.training_config if isinstance(partner.training_config, dict) else {}
+        trial_ends = tc.get("trial_ends_at")
+        subscription = tc.get("stripe_subscription_id")
+        if trial_ends is not None:
+            if trial_ends.tzinfo is None:
+                trial_ends = trial_ends.replace(tzinfo=timezone.utc)
+            if trial_ends < datetime.now(timezone.utc) and not subscription:
+                logger.warning(
+                    "Trial expired — admin operation blocked",
+                    extra={"partner_id": user.partner_id, "trial_ends_at": str(trial_ends)},
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                    detail="Trial expired. Upgrade your plan to continue.",
+                )
     return user
 
 
