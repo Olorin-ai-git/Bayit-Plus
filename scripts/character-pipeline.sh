@@ -20,6 +20,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly ELEVENLABS_URL="${ELEVENLABS_API_URL:-https://api.elevenlabs.io/v1}"
 readonly FAL_QUEUE_URL="https://queue.fal.run/fal-ai/creatify/aurora"
 readonly CREATIFY_AURORA_URL="https://api.creatify.ai/api/aurora"
+readonly RUNPOD_API_BASE="https://api.runpod.ai/v2"
 readonly ANTHROPIC_URL="https://api.anthropic.com/v1/messages"
 readonly DEFAULT_MODEL="claude-haiku-4-5-20251001"
 readonly TMPFILES_URL="${TEMP_FILE_HOST_URL:-https://tmpfiles.org/api/v1/upload}"
@@ -109,6 +110,9 @@ check_deps() {
       [ -n "${CREATIFY_API_KEY:-}" ] || die "CREATIFY_API_KEY not set" ;;
     aurora)
       [ -n "${FAL_KEY:-}" ] || die "FAL_KEY not set" ;;
+    musetalk)
+      [ -n "${RUNPOD_API_KEY:-}" ] || die "RUNPOD_API_KEY not set"
+      [ -n "${RUNPOD_MUSETALK_ENDPOINT:-}" ] || die "RUNPOD_MUSETALK_ENDPOINT not set" ;;
   esac
 }
 
@@ -264,6 +268,7 @@ run_lipsync() {
   case "$LIPSYNC_PROVIDER" in
     creatify-aurora) run_lipsync_creatify "$image_url" "$audio_url" ;;
     aurora)          run_lipsync_fal "$image_url" "$audio_url" ;;
+    musetalk)        run_lipsync_musetalk "$image_url" "$audio_url" ;;
     *)               die "Unknown provider: $LIPSYNC_PROVIDER" ;;
   esac
 }
@@ -307,6 +312,49 @@ run_lipsync_creatify() {
     printf "\r  Status: %-12s (attempt %d/%d)" "$job_status" "$attempt" "$max_attempts"
   done
   die "Creatify Aurora timed out after 5 minutes"
+}
+
+run_lipsync_musetalk() {
+  local image_url="$1" audio_url="$2"
+  local endpoint="${RUNPOD_API_BASE}/${RUNPOD_MUSETALK_ENDPOINT}"
+  info "Submitting MuseTalk lip-sync job (RunPod)..."
+  local body
+  body=$(jq -n --arg img "$image_url" --arg aud "$audio_url" \
+    '{input: {image_url: $img, audio_url: $aud}}')
+  local resp
+  resp=$(curl -s -X POST "${endpoint}/run" \
+    -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+    -H "Content-Type: application/json" \
+    -d "$body")
+  local job_id
+  job_id=$(echo "$resp" | jq -r '.id // empty')
+  [ -n "$job_id" ] || die "MuseTalk submission failed: $resp"
+
+  info "Polling for completion (job: $job_id)..."
+  local attempt=0 max_attempts=120
+  while [ $attempt -lt $max_attempts ]; do
+    sleep 5
+    resp=$(curl -s "${endpoint}/status/${job_id}" \
+      -H "Authorization: Bearer ${RUNPOD_API_KEY}")
+    local job_status
+    job_status=$(echo "$resp" | jq -r '.status // "UNKNOWN"')
+    case "$job_status" in
+      COMPLETED)
+        echo ""
+        local has_error
+        has_error=$(echo "$resp" | jq -r '.output.error // empty')
+        [ -z "$has_error" ] || die "MuseTalk handler error: $has_error"
+        info "Decoding result video..."
+        echo "$resp" | jq -r '.output.video_base64' | base64 -d > "$OUTPUT_DIR/lipsync_response.mp4"
+        [ -s "$OUTPUT_DIR/lipsync_response.mp4" ] || die "Decoded video is empty"
+        return ;;
+      FAILED)
+        die "MuseTalk job failed: $(echo "$resp" | jq -r '.error // .output.error // "unknown"')" ;;
+    esac
+    attempt=$((attempt + 1))
+    printf "\r  Status: %-12s (attempt %d/%d)" "$job_status" "$attempt" "$max_attempts"
+  done
+  die "MuseTalk timed out after 10 minutes"
 }
 
 run_lipsync_fal() {
