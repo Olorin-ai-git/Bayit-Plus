@@ -137,6 +137,18 @@ class Settings(
         description="Olorin.ai platform configuration (nested)",
     )
 
+    # Training platform — per-tier video duration limits
+    TRAINING_MAX_DURATION_TRIAL_SECONDS: int = Field(
+        default=1800,
+        ge=0,
+        description="Max video duration (seconds) for trial orgs. 0 = unlimited.",
+    )
+    TRAINING_MAX_DURATION_TEAM_SECONDS: int = Field(
+        default=7200,
+        ge=0,
+        description="Max video duration (seconds) for team-tier orgs. 0 = unlimited.",
+    )
+
     # Comprehension Mode B2B (Phase 3)
     COMPREHENSION_TURN_CREDIT_COST: int = Field(
         default=1,
