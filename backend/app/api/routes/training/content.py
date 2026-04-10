@@ -75,6 +75,31 @@ async def ingest_content(
         topic_tags=body.tags,
         partner_id=admin.partner_id,
     )
+    # Populate source metadata from oEmbed
+    from app.utils.video_url_utils import get_oembed_url
+    source_meta: dict[str, str] = {}
+    oembed_endpoint = get_oembed_url(body.video_url)
+    if oembed_endpoint:
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                oembed_resp = await client.get(oembed_endpoint)
+                if oembed_resp.status_code == 200:
+                    oembed_data = oembed_resp.json()
+                    source_meta = {
+                        "provider_name": oembed_data.get("provider_name", ""),
+                        "original_title": oembed_data.get("title", ""),
+                        "author_name": oembed_data.get("author_name", ""),
+                    }
+        except Exception:
+            logger.debug("oEmbed fetch failed for source_metadata", extra={"url": body.video_url})
+    if not source_meta.get("provider_name"):
+        from urllib.parse import urlparse as _urlparse
+        parsed_host = _urlparse(body.video_url).hostname or ""
+        source_meta["provider_name"] = "Direct File" if any(
+            body.video_url.lower().endswith(ext) for ext in (".mp4", ".webm", ".mov", ".avi", ".mkv")
+        ) else parsed_host
+    content.source_metadata = source_meta
     await content.insert()
     job = await create_ingest_job(
         partner=partner, content=content, video_url=body.video_url,
@@ -185,6 +210,8 @@ def _content_response(c: Content, status_map: dict[str, str] | None = None, chap
         warnings = _compute_warnings(chapter_count, c.duration)
         if warnings:
             resp["warnings"] = warnings
+    if c.source_metadata:
+        resp["source_metadata"] = c.source_metadata
     return resp
 
 
