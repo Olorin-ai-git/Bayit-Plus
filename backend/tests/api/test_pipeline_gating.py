@@ -465,3 +465,269 @@ class TestContentStatusEndpoint:
             )
 
         assert resp.status_code == 404
+
+
+class TestRetryEndpoint:
+    """POST /api/v1/training/content/{id}/retry stage + subtask params."""
+
+    async def _patch_content_and_job(self, job):
+        """Helper: mock Content.get + IngestJob.find_one for the retry route."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.FAILED
+        content.save = AsyncMock()
+        return content
+
+    async def test_retry_without_params_resumes_existing_job(
+        self, training_admin_client
+    ):
+        """No params + existing job -> resume_pipeline dispatched."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.FAILED
+        content.save = AsyncMock()
+
+        existing_job = MagicMock()
+        existing_job.job_id = "job-abc"
+        existing_job.overall_status = "failed"
+
+        called = {}
+
+        async def fake_resume(job):
+            called["resumed_job_id"] = job.job_id
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=existing_job,
+            ),
+            patch(
+                "app.api.routes.training.content.resume_pipeline",
+                side_effect=fake_resume,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+            )
+
+        assert resp.status_code == 202
+        assert resp.json()["job_id"] == "job-abc"
+        # BackgroundTasks runs after the response; await it by flushing:
+        # since TestClient/AsyncClient does actually run background tasks
+        # synchronously after the response, called should have been populated.
+        assert called.get("resumed_job_id") == "job-abc"
+
+    async def test_retry_with_stage_param(self, training_admin_client):
+        """?stage=voice_cloning -> retry_stage dispatched with enum."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.FAILED
+        content.save = AsyncMock()
+
+        existing_job = MagicMock()
+        existing_job.job_id = "job-xyz"
+        existing_job.overall_status = "failed"
+
+        called = {}
+
+        async def fake_retry_stage(job, stage_name):
+            called["job_id"] = job.job_id
+            called["stage"] = stage_name
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=existing_job,
+            ),
+            patch(
+                "app.api.routes.training.content.retry_stage",
+                side_effect=fake_retry_stage,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+                "?stage=voice_cloning"
+            )
+
+        assert resp.status_code == 202
+        assert called["stage"] == StageName.VOICE_CLONING
+        assert called["job_id"] == "job-xyz"
+
+    async def test_retry_with_stage_and_subtask(self, training_admin_client):
+        """?stage=X&subtask=Y -> retry_subtask dispatched."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.FAILED
+        content.save = AsyncMock()
+
+        existing_job = MagicMock()
+        existing_job.job_id = "job-sub"
+        existing_job.overall_status = "failed"
+
+        called = {}
+
+        async def fake_retry_subtask(job, stage_name, subtask):
+            called["job_id"] = job.job_id
+            called["stage"] = stage_name
+            called["subtask"] = subtask
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=existing_job,
+            ),
+            patch(
+                "app.api.routes.training.content.retry_subtask",
+                side_effect=fake_retry_subtask,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+                "?stage=voice_cloning&subtask=bob"
+            )
+
+        assert resp.status_code == 202
+        assert called["stage"] == StageName.VOICE_CLONING
+        assert called["subtask"] == "bob"
+
+    async def test_retry_rejects_invalid_stage_name(
+        self, training_admin_client
+    ):
+        """Unknown stage name -> 400."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.FAILED
+        content.save = AsyncMock()
+
+        existing_job = MagicMock()
+        existing_job.job_id = "job-bad"
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=existing_job,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+                "?stage=not_a_real_stage"
+            )
+
+        assert resp.status_code == 400
+
+    async def test_retry_rejects_subtask_without_stage(
+        self, training_admin_client
+    ):
+        """subtask= without stage= -> 400 (ambiguous target)."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.FAILED
+        content.save = AsyncMock()
+
+        existing_job = MagicMock()
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=existing_job,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+                "?subtask=bob"
+            )
+
+        assert resp.status_code == 400
+
+    async def test_retry_returns_404_for_malformed_content_id(
+        self, training_admin_client
+    ):
+        resp = await training_admin_client.post(
+            "/api/v1/training/content/not-an-oid/retry"
+        )
+        assert resp.status_code == 404
+
+    async def test_retry_returns_404_when_content_missing(
+        self, training_admin_client
+    ):
+        with patch(
+            "app.api.routes.training.content.Content.get",
+            new_callable=AsyncMock,
+            return_value=None,
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+            )
+        assert resp.status_code == 404
+
+    async def test_retry_sets_processing_state_back_to_processing(
+        self, training_admin_client
+    ):
+        """Pressing retry must flip Content.processing_state back to PROCESSING
+        so the admin UI stops showing the FAILED badge immediately."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.FAILED
+        content.save = AsyncMock()
+
+        existing_job = MagicMock()
+        existing_job.job_id = "job-flip"
+        existing_job.overall_status = "failed"
+
+        async def noop_resume(job):
+            pass
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=existing_job,
+            ),
+            patch(
+                "app.api.routes.training.content.resume_pipeline",
+                side_effect=noop_resume,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+            )
+
+        assert resp.status_code == 202
+        # processing_state was flipped before the background task fired
+        assert content.processing_state == ProcessingState.PROCESSING
+        content.save.assert_awaited()

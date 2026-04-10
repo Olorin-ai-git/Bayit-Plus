@@ -1,11 +1,11 @@
 """Training platform content management routes."""
 
 import logging
-from typing import List
+from typing import List, Optional
 
 from beanie import PydanticObjectId
 from bson.errors import InvalidId
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from app.api.routes.training.dependencies import (
@@ -16,8 +16,15 @@ from app.models.chapters import VideoChapters
 from app.models.content import Content, ProcessingState
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
+from app.models.pipeline_stage import StageName
 from app.models.training_user import TrainingUser
-from app.services.olorin.ingest_orchestrator import create_ingest_job, run_pipeline
+from app.services.olorin.ingest_orchestrator import (
+    create_ingest_job,
+    resume_pipeline,
+    retry_stage,
+    retry_subtask,
+    run_pipeline,
+)
 from app.utils.video_url_utils import validate_video_url
 
 logger = logging.getLogger(__name__)
@@ -297,24 +304,83 @@ async def get_content_status(
 async def retry_content_ingest(
     content_id: str,
     background_tasks: BackgroundTasks,
+    stage: Optional[str] = Query(
+        default=None,
+        description="Retry a specific pipeline stage (e.g. 'voice_cloning'). "
+        "When omitted, resumes from the first non-completed stage.",
+    ),
+    subtask: Optional[str] = Query(
+        default=None,
+        description="Retry a single subtask within a stage (e.g. one "
+        "character's voice clone). Requires stage to also be set.",
+    ),
     admin: TrainingUser = Depends(require_training_admin),
 ):
-    """Re-run the AI pipeline on a failed content item."""
-    content = await Content.get(PydanticObjectId(content_id))
+    """Re-run the AI pipeline on a failed content item.
+
+    Dispatch strategy based on query params:
+
+    - No params: resume the existing job from its first non-completed stage.
+    - ``stage=X``: reset stage X and run forward from there.
+    - ``stage=X&subtask=Y``: retry a single subtask inside stage X, leaving
+      sibling subtasks untouched.
+    """
+    if subtask and not stage:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="subtask query param requires stage to also be specified",
+        )
+
+    try:
+        content_oid = PydanticObjectId(content_id)
+    except (InvalidId, TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
+        )
+    content = await Content.get(content_oid)
     if not content or content.partner_id != admin.partner_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
-    partner = await IntegrationPartner.find_one({"partner_id": admin.partner_id})
-    if not partner:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found")
-    job = await create_ingest_job(
-        partner=partner,
-        content=content,
-        video_url=content.stream_url,
-        capabilities=["characters", "subtitles"],
-        direct=True,
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
+        )
+
+    job = await IngestJob.find_one(
+        {"content_id": content_id}, sort=[("created_at", -1)],
     )
-    background_tasks.add_task(run_pipeline, job)
-    return {"job_id": job.job_id, "content_id": content_id, "status": job.overall_status}
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No ingest job found for this content; cannot retry",
+        )
+
+    stage_enum: Optional[StageName] = None
+    if stage is not None:
+        try:
+            stage_enum = StageName(stage)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Unknown pipeline stage: {stage!r}",
+            )
+
+    # Flip content state back to PROCESSING immediately so the admin UI
+    # reflects the retry before the background task completes. The
+    # orchestrator's _sync_content_state will settle the final state
+    # (READY / FAILED) once the runner returns.
+    content.processing_state = ProcessingState.PROCESSING
+    await content.save()
+
+    if stage_enum is not None and subtask is not None:
+        background_tasks.add_task(retry_subtask, job, stage_enum, subtask)
+    elif stage_enum is not None:
+        background_tasks.add_task(retry_stage, job, stage_enum)
+    else:
+        background_tasks.add_task(resume_pipeline, job)
+
+    return {
+        "job_id": job.job_id,
+        "content_id": content_id,
+        "status": "processing",
+    }
 
 
 @router.delete("/{content_id}")
