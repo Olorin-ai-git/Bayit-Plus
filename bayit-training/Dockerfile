@@ -31,7 +31,7 @@ RUN sed -i '/demucs/d; /torchcodec/d; /spacy/d' pyproject.toml && \
 FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg curl unzip \
+    ffmpeg curl unzip libgl1 libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Deno — required by yt-dlp for YouTube JS extraction
