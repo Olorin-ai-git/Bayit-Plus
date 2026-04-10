@@ -72,3 +72,24 @@ def test_stages_field_preserves_existing_capabilities_dict():
     )
     assert job.capabilities == {"characters": "pending", "subtitles": "processing"}
     assert job.stages == []
+
+
+def test_first_failed_stage_uses_declaration_order_not_lexicographic():
+    """Regression guard: first_failed_stage must iterate StageName in
+    declaration order (VOICE_CLONING index 3), not lexicographic string
+    order (which would pick FINALIZATION because 'finalization' < 'voice_cloning').
+    """
+    job = _make_job(job_id="test-decl-order")
+    # Mark voice_cloning failed — declaration index 3
+    vc = job.get_or_create_stage(StageName.VOICE_CLONING)
+    vc.mark_failed("elevenlabs 429")
+    # Mark finalization failed — declaration index 7
+    fin = job.get_or_create_stage(StageName.FINALIZATION)
+    fin.mark_failed("cleanup crash")
+
+    failed = job.first_failed_stage()
+    assert failed is not None
+    assert failed.name == StageName.VOICE_CLONING, (
+        "first_failed_stage must iterate in StageName declaration order; "
+        "a lexicographic implementation would return FINALIZATION instead"
+    )
