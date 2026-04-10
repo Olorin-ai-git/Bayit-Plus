@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 import pymongo
@@ -7,6 +8,22 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pymongo import TEXT, IndexModel
 
 from app.models.vod_interaction import ContentCharacter, InteractiveMoment
+
+
+class ProcessingState(str, Enum):
+    """Training pipeline gating state. Viewers only see READY content.
+
+    - PROCESSING: ingest pipeline is running; content is hidden from viewers
+      and cannot be assigned to students
+    - READY: all pipeline stages complete; content is fully visible and
+      assignable
+    - FAILED: ingest pipeline failed; admin can retry, but content is not
+      visible to viewers
+    """
+
+    PROCESSING = "processing"
+    READY = "ready"
+    FAILED = "failed"
 
 
 class ContentBase(BaseModel):
@@ -185,6 +202,7 @@ class Content(Document):
 
     # Visibility
     is_published: bool = True
+    processing_state: ProcessingState = ProcessingState.READY
     is_featured: bool = False
     featured_order: Dict[str, int] = Field(default_factory=dict)  # {section_id: order}
     requires_subscription: str = "premium"  # basic, premium, family, none
