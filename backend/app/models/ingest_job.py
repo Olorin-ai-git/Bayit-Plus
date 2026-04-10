@@ -5,10 +5,12 @@ Tracks per-capability status for orchestrated video ingestion.
 """
 
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from beanie import Document
 from pydantic import Field
+
+from app.models.pipeline_stage import StageExecution, StageName, StageStatus
 
 
 def derive_overall_status(capabilities: Dict[str, str]) -> str:
@@ -42,6 +44,10 @@ class IngestJob(Document):
         default_factory=dict,
         description="Per-capability status: pending|processing|completed|failed",
     )
+    stages: List[StageExecution] = Field(
+        default_factory=list,
+        description="Ordered pipeline stage executions for resumable processing",
+    )
     error_detail: Optional[str] = Field(
         default=None, description="Top-level error if pipeline itself failed",
     )
@@ -70,3 +76,32 @@ class IngestJob(Document):
         self.capabilities[capability] = status
         self.updated_at = datetime.now(timezone.utc)
         await self.save()
+
+    def get_or_create_stage(self, name: StageName) -> StageExecution:
+        """Return existing stage with this name, or create and append a new one."""
+        for stage in self.stages:
+            if stage.name == name:
+                return stage
+        stage = StageExecution(name=name)
+        self.stages.append(stage)
+        return stage
+
+    def get_stage(self, name: StageName) -> Optional[StageExecution]:
+        """Return the existing stage with this name, or None if not present."""
+        for stage in self.stages:
+            if stage.name == name:
+                return stage
+        return None
+
+    def first_failed_stage(self) -> Optional[StageExecution]:
+        """Return the earliest-declared stage that is currently FAILED.
+
+        Uses StageName declaration order (not lexicographic) so resume-from-failure
+        picks up at the logically earliest failed step.
+        """
+        by_name = {s.name: s for s in self.stages}
+        for name in StageName:
+            stage = by_name.get(name)
+            if stage is not None and stage.status == StageStatus.FAILED:
+                return stage
+        return None
