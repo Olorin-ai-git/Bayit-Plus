@@ -264,11 +264,20 @@ async def get_content_status(
         {"content_id": content_id}, sort=[("created_at", -1)],
     )
     if not job:
+        # No IngestJob row exists. This happens for legacy content created
+        # before the pipeline shipped, or for rows where job insertion raced.
+        # Derive status from Content.processing_state so a FAILED row does
+        # not get misreported as "ready" — the Task 10 retry UI relies on
+        # this field to decide whether to show the retry CTA.
         return {
             "content_id": content_id,
             "job_id": None,
             "processing_state": content.processing_state.value,
-            "status": "ready",
+            "status": (
+                "ready"
+                if content.processing_state == ProcessingState.READY
+                else content.processing_state.value
+            ),
             "capabilities": {},
             "stages": [],
             "estimated_seconds": 0,

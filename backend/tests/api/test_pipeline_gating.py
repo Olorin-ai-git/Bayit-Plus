@@ -402,6 +402,42 @@ class TestContentStatusEndpoint:
         assert body["stages"] == []
         assert body["job_id"] is None
 
+    async def test_status_no_job_mirrors_non_ready_processing_state(
+        self, training_admin_client
+    ):
+        """When no job exists and content is FAILED, status must not say 'ready'.
+
+        Guards against the contradictory shape where processing_state=FAILED
+        but status=ready, which would hide the retry CTA in the admin UI.
+        """
+        failed_content = MagicMock()
+        failed_content.partner_id = "training-testorg-abc12345"
+        failed_content.processing_state = ProcessingState.FAILED
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=failed_content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=None,
+            ),
+        ):
+            resp = await training_admin_client.get(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/status"
+            )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["processing_state"] == "failed"
+        assert body["status"] != "ready"
+        assert body["status"] == "failed"
+        assert body["job_id"] is None
+        assert body["stages"] == []
+
     async def test_status_returns_404_for_malformed_content_id(
         self, training_admin_client
     ):
