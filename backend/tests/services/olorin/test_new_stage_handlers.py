@@ -356,3 +356,110 @@ async def test_run_finalization_raises_when_content_missing():
     ):
         with pytest.raises(RuntimeError, match="not found"):
             await _run_finalization(job)
+
+
+# ---------------------------------------------------------------------------
+# _segments_for_character tests
+# ---------------------------------------------------------------------------
+
+def test_segments_for_character_returns_empty_when_no_cue_map():
+    """Documented behavior: empty cue_map -> empty segments. No index-based
+    fallback to raw transcript_segments (would map to wrong speaker)."""
+    from app.services.olorin.ingest_orchestrator import _segments_for_character
+
+    class FakeChar:
+        def __init__(self, name):
+            self.name = name
+
+    class FakeContent:
+        interactive_characters = [FakeChar("alice"), FakeChar("bob")]
+        transcript_segments = [
+            {"speaker": "speaker_0", "start": 0.0, "end": 5.0, "text": "hi"},
+            {"speaker": "speaker_1", "start": 5.0, "end": 10.0, "text": "hello"},
+        ]
+
+    result = _segments_for_character({}, "alice", FakeContent())
+    assert result == []
+
+
+def test_segments_for_character_uses_cue_map_when_present():
+    """When cue_map has entries for a character, they are returned correctly."""
+    from app.services.olorin.ingest_orchestrator import _segments_for_character
+
+    class FakeCue:
+        def __init__(self, start, end, text):
+            self.start_time = start
+            self.end_time = end
+            self.text = text
+
+    cue_map = {
+        "alice": [FakeCue(1.0, 3.0, "hello"), FakeCue(10.0, 15.0, "bye")],
+    }
+
+    class FakeContent:
+        interactive_characters = []
+
+    result = _segments_for_character(cue_map, "alice", FakeContent())
+    assert result == [
+        {"start": 1.0, "end": 3.0, "text": "hello"},
+        {"start": 10.0, "end": 15.0, "text": "bye"},
+    ]
+
+
+# ---------------------------------------------------------------------------
+# _sync_content_state tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_sync_content_state_sets_ready_when_finalization_completed():
+    """After a successful retry cycle, _sync_content_state should flip
+    content to READY based on FINALIZATION.COMPLETED, even if
+    _run_finalization didn't fire in this run (it was already completed
+    from a prior run and the runner skipped it)."""
+    from app.services.olorin.ingest_orchestrator import _sync_content_state
+    from app.models.content import Content, ProcessingState
+    from app.models.pipeline_stage import StageName
+
+    job = _make_job()
+    # All stages completed, including finalization
+    for name in StageName:
+        s = job.get_or_create_stage(name)
+        s.mark_completed()
+
+    fake_content = MagicMock(spec=Content)
+    fake_content.processing_state = ProcessingState.FAILED
+    fake_content.save = AsyncMock()
+
+    with patch(
+        "app.services.olorin.ingest_orchestrator.Content.get",
+        new=AsyncMock(return_value=fake_content),
+    ):
+        await _sync_content_state(job)
+
+    assert fake_content.processing_state == ProcessingState.READY
+    fake_content.save.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_sync_content_state_sets_failed_when_any_stage_failed():
+    """A job with any FAILED stage flips content to FAILED."""
+    from app.services.olorin.ingest_orchestrator import _sync_content_state
+    from app.models.content import Content, ProcessingState
+    from app.models.pipeline_stage import StageName
+
+    job = _make_job()
+    vc = job.get_or_create_stage(StageName.VOICE_CLONING)
+    vc.mark_failed("elevenlabs 429")
+
+    fake_content = MagicMock(spec=Content)
+    fake_content.processing_state = ProcessingState.PROCESSING
+    fake_content.save = AsyncMock()
+
+    with patch(
+        "app.services.olorin.ingest_orchestrator.Content.get",
+        new=AsyncMock(return_value=fake_content),
+    ):
+        await _sync_content_state(job)
+
+    assert fake_content.processing_state == ProcessingState.FAILED
+    fake_content.save.assert_awaited_once()

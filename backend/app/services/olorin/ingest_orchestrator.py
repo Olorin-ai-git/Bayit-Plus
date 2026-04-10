@@ -22,7 +22,6 @@ from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
 from app.models.pipeline_stage import StageName, StageStatus
 from app.services.olorin.face_extraction import (
-    FaceExtractionError,
     FaceExtractionService,
     NoFaceDetectedError,
 )
@@ -148,14 +147,31 @@ async def retry_subtask(
 
 
 async def _sync_content_state(job: IngestJob) -> None:
-    """Update Content.processing_state based on the job's final stage state."""
+    """Update Content.processing_state based on the job's current stage state.
+
+    Invariant: if any stage is FAILED, content is FAILED. If the FINALIZATION
+    stage is COMPLETED, content is READY. In-progress runs leave
+    processing_state alone.
+
+    The READY flip handles the retry-success case: when a mid-pipeline stage
+    is retried and the runner continues forward, FINALIZATION may already be
+    COMPLETED from a prior run (the runner skips completed stages). In that
+    scenario _run_finalization never fires in this run, so without this check
+    processing_state would stay FAILED even though the pipeline succeeded.
+    """
     content = await Content.get(job.content_id)
     if not content:
         return
+
     if job.first_failed_stage() is not None:
         content.processing_state = ProcessingState.FAILED
         await content.save()
-    # If no failures, _run_finalization already set it to READY — don't overwrite.
+        return
+
+    finalization = job.get_stage(StageName.FINALIZATION)
+    if finalization is not None and finalization.status == StageStatus.COMPLETED:
+        content.processing_state = ProcessingState.READY
+        await content.save()
 
 
 def _build_runner() -> ResumablePipelineRunner:
@@ -573,27 +589,33 @@ async def _download_video(video_url: str, tmpdir: Path) -> Path:
 
 
 def _segments_for_character(
-    cue_map: dict, character_name: str, content: Content,
+    cue_map: dict, character_name: str, content,
 ) -> list:
-    """Return per-character speech segments in the shape face_extraction expects.
+    """Return per-character speech segments for face extraction.
 
-    Prefers dialogue_mapper cue_map. Falls back to raw transcript_segments
-    filtered by speaker label index when cue_map is empty.
+    Uses dialogue_mapper cue_map when available (preferred — accurate
+    subtitle-based mapping). When cue_map is empty for this character,
+    returns [] which causes FaceExtractionService to raise
+    FaceExtractionError; the handler marks the subtask failed and the
+    admin recovers via the manual portrait upload endpoint.
+
+    We intentionally do NOT fall back to speaker-label indexing from
+    raw transcript_segments because:
+    1. ElevenLabs Scribe diarization uses its own speaker_id ordering
+       ("speaker_0", "speaker_1") which does NOT correspond to the
+       order characters appear in content.interactive_characters
+       (which comes from Claude's text-based extraction).
+    2. The index-based fallback would silently return segments for the
+       wrong speaker, producing portraits of the wrong person.
+    Failing loudly and falling back to manual upload is the correct
+    recovery.
     """
     cues = cue_map.get(character_name, [])
-    if cues:
-        return [{"start": c.start_time, "end": c.end_time, "text": c.text} for c in cues]
-    transcript_segments = getattr(content, "transcript_segments", None) or []
-    if not transcript_segments:
+    if not cues:
         return []
-    char_names = [c.name for c in (content.interactive_characters or [])]
-    if character_name not in char_names:
-        return []
-    speaker_label = f"speaker_{char_names.index(character_name) + 1}"
     return [
-        {"start": s.get("start", 0), "end": s.get("end", 0), "text": s.get("text", "")}
-        for s in transcript_segments
-        if s.get("speaker") == speaker_label
+        {"start": c.start_time, "end": c.end_time, "text": c.text}
+        for c in cues
     ]
 
 
