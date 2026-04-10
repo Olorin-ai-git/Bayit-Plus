@@ -5,12 +5,19 @@ Covers:
 - Admin list includes all content regardless of processing_state.
 - Assignment creation rejects non-READY content with 409.
 - Assignment creation allows READY content.
+- Status endpoint exposes processing_state + stages[] payload.
 """
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.models.content import ProcessingState
+from app.models.pipeline_stage import (
+    StageExecution,
+    StageName,
+    StageStatus,
+    SubtaskExecution,
+)
 
 pytest_plugins = ["conftest_training"]
 
@@ -291,3 +298,134 @@ class TestAssignmentGating:
             )
 
         assert resp.status_code == 201
+
+
+class TestContentStatusEndpoint:
+    """GET /api/v1/training/content/{id}/status stage enrichment."""
+
+    async def test_status_returns_processing_state_and_stages(
+        self, training_admin_client
+    ):
+        """Status endpoint returns processing_state + full stages payload."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.PROCESSING
+
+        # Build a realistic stages list: one completed, one running with
+        # mixed subtask outcomes.
+        transcription = StageExecution(
+            name=StageName.TRANSCRIPTION,
+            status=StageStatus.COMPLETED,
+        )
+        voice_cloning = StageExecution(
+            name=StageName.VOICE_CLONING,
+            status=StageStatus.RUNNING,
+            subtasks={
+                "alice": SubtaskExecution(
+                    name="alice", status=StageStatus.COMPLETED,
+                ),
+                "bob": SubtaskExecution(
+                    name="bob",
+                    status=StageStatus.FAILED,
+                    error="elevenlabs 429",
+                    retry_count=1,
+                ),
+            },
+        )
+        job = MagicMock()
+        job.job_id = "j-cs-1"
+        job.overall_status = "processing"
+        job.capabilities = {"characters": "completed"}
+        job.stages = [transcription, voice_cloning]
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=job,
+            ),
+        ):
+            resp = await training_admin_client.get(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/status"
+            )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["content_id"] == "507f1f77bcf86cd799439011"
+        assert body["processing_state"] == "processing"
+        assert body["job_id"] == "j-cs-1"
+        assert body["capabilities"] == {"characters": "completed"}
+        assert isinstance(body["stages"], list)
+        assert len(body["stages"]) == 2
+
+        stages_by_name = {s["name"]: s for s in body["stages"]}
+        assert stages_by_name["transcription"]["status"] == "completed"
+        vc = stages_by_name["voice_cloning"]
+        assert vc["status"] == "running"
+        assert vc["subtasks"]["alice"]["status"] == "completed"
+        assert vc["subtasks"]["bob"]["status"] == "failed"
+        assert vc["subtasks"]["bob"]["error"] == "elevenlabs 429"
+        assert vc["subtasks"]["bob"]["retry_count"] == 1
+
+    async def test_status_returns_empty_stages_when_no_job(
+        self, training_admin_client
+    ):
+        """When no IngestJob exists, stages is [] and state mirrors Content."""
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.READY
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=None,
+            ),
+        ):
+            resp = await training_admin_client.get(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/status"
+            )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["processing_state"] == "ready"
+        assert body["stages"] == []
+        assert body["job_id"] is None
+
+    async def test_status_returns_404_for_malformed_content_id(
+        self, training_admin_client
+    ):
+        """Malformed ObjectId is rejected as 404, not 500."""
+        resp = await training_admin_client.get(
+            "/api/v1/training/content/not-a-valid-oid/status"
+        )
+        assert resp.status_code == 404
+
+    async def test_status_returns_404_for_wrong_partner(
+        self, training_admin_client
+    ):
+        """Content owned by a different partner is 404 (no existence leak)."""
+        other_partner_content = MagicMock()
+        other_partner_content.partner_id = "training-otherorg-xyz"
+        other_partner_content.processing_state = ProcessingState.READY
+
+        with patch(
+            "app.api.routes.training.content.Content.get",
+            new_callable=AsyncMock,
+            return_value=other_partner_content,
+        ):
+            resp = await training_admin_client.get(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/status"
+            )
+
+        assert resp.status_code == 404

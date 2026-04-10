@@ -4,6 +4,7 @@ import logging
 from typing import List
 
 from beanie import PydanticObjectId
+from bson.errors import InvalidId
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
@@ -242,18 +243,43 @@ async def get_content_status(
     content_id: str,
     user: TrainingUser = Depends(get_current_training_user),
 ):
-    """Poll ingest status for a content item."""
-    content = await Content.get(PydanticObjectId(content_id))
+    """Poll ingest status for a content item.
+
+    Returns the content's processing_state plus a per-stage breakdown from
+    the latest IngestJob so the admin UI can render stage + subtask progress
+    and surface granular retry affordances.
+    """
+    try:
+        content_oid = PydanticObjectId(content_id)
+    except (InvalidId, TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
+        )
+    content = await Content.get(content_oid)
     if not content or content.partner_id != user.partner_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
-    job = await IngestJob.find_one({"content_id": content_id}, sort=[("created_at", -1)])
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
+        )
+    job = await IngestJob.find_one(
+        {"content_id": content_id}, sort=[("created_at", -1)],
+    )
     if not job:
-        return {"content_id": content_id, "status": "ready", "capabilities": {}, "estimated_seconds": 0}
+        return {
+            "content_id": content_id,
+            "job_id": None,
+            "processing_state": content.processing_state.value,
+            "status": "ready",
+            "capabilities": {},
+            "stages": [],
+            "estimated_seconds": 0,
+        }
     return {
         "content_id": content_id,
         "job_id": job.job_id,
+        "processing_state": content.processing_state.value,
         "status": job.overall_status,
         "capabilities": job.capabilities,
+        "stages": [s.model_dump(mode="json") for s in job.stages],
         "estimated_seconds": 60 + (len(job.capabilities) * 45),
     }
 
