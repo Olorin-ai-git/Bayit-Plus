@@ -60,12 +60,20 @@ class ResumablePipelineRunner:
         await self._run_forward(job, start_index=0)
 
     async def retry_stage(self, job: IngestJob, name: StageName) -> None:
-        """Reset the named stage to PENDING and re-run from there forward."""
+        """Re-run a stage from scratch, then continue forward.
+
+        Status is left as FAILED (not reset to PENDING) so that
+        mark_running() inside _run_stage correctly detects a retry and
+        increments retry_count. Stale error/timestamps/subtasks are
+        cleared so they reflect only the new attempt.
+        """
         stage = job.get_or_create_stage(name)
-        stage.status = StageStatus.PENDING
+        # Keep status=FAILED so mark_running() increments retry_count.
         stage.error = None
         stage.started_at = None
         stage.completed_at = None
+        # Wipe subtasks — handlers are expected to repopulate from scratch.
+        stage.subtasks = {}
 
         idx = PIPELINE_ORDER.index(name)
         await self._run_forward(job, start_index=idx)
@@ -94,6 +102,7 @@ class ResumablePipelineRunner:
             await self._handlers[stage_name](job, resume_subtask=subtask)
         except Exception as exc:
             stage.fail_subtask(subtask, str(exc))
+            stage.mark_failed(str(exc))  # keep stage-level error consistent
             await job.save()
             logger.exception(
                 "subtask retry failed: stage=%s subtask=%s",
@@ -130,6 +139,10 @@ class ResumablePipelineRunner:
     async def _run_stage(self, job: IngestJob, name: StageName) -> bool:
         """Invoke one stage handler and update its status. Returns True on success."""
         stage = job.get_or_create_stage(name)
+        logger.info(
+            "stage %s starting (job=%s retry_count=%d)",
+            name.value, job.job_id, stage.retry_count,
+        )
         stage.mark_running()
         await job.save()
 
@@ -154,8 +167,22 @@ class ResumablePipelineRunner:
                 return False
             if stage.all_subtasks_complete():
                 stage.mark_completed()
+            else:
+                # Defensive: handler returned with subtasks in a non-terminal state.
+                # Treat as stage-level failure to prevent silent pipeline advancement.
+                non_terminal = [
+                    t_name for t_name, t in stage.subtasks.items()
+                    if t.status not in (StageStatus.COMPLETED, StageStatus.FAILED)
+                ]
+                stage.mark_failed(
+                    f"handler returned with subtasks in non-terminal state: {non_terminal}"
+                )
+                await job.save()
+                return False
         else:
             stage.mark_completed()
 
         await job.save()
-        return True
+        if stage.status == StageStatus.COMPLETED:
+            logger.info("stage %s completed (job=%s)", name.value, job.job_id)
+        return stage.status == StageStatus.COMPLETED

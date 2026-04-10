@@ -232,3 +232,90 @@ async def test_retry_stage_reruns_stage_then_continues():
     handlers[StageName.SUBTITLES].assert_awaited_once()
     handlers[StageName.FINALIZATION].assert_awaited_once()
     assert job.get_stage(StageName.VOICE_CLONING).status == StageStatus.COMPLETED
+
+
+@pytest.mark.asyncio
+async def test_retry_stage_increments_retry_count():
+    handlers = _make_handlers()
+    runner = ResumablePipelineRunner(stage_handlers=handlers)
+    job = _make_job()
+    vc = job.get_or_create_stage(StageName.VOICE_CLONING)
+    vc.mark_failed("first attempt failed")
+    assert vc.retry_count == 0
+
+    await runner.retry_stage(job, StageName.VOICE_CLONING)
+
+    vc_after = job.get_stage(StageName.VOICE_CLONING)
+    assert vc_after.retry_count == 1
+    assert vc_after.status == StageStatus.COMPLETED
+
+
+@pytest.mark.asyncio
+async def test_retry_stage_clears_stale_subtasks():
+    """retry_stage should wipe subtask state so handlers start fresh."""
+    handlers = _make_handlers()
+    runner = ResumablePipelineRunner(stage_handlers=handlers)
+    job = _make_job()
+    vc = job.get_or_create_stage(StageName.VOICE_CLONING)
+    vc.add_subtask("alice")
+    vc.start_subtask("alice")
+    vc.fail_subtask("alice", "old failure")
+    vc.mark_failed("stale")
+
+    await runner.retry_stage(job, StageName.VOICE_CLONING)
+
+    # The empty handler didn't repopulate subtasks, so the stage should
+    # still be reachable — the key assertion is that the OLD stale subtask
+    # is gone.
+    assert "alice" not in job.get_stage(StageName.VOICE_CLONING).subtasks
+
+
+@pytest.mark.asyncio
+async def test_retry_subtask_exception_marks_stage_failed_with_new_error():
+    handlers = _make_handlers()
+
+    async def failing_handler(job, resume_subtask=None):
+        raise RuntimeError("retry also failed")
+
+    handlers[StageName.VOICE_CLONING].side_effect = failing_handler
+    runner = ResumablePipelineRunner(stage_handlers=handlers)
+    job = _make_job()
+    vc = job.get_or_create_stage(StageName.VOICE_CLONING)
+    vc.add_subtask("bob")
+    vc.start_subtask("bob")
+    vc.fail_subtask("bob", "original error")
+    vc.mark_failed("original stage error")
+
+    await runner.retry_subtask(job, StageName.VOICE_CLONING, "bob")
+
+    vc_after = job.get_stage(StageName.VOICE_CLONING)
+    assert vc_after.status == StageStatus.FAILED
+    assert "retry also failed" in vc_after.error
+    assert vc_after.subtasks["bob"].status == StageStatus.FAILED
+    assert "retry also failed" in vc_after.subtasks["bob"].error
+
+
+@pytest.mark.asyncio
+async def test_stage_fails_when_handler_leaves_subtasks_non_terminal():
+    """A buggy handler that adds a subtask but forgets to complete it
+    should cause the stage to be marked FAILED, not silently advance."""
+    handlers = _make_handlers()
+
+    async def buggy_handler(job, resume_subtask=None):
+        stage = job.get_or_create_stage(StageName.VOICE_CLONING)
+        stage.add_subtask("alice")
+        stage.start_subtask("alice")
+        # Oops — never completed alice
+
+    handlers[StageName.VOICE_CLONING].side_effect = buggy_handler
+    runner = ResumablePipelineRunner(stage_handlers=handlers)
+    job = _make_job()
+
+    await runner.run_all(job)
+
+    vc = job.get_stage(StageName.VOICE_CLONING)
+    assert vc.status == StageStatus.FAILED
+    assert "non-terminal" in vc.error
+    # Subsequent stages should NOT run
+    handlers[StageName.SUBTITLES].assert_not_awaited()
+    handlers[StageName.FINALIZATION].assert_not_awaited()
