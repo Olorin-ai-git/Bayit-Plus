@@ -24,7 +24,7 @@ class DubbingConfigMixin:
     # Character Animation Provider Selection
     CHARACTER_ANIMATION_PROVIDER: str = Field(
         default="aurora",
-        description="Provider for character animation: 'aurora', 'wavespeed', 'elevenlabs', or 'creatify'"
+        description="Provider for character animation: 'aurora', 'elevenlabs', or 'creatify'"
     )
     TEMP_FILE_HOST_URL: str = Field(
         default="https://tmpfiles.org/api/v1/upload",
@@ -39,16 +39,6 @@ class DubbingConfigMixin:
     FAL_AURORA_RESOLUTION: str = Field(
         default="480p",
         description="Aurora output resolution: 480p or 720p",
-    )
-
-    # WaveSpeedAI daVinci-MagiHuman (self-hosted lipsync alternative)
-    WAVESPEED_API_KEY: str = Field(
-        default="",
-        description="WaveSpeedAI API key for daVinci-MagiHuman lip-sync",
-    )
-    WAVESPEED_RESOLUTION: str = Field(
-        default="720p",
-        description="WaveSpeed output resolution: 256p, 720p, or 1080p",
     )
 
     # Creatify Aurora (Character animation and lip-sync - Alternative provider)
@@ -83,7 +73,7 @@ class DubbingConfigMixin:
     @classmethod
     def validate_animation_provider(cls, v: str) -> str:
         """Validate CHARACTER_ANIMATION_PROVIDER is a supported provider."""
-        valid_providers = ["aurora", "creatify-aurora", "wavespeed", "elevenlabs", "creatify"]
+        valid_providers = ["aurora", "creatify-aurora", "elevenlabs", "creatify"]
         if v.lower() not in valid_providers:
             raise ValueError(
                 f"CHARACTER_ANIMATION_PROVIDER must be one of {valid_providers}, got '{v}'"
