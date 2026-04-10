@@ -5,11 +5,12 @@ from typing import List, Optional
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.api.routes.training.dependencies import require_training_admin
 from app.models.chapters import ChapterItemModel, VideoChapters
 from app.models.content import Content
+from app.models.training_assignment import TrainingAssignment
 from app.models.training_user import TrainingUser
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,13 @@ class ContentUpdateRequest(BaseModel):
     tags: Optional[List[str]] = None
     chapters: Optional[List[ChapterUpdateItem]] = None
     characters: Optional[List[CharacterUpdateItem]] = None
+
+
+class FormatChangeRequest(BaseModel):
+    format_id: str = Field(..., min_length=1, description="New lesson format ID")
+    format_overrides: Optional[dict] = Field(
+        default=None, description="Format configuration overrides",
+    )
 
 
 @router.patch("/{content_id}")
@@ -80,3 +88,36 @@ async def update_content(
             len(chapter_items), content_id,
         )
     return {"updated": True, "content_id": content_id}
+
+
+@router.patch("/{content_id}/format")
+async def change_content_format(
+    content_id: str,
+    body: FormatChangeRequest,
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Change the lesson format for a content item across all assignments."""
+    content = await Content.get(PydanticObjectId(content_id))
+    if not content or content.partner_id != admin.partner_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
+        )
+    assignments = await TrainingAssignment.find(
+        TrainingAssignment.partner_id == admin.partner_id,
+        TrainingAssignment.content_id == content_id,
+    ).to_list()
+    updated_count = 0
+    for assignment in assignments:
+        assignment.format_id = body.format_id
+        await assignment.save()
+        updated_count += 1
+    logger.info(
+        "Format changed for content %s to %s (%d assignments updated)",
+        content_id, body.format_id, updated_count,
+    )
+    return {
+        "updated": True,
+        "content_id": content_id,
+        "format_id": body.format_id,
+        "assignments_updated": updated_count,
+    }
