@@ -93,3 +93,34 @@ def test_first_failed_stage_uses_declaration_order_not_lexicographic():
         "first_failed_stage must iterate in StageName declaration order; "
         "a lexicographic implementation would return FINALIZATION instead"
     )
+
+
+def test_stages_field_coerces_null_from_stored_document():
+    """Regression guard: loading an existing document that has
+    `stages: null` (from a legacy write or partial migration) must not
+    raise ValidationError. The validator coerces null -> empty list.
+
+    model_validate cannot be used here because Beanie's Document.__init__
+    calls get_pymongo_collection() which requires an initialised collection.
+    Instead we invoke the model_validator classmethod directly — the same
+    path that Pydantic takes when parsing a raw dict — then construct the
+    object with the already-coerced values.
+    """
+    raw = {
+        "job_id": "test-null-stages",
+        "partner_id": "p1",
+        "content_id": "c1",
+        "video_url": "https://example.com/x.mp4",
+        "capabilities": {"characters": "pending"},
+        "stages": None,
+    }
+    # Exercise the validator directly (same call Pydantic makes in mode='before').
+    coerced = IngestJob._coerce_null_stages(raw)
+    assert coerced["stages"] == [], "validator must coerce None -> []"
+
+    # Construct with the coerced payload — stages is now a valid empty list.
+    job = _make_job(**{k: v for k, v in coerced.items() if k in {
+        "job_id", "partner_id", "content_id", "video_url", "capabilities", "stages",
+    }})
+    assert job.stages == []
+    assert job.capabilities == {"characters": "pending"}

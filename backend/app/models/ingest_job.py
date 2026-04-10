@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from beanie import Document
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from app.models.pipeline_stage import StageExecution, StageName, StageStatus
 
@@ -64,6 +64,19 @@ class IngestJob(Document):
             "job_id",
             "partner_id",
         ]
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_null_stages(cls, values):
+        """Coerce stages=null from legacy or partial documents to an empty list.
+
+        A missing `stages` key triggers `default_factory=list`, but an explicit
+        `null` in the stored document would raise ValidationError. Coerce here
+        so old documents load cleanly.
+        """
+        if isinstance(values, dict) and values.get("stages") is None and "stages" in values:
+            values["stages"] = []
+        return values
 
     @property
     def overall_status(self) -> str:
