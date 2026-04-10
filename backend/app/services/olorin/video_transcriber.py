@@ -67,15 +67,33 @@ async def _download_video(url: str, dest: str) -> str:
     return await _download_via_ytdlp(url, dest)
 
 
-async def _download_via_ytdlp(url: str, dest: str) -> str:
-    """Download video via yt-dlp (YouTube, Vimeo, etc.)."""
-    proc = await asyncio.create_subprocess_exec(
+def _ytdlp_command(url: str, dest: str) -> list[str]:
+    """Build the yt-dlp argv for a given url/dest.
+
+    Injects ``--cookies <path>`` when ``settings.YTDLP_COOKIES_FILE`` is set.
+    YouTube's anti-bot rejects unauthenticated downloads from datacenter IPs
+    (Hetzner, GCloud, AWS) so the VPS deployment relies on a mounted
+    Netscape-format cookies.txt. Local dev from a residential IP can leave
+    the setting unset.
+    """
+    args = [
         "yt-dlp",
         "--no-playlist",
         "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
         "--merge-output-format", "mp4",
-        "-o", dest,
-        url,
+    ]
+    cookies_file = settings.YTDLP_COOKIES_FILE
+    if cookies_file:
+        args.extend(["--cookies", cookies_file])
+    args.extend(["-o", dest, url])
+    return args
+
+
+async def _download_via_ytdlp(url: str, dest: str) -> str:
+    """Download video via yt-dlp (YouTube, Vimeo, etc.)."""
+    args = _ytdlp_command(url, dest)
+    proc = await asyncio.create_subprocess_exec(
+        *args,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )

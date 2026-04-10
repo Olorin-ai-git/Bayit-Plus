@@ -12,12 +12,28 @@ and is expected to:
 When a handler is called with ``resume_subtask=name``, it should process
 ONLY that subtask (other subtasks are already in their terminal state).
 
-Persistence: the runner calls ``await job.save()`` before and after each
-stage invocation so a crash between stages leaves the latest state in
-MongoDB.
+Persistence model (important)
+-----------------------------
+Beanie 2.0.1 replaces ``job.stages`` in place after every ``save()``
+via ``merge_models``. Any Python reference to a nested ``StageExecution``
+is orphaned across a save boundary. To avoid silent data loss, the
+runner:
+
+1. Never holds a ``StageExecution`` reference across ``job.save()``.
+2. Re-acquires the stage via ``job.get_or_create_stage()`` after each
+   save, or delegates mutation to ``IngestJob.*`` atomic mutator
+   methods that contain the lifetime inside a single method body.
+3. Reads stage state BEFORE issuing any save that could orphan the
+   reference, captures primitives (status, subtask counts), and acts on
+   the primitives afterwards.
+
+Violating this discipline causes the symptoms observed in the 2026-04-10
+Task 20 silent-failure incident: DB shows all stages RUNNING with no
+completion timestamps, even though handlers have run and mutated the
+in-memory copy.
 """
 import logging
-from typing import Awaitable, Callable, Dict, Optional
+from typing import Awaitable, Callable, Dict
 
 from app.models.ingest_job import IngestJob
 from app.models.pipeline_stage import StageName, StageStatus
@@ -67,14 +83,7 @@ class ResumablePipelineRunner:
         increments retry_count. Stale error/timestamps/subtasks are
         cleared so they reflect only the new attempt.
         """
-        stage = job.get_or_create_stage(name)
-        # Keep status=FAILED so mark_running() increments retry_count.
-        stage.error = None
-        stage.started_at = None
-        stage.completed_at = None
-        # Wipe subtasks — handlers are expected to repopulate from scratch.
-        stage.subtasks = {}
-
+        await job.reset_stage_for_retry(name)
         idx = PIPELINE_ORDER.index(name)
         await self._run_forward(job, start_index=idx)
 
@@ -88,101 +97,97 @@ class ResumablePipelineRunner:
         complete, the runner marks the stage COMPLETED and continues
         forward through subsequent stages.
         """
-        stage = job.get_or_create_stage(stage_name)
-        if subtask not in stage.subtasks:
-            raise ValueError(
-                f"subtask {subtask!r} not found in stage {stage_name.value!r}"
-            )
-
-        # Reset the subtask's failed state
-        stage.subtasks[subtask].status = StageStatus.PENDING
-        stage.subtasks[subtask].error = None
+        await job.reset_subtask_for_retry(stage_name, subtask)
 
         try:
             await self._handlers[stage_name](job, resume_subtask=subtask)
         except Exception as exc:
-            stage.fail_subtask(subtask, str(exc))
-            stage.mark_failed(str(exc))  # keep stage-level error consistent
-            await job.save()
+            await job.fail_stage_subtask(stage_name, subtask, str(exc))
+            await job.mark_stage_failed(stage_name, str(exc))
             logger.exception(
                 "subtask retry failed: stage=%s subtask=%s",
                 stage_name.value, subtask,
             )
             return
 
-        # Infer stage completion after subtask handler returns
+        # Re-read stage state (the handler may have done its own saves).
+        stage = job.get_or_create_stage(stage_name)
         if stage.all_subtasks_complete() and not stage.has_failed_subtasks():
-            stage.mark_completed()
+            await job.mark_stage_completed(stage_name)
         elif stage.has_failed_subtasks():
             failed_count = sum(
                 1 for t in stage.subtasks.values() if t.status == StageStatus.FAILED
             )
-            stage.mark_failed(
-                f"{failed_count} of {len(stage.subtasks)} subtasks failed"
+            await job.mark_stage_failed(
+                stage_name,
+                f"{failed_count} of {len(stage.subtasks)} subtasks failed",
             )
-        await job.save()
 
-        if stage.status == StageStatus.COMPLETED:
+        # Re-acquire after the save above; check status on fresh instance.
+        if job.get_or_create_stage(stage_name).status == StageStatus.COMPLETED:
             idx = PIPELINE_ORDER.index(stage_name)
             await self._run_forward(job, start_index=idx + 1)
 
     async def _run_forward(self, job: IngestJob, start_index: int) -> None:
         """Run stages from start_index forward, skipping completed ones."""
         for name in PIPELINE_ORDER[start_index:]:
-            stage = job.get_or_create_stage(name)
-            if stage.status == StageStatus.COMPLETED:
+            if job.get_or_create_stage(name).status == StageStatus.COMPLETED:
                 continue
             ok = await self._run_stage(job, name)
             if not ok:
                 return
 
     async def _run_stage(self, job: IngestJob, name: StageName) -> bool:
-        """Invoke one stage handler and update its status. Returns True on success."""
-        stage = job.get_or_create_stage(name)
+        """Invoke one stage handler and update its status. Returns True on success.
+
+        Does NOT hold a ``StageExecution`` reference across any save.
+        Uses ``job.mark_stage_*`` atomic mutators instead.
+        """
+        retry_count = job.get_or_create_stage(name).retry_count
         logger.info(
             "stage %s starting (job=%s retry_count=%d)",
-            name.value, job.job_id, stage.retry_count,
+            name.value, job.job_id, retry_count,
         )
-        stage.mark_running()
-        await job.save()
+        await job.mark_stage_running(name)
 
         try:
             await self._handlers[name](job, resume_subtask=None)
         except Exception as exc:
-            stage.mark_failed(str(exc))
-            await job.save()
+            await job.mark_stage_failed(name, str(exc))
             logger.exception("stage %s failed for job %s", name.value, job.job_id)
             return False
 
-        # Infer completion from subtask state (if any) or exception absence
+        # Re-read stage state after the handler (it may have mutated
+        # subtasks via its own atomic saves, which orphaned any earlier
+        # reference on this frame).
+        stage = job.get_or_create_stage(name)
+
         if stage.subtasks:
             if stage.has_failed_subtasks():
                 failed_count = sum(
                     1 for t in stage.subtasks.values() if t.status == StageStatus.FAILED
                 )
-                stage.mark_failed(
-                    f"{failed_count} of {len(stage.subtasks)} subtasks failed"
+                await job.mark_stage_failed(
+                    name,
+                    f"{failed_count} of {len(stage.subtasks)} subtasks failed",
                 )
-                await job.save()
                 return False
             if stage.all_subtasks_complete():
-                stage.mark_completed()
+                await job.mark_stage_completed(name)
             else:
-                # Defensive: handler returned with subtasks in a non-terminal state.
-                # Treat as stage-level failure to prevent silent pipeline advancement.
                 non_terminal = [
                     t_name for t_name, t in stage.subtasks.items()
                     if t.status not in (StageStatus.COMPLETED, StageStatus.FAILED)
                 ]
-                stage.mark_failed(
-                    f"handler returned with subtasks in non-terminal state: {non_terminal}"
+                await job.mark_stage_failed(
+                    name,
+                    f"handler returned with subtasks in non-terminal state: {non_terminal}",
                 )
-                await job.save()
                 return False
         else:
-            stage.mark_completed()
+            await job.mark_stage_completed(name)
 
-        await job.save()
-        if stage.status == StageStatus.COMPLETED:
+        final = job.get_or_create_stage(name).status
+        if final == StageStatus.COMPLETED:
             logger.info("stage %s completed (job=%s)", name.value, job.job_id)
-        return stage.status == StageStatus.COMPLETED
+        return final == StageStatus.COMPLETED

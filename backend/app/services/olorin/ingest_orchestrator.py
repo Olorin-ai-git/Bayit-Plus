@@ -37,9 +37,6 @@ from app.services.olorin.video_transcriber import transcribe_video
 # failure to stamp the error field for us.
 MANUAL_PORTRAIT_UPLOAD_MARKER = "manually-resolved:portrait-upload"
 
-
-def _utcnow_orchestrator() -> datetime:
-    return datetime.now(timezone.utc)
 from app.services.vod_interaction.dialogue_mapper import dialogue_mapper_service
 from app.services.vod_interaction.voice_cloner import (
     character_voice_cloner_service,
@@ -273,6 +270,10 @@ async def _stage_search(
 # Individual pipeline stages
 # ---------------------------------------------------------------------------
 
+class DurationLimitExceeded(RuntimeError):
+    """Raised when a transcribed video exceeds the partner's tier duration limit."""
+
+
 async def _run_transcription(
     job: IngestJob,
     content: Content,
@@ -285,77 +286,84 @@ async def _run_transcription(
       team         -> TRAINING_MAX_DURATION_TEAM_SECONDS  (default 7200)
       organization -> unlimited (0)
 
-    If duration exceeds the limit, all capabilities are marked failed and "" is
-    returned so the pipeline stops. The caller (run_pipeline) must NOT increment
-    credits_used in this case.
+    Failure modes all propagate as exceptions so the ResumablePipelineRunner
+    can mark the stage FAILED and halt the pipeline:
+
+      - yt-dlp / HTTP download error → RuntimeError from transcribe_video
+      - ElevenLabs Scribe error      → httpx.HTTPStatusError from transcribe_video
+      - Over-limit duration           → DurationLimitExceeded
+      - Empty transcript result       → RuntimeError
+
+    The pre-fix behavior of silently returning "" and letting downstream
+    stages march forward was the root cause of the Task 20 silent-failure
+    incident: an unavailable YouTube URL produced an 8-stage run where
+    every stage recorded RUNNING but content ended up READY.
     """
-    try:
-        result = await transcribe_video(job.video_url)
+    result = await transcribe_video(job.video_url)
 
-        # Duration gate -- check after transcription because that's when we
-        # first know the real duration. ElevenLabs is billed for this call
-        # regardless, but all downstream LLM stages are skipped on failure.
-        tc = partner.training_config
-        tier = (
-            tc.get("org_tier", "trial") if isinstance(tc, dict)
-            else getattr(tc, "org_tier", "trial")
+    # Duration gate -- check after transcription because that's when we
+    # first know the real duration. ElevenLabs is billed for this call
+    # regardless, but all downstream LLM stages are skipped on failure.
+    tc = partner.training_config
+    tier = (
+        tc.get("org_tier", "trial") if isinstance(tc, dict)
+        else getattr(tc, "org_tier", "trial")
+    )
+    _TIER_LIMITS = {
+        "trial": settings.TRAINING_MAX_DURATION_TRIAL_SECONDS,
+        "team": settings.TRAINING_MAX_DURATION_TEAM_SECONDS,
+    }
+    max_seconds = _TIER_LIMITS.get(tier, 0)  # 0 = unlimited (organization)
+
+    if max_seconds > 0 and result.duration_seconds > max_seconds:
+        limit_min = max_seconds // 60
+        actual_min = int(result.duration_seconds / 60)
+        message = (
+            f"Video too long ({actual_min} min). "
+            f"{tier.title()} tier limit: {limit_min} min. "
+            "Upgrade your plan or use a shorter video."
         )
-        _TIER_LIMITS = {
-            "trial": settings.TRAINING_MAX_DURATION_TRIAL_SECONDS,
-            "team": settings.TRAINING_MAX_DURATION_TEAM_SECONDS,
+        job.error_detail = message
+        for cap in job.capabilities:
+            job.capabilities[cap] = "failed"
+        job.updated_at = datetime.now(timezone.utc)
+        await job.save()
+        logger.warning(
+            "Video rejected: duration exceeds tier limit",
+            extra={
+                "job_id": job.job_id,
+                "duration_seconds": result.duration_seconds,
+                "max_seconds": max_seconds,
+                "tier": tier,
+            },
+        )
+        raise DurationLimitExceeded(message)
+
+    if not result.full_text:
+        raise RuntimeError(
+            "transcription produced no text (audio may be silent, "
+            "empty, or unrecognized language)"
+        )
+
+    content.transcript = result.full_text
+    content.transcript_segments = [
+        {
+            "speaker": s.speaker,
+            "text": s.text,
+            "start": s.start,
+            "end": s.end,
         }
-        max_seconds = _TIER_LIMITS.get(tier, 0)  # 0 = unlimited (organization)
-
-        if max_seconds > 0 and result.duration_seconds > max_seconds:
-            limit_min = max_seconds // 60
-            actual_min = int(result.duration_seconds / 60)
-            job.error_detail = (
-                f"Video too long ({actual_min} min). "
-                f"{tier.title()} tier limit: {limit_min} min. "
-                "Upgrade your plan or use a shorter video."
-            )
-            for cap in job.capabilities:
-                job.capabilities[cap] = "failed"
-            job.updated_at = datetime.now(timezone.utc)
-            await job.save()
-            logger.warning(
-                "Video rejected: duration exceeds tier limit",
-                extra={
-                    "job_id": job.job_id,
-                    "duration_seconds": result.duration_seconds,
-                    "max_seconds": max_seconds,
-                    "tier": tier,
-                },
-            )
-            return ""
-
-        if result.full_text:
-            content.transcript = result.full_text
-            content.transcript_segments = [
-                {
-                    "speaker": s.speaker,
-                    "text": s.text,
-                    "start": s.start,
-                    "end": s.end,
-                }
-                for s in result.segments
-            ]
-            await content.save()
-            logger.info(
-                "Transcription saved",
-                extra={
-                    "job_id": job.job_id,
-                    "segments": len(result.segments),
-                },
-            )
-            return result.full_text
-        return ""
-    except Exception:
-        logger.exception(
-            "Transcription failed",
-            extra={"job_id": job.job_id},
-        )
-        return ""
+        for s in result.segments
+    ]
+    await content.save()
+    logger.info(
+        "Transcription saved",
+        extra={
+            "job_id": job.job_id,
+            "segments": len(result.segments),
+        },
+    )
+    return result.full_text
 
 
 async def _run_characters(
@@ -428,6 +436,10 @@ async def _run_characters(
             "job_id": job.job_id,
             "stage": "characters",
         })
+        # Re-raise so ResumablePipelineRunner marks the stage FAILED and
+        # halts the pipeline. Silent return was the root cause of the
+        # Task 20 silent-failure incident (see silent-failure plan doc).
+        raise
 
 
 async def _run_subtitles(
@@ -445,7 +457,10 @@ async def _run_subtitles(
     try:
         if not transcript_text:
             await job.update_capability("subtitles", "failed")
-            return
+            raise RuntimeError(
+                "cannot generate subtitles: transcript is empty "
+                "(upstream transcription stage produced no text)"
+            )
 
         translation_svc = LiveTranslationService()
         target_langs = ["en", "he", "es"]
@@ -488,6 +503,7 @@ async def _run_subtitles(
             "job_id": job.job_id,
             "stage": "subtitles",
         })
+        raise
 
 
 async def _run_trivia(
@@ -531,6 +547,7 @@ async def _run_trivia(
             "job_id": job.job_id,
             "stage": "trivia",
         })
+        raise
 
 
 async def _run_search(
@@ -571,6 +588,10 @@ async def _run_search(
                 "stage": "search",
                 "error": result.get("error", ""),
             })
+            raise RuntimeError(
+                f"search index returned failure status: "
+                f"{result.get('error') or status}"
+            )
     except Exception:
         logger.exception(
             "Search indexing failed",
@@ -581,6 +602,7 @@ async def _run_search(
             "job_id": job.job_id,
             "stage": "search",
         })
+        raise
 
 
 # ---------------------------------------------------------------------------
@@ -638,6 +660,13 @@ async def _run_face_extraction(
 
     Subtask-aware: if resume_subtask is set, processes only that character.
     Falls back gracefully on NoFaceDetectedError (admin can upload manually).
+
+    Persistence discipline: all subtask mutations go through the IngestJob
+    atomic mutator methods (``mark_manual_portrait_subtask``,
+    ``start_stage_subtask``, ``complete_stage_subtask``,
+    ``fail_stage_subtask``) so no StageExecution reference is held across
+    a ``save()`` — see ``resumable_ingest`` module docstring for the
+    Beanie 2.0.1 orphan-reference advisory.
     """
     content = await Content.get(job.content_id)
     if not content or not content.interactive_characters:
@@ -647,7 +676,6 @@ async def _run_face_extraction(
         )
         return
 
-    stage = job.get_or_create_stage(StageName.FACE_EXTRACTION)
     face_svc = FaceExtractionService(storage_service=storage_service)
 
     track = await find_subtitle_track(str(content.id))
@@ -666,40 +694,42 @@ async def _run_face_extraction(
             for character in content.interactive_characters:
                 if resume_subtask and character.name != resume_subtask:
                     continue
-                stage.add_subtask(character.name)
-                stage.start_subtask(character.name)
-                stage.fail_subtask(character.name, f"video download failed: {exc}")
+                await job.start_stage_subtask(
+                    StageName.FACE_EXTRACTION, character.name,
+                )
+                await job.fail_stage_subtask(
+                    StageName.FACE_EXTRACTION,
+                    character.name,
+                    f"video download failed: {exc}",
+                )
             return
 
         for character in content.interactive_characters:
             if resume_subtask and character.name != resume_subtask:
                 continue
 
-            stage.add_subtask(character.name)
-            if stage.subtasks[character.name].status == StageStatus.COMPLETED:
+            # Re-read stage fresh on every iteration — the prior iteration's
+            # saves orphan any cached reference.
+            stage = job.get_or_create_stage(StageName.FACE_EXTRACTION)
+            existing = stage.subtasks.get(character.name)
+            if existing and existing.status == StageStatus.COMPLETED:
                 continue
 
             if character.frame_url:
-                # Task 11 manual portrait upload path: character already
-                # has a frame_url from the portraits endpoint. Mark the
-                # subtask completed WITHOUT calling start_subtask — which
-                # would clear the error field — so the "manually resolved"
-                # audit marker survives subsequent retry_stage / retry
-                # subtask calls. The frontend keys on (status==completed
-                # AND error!=null) to render the "manually resolved"
-                # badge. If there's no pre-existing error (rare: the
-                # character was added post-ingest and the admin uploaded
-                # before YuNet ran), stamp a canonical marker so the
-                # badge still renders.
-                subtask = stage.subtasks[character.name]
-                subtask.status = StageStatus.COMPLETED
-                subtask.completed_at = _utcnow_orchestrator()
-                if subtask.error is None:
-                    subtask.error = MANUAL_PORTRAIT_UPLOAD_MARKER
+                # Manual portrait upload path: character already has a
+                # frame_url from the portraits endpoint. Preserve the
+                # "manually resolved" audit marker via a dedicated atomic
+                # mutator so it survives retry_stage / retry_subtask.
+                await job.mark_manual_portrait_subtask(
+                    StageName.FACE_EXTRACTION,
+                    character.name,
+                    MANUAL_PORTRAIT_UPLOAD_MARKER,
+                )
                 continue
 
-            stage.start_subtask(character.name)
-            await job.save()
+            await job.start_stage_subtask(
+                StageName.FACE_EXTRACTION, character.name,
+            )
 
             segments = _segments_for_character(cue_map, character.name, content)
             try:
@@ -711,11 +741,19 @@ async def _run_face_extraction(
                 )
                 character.frame_url = url
                 await content.save()
-                stage.complete_subtask(character.name)
+                await job.complete_stage_subtask(
+                    StageName.FACE_EXTRACTION, character.name,
+                )
             except NoFaceDetectedError as exc:
-                stage.fail_subtask(character.name, f"no face detected: {exc}")
+                await job.fail_stage_subtask(
+                    StageName.FACE_EXTRACTION,
+                    character.name,
+                    f"no face detected: {exc}",
+                )
             except Exception as exc:
-                stage.fail_subtask(character.name, str(exc))
+                await job.fail_stage_subtask(
+                    StageName.FACE_EXTRACTION, character.name, str(exc),
+                )
 
 
 async def _run_voice_cloning(
@@ -725,23 +763,24 @@ async def _run_voice_cloning(
 
     Subtask-aware: if resume_subtask is set, processes only that character.
     "skipped" status (no dialogue / audio too short) is treated as success.
+    Uses atomic subtask mutators — no StageExecution refs across saves.
     """
     content = await Content.get(job.content_id)
     if not content or not content.interactive_characters:
         return
 
-    stage = job.get_or_create_stage(StageName.VOICE_CLONING)
-
     for character in content.interactive_characters:
         if resume_subtask and character.name != resume_subtask:
             continue
 
-        stage.add_subtask(character.name)
-        if stage.subtasks[character.name].status == StageStatus.COMPLETED:
+        stage = job.get_or_create_stage(StageName.VOICE_CLONING)
+        existing = stage.subtasks.get(character.name)
+        if existing and existing.status == StageStatus.COMPLETED:
             continue
 
-        stage.start_subtask(character.name)
-        await job.save()
+        await job.start_stage_subtask(
+            StageName.VOICE_CLONING, character.name,
+        )
 
         try:
             result = await character_voice_cloner_service.clone_single_character(
@@ -754,17 +793,45 @@ async def _run_voice_cloning(
                         character.name, result.reason,
                         extra={"job_id": job.job_id},
                     )
-                stage.complete_subtask(character.name)
+                await job.complete_stage_subtask(
+                    StageName.VOICE_CLONING, character.name,
+                )
             else:
-                stage.fail_subtask(character.name, result.reason or "voice clone failed")
+                await job.fail_stage_subtask(
+                    StageName.VOICE_CLONING,
+                    character.name,
+                    result.reason or "voice clone failed",
+                )
         except Exception as exc:
-            stage.fail_subtask(character.name, str(exc))
+            await job.fail_stage_subtask(
+                StageName.VOICE_CLONING, character.name, str(exc),
+            )
 
 
 async def _run_finalization(
     job: IngestJob, resume_subtask: Optional[str] = None,
 ) -> None:
-    """Stage: Mark content as READY (pipeline complete)."""
+    """Stage: Mark content as READY (pipeline complete).
+
+    Refuses to flip READY if any prior stage is FAILED. The runner's
+    _run_forward normally short-circuits before reaching finalization
+    when a stage fails, but this guard defends against:
+
+      - Subtask retry paths that bypass the full forward pass
+      - Future handlers that forget to raise on failure
+      - Stale pipeline state from legacy or manually-edited job rows
+
+    This is the defensive belt-and-suspenders fix from the Task 20
+    silent-failure incident, where a broken YouTube download completed
+    the entire pipeline as "finalized" despite zero content being
+    produced.
+    """
+    failed = job.first_failed_stage()
+    if failed is not None:
+        raise RuntimeError(
+            f"cannot finalize: stage {failed.name.value} is FAILED "
+            f"({(failed.error or 'no error detail')[:200]})"
+        )
     content = await Content.get(job.content_id)
     if not content:
         raise RuntimeError(

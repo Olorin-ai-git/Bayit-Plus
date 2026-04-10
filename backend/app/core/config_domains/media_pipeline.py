@@ -1,9 +1,25 @@
 """Domain config: Trailer extraction pipeline and Kan Educational TV."""
+from typing import Optional
+
 from pydantic import Field
 
 
 class MediaPipelineConfigMixin:
     """Trailer extraction pipeline and Kan Educational TV channel configuration."""
+
+    # Shared yt-dlp authentication (used by training ingest + trailer pipeline)
+    YTDLP_COOKIES_FILE: Optional[str] = Field(
+        default=None,
+        env="YTDLP_COOKIES_FILE",
+        description=(
+            "Absolute path to a Netscape-format cookies.txt for yt-dlp. "
+            "Required when running on datacenter IPs (e.g. Hetzner VPS) "
+            "because YouTube's anti-bot rejects unauthenticated downloads "
+            "from these ranges. Export from a logged-in browser via "
+            "'Get cookies.txt LOCALLY' extension. Leave unset for local "
+            "development from a residential IP."
+        ),
+    )
 
     # Trailer Extraction Pipeline Configuration
     TRAILER_EXTRACTION_TEMP_DIR: str = Field(

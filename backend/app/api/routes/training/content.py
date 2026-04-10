@@ -369,6 +369,18 @@ async def retry_content_ingest(
     content.processing_state = ProcessingState.PROCESSING
     await content.save()
 
+    # Reset per-capability statuses so ``job.overall_status`` returns
+    # "processing" during the retry run. Without this reset the list
+    # endpoint would keep mapping the content's display ``status`` to
+    # "failed" (driven by the stale capabilities dict) and the detail
+    # page's progress banner would fight with a "failed" badge in the
+    # list. Only the scoped retry paths get a selective reset; a full
+    # ``resume_pipeline`` run resets all four to match the fresh attempt.
+    if stage_enum is None and subtask is None:
+        job.capabilities = {cap: "pending" for cap in job.capabilities}
+        job.error_detail = None
+        await job.save()
+
     if stage_enum is not None and subtask is not None:
         background_tasks.add_task(retry_subtask, job, stage_enum, subtask)
     elif stage_enum is not None:
