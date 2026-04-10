@@ -12,7 +12,7 @@ from app.api.routes.training.dependencies import (
     require_training_admin,
 )
 from app.models.chapters import VideoChapters
-from app.models.content import Content
+from app.models.content import Content, ProcessingState
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingUser
@@ -122,8 +122,15 @@ async def ingest_content(
 async def list_content(
     user: TrainingUser = Depends(get_current_training_user),
 ):
-    """List organization's training content with pipeline status."""
-    items = await Content.find({"partner_id": user.partner_id}).sort("-_id").to_list()
+    """List organization's training content with pipeline status.
+
+    Viewers only see content whose pipeline has completed (processing_state=READY).
+    Admins see all content regardless of pipeline state.
+    """
+    query: dict = {"partner_id": user.partner_id}
+    if user.role != "admin":
+        query["processing_state"] = ProcessingState.READY
+    items = await Content.find(query).sort("-_id").to_list()
     content_ids = [str(c.id) for c in items]
     jobs = await IngestJob.find(
         {"content_id": {"$in": content_ids}},

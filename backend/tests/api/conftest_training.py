@@ -62,6 +62,20 @@ async def training_admin_client(mock_training_admin):
 
 
 @pytest_asyncio.fixture
+async def training_viewer_client(mock_training_viewer):
+    """AsyncClient with training viewer auth override."""
+    app.dependency_overrides[get_current_training_user] = lambda: mock_training_viewer
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        yield ac
+
+    app.dependency_overrides.pop(get_current_training_user, None)
+
+
+@pytest_asyncio.fixture
 async def training_public_client():
     """AsyncClient with no auth (for public endpoints like register/login)."""
     async with AsyncClient(

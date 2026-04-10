@@ -12,6 +12,7 @@ from app.api.routes.training.dependencies import (
     get_current_training_user,
     require_training_admin,
 )
+from app.models.content import Content, ProcessingState
 from app.models.training_assignment import TrainingAssignment
 from app.models.training_user import TrainingUser
 
@@ -36,7 +37,35 @@ async def create_assignment(
     body: CreateAssignmentRequest,
     admin: TrainingUser = Depends(require_training_admin),
 ):
-    """Assign content to employees."""
+    """Assign content to employees.
+
+    Rejects assignment to content whose pipeline has not completed — viewers
+    cannot consume PROCESSING or FAILED content, so assigning it would create
+    a dead-end experience.
+    """
+    try:
+        content_oid = PydanticObjectId(body.content_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content not found",
+        )
+    content = await Content.get(content_oid)
+    if not content or content.partner_id != admin.partner_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content not found",
+        )
+    if content.processing_state != ProcessingState.READY:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                f"Content is still processing "
+                f"(state: {content.processing_state.value}); "
+                f"cannot assign until processing completes"
+            ),
+        )
+
     existing = await TrainingAssignment.find_one({
         "partner_id": admin.partner_id,
         "content_id": body.content_id,
