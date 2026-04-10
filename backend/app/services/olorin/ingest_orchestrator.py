@@ -27,6 +27,7 @@ from app.services.olorin.face_extraction import (
     NoFaceDetectedError,
 )
 from app.services.olorin.metering_service import metering_service
+from app.services.olorin.resumable_ingest import ResumablePipelineRunner
 from app.services.olorin.video_transcriber import transcribe_video
 from app.services.vod_interaction.dialogue_mapper import dialogue_mapper_service
 from app.services.vod_interaction.voice_cloner import (
@@ -88,60 +89,156 @@ async def create_ingest_job(
 
 
 async def run_pipeline(job: IngestJob) -> None:
-    """
-    Execute the orchestrated pipeline.
+    """Drive the full training ingest pipeline with resumable stages.
 
-    Order: transcribe first (other stages need transcript),
-    then run remaining stages concurrently.
+    Flow:
+    1. Flip Content.processing_state to PROCESSING
+    2. Run all pipeline stages via ResumablePipelineRunner in declared order
+    3. On any stage failure, flip processing_state to FAILED
+    4. _run_finalization stage flips to READY on success
     """
-    partner = await IntegrationPartner.find_one(
-        IntegrationPartner.partner_id == job.partner_id,
-    )
     content = await Content.get(job.content_id)
-    if not content or not partner:
-        job.error_detail = "Content or partner not found"
-        await job.save()
-        return
+    if content:
+        content.processing_state = ProcessingState.PROCESSING
+        await content.save()
 
-    transcript_text = getattr(content, "transcript", None) or ""
+    runner = _build_runner()
+    await runner.run_all(job)
 
-    # Stage 0: Transcribe (if not already cached on content)
-    if not transcript_text:
-        transcript_text = await _run_transcription(
-            job, content, partner,
+    if job.first_failed_stage() is not None:
+        logger.warning(
+            "pipeline failed for job %s at stage %s",
+            job.job_id, job.first_failed_stage().name.value,
         )
-
-    # Build concurrent stage tasks
-    stages = []
-    caps = job.capabilities
-    if "characters" in caps:
-        stages.append(
-            _run_characters(job, content, partner, transcript_text),
-        )
-    if "subtitles" in caps:
-        stages.append(
-            _run_subtitles(job, content, partner, transcript_text),
-        )
-    if "trivia" in caps:
-        stages.append(
-            _run_trivia(job, content, partner, transcript_text),
-        )
-    if "search" in caps:
-        stages.append(
-            _run_search(job, content, partner),
-        )
-
-    if stages:
-        await asyncio.gather(*stages, return_exceptions=True)
+        content = await Content.get(job.content_id)
+        if content:
+            content.processing_state = ProcessingState.FAILED
+            await content.save()
 
     logger.info(
         "Pipeline complete",
         extra={
             "job_id": job.job_id,
-            "status": job.overall_status,
             "capabilities": job.capabilities,
         },
     )
+
+
+async def resume_pipeline(job: IngestJob) -> None:
+    """Resume a failed pipeline from its first non-completed stage."""
+    runner = _build_runner()
+    await runner.resume(job)
+    await _sync_content_state(job)
+
+
+async def retry_stage(job: IngestJob, stage_name: StageName) -> None:
+    """Retry a specific stage (resets it + continues forward)."""
+    runner = _build_runner()
+    await runner.retry_stage(job, stage_name)
+    await _sync_content_state(job)
+
+
+async def retry_subtask(
+    job: IngestJob, stage_name: StageName, subtask: str,
+) -> None:
+    """Retry a single subtask (e.g. one character's voice clone) within a stage."""
+    runner = _build_runner()
+    await runner.retry_subtask(job, stage_name, subtask)
+    await _sync_content_state(job)
+
+
+async def _sync_content_state(job: IngestJob) -> None:
+    """Update Content.processing_state based on the job's final stage state."""
+    content = await Content.get(job.content_id)
+    if not content:
+        return
+    if job.first_failed_stage() is not None:
+        content.processing_state = ProcessingState.FAILED
+        await content.save()
+    # If no failures, _run_finalization already set it to READY — don't overwrite.
+
+
+def _build_runner() -> ResumablePipelineRunner:
+    """Construct a ResumablePipelineRunner with all stage handlers."""
+    return ResumablePipelineRunner(stage_handlers={
+        StageName.TRANSCRIPTION: _stage_transcription,
+        StageName.CHARACTER_EXTRACTION: _stage_character_extraction,
+        StageName.SUBTITLES: _stage_subtitles,
+        StageName.FACE_EXTRACTION: _run_face_extraction,
+        StageName.VOICE_CLONING: _run_voice_cloning,
+        StageName.TRIVIA: _stage_trivia,
+        StageName.SEARCH_INDEX: _stage_search,
+        StageName.FINALIZATION: _run_finalization,
+    })
+
+
+async def _fetch_partner(partner_id: str) -> IntegrationPartner:
+    partner = await IntegrationPartner.find_one(
+        IntegrationPartner.partner_id == partner_id,
+    )
+    if not partner:
+        raise RuntimeError(f"partner {partner_id!r} not found")
+    return partner
+
+
+async def _stage_transcription(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Adapter: wraps legacy _run_transcription for the ResumablePipelineRunner."""
+    content = await Content.get(job.content_id)
+    if not content:
+        raise RuntimeError(f"content {job.content_id} not found")
+    partner = await _fetch_partner(job.partner_id)
+    transcript_text = getattr(content, "transcript", None) or ""
+    if not transcript_text:
+        await _run_transcription(job, content, partner)
+
+
+async def _stage_character_extraction(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Adapter: wraps legacy _run_characters for the ResumablePipelineRunner."""
+    content = await Content.get(job.content_id)
+    if not content:
+        raise RuntimeError(f"content {job.content_id} not found")
+    partner = await _fetch_partner(job.partner_id)
+    transcript_text = getattr(content, "transcript", None) or ""
+    await _run_characters(job, content, partner, transcript_text)
+
+
+async def _stage_subtitles(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Adapter: wraps legacy _run_subtitles for the ResumablePipelineRunner."""
+    content = await Content.get(job.content_id)
+    if not content:
+        raise RuntimeError(f"content {job.content_id} not found")
+    partner = await _fetch_partner(job.partner_id)
+    transcript_text = getattr(content, "transcript", None) or ""
+    await _run_subtitles(job, content, partner, transcript_text)
+
+
+async def _stage_trivia(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Adapter: wraps legacy _run_trivia for the ResumablePipelineRunner."""
+    content = await Content.get(job.content_id)
+    if not content:
+        raise RuntimeError(f"content {job.content_id} not found")
+    partner = await _fetch_partner(job.partner_id)
+    transcript_text = getattr(content, "transcript", None) or ""
+    await _run_trivia(job, content, partner, transcript_text)
+
+
+async def _stage_search(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Adapter: wraps legacy _run_search for the ResumablePipelineRunner."""
+    content = await Content.get(job.content_id)
+    if not content:
+        raise RuntimeError(f"content {job.content_id} not found")
+    partner = await _fetch_partner(job.partner_id)
+    await _run_search(job, content, partner)
 
 
 # ---------------------------------------------------------------------------
