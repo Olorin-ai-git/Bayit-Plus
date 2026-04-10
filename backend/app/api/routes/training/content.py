@@ -248,6 +248,30 @@ async def get_content_status(
     }
 
 
+@router.post("/{content_id}/retry", status_code=status.HTTP_202_ACCEPTED)
+async def retry_content_ingest(
+    content_id: str,
+    background_tasks: BackgroundTasks,
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Re-run the AI pipeline on a failed content item."""
+    content = await Content.get(PydanticObjectId(content_id))
+    if not content or content.partner_id != admin.partner_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
+    partner = await IntegrationPartner.find_one({"partner_id": admin.partner_id})
+    if not partner:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found")
+    job = await create_ingest_job(
+        partner=partner,
+        content=content,
+        video_url=content.stream_url,
+        capabilities=["characters", "subtitles"],
+        direct=True,
+    )
+    background_tasks.add_task(run_pipeline, job)
+    return {"job_id": job.job_id, "content_id": content_id, "status": job.overall_status}
+
+
 @router.delete("/{content_id}")
 async def delete_content(
     content_id: str,
