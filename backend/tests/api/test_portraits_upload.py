@@ -361,6 +361,71 @@ class TestPortraitUpload:
         assert ";" not in stem
         assert " " not in stem
 
+    async def test_upload_portrait_stamps_marker_when_no_prior_error(
+        self, training_admin_client
+    ):
+        """When a PENDING face_extraction subtask with no error is resolved
+        manually, the handler stamps MANUAL_PORTRAIT_UPLOAD_MARKER so the
+        frontend "manually resolved" badge still renders."""
+        from app.services.olorin.ingest_orchestrator import (
+            MANUAL_PORTRAIT_UPLOAD_MARKER,
+        )
+
+        alice = _build_character("alice")
+        content = _build_content(characters=[alice])
+        png_bytes = _make_png_bytes()
+
+        # Pending subtask with no prior error (e.g. character added
+        # post-ingest and admin uploaded before YuNet ran).
+        stage = StageExecution(
+            name=StageName.FACE_EXTRACTION,
+            status=StageStatus.RUNNING,
+            subtasks={
+                "alice": SubtaskExecution(
+                    name="alice",
+                    status=StageStatus.PENDING,
+                    error=None,
+                ),
+            },
+        )
+        job = MagicMock()
+        job.get_stage = MagicMock(return_value=stage)
+        job.save = AsyncMock()
+        job.job_id = "job-pending"
+
+        with (
+            patch(
+                "app.api.routes.training.portraits.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.portraits.storage_service.upload_bytes",
+                new_callable=AsyncMock,
+                return_value="https://gcs/t/507f.../alice.jpg",
+            ),
+            patch(
+                "app.api.routes.training.portraits.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=job,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011"
+                "/characters/alice/portrait",
+                files={
+                    "portrait": (
+                        "alice.png", io.BytesIO(png_bytes), "image/png",
+                    ),
+                },
+            )
+
+        assert resp.status_code == 200
+        assert stage.subtasks["alice"].status == StageStatus.COMPLETED
+        # Marker stamped so isManuallyResolved() returns true on the
+        # frontend even though there was no prior YuNet failure.
+        assert stage.subtasks["alice"].error == MANUAL_PORTRAIT_UPLOAD_MARKER
+
     async def test_upload_portrait_marks_face_extraction_subtask_complete(
         self, training_admin_client
     ):

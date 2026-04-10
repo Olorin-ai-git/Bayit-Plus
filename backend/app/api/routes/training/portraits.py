@@ -38,6 +38,9 @@ from app.models.ingest_job import IngestJob
 from app.models.pipeline_stage import StageName, StageStatus
 from app.models.training_user import TrainingUser
 from app.services.olorin.face_extraction import _sanitize_name
+from app.services.olorin.ingest_orchestrator import (
+    MANUAL_PORTRAIT_UPLOAD_MARKER,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -162,6 +165,14 @@ async def _resolve_face_extraction_subtask(
     # destroy the audit trail of why YuNet failed. complete_subtask
     # only touches status + completed_at, leaving error intact.
     stage.complete_subtask(character_name)
+    # If the subtask had no prior error (e.g. it was PENDING because
+    # face_extraction never actually ran for this character), stamp
+    # the canonical marker so the frontend "manually resolved" badge
+    # still renders. This also helps the _run_face_extraction handler
+    # recognize on a subsequent retry that the character was admin-
+    # resolved and should be skipped.
+    if subtask.error is None:
+        subtask.error = MANUAL_PORTRAIT_UPLOAD_MARKER
     if stage.all_subtasks_complete():
         stage.mark_completed()
     await job.save()

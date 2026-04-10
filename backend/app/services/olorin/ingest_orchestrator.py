@@ -28,6 +28,18 @@ from app.services.olorin.face_extraction import (
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.resumable_ingest import ResumablePipelineRunner
 from app.services.olorin.video_transcriber import transcribe_video
+
+# Canonical marker stamped on a face_extraction subtask when the admin
+# used the Task 11 portrait upload endpoint to hand-supply a frame.
+# The frontend's isManuallyResolved() helper keys on any non-null
+# error field on a COMPLETED subtask; this marker guarantees the
+# badge renders even on characters that never had a prior YuNet
+# failure to stamp the error field for us.
+MANUAL_PORTRAIT_UPLOAD_MARKER = "manually-resolved:portrait-upload"
+
+
+def _utcnow_orchestrator() -> datetime:
+    return datetime.now(timezone.utc)
 from app.services.vod_interaction.dialogue_mapper import dialogue_mapper_service
 from app.services.vod_interaction.voice_cloner import (
     character_voice_cloner_service,
@@ -668,8 +680,22 @@ async def _run_face_extraction(
                 continue
 
             if character.frame_url:
-                stage.start_subtask(character.name)
-                stage.complete_subtask(character.name)
+                # Task 11 manual portrait upload path: character already
+                # has a frame_url from the portraits endpoint. Mark the
+                # subtask completed WITHOUT calling start_subtask — which
+                # would clear the error field — so the "manually resolved"
+                # audit marker survives subsequent retry_stage / retry
+                # subtask calls. The frontend keys on (status==completed
+                # AND error!=null) to render the "manually resolved"
+                # badge. If there's no pre-existing error (rare: the
+                # character was added post-ingest and the admin uploaded
+                # before YuNet ran), stamp a canonical marker so the
+                # badge still renders.
+                subtask = stage.subtasks[character.name]
+                subtask.status = StageStatus.COMPLETED
+                subtask.completed_at = _utcnow_orchestrator()
+                if subtask.error is None:
+                    subtask.error = MANUAL_PORTRAIT_UPLOAD_MARKER
                 continue
 
             stage.start_subtask(character.name)

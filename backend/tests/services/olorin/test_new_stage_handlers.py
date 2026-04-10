@@ -145,8 +145,14 @@ async def test_run_face_extraction_resume_subtask_processes_only_one():
 
 @pytest.mark.asyncio
 async def test_run_face_extraction_skips_character_with_existing_frame_url():
-    """A character with a pre-existing frame_url is marked complete without re-running."""
-    from app.services.olorin.ingest_orchestrator import _run_face_extraction
+    """A character with a pre-existing frame_url is marked complete without
+    re-running. Also stamps MANUAL_PORTRAIT_UPLOAD_MARKER when the subtask
+    has no prior error, so the frontend "manually resolved" badge renders.
+    """
+    from app.services.olorin.ingest_orchestrator import (
+        _run_face_extraction,
+        MANUAL_PORTRAIT_UPLOAD_MARKER,
+    )
 
     char_a = _make_character("Alice", frame_url="https://gcs/existing.jpg")
     content = _make_content(characters=[char_a])
@@ -179,6 +185,72 @@ async def test_run_face_extraction_skips_character_with_existing_frame_url():
     mock_svc_instance.extract_portrait.assert_not_awaited()
     stage = job.get_stage(StageName.FACE_EXTRACTION)
     assert stage.subtasks["Alice"].status == StageStatus.COMPLETED
+    # Marker stamped so the frontend "manually resolved" badge renders.
+    assert stage.subtasks["Alice"].error == MANUAL_PORTRAIT_UPLOAD_MARKER
+
+
+@pytest.mark.asyncio
+async def test_run_face_extraction_preserves_prior_error_as_audit_trail():
+    """When a character has frame_url (manual upload) AND an existing error
+    string (YuNet failure), the handler must preserve the error for forensics
+    rather than overwriting it with the canonical marker. Ensures the
+    original YuNet failure reason survives a subsequent retry_stage call
+    that wipes subtasks but leaves content.frame_url intact."""
+    from app.services.olorin.ingest_orchestrator import _run_face_extraction
+    from app.models.pipeline_stage import StageExecution, SubtaskExecution
+
+    char_a = _make_character("Alice", frame_url="https://gcs/existing.jpg")
+    content = _make_content(characters=[char_a])
+    job = _make_job()
+    # Pre-populate the stage with a failed subtask carrying the YuNet
+    # error — simulating the state before a manual upload happens or
+    # before a retry_stage that preserves per-subtask state.
+    original_error = "no face detected: no candidates matched"
+    job.stages.append(
+        StageExecution(
+            name=StageName.FACE_EXTRACTION,
+            status=StageStatus.FAILED,
+            subtasks={
+                "Alice": SubtaskExecution(
+                    name="Alice",
+                    status=StageStatus.FAILED,
+                    error=original_error,
+                ),
+            },
+        )
+    )
+
+    with (
+        patch(
+            "app.services.olorin.ingest_orchestrator.Content.get",
+            new=AsyncMock(return_value=content),
+        ),
+        patch(
+            "app.services.olorin.ingest_orchestrator.find_subtitle_track",
+            new=AsyncMock(return_value=None),
+        ),
+        patch(
+            "app.services.olorin.ingest_orchestrator._download_video",
+            new=AsyncMock(return_value=Path("/tmp/fake_video.mp4")),
+        ),
+        patch(
+            "app.services.olorin.ingest_orchestrator.FaceExtractionService"
+        ) as MockFaceSvc,
+    ):
+        mock_svc_instance = MagicMock()
+        mock_svc_instance.extract_portrait = AsyncMock()
+        MockFaceSvc.return_value = mock_svc_instance
+
+        await _run_face_extraction(job)
+
+    # Subtask is now FAILED and thus re-processed; the failed state
+    # means the handler enters the frame_url branch and marks it
+    # completed without re-running YuNet.
+    mock_svc_instance.extract_portrait.assert_not_awaited()
+    stage = job.get_stage(StageName.FACE_EXTRACTION)
+    assert stage.subtasks["Alice"].status == StageStatus.COMPLETED
+    # Critical: original YuNet failure reason preserved exactly.
+    assert stage.subtasks["Alice"].error == original_error
 
 
 @pytest.mark.asyncio
