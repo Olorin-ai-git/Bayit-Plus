@@ -44,21 +44,27 @@ class TranscriptionResult:
     duration_seconds: float = 0.0
 
 
-_YT_PATTERN = re.compile(
-    r"(youtube\.com/watch|youtu\.be/|youtube\.com/embed/|youtube\.com/shorts/)"
+_DIRECT_MEDIA_PATTERN = re.compile(
+    r"\.(mp4|webm|mkv|mov|avi|m4v|ts|flv|wmv|mp3|m4a|wav|ogg)(\?|$)",
+    re.IGNORECASE,
 )
 
 
 async def _download_video(url: str, dest: str) -> str:
-    """Download a video URL to a local file. Uses yt-dlp for YouTube."""
-    if _YT_PATTERN.search(url):
-        return await _download_via_ytdlp(url, dest)
-    async with httpx.AsyncClient(timeout=300.0, follow_redirects=True) as client:
-        resp = await client.get(url)
-        resp.raise_for_status()
-        with open(dest, "wb") as f:
-            f.write(resp.content)
-    return dest
+    """Download a video URL to a local file.
+
+    Direct media URLs (.mp4, .webm, etc.) are fetched via HTTP.
+    Everything else (YouTube, Vimeo, Dailymotion, etc.) goes through
+    yt-dlp which supports 1000+ sites.
+    """
+    if _DIRECT_MEDIA_PATTERN.search(url):
+        async with httpx.AsyncClient(timeout=300.0, follow_redirects=True) as client:
+            resp = await client.get(url)
+            resp.raise_for_status()
+            with open(dest, "wb") as f:
+                f.write(resp.content)
+        return dest
+    return await _download_via_ytdlp(url, dest)
 
 
 async def _download_via_ytdlp(url: str, dest: str) -> str:
