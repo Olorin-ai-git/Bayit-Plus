@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import PydanticObjectId
+from bson.errors import InvalidId
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
@@ -45,7 +46,7 @@ async def create_assignment(
     """
     try:
         content_oid = PydanticObjectId(body.content_id)
-    except Exception:
+    except (InvalidId, TypeError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Content not found",
@@ -56,13 +57,20 @@ async def create_assignment(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Content not found",
         )
+    if content.processing_state == ProcessingState.FAILED:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "Content processing failed; retry ingest before "
+                "assigning to trainees"
+            ),
+        )
     if content.processing_state != ProcessingState.READY:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=(
-                f"Content is still processing "
-                f"(state: {content.processing_state.value}); "
-                f"cannot assign until processing completes"
+                "Content is still processing; cannot assign "
+                "until processing completes"
             ),
         )
 

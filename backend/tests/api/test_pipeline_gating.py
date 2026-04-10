@@ -90,6 +90,60 @@ class TestViewerContentGating:
         assert captured_query.get("partner_id") == "training-testorg-abc12345"
         assert "processing_state" not in captured_query
 
+    async def test_teacher_query_has_no_processing_state_filter(self):
+        """Teacher list query must NOT include a processing_state filter.
+
+        Teachers are staff (not trainees) and need to monitor ingest
+        progress / retry failures, same as admins.
+        """
+        from httpx import ASGITransport, AsyncClient
+
+        from app.api.routes.training.dependencies import (
+            get_current_training_user,
+        )
+        from app.main import app
+
+        mock_teacher = MagicMock()
+        mock_teacher.id = "training_teacher_001"
+        mock_teacher.email = "teacher@testorg.com"
+        mock_teacher.role = "teacher"
+        mock_teacher.partner_id = "training-testorg-abc12345"
+
+        app.dependency_overrides[get_current_training_user] = lambda: mock_teacher
+        try:
+            captured_query: dict = {}
+
+            def capture_find(query):
+                captured_query.update(query)
+                return _fake_find_chain([])
+
+            with (
+                patch(
+                    "app.api.routes.training.content.Content.find",
+                    side_effect=capture_find,
+                ),
+                patch(
+                    "app.api.routes.training.content.IngestJob.find",
+                    return_value=_fake_find_chain([]),
+                ),
+                patch(
+                    "app.api.routes.training.content.VideoChapters.get_for_content",
+                    new_callable=AsyncMock,
+                    return_value=None,
+                ),
+            ):
+                async with AsyncClient(
+                    transport=ASGITransport(app=app),
+                    base_url="http://test",
+                ) as ac:
+                    resp = await ac.get("/api/v1/training/content")
+        finally:
+            app.dependency_overrides.pop(get_current_training_user, None)
+
+        assert resp.status_code == 200
+        assert captured_query.get("partner_id") == "training-testorg-abc12345"
+        assert "processing_state" not in captured_query
+
 
 class TestAssignmentGating:
     """POST /api/v1/training/assignments gating by Content.processing_state."""
@@ -154,6 +208,20 @@ class TestAssignmentGating:
             )
 
         assert resp.status_code == 409
+        assert "failed" in resp.json()["detail"].lower()
+
+    async def test_assignment_returns_404_for_malformed_content_id(
+        self, training_admin_client
+    ):
+        """Malformed ObjectId is rejected as 404 (not 500/422)."""
+        resp = await training_admin_client.post(
+            "/api/v1/training/assignments",
+            json={
+                "content_id": "not-a-valid-objectid",
+                "assigned_to": ["u1"],
+            },
+        )
+        assert resp.status_code == 404
 
     async def test_assignment_returns_404_when_content_missing(
         self, training_admin_client

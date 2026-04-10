@@ -124,11 +124,14 @@ async def list_content(
 ):
     """List organization's training content with pipeline status.
 
-    Viewers only see content whose pipeline has completed (processing_state=READY).
-    Admins see all content regardless of pipeline state.
+    Viewers (trainees) only see content whose pipeline has completed
+    (processing_state=READY). Admins and teachers — both staff roles — see
+    all content regardless of pipeline state so they can monitor ingest
+    progress and retry failures. Any other / future role is treated as a
+    trainee and gets the READY-only view (fail-closed).
     """
     query: dict = {"partner_id": user.partner_id}
-    if user.role != "admin":
+    if user.role not in ("admin", "teacher"):
         query["processing_state"] = ProcessingState.READY
     items = await Content.find(query).sort("-_id").to_list()
     content_ids = [str(c.id) for c in items]
