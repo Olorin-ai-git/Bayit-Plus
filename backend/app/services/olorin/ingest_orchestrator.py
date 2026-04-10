@@ -6,16 +6,33 @@ trivia + search indexing, all tracked per-capability in an IngestJob.
 """
 
 import asyncio
+import tempfile
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
+
+import httpx
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
-from app.models.content import Content
+from app.core.storage import storage_service
+from app.models.content import Content, ProcessingState
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
+from app.models.pipeline_stage import StageName, StageStatus
+from app.services.olorin.face_extraction import (
+    FaceExtractionError,
+    FaceExtractionService,
+    NoFaceDetectedError,
+)
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.video_transcriber import transcribe_video
+from app.services.vod_interaction.dialogue_mapper import dialogue_mapper_service
+from app.services.vod_interaction.voice_cloner import (
+    character_voice_cloner_service,
+    find_subtitle_track,
+)
 
 logger = get_logger(__name__)
 
@@ -439,3 +456,178 @@ async def _run_search(
             "job_id": job.job_id,
             "stage": "search",
         })
+
+
+# ---------------------------------------------------------------------------
+# New resumable-pipeline stage handlers (7C)
+# ---------------------------------------------------------------------------
+
+async def _download_video(video_url: str, tmpdir: Path) -> Path:
+    """Download video_url into tmpdir and return the local Path."""
+    suffix = Path(video_url.split("?")[0]).suffix or ".mp4"
+    dest = tmpdir / f"video{suffix}"
+    async with httpx.AsyncClient(follow_redirects=True, timeout=300) as client:
+        async with client.stream("GET", video_url) as resp:
+            resp.raise_for_status()
+            with dest.open("wb") as fh:
+                async for chunk in resp.aiter_bytes(chunk_size=65536):
+                    fh.write(chunk)
+    return dest
+
+
+def _segments_for_character(
+    cue_map: dict, character_name: str, content: Content,
+) -> list:
+    """Return per-character speech segments in the shape face_extraction expects.
+
+    Prefers dialogue_mapper cue_map. Falls back to raw transcript_segments
+    filtered by speaker label index when cue_map is empty.
+    """
+    cues = cue_map.get(character_name, [])
+    if cues:
+        return [{"start": c.start_time, "end": c.end_time, "text": c.text} for c in cues]
+    transcript_segments = getattr(content, "transcript_segments", None) or []
+    if not transcript_segments:
+        return []
+    char_names = [c.name for c in (content.interactive_characters or [])]
+    if character_name not in char_names:
+        return []
+    speaker_label = f"speaker_{char_names.index(character_name) + 1}"
+    return [
+        {"start": s.get("start", 0), "end": s.get("end", 0), "text": s.get("text", "")}
+        for s in transcript_segments
+        if s.get("speaker") == speaker_label
+    ]
+
+
+async def _run_face_extraction(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Stage: Extract a portrait for each character using OpenCV YuNet.
+
+    Subtask-aware: if resume_subtask is set, processes only that character.
+    Falls back gracefully on NoFaceDetectedError (admin can upload manually).
+    """
+    content = await Content.get(job.content_id)
+    if not content or not content.interactive_characters:
+        logger.info(
+            "face_extraction: no characters to process",
+            extra={"job_id": job.job_id},
+        )
+        return
+
+    stage = job.get_or_create_stage(StageName.FACE_EXTRACTION)
+    face_svc = FaceExtractionService(storage_service=storage_service)
+
+    track = await find_subtitle_track(str(content.id))
+    cue_map: dict = {}
+    if track and track.cues:
+        character_names = [c.name for c in content.interactive_characters]
+        cue_map = await dialogue_mapper_service.map_dialogue_to_characters(
+            track.cues, character_names, content.title or str(content.id),
+        )
+
+    with tempfile.TemporaryDirectory() as tmpdir_str:
+        tmpdir_path = Path(tmpdir_str)
+        try:
+            video_path = await _download_video(job.video_url, tmpdir_path)
+        except Exception as exc:
+            for character in content.interactive_characters:
+                if resume_subtask and character.name != resume_subtask:
+                    continue
+                stage.add_subtask(character.name)
+                stage.start_subtask(character.name)
+                stage.fail_subtask(character.name, f"video download failed: {exc}")
+            return
+
+        for character in content.interactive_characters:
+            if resume_subtask and character.name != resume_subtask:
+                continue
+
+            stage.add_subtask(character.name)
+            if stage.subtasks[character.name].status == StageStatus.COMPLETED:
+                continue
+
+            if character.frame_url:
+                stage.start_subtask(character.name)
+                stage.complete_subtask(character.name)
+                continue
+
+            stage.start_subtask(character.name)
+            await job.save()
+
+            segments = _segments_for_character(cue_map, character.name, content)
+            try:
+                url = await face_svc.extract_portrait(
+                    video_path=video_path,
+                    character_name=character.name,
+                    speech_segments=segments,
+                    content_id=str(content.id),
+                )
+                character.frame_url = url
+                await content.save()
+                stage.complete_subtask(character.name)
+            except NoFaceDetectedError as exc:
+                stage.fail_subtask(character.name, f"no face detected: {exc}")
+            except Exception as exc:
+                stage.fail_subtask(character.name, str(exc))
+
+
+async def _run_voice_cloning(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Stage: Clone voice for each character from subtitle dialogue.
+
+    Subtask-aware: if resume_subtask is set, processes only that character.
+    "skipped" status (no dialogue / audio too short) is treated as success.
+    """
+    content = await Content.get(job.content_id)
+    if not content or not content.interactive_characters:
+        return
+
+    stage = job.get_or_create_stage(StageName.VOICE_CLONING)
+
+    for character in content.interactive_characters:
+        if resume_subtask and character.name != resume_subtask:
+            continue
+
+        stage.add_subtask(character.name)
+        if stage.subtasks[character.name].status == StageStatus.COMPLETED:
+            continue
+
+        stage.start_subtask(character.name)
+        await job.save()
+
+        try:
+            result = await character_voice_cloner_service.clone_single_character(
+                content=content, character_name=character.name,
+            )
+            if result.status in ("cloned", "skipped"):
+                if result.status == "skipped":
+                    logger.info(
+                        "voice_cloning skipped for %s: %s",
+                        character.name, result.reason,
+                        extra={"job_id": job.job_id},
+                    )
+                stage.complete_subtask(character.name)
+            else:
+                stage.fail_subtask(character.name, result.reason or "voice clone failed")
+        except Exception as exc:
+            stage.fail_subtask(character.name, str(exc))
+
+
+async def _run_finalization(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Stage: Mark content as READY (pipeline complete)."""
+    content = await Content.get(job.content_id)
+    if not content:
+        raise RuntimeError(
+            f"content {job.content_id} not found during finalization"
+        )
+    content.processing_state = ProcessingState.READY
+    await content.save()
+    logger.info(
+        "finalization: content marked READY",
+        extra={"job_id": job.job_id, "content_id": job.content_id},
+    )
