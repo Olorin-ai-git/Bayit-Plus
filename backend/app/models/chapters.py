@@ -59,7 +59,7 @@ class VideoChapters(Document):
     @classmethod
     async def get_for_content(cls, content_id: str) -> Optional["VideoChapters"]:
         """Get chapters for a specific content"""
-        return await cls.find_one(cls.content_id == content_id)
+        return await cls.find_one({"content_id": content_id})
 
     @classmethod
     async def create_or_update(
