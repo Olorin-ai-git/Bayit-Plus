@@ -23,6 +23,7 @@ from app.models.ingest_job import IngestJob
 from app.models.content import Content
 from app.models.vod_interaction import VODInteractionSession
 from app.models.b2b_content_source import B2BContentSource
+from app.models.chapters import VideoChapters
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -33,6 +34,7 @@ SERVICE_MODELS: List[Type[Document]] = [
     Content,
     VODInteractionSession,
     B2BContentSource,
+    VideoChapters,
 ]
 
 
