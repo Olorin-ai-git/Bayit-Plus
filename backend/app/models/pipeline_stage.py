@@ -1,6 +1,4 @@
 """Pipeline stage tracking models for resumable ingest jobs."""
-from __future__ import annotations
-
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Dict, Optional
@@ -9,7 +7,12 @@ from pydantic import BaseModel, Field
 
 
 class StageName(str, Enum):
-    """Ordered pipeline stages. Order determines resume-from-failure sequence."""
+    """Ordered pipeline stages. Order determines resume-from-failure sequence.
+
+    Use ``list(StageName).index(stage_name)`` for ordering; do NOT compare
+    enum members with ``<`` because that uses lexicographic string ordering,
+    not declaration order.
+    """
 
     TRANSCRIPTION = "transcription"
     CHARACTER_EXTRACTION = "character_extraction"
@@ -22,6 +25,8 @@ class StageName(str, Enum):
 
 
 class StageStatus(str, Enum):
+    """Lifecycle state of a pipeline stage or subtask."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -53,6 +58,8 @@ class StageExecution(BaseModel):
     subtasks: Dict[str, SubtaskExecution] = Field(default_factory=dict)
 
     def mark_running(self) -> None:
+        if self.status == StageStatus.FAILED:
+            self.retry_count += 1
         self.status = StageStatus.RUNNING
         self.started_at = _utcnow()
         self.completed_at = None
@@ -81,11 +88,21 @@ class StageExecution(BaseModel):
         task.error = None
 
     def complete_subtask(self, name: str) -> None:
+        if name not in self.subtasks:
+            raise ValueError(
+                f"Subtask {name!r} not registered in stage {self.name.value!r}. "
+                "Call add_subtask() or start_subtask() first."
+            )
         task = self.subtasks[name]
         task.status = StageStatus.COMPLETED
         task.completed_at = _utcnow()
 
     def fail_subtask(self, name: str, error: str) -> None:
+        if name not in self.subtasks:
+            raise ValueError(
+                f"Subtask {name!r} not registered in stage {self.name.value!r}. "
+                "Call add_subtask() or start_subtask() first."
+            )
         task = self.subtasks[name]
         task.status = StageStatus.FAILED
         task.completed_at = _utcnow()
@@ -93,6 +110,14 @@ class StageExecution(BaseModel):
         task.retry_count += 1
 
     def all_subtasks_complete(self) -> bool:
+        """Return True when every subtask has reached COMPLETED status.
+
+        For stages that do not use subtasks (e.g. TRANSCRIPTION), this
+        delegates to the stage's own completion status.  This is intentional:
+        callers can use ``all_subtasks_complete()`` uniformly for both
+        subtask-tracking stages and flat single-unit stages without needing to
+        branch on whether subtasks exist.
+        """
         if not self.subtasks:
             return self.status == StageStatus.COMPLETED
         return all(t.status == StageStatus.COMPLETED for t in self.subtasks.values())
