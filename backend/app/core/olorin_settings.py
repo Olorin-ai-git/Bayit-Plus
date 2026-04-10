@@ -60,8 +60,8 @@ class OlorinMinimalSettings(BaseSettings):
     SENTRY_ENVIRONMENT: str = Field(default="production")
     SENTRY_TRACES_SAMPLE_RATE: float = Field(default=0.2)
 
-    # CORS
-    BACKEND_CORS_ORIGINS: str = Field(default="*")
+    # CORS (no wildcard default — must be set via .env or will use dev fallback)
+    BACKEND_CORS_ORIGINS: str = Field(default="")
 
     @property
     def MONGODB_URL(self) -> str:

@@ -25,6 +25,8 @@ services:
       - MONGODB_URL=mongodb://mongodb:27017
       - MONGODB_DB_NAME=bayit_plus
       - DEBUG=true
+      # CORS — explicit here so it cannot be lost; env_file provides production values
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-["http://localhost:3000","http://localhost:3006","http://localhost:3200","http://localhost:3211","http://localhost:8000"]}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - SPEECH_TO_TEXT_PROVIDER=${SPEECH_TO_TEXT_PROVIDER:-whisper}
       - STRIPE_API_KEY=${STRIPE_API_KEY}

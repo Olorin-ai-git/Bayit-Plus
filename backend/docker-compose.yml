@@ -49,6 +49,8 @@ services:
       - LOG_LEVEL=DEBUG
       - API_V1_PREFIX=/api/v1
       - STORAGE_TYPE=local
+      # CORS
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000","http://localhost:3006","http://localhost:3200","http://localhost:3211","http://localhost:8000","http://localhost:8080"]
       # Podcast Translation
       - PODCAST_TRANSLATION_ENABLED=true
       - PODCAST_TRANSLATION_POLL_INTERVAL=300

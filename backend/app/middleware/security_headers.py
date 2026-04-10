@@ -12,11 +12,48 @@ Adds security headers to all responses to protect against common vulnerabilities
 """
 
 import logging
+import os
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)
+
+# CSP connect-src domains loaded from env (comma-separated) or sensible defaults.
+# This covers every frontend, CDN, auth provider, and payment service that
+# browsers need to reach from pages served by this API.
+_CSP_CONNECT_SRC_ENV = os.getenv("CSP_CONNECT_SRC_EXTRA", "")
+
+_CSP_CONNECT_SRC_DEFAULTS = [
+    "'self'",
+    # Olorin API endpoints
+    "https://api.olorin.ai",
+    "https://api.bayit.tv",
+    # WebSocket endpoints
+    "wss://api.olorin.ai",
+    "wss://api.bayit.tv",
+    "wss://ws.bayit.tv",
+    "wss://m.bayit.tv",
+    # CDN
+    "https://cdn.bayit.tv",
+    "https://storage.googleapis.com",
+    # Stripe
+    "https://api.stripe.com",
+    # Firebase / Google Auth
+    "https://www.googleapis.com",
+    "https://securetoken.googleapis.com",
+    "https://identitytoolkit.googleapis.com",
+    "https://oauth2.googleapis.com",
+    "https://apis.google.com",
+    "https://*.firebaseio.com",
+    # Apple Auth
+    "https://appleid.apple.com",
+    # ElevenLabs (TTS streaming)
+    "https://api.elevenlabs.io",
+]
+
+_extra = [s.strip() for s in _CSP_CONNECT_SRC_ENV.split(",") if s.strip()]
+_CSP_CONNECT_SRC = " ".join(_CSP_CONNECT_SRC_DEFAULTS + _extra)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -28,30 +65,17 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(self, request: Request, call_next):
-        """
-        Add security headers to response.
-
-        Args:
-            request: FastAPI request object
-            call_next: Next middleware in chain
-
-        Returns:
-            Response with security headers added
-        """
         response: Response = await call_next(request)
 
         # Content Security Policy (CSP)
-        # Restricts resource loading to prevent XSS
-        # Note: Chrome Extension popup pages may need 'unsafe-inline' for inline styles
-        # Extension pages loaded via chrome-extension:// protocol are not affected by CSP
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self'; "
-            "style-src 'self' 'unsafe-inline'; "  # Allow inline styles for Glass UI
+            "style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data: https:; "
             "font-src 'self' data:; "
             "media-src 'self' https: blob:; "
-            "connect-src 'self' https://api.stripe.com wss://ws.bayit.tv wss://api.bayit.tv wss://m.bayit.tv; "
+            f"connect-src {_CSP_CONNECT_SRC}; "
             "frame-ancestors 'none'; "
             "base-uri 'self'; "
             "form-action 'self'"
@@ -67,14 +91,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
 
         # Enforce HTTPS (max-age = 1 year)
-        # includeSubDomains: Apply to all subdomains
-        # preload: Allow inclusion in browser HSTS preload lists
         response.headers["Strict-Transport-Security"] = (
             "max-age=31536000; includeSubDomains; preload"
         )
 
         # Control referrer information (privacy)
-        # strict-origin-when-cross-origin: Send full URL for same-origin, only origin for cross-origin
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
         # Restrict browser features (permissions)
