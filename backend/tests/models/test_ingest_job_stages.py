@@ -76,7 +76,7 @@ def test_stages_field_preserves_existing_capabilities_dict():
 
 def test_first_failed_stage_uses_declaration_order_not_lexicographic():
     """Regression guard: first_failed_stage must iterate StageName in
-    declaration order (VOICE_CLONING index 3), not lexicographic string
+    declaration order (VOICE_CLONING index 4), not lexicographic string
     order (which would pick FINALIZATION because 'finalization' < 'voice_cloning').
     """
     job = _make_job(job_id="test-decl-order")

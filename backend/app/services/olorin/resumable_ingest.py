@@ -30,9 +30,9 @@ StageHandler = Callable[..., Awaitable[None]]
 PIPELINE_ORDER = (
     StageName.TRANSCRIPTION,
     StageName.CHARACTER_EXTRACTION,
+    StageName.SUBTITLES,
     StageName.FACE_EXTRACTION,
     StageName.VOICE_CLONING,
-    StageName.SUBTITLES,
     StageName.TRIVIA,
     StageName.SEARCH_INDEX,
     StageName.FINALIZATION,

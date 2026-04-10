@@ -151,10 +151,13 @@ async def test_retry_subtask_runs_only_that_subtask_then_continues():
     job = _make_job()
 
     # Simulate prior state: all stages through VOICE_CLONING completed except
-    # bob's voice clone, which failed
+    # bob's voice clone, which failed.
+    # New order: TRANSCRIPTION, CHARACTER_EXTRACTION, SUBTITLES, FACE_EXTRACTION,
+    # VOICE_CLONING, TRIVIA, SEARCH_INDEX, FINALIZATION
     for name in (
         StageName.TRANSCRIPTION,
         StageName.CHARACTER_EXTRACTION,
+        StageName.SUBTITLES,
         StageName.FACE_EXTRACTION,
     ):
         s = job.get_or_create_stage(name)
@@ -183,9 +186,11 @@ async def test_retry_subtask_runs_only_that_subtask_then_continues():
     assert vc_after.status == StageStatus.COMPLETED
     assert vc_after.subtasks["alice"].status == StageStatus.COMPLETED
     assert vc_after.subtasks["bob"].status == StageStatus.COMPLETED
-    # After the subtask succeeds, the runner should continue through
-    # the remaining forward stages
-    handlers[StageName.SUBTITLES].assert_awaited_once()
+    # After the subtask succeeds, the runner continues through the remaining
+    # forward stages (TRIVIA, SEARCH_INDEX, FINALIZATION — not SUBTITLES
+    # which already completed before VOICE_CLONING in the new order).
+    handlers[StageName.SUBTITLES].assert_not_awaited()
+    handlers[StageName.TRIVIA].assert_awaited_once()
     handlers[StageName.FINALIZATION].assert_awaited_once()
 
 
@@ -215,10 +220,13 @@ async def test_retry_stage_reruns_stage_then_continues():
     handlers = _make_handlers()
     runner = ResumablePipelineRunner(stage_handlers=handlers)
     job = _make_job()
-    # Simulate: everything done, but VOICE_CLONING now failed
+    # Simulate: stages before VOICE_CLONING done, but VOICE_CLONING failed.
+    # New order: TRANSCRIPTION, CHARACTER_EXTRACTION, SUBTITLES, FACE_EXTRACTION,
+    # VOICE_CLONING, TRIVIA, SEARCH_INDEX, FINALIZATION
     for name in (
         StageName.TRANSCRIPTION,
         StageName.CHARACTER_EXTRACTION,
+        StageName.SUBTITLES,
         StageName.FACE_EXTRACTION,
     ):
         s = job.get_or_create_stage(name)
@@ -229,7 +237,10 @@ async def test_retry_stage_reruns_stage_then_continues():
     await runner.retry_stage(job, StageName.VOICE_CLONING)
 
     handlers[StageName.VOICE_CLONING].assert_awaited_once()
-    handlers[StageName.SUBTITLES].assert_awaited_once()
+    # SUBTITLES is before VOICE_CLONING in new order — already completed, not re-run
+    handlers[StageName.SUBTITLES].assert_not_awaited()
+    # TRIVIA is the next stage after VOICE_CLONING
+    handlers[StageName.TRIVIA].assert_awaited_once()
     handlers[StageName.FINALIZATION].assert_awaited_once()
     assert job.get_stage(StageName.VOICE_CLONING).status == StageStatus.COMPLETED
 
@@ -316,6 +327,7 @@ async def test_stage_fails_when_handler_leaves_subtasks_non_terminal():
     vc = job.get_stage(StageName.VOICE_CLONING)
     assert vc.status == StageStatus.FAILED
     assert "non-terminal" in vc.error
-    # Subsequent stages should NOT run
-    handlers[StageName.SUBTITLES].assert_not_awaited()
+    # Stages after VOICE_CLONING in the new order should NOT run.
+    # SUBTITLES comes BEFORE VOICE_CLONING now, so it will have run.
+    handlers[StageName.TRIVIA].assert_not_awaited()
     handlers[StageName.FINALIZATION].assert_not_awaited()
