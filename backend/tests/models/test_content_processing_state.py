@@ -48,3 +48,17 @@ def test_processing_state_can_be_set_to_failed():
         processing_state=ProcessingState.FAILED,
     )
     assert c.processing_state == ProcessingState.FAILED
+
+
+def test_processing_state_coerces_null_from_stored_document():
+    """Regression guard: a legacy or admin-written document with
+    processing_state: null must load as READY, not raise ValidationError."""
+    # Call the validator directly (mirrors Task 2 IngestJob pattern —
+    # Content.__init__ hits pymongo collection access, so we exercise
+    # the mode='before' validator without going through model_validate).
+    result = Content._coerce_null_processing_state(None)
+    assert result == ProcessingState.READY
+
+    # A non-null value should pass through untouched
+    assert Content._coerce_null_processing_state(ProcessingState.PROCESSING) == ProcessingState.PROCESSING
+    assert Content._coerce_null_processing_state("failed") == "failed"

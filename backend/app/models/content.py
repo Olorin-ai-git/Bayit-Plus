@@ -202,7 +202,26 @@ class Content(Document):
 
     # Visibility
     is_published: bool = True
+    # Default READY is load-bearing: preserves visibility of existing
+    # published documents (legacy rows without this field load as READY).
+    # The resumable ingest pipeline explicitly sets PROCESSING at job start.
+    # DO NOT change this default to PROCESSING — it would silently hide
+    # every published document in production.
     processing_state: ProcessingState = ProcessingState.READY
+
+    @field_validator("processing_state", mode="before")
+    @classmethod
+    def _coerce_null_processing_state(cls, v):
+        """Coerce stores/migrations that set processing_state: null back to READY.
+
+        Pydantic's type-level default only applies when the key is missing;
+        an explicit null from a legacy document would raise ValidationError.
+        This matches the pattern used for IngestJob.stages in Task 2.
+        """
+        if v is None:
+            return ProcessingState.READY
+        return v
+
     is_featured: bool = False
     featured_order: Dict[str, int] = Field(default_factory=dict)  # {section_id: order}
     requires_subscription: str = "premium"  # basic, premium, family, none
