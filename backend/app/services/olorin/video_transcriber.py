@@ -5,7 +5,9 @@ Extracts audio from video URLs and transcribes with speaker diarization
 via ElevenLabs Scribe v2 API.
 """
 
+import asyncio
 import logging
+import re
 import tempfile
 from dataclasses import dataclass, field
 from typing import Optional
@@ -42,13 +44,41 @@ class TranscriptionResult:
     duration_seconds: float = 0.0
 
 
+_YT_PATTERN = re.compile(
+    r"(youtube\.com/watch|youtu\.be/|youtube\.com/embed/|youtube\.com/shorts/)"
+)
+
+
 async def _download_video(url: str, dest: str) -> str:
-    """Download a video URL to a local file."""
+    """Download a video URL to a local file. Uses yt-dlp for YouTube."""
+    if _YT_PATTERN.search(url):
+        return await _download_via_ytdlp(url, dest)
     async with httpx.AsyncClient(timeout=300.0, follow_redirects=True) as client:
         resp = await client.get(url)
         resp.raise_for_status()
         with open(dest, "wb") as f:
             f.write(resp.content)
+    return dest
+
+
+async def _download_via_ytdlp(url: str, dest: str) -> str:
+    """Download video via yt-dlp (YouTube, Vimeo, etc.)."""
+    proc = await asyncio.create_subprocess_exec(
+        "yt-dlp",
+        "--no-playlist",
+        "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
+        "--merge-output-format", "mp4",
+        "-o", dest,
+        url,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=300)
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"yt-dlp failed (exit {proc.returncode}): {stderr.decode()[:500]}"
+        )
+    logger.info("Downloaded video via yt-dlp", extra={"url": url[:80]})
     return dest
 
 
