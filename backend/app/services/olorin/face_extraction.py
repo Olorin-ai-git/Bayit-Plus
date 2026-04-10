@@ -1,20 +1,17 @@
 """Face portrait extraction for training video characters.
 
-Strategy:
-1. Pick the timestamp at the midpoint of the character's longest speech segment.
-2. Use ffmpeg to extract a single frame at that timestamp.
-3. Run OpenCV YuNet (cv2.FaceDetectorYN) on the frame.
-4. If a face is found, crop with padding, upload to GCS, return URL.
-5. If no face found, try up to MAX_FALLBACK_ATTEMPTS other candidate frames.
-6. If still no face, raise NoFaceDetectedError — caller provides manual upload UI.
+Picks the midpoint of the longest speech segment, extracts a frame via
+ffmpeg, runs YuNet face detection, crops with padding, uploads to GCS.
+Falls back through MAX_FALLBACK_ATTEMPTS candidates; raises
+NoFaceDetectedError if none yield a face.
 
-YuNet is a modern ONNX-based face detector built into OpenCV's contrib
-module. The model file lives at
-app/services/olorin/models/face_detection_yunet_2023mar.onnx (230KB,
-Apache 2.0, opencv_zoo).
+Model: app/services/olorin/models/face_detection_yunet_2023mar.onnx
+(230 KB, Apache 2.0, opencv_zoo).
 """
 import asyncio
 import logging
+import re
+import tempfile
 from pathlib import Path
 from typing import List, Optional
 
@@ -27,6 +24,17 @@ logger = logging.getLogger(__name__)
 DEFAULT_MODEL_PATH = (
     Path(__file__).parent / "models" / "face_detection_yunet_2023mar.onnx"
 )
+
+_UNSAFE_NAME_RE = re.compile(r"[^A-Za-z0-9_\-]")
+
+
+def _sanitize_name(name: str) -> str:
+    """Replace anything outside [A-Za-z0-9_-] with underscores.
+
+    Prevents path-traversal when character names come from LLM output.
+    """
+    cleaned = _UNSAFE_NAME_RE.sub("_", name).strip("_")
+    return cleaned or "unknown"
 
 
 class FaceExtractionError(Exception):
@@ -49,7 +57,7 @@ class FaceExtractionService:
         storage_service: StorageService,
         model_path: Optional[Path] = None,
     ) -> None:
-        self._storage = storage_service
+        self._gcs = storage_service
         self._model_path = model_path or DEFAULT_MODEL_PATH
         self._detector: Optional[cv2.FaceDetectorYN] = None
 
@@ -88,47 +96,52 @@ class FaceExtractionService:
             raise FaceExtractionError("no speech segments for character")
 
         candidates = self._rank_candidate_timestamps(speech_segments)
-        work_dir = Path(f"/tmp/face_extract_{content_id}_{character_name}")
-        work_dir.mkdir(parents=True, exist_ok=True)
+        safe_name = _sanitize_name(character_name)
+        tried_timestamps: List[float] = []
 
-        for idx, ts in enumerate(candidates[: self.MAX_FALLBACK_ATTEMPTS]):
-            frame_path = work_dir / f"frame_{idx}.jpg"
-            try:
-                await self._extract_frame_at(video_path, ts, frame_path)
-            except FaceExtractionError as e:
-                logger.warning("ffmpeg frame extract failed at %.2fs: %s", ts, e)
-                continue
+        with tempfile.TemporaryDirectory(
+            prefix=f"face_extract_{content_id}_"
+        ) as work_dir_str:
+            work_dir = Path(work_dir_str)
 
-            crop = self._detect_face(frame_path)
-            if crop is None:
-                logger.debug("no face at %.2fs for %s", ts, character_name)
-                continue
+            for idx, ts in enumerate(candidates[: self.MAX_FALLBACK_ATTEMPTS]):
+                tried_timestamps.append(ts)
+                frame_path = work_dir / f"frame_{idx}.jpg"
+                try:
+                    await self._extract_frame_at(video_path, ts, frame_path)
+                except FaceExtractionError as e:
+                    logger.warning("ffmpeg frame extract failed at %.2fs: %s", ts, e)
+                    continue
 
-            cropped_path = work_dir / f"portrait_{idx}.jpg"
-            cv2.imwrite(str(cropped_path), crop)
-            remote_path = f"training-portraits/{content_id}/{character_name}.jpg"
-            url = await self._storage.upload_file(
-                local_path=str(cropped_path),
-                remote_path=remote_path,
-            )
-            logger.info(
-                "extracted portrait for %s at %.2fs -> %s",
-                character_name, ts, url,
-            )
-            return url
+                crop = self._detect_face(frame_path)
+                if crop is None:
+                    logger.debug("no face at %.2fs for %s", ts, character_name)
+                    continue
+
+                cropped_path = work_dir / f"portrait_{idx}.jpg"
+                if not cv2.imwrite(str(cropped_path), crop):
+                    raise FaceExtractionError(
+                        f"cv2.imwrite failed writing to {cropped_path}"
+                    )
+                url = await self._gcs.upload_file(
+                    local_path=str(cropped_path),
+                    remote_path=f"training-portraits/{content_id}/{safe_name}.jpg",
+                )
+                logger.info("extracted portrait for %s at %.2fs -> %s", character_name, ts, url)
+                return url
 
         raise NoFaceDetectedError(
-            f"no face detected in {self.MAX_FALLBACK_ATTEMPTS} candidate frames "
-            f"for character '{character_name}'"
+            f"no face detected for character {character_name!r} in content "
+            f"{content_id!r} (tried timestamps: {tried_timestamps})"
         )
 
     def _pick_best_speech_timestamp(self, segments: List[dict]) -> float:
-        if not segments:
-            raise FaceExtractionError("no speech segments")
-        longest = max(segments, key=lambda s: s["end"] - s["start"])
-        return (longest["start"] + longest["end"]) / 2
+        """Backward-compat delegator; production code uses _rank_candidate_timestamps."""
+        return self._rank_candidate_timestamps(segments)[0]
 
     def _rank_candidate_timestamps(self, segments: List[dict]) -> List[float]:
+        if not segments:
+            raise FaceExtractionError("no speech segments")
         ranked = sorted(segments, key=lambda s: s["end"] - s["start"], reverse=True)
         return [(s["start"] + s["end"]) / 2 for s in ranked]
 
@@ -158,10 +171,8 @@ class FaceExtractionService:
     def _detect_face(self, frame_path: Path):
         """Return cropped BGR face image, or None if no face detected.
 
-        cv2.FaceDetectorYN.detect(image) returns (retval, faces) where
-        `faces` is either None or a 2D numpy array of shape (N, 15):
-        columns are [x, y, w, h, lx1, ly1, ..., lx5, ly5, confidence].
-        Results are already sorted by confidence.
+        YuNet returns (retval, faces): faces is None or shape (N, 15)
+        [x, y, w, h, lx1, ly1, ..., lx5, ly5, confidence], by confidence.
         """
         image = cv2.imread(str(frame_path))
         if image is None:
@@ -180,4 +191,7 @@ class FaceExtractionService:
         y1 = max(0, int(fy - pad_h))
         x2 = min(w, int(fx + fw + pad_w))
         y2 = min(h, int(fy + fh + pad_h))
+        if x1 >= x2 or y1 >= y2:
+            logger.warning("degenerate face crop (box=%s): skipping", best[:4].tolist())
+            return None
         return image[y1:y2, x1:x2]

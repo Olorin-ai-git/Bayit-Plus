@@ -118,3 +118,44 @@ async def test_extract_portrait_raises_no_face_when_all_frames_empty(service, tm
                 speech_segments=segments,
                 content_id="c1",
             )
+
+
+@pytest.mark.asyncio
+async def test_extract_portrait_happy_path_uploads_and_returns_url(service, tmp_path):
+    video = tmp_path / "v.mp4"
+    video.write_bytes(b"fake")
+    fake_crop = np.full((200, 200, 3), 128, dtype=np.uint8)
+    segments = [{"start": 10.0, "end": 20.0, "text": "hello"}]
+
+    with patch.object(service, "_extract_frame_at") as frame_mock, \
+         patch.object(service, "_detect_face", return_value=fake_crop), \
+         patch("app.services.olorin.face_extraction.cv2.imwrite", return_value=True) as imwrite_mock:
+        async def fake_extract(video_path, ts, output):
+            output.write_bytes(b"fake jpg")
+            return output
+        frame_mock.side_effect = fake_extract
+
+        url = await service.extract_portrait(
+            video_path=video,
+            character_name="alice",
+            speech_segments=segments,
+            content_id="c1",
+        )
+
+    assert url == "https://gcs/portraits/c1/alice.jpg"
+    imwrite_mock.assert_called_once()
+    service._gcs.upload_file.assert_awaited_once()
+    call_kwargs = service._gcs.upload_file.call_args
+    all_args = str(call_kwargs)
+    assert "alice.jpg" in all_args
+    assert "training-portraits/c1/" in all_args
+
+
+def test_sanitize_name_handles_path_traversal():
+    from app.services.olorin.face_extraction import _sanitize_name
+    assert _sanitize_name("../../etc") == "etc"
+    assert _sanitize_name("Dr. Chen") == "Dr__Chen"
+    assert _sanitize_name("alice/bob") == "alice_bob"
+    assert _sanitize_name("alice") == "alice"
+    assert _sanitize_name("") == "unknown"
+    assert _sanitize_name("!!!") == "unknown"
