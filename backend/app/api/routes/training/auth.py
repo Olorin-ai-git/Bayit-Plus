@@ -271,8 +271,10 @@ async def accept_invite_oauth(body: AcceptInviteOAuthRequest):
     user.status = "active"
     user.invite_token = None
     user.activated_at = datetime.now(timezone.utc)
-    user.last_oauth_provider = body.provider
     await user.save()
+    await TrainingUser.find_one({"email": user.email}).update(
+        {"$set": {"last_oauth_provider": body.provider}}
+    )
     logger.info("Training invite accepted via OAuth (%s): %s", body.provider, user.email)
     token = create_training_token(user)
     return {
