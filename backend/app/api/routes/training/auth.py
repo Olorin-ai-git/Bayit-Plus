@@ -215,7 +215,7 @@ async def accept_invite(body: AcceptInviteRequest):
         )
 
     if user.invited_at and (
-        datetime.now(timezone.utc) - user.invited_at
+        datetime.now(timezone.utc) - user.invited_at.replace(tzinfo=timezone.utc)
     ).days > INVITE_EXPIRE_DAYS:
         user.invite_token = None
         await user.save()
@@ -249,7 +249,7 @@ async def accept_invite_oauth(body: AcceptInviteOAuthRequest):
         )
 
     if user.invited_at and (
-        datetime.now(timezone.utc) - user.invited_at
+        datetime.now(timezone.utc) - user.invited_at.replace(tzinfo=timezone.utc)
     ).days > INVITE_EXPIRE_DAYS:
         user.invite_token = None
         await user.save()
