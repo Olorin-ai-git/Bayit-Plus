@@ -30,6 +30,10 @@ RUN sed -i '/demucs/d; /torchcodec/d; /spacy/d' pyproject.toml && \
 
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN useradd -m -u 1000 bayit && \
     mkdir -p /app && \
     chown -R bayit:bayit /app
