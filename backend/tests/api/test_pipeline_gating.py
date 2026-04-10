@@ -690,6 +690,43 @@ class TestRetryEndpoint:
             )
         assert resp.status_code == 404
 
+    async def test_retry_returns_404_when_no_ingest_job_exists(
+        self, training_admin_client
+    ):
+        """Legacy content rows without an IngestJob cannot be resumed — 404.
+
+        Pre-Task-7 content (or manually-created rows that never went through
+        /ingest) lack the stage tracking that resume_pipeline needs. Admins
+        must re-ingest to get a fresh job. Guards against the "stuck in
+        processing forever" failure mode where we'd flip state but have
+        nothing to resume.
+        """
+        content = MagicMock()
+        content.partner_id = "training-testorg-abc12345"
+        content.processing_state = ProcessingState.READY
+        content.save = AsyncMock()
+
+        with (
+            patch(
+                "app.api.routes.training.content.Content.get",
+                new_callable=AsyncMock,
+                return_value=content,
+            ),
+            patch(
+                "app.api.routes.training.content.IngestJob.find_one",
+                new_callable=AsyncMock,
+                return_value=None,
+            ),
+        ):
+            resp = await training_admin_client.post(
+                "/api/v1/training/content/507f1f77bcf86cd799439011/retry"
+            )
+
+        assert resp.status_code == 404
+        assert "ingest job" in resp.json()["detail"].lower()
+        # processing_state must NOT be flipped — we never dispatched any work.
+        content.save.assert_not_awaited()
+
     async def test_retry_sets_processing_state_back_to_processing(
         self, training_admin_client
     ):
