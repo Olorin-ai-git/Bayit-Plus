@@ -101,6 +101,45 @@ class CharacterVoiceClonerService:
         )
         return results
 
+    async def clone_single_character(
+        self, content: Content, character_name: str,
+    ) -> VoiceCloneResult:
+        """Clone voice for a single named character.
+
+        Looks up the character in content.interactive_characters, fetches
+        subtitle cues, and delegates to _clone_single.  Saves content on
+        completion (mirroring clone_character_voices behaviour).
+
+        Raises:
+            ValueError: if character_name is not found in content.interactive_characters.
+        """
+        char = next(
+            (c for c in (content.interactive_characters or []) if c.name == character_name),
+            None,
+        )
+        if char is None:
+            raise ValueError(
+                f"character {character_name!r} not found in content {content.id}"
+            )
+
+        content_id = str(content.id)
+        track = await find_subtitle_track(content_id)
+        cues = []
+        if track and track.cues:
+            cue_map = await dialogue_mapper_service.map_dialogue_to_characters(
+                track.cues, [character_name], content.title or content_id,
+            )
+            cues = cue_map.get(character_name, [])
+
+        timeout = settings.VOICE_CLONE_FFMPEG_TIMEOUT
+        audio_filter = settings.VOICE_CLONE_AUDIO_FILTER
+
+        with tempfile.TemporaryDirectory() as tmp:
+            result = await self._clone_single(content, char, cues, tmp, timeout, audio_filter)
+
+        await content.save()
+        return result
+
     async def _clone_single(
         self, content: Content, char, cues: List[SubtitleCueModel],
         tmp_dir: str, timeout: int, audio_filter: str,
