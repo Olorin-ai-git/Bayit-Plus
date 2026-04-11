@@ -42,8 +42,11 @@ def _make_partner(tier: str = "trial") -> MagicMock:
 class TestDurationGate:
 
     async def test_trial_video_over_limit_fails_all_capabilities(self):
-        """A 45-minute video on a trial org fails all capabilities."""
-        from app.services.olorin.ingest_orchestrator import _run_transcription
+        """A 45-minute video on a trial org raises DurationLimitExceeded."""
+        from app.services.olorin.ingest_orchestrator import (
+            DurationLimitExceeded,
+            _run_transcription,
+        )
 
         job = _make_job()
         content = _make_content()
@@ -59,9 +62,9 @@ class TestDurationGate:
             new_callable=AsyncMock,
             return_value=transcript_result,
         ):
-            result = await _run_transcription(job, content, partner)
+            with pytest.raises(DurationLimitExceeded):
+                await _run_transcription(job, content, partner)
 
-        assert result == ""
         assert "too long" in (job.error_detail or "").lower()
         assert all(v == "failed" for v in job.capabilities.values())
 
@@ -89,8 +92,11 @@ class TestDurationGate:
         assert job.error_detail is None
 
     async def test_team_tier_enforces_2h_limit(self):
-        """A 3-hour video on a team-tier org fails."""
-        from app.services.olorin.ingest_orchestrator import _run_transcription
+        """A 3-hour video on a team-tier org raises DurationLimitExceeded."""
+        from app.services.olorin.ingest_orchestrator import (
+            DurationLimitExceeded,
+            _run_transcription,
+        )
 
         job = _make_job()
         content = _make_content()
@@ -106,9 +112,9 @@ class TestDurationGate:
             new_callable=AsyncMock,
             return_value=transcript_result,
         ):
-            result = await _run_transcription(job, content, partner)
+            with pytest.raises(DurationLimitExceeded):
+                await _run_transcription(job, content, partner)
 
-        assert result == ""
         assert "too long" in (job.error_detail or "").lower()
 
     async def test_organization_tier_has_no_duration_limit(self):
@@ -135,7 +141,7 @@ class TestDurationGate:
         assert job.error_detail is None
 
     async def test_transcription_failure_still_returns_empty(self):
-        """If transcribe_video raises, the function returns '' and does NOT set duration error."""
+        """If transcribe_video raises RuntimeError, _run_transcription propagates it."""
         from app.services.olorin.ingest_orchestrator import _run_transcription
 
         job = _make_job()
@@ -147,9 +153,8 @@ class TestDurationGate:
             new_callable=AsyncMock,
             side_effect=RuntimeError("ElevenLabs timeout"),
         ):
-            result = await _run_transcription(job, content, partner)
+            with pytest.raises(RuntimeError, match="ElevenLabs timeout"):
+                await _run_transcription(job, content, partner)
 
-        assert result == ""
-        # Transcription failure does NOT mark capabilities as failed -- that happens
-        # at the pipeline level (downstream stages skip on empty transcript)
+        # Transcription failure does NOT set a duration-based error_detail
         assert "too long" not in (job.error_detail or "")

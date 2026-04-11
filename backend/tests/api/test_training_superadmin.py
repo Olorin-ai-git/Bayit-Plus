@@ -1,10 +1,44 @@
 """Tests for superadmin role gating and CRUD routes — Tasks 3, 4 & 5."""
 
 import pytest
+from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
 from httpx import AsyncClient
 
-from app.models.platform_config import PlatformConfig
+from app.models.platform_config import (
+    FeatureCost,
+    FormatCost,
+    PlatformConfig,
+    SubscriptionPlan,
+    _DEFAULT_FEATURE_COSTS,
+    _DEFAULT_FORMAT_COSTS,
+    _DEFAULT_PLANS,
+    _DEFAULT_TIER_LIMITS,
+)
+
+pytest_plugins = ["conftest_training"]
+
+
+def _make_default_config() -> MagicMock:
+    """Build a MagicMock PlatformConfig with default values (no DB required)."""
+    cfg = MagicMock(spec=PlatformConfig)
+    cfg.config_type = "platform"
+    cfg.tier_limits = dict(_DEFAULT_TIER_LIMITS)
+    cfg.format_costs = list(_DEFAULT_FORMAT_COSTS)
+    cfg.feature_costs = list(_DEFAULT_FEATURE_COSTS)
+    cfg.subscription_plans = list(_DEFAULT_PLANS)
+    cfg.save = AsyncMock()
+    # Make the mock JSON-serializable by returning a real PlatformConfig dict
+    # when the route returns it as a response model.
+    cfg.model_dump = MagicMock(return_value={
+        "config_type": "platform",
+        "tier_limits": dict(_DEFAULT_TIER_LIMITS),
+        "format_costs": [f.model_dump() for f in _DEFAULT_FORMAT_COSTS],
+        "feature_costs": [f.model_dump() for f in _DEFAULT_FEATURE_COSTS],
+        "subscription_plans": [p.model_dump() for p in _DEFAULT_PLANS],
+        "updated_at": "2026-04-11T00:00:00Z",
+    })
+    return cfg
 
 
 # ── Auth gating (Task 3) ───────────────────────────────────────────────────────
@@ -20,7 +54,11 @@ async def test_superadmin_route_requires_superadmin_role(training_admin_client: 
 @pytest.mark.asyncio
 async def test_superadmin_route_allows_superadmin_role(training_superadmin_client: AsyncClient):
     """Superadmin gets 200 on superadmin config route."""
-    response = await training_superadmin_client.get("/api/v1/training/superadmin/config")
+    with patch(
+        "app.api.routes.training.superadmin.PlatformConfig.get_singleton",
+        new=AsyncMock(return_value=_make_default_config()),
+    ):
+        response = await training_superadmin_client.get("/api/v1/training/superadmin/config")
     assert response.status_code == 200
 
 
@@ -30,7 +68,12 @@ async def test_superadmin_route_allows_superadmin_role(training_superadmin_clien
 @pytest.mark.asyncio
 async def test_get_config_returns_defaults(training_superadmin_client: AsyncClient):
     """GET /superadmin/config returns full config with default values."""
-    response = await training_superadmin_client.get("/api/v1/training/superadmin/config")
+    with patch(
+        "app.api.routes.training.superadmin.PlatformConfig.get_singleton",
+        new=AsyncMock(return_value=_make_default_config()),
+    ):
+        response = await training_superadmin_client.get("/api/v1/training/superadmin/config")
+
     assert response.status_code == 200
     data = response.json()
     assert data["tier_limits"]["team"] == 500
@@ -42,10 +85,15 @@ async def test_get_config_returns_defaults(training_superadmin_client: AsyncClie
 @pytest.mark.asyncio
 async def test_put_config_updates_tier_limits(training_superadmin_client: AsyncClient):
     """PUT /superadmin/config persists updated tier limits."""
-    response = await training_superadmin_client.put(
-        "/api/v1/training/superadmin/config",
-        json={"tier_limits": {"free": 50, "team": 600, "organization": 2000, "enterprise": 10000}},
-    )
+    with patch(
+        "app.api.routes.training.superadmin.PlatformConfig.get_singleton",
+        new=AsyncMock(return_value=_make_default_config()),
+    ):
+        response = await training_superadmin_client.put(
+            "/api/v1/training/superadmin/config",
+            json={"tier_limits": {"free": 50, "team": 600, "organization": 2000, "enterprise": 10000}},
+        )
+
     assert response.status_code == 200
     assert response.json()["tier_limits"]["team"] == 600
 
@@ -53,38 +101,51 @@ async def test_put_config_updates_tier_limits(training_superadmin_client: AsyncC
 @pytest.mark.asyncio
 async def test_put_config_rejects_negative_credits(training_superadmin_client: AsyncClient):
     """PUT /superadmin/config rejects negative tier_limits values."""
-    response = await training_superadmin_client.put(
-        "/api/v1/training/superadmin/config",
-        json={"tier_limits": {"team": -1}},
-    )
+    with patch(
+        "app.api.routes.training.superadmin.PlatformConfig.get_singleton",
+        new=AsyncMock(return_value=_make_default_config()),
+    ):
+        response = await training_superadmin_client.put(
+            "/api/v1/training/superadmin/config",
+            json={"tier_limits": {"team": -1}},
+        )
     assert response.status_code == 422
 
 
 @pytest.mark.asyncio
 async def test_put_config_rejects_invalid_stripe_id(training_superadmin_client: AsyncClient):
     """PUT /superadmin/config rejects malformed Stripe Price IDs."""
-    response = await training_superadmin_client.put(
-        "/api/v1/training/superadmin/config",
-        json={
-            "subscription_plans": [
-                {
-                    "id": "team",
-                    "name": "Team",
-                    "price_monthly": 349,
-                    "price_annual": 279,
-                    "stripe_price_id_monthly": "bad_id",
-                    "stripe_price_id_annual": "",
-                }
-            ]
-        },
-    )
+    with patch(
+        "app.api.routes.training.superadmin.PlatformConfig.get_singleton",
+        new=AsyncMock(return_value=_make_default_config()),
+    ):
+        response = await training_superadmin_client.put(
+            "/api/v1/training/superadmin/config",
+            json={
+                "subscription_plans": [
+                    {
+                        "id": "team",
+                        "name": "Team",
+                        "price_monthly": 349,
+                        "price_annual": 279,
+                        "stripe_price_id_monthly": "bad_id",
+                        "stripe_price_id_annual": "",
+                    }
+                ]
+            },
+        )
     assert response.status_code == 422
 
 
 @pytest.mark.asyncio
-async def test_get_public_credits_omits_stripe_ids(async_client: AsyncClient):
+async def test_get_public_credits_omits_stripe_ids(training_public_client: AsyncClient):
     """GET /config/credits returns plan display prices but no Stripe IDs."""
-    response = await async_client.get("/api/v1/training/config/credits")
+    with patch(
+        "app.api.routes.training.superadmin.PlatformConfig.get_singleton",
+        new=AsyncMock(return_value=_make_default_config()),
+    ):
+        response = await training_public_client.get("/api/v1/training/config/credits")
+
     assert response.status_code == 200
     data = response.json()
     for plan in data["subscription_plans"]:
@@ -153,7 +214,6 @@ async def test_checkout_uses_platform_config_price_id(
 
 def test_cost_accumulator_total():
     """_CostAccumulator.total() sums all provider costs with Decimal precision."""
-    from decimal import Decimal
     from app.services.olorin.pipeline_cost_tracker import _CostAccumulator
 
     acc = _CostAccumulator(
@@ -166,8 +226,6 @@ def test_cost_accumulator_total():
 
 def test_cost_accumulator_add_elevenlabs_stt():
     """add_elevenlabs_stt accumulates cost proportional to duration."""
-    from decimal import Decimal
-    from unittest.mock import patch
     from app.services.olorin.pipeline_cost_tracker import _CostAccumulator
 
     acc = _CostAccumulator()
@@ -184,7 +242,6 @@ def test_cost_accumulator_add_elevenlabs_stt():
 
 def test_cost_accumulator_starts_at_zero():
     """_CostAccumulator initialises all providers at zero."""
-    from decimal import Decimal
     from app.services.olorin.pipeline_cost_tracker import _CostAccumulator
 
     acc = _CostAccumulator()

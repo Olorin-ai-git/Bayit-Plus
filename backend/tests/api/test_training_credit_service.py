@@ -45,9 +45,8 @@ async def test_deduct_success(service):
     with patch(
         "app.services.training.credit_service.IntegrationPartner"
     ) as MockPartner:
-        MockPartner.get_motor_collection = MagicMock()
         coll = AsyncMock()
-        MockPartner.get_motor_collection.return_value = coll
+        MockPartner.get_pymongo_collection.return_value = coll
         coll.find_one_and_update = AsyncMock(return_value={
             "training_config": {
                 "credits_used": 11,
@@ -73,9 +72,8 @@ async def test_deduct_insufficient(service):
     with patch(
         "app.services.training.credit_service.IntegrationPartner"
     ) as MockPartner:
-        MockPartner.get_motor_collection = MagicMock()
         coll = AsyncMock()
-        MockPartner.get_motor_collection.return_value = coll
+        MockPartner.get_pymongo_collection.return_value = coll
         coll.find_one_and_update = AsyncMock(return_value=None)
 
         success, remaining = await service.deduct(

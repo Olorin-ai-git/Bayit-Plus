@@ -49,7 +49,7 @@ async def test_sequential_deductions_exhaust_credits(service):
         "app.services.training.credit_service.IntegrationPartner"
     ) as MockPartner:
         coll = AsyncMock()
-        MockPartner.get_motor_collection.return_value = coll
+        MockPartner.get_pymongo_collection.return_value = coll
         coll.find_one_and_update = mock_update
 
         ok1, r1 = await service.deduct(partner_id, "companion")
@@ -74,7 +74,7 @@ async def test_zero_cost_feature_always_succeeds(service):
         "app.services.training.credit_service.IntegrationPartner"
     ) as MockPartner:
         coll = AsyncMock()
-        MockPartner.get_motor_collection.return_value = coll
+        MockPartner.get_pymongo_collection.return_value = coll
 
         ok, remaining = await service.deduct("any_partner", "companion")
 
@@ -109,7 +109,7 @@ async def test_independent_partners_isolated(service):
         "app.services.training.credit_service.IntegrationPartner"
     ) as MockPartner:
         coll = AsyncMock()
-        MockPartner.get_motor_collection.return_value = coll
+        MockPartner.get_pymongo_collection.return_value = coll
         coll.find_one_and_update = mock_update
 
         ok1, r1 = await service.deduct("p1", "companion")
