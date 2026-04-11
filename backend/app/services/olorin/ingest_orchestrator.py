@@ -449,50 +449,127 @@ async def _run_subtitles(
     partner: IntegrationPartner,
     transcript_text: str,
 ) -> None:
-    """Stage: Generate multi-language subtitles from transcript."""
-    from app.services.live_translation.service import (
-        LiveTranslationService,
+    """Stage: Generate subtitle tracks from transcript segments in 10 languages."""
+    from app.models.subtitles import (
+        SubtitleCueModel,
+        SubtitleTrackDoc,
+        get_language_native_name,
     )
+    from app.services.live_translation.service import LiveTranslationService
+    from app.services.subtitle_sync_service import (
+        sync_content_subtitle_languages,
+    )
+
+    SUBTITLE_LANGS = [
+        "en", "he", "es", "zh", "fr", "it", "hi", "ta", "bn", "ja",
+    ]
 
     await job.update_capability("subtitles", "processing")
     try:
-        if not transcript_text:
+        segments = getattr(content, "transcript_segments", None) or []
+        if not segments and not transcript_text:
             await job.update_capability("subtitles", "failed")
             raise RuntimeError(
-                "cannot generate subtitles: transcript is empty "
-                "(upstream transcription stage produced no text)"
+                "cannot generate subtitles: no transcript segments or text "
+                "(upstream transcription stage produced no output)"
             )
 
-        translation_svc = LiveTranslationService()
-        target_langs = ["en", "he", "es"]
-        translated = 0
+        # Build source-language cues from transcript segments
+        cues = [
+            SubtitleCueModel(
+                index=i,
+                start_time=float(seg.get("start", 0.0)),
+                end_time=float(seg.get("end", 0.0)),
+                text=seg.get("text", "").strip(),
+            )
+            for i, seg in enumerate(segments)
+            if seg.get("text", "").strip()
+        ]
 
-        for lang in target_langs:
+        if not cues:
+            await job.update_capability("subtitles", "failed")
+            raise RuntimeError(
+                "cannot generate subtitles: transcript segments have no text"
+            )
+
+        content_id = str(content.id)
+
+        # Create English track from source segments
+        existing_en = await SubtitleTrackDoc.find_one(
+            {"content_id": content_id, "language": "en"}
+        )
+        if not existing_en:
+            en_track = SubtitleTrackDoc(
+                content_id=content_id,
+                language="en",
+                language_name=get_language_native_name("en"),
+                cues=cues,
+                is_default=True,
+                is_auto_generated=True,
+                source="pipeline",
+            )
+            await en_track.insert()
+
+        # Translate to remaining languages
+        translation_svc = LiveTranslationService()
+        translated_count = 1  # English already done
+
+        for lang in SUBTITLE_LANGS:
+            if lang == "en":
+                continue
+            existing = await SubtitleTrackDoc.find_one(
+                {"content_id": content_id, "language": lang}
+            )
+            if existing:
+                translated_count += 1
+                continue
             try:
-                result = await translation_svc.translate_text(
-                    transcript_text, "auto", lang,
+                translated_cues = []
+                for cue in cues:
+                    translated_text = await translation_svc.translate_text(
+                        cue.text, "en", lang,
+                    )
+                    translated_cues.append(
+                        SubtitleCueModel(
+                            index=cue.index,
+                            start_time=cue.start_time,
+                            end_time=cue.end_time,
+                            text=translated_text or cue.text,
+                        )
+                    )
+                track = SubtitleTrackDoc(
+                    content_id=content_id,
+                    language=lang,
+                    language_name=get_language_native_name(lang),
+                    cues=translated_cues,
+                    is_auto_generated=True,
+                    source="pipeline",
                 )
-                if result:
-                    translated += 1
+                await track.insert()
+                translated_count += 1
             except Exception:
                 logger.warning(
                     "Subtitle translation failed for language",
-                    extra={"lang": lang, "job_id": job.job_id},
+                    extra={"lang": lang, "job_id": job.job_id,
+                           "content_id": content_id},
                 )
+
+        # Sync content.has_subtitles and available_subtitle_languages
+        await sync_content_subtitle_languages(content_id)
 
         await job.update_capability("subtitles", "completed")
         await metering_service.record_usage(
             partner_id=partner.partner_id,
             capability="subtitles",
             metadata={
-                "content_id": str(content.id),
-                "languages_translated": translated,
+                "content_id": content_id,
+                "languages_generated": translated_count,
             },
         )
         await _fire_webhook(partner, "subtitles.completed", {
             "job_id": job.job_id,
-            "content_id": str(content.id),
-            "languages": translated,
+            "content_id": content_id,
+            "languages": translated_count,
         })
     except Exception:
         logger.exception(
