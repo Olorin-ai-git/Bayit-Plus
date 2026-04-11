@@ -13,6 +13,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from pathlib import Path
+
+from fastapi.staticfiles import StaticFiles
+
 from app.core.config import settings
 from app.core.database import close_mongo_connection, get_database
 from app.core.logging_config import setup_logging
@@ -102,6 +106,22 @@ app.add_middleware(RequestTimingMiddleware)
 app.add_middleware(CorrelationIdMiddleware)
 
 register_routes(app)
+
+# Serve preset avatar PNGs at /static/avatars/training/*.png
+# The shared assets directory sits one level above the backend dir
+# in the repo layout; inside the Docker container it is copied to
+# the same relative position by the Dockerfile COPY step.
+_avatars_dir = Path(__file__).resolve().parents[2] / "shared" / "assets" / "avatars" / "training"
+if _avatars_dir.is_dir():
+    app.mount(
+        "/static/avatars/training",
+        StaticFiles(directory=str(_avatars_dir)),
+        name="training-avatars",
+    )
+    logger.info(
+        "Mounted training avatar gallery",
+        extra={"path": str(_avatars_dir)},
+    )
 
 
 if __name__ == "__main__":

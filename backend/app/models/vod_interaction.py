@@ -301,6 +301,17 @@ class ContentCharacter(BaseModel):
         default_factory=list,
         description="AI-generated character-specific questions",
     )
+    portrait_source: Optional[str] = Field(
+        default=None,
+        description=(
+            "How the portrait was set: auto_detected | custom_upload | "
+            "preset_avatar | auto_fallback. None for legacy rows."
+        ),
+    )
+    preset_avatar_id: Optional[str] = Field(
+        default=None,
+        description="Manifest id of the preset avatar, when portrait_source=preset_avatar or auto_fallback",
+    )
 
 
 class CharacterResponse(BaseModel):

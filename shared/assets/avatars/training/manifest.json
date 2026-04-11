@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "avatars": [
+    {
+      "id": "instructor_f01",
+      "file": "instructor_f01.png",
+      "gender": "female",
+      "voice_id_env": "ELEVENLABS_ENGLISH_VOICE_ID",
+      "name_key": "presetAvatars.female.professional"
+    },
+    {
+      "id": "instructor_f02",
+      "file": "instructor_f02.png",
+      "gender": "female",
+      "voice_id_env": "ELEVENLABS_ENGLISH_VOICE_ID",
+      "name_key": "presetAvatars.female.friendly"
+    },
+    {
+      "id": "instructor_f03",
+      "file": "instructor_f03.png",
+      "gender": "female",
+      "voice_id_env": "ELEVENLABS_ENGLISH_VOICE_ID",
+      "name_key": "presetAvatars.female.authoritative"
+    },
+    {
+      "id": "instructor_m01",
+      "file": "instructor_m01.png",
+      "gender": "male",
+      "voice_id_env": "ELEVENLABS_ENGLISH_MALE_VOICE_ID",
+      "name_key": "presetAvatars.male.professional"
+    },
+    {
+      "id": "instructor_m02",
+      "file": "instructor_m02.png",
+      "gender": "male",
+      "voice_id_env": "ELEVENLABS_ENGLISH_MALE_VOICE_ID",
+      "name_key": "presetAvatars.male.friendly"
+    },
+    {
+      "id": "instructor_m03",
+      "file": "instructor_m03.png",
+      "gender": "male",
+      "voice_id_env": "ELEVENLABS_ENGLISH_MALE_VOICE_ID",
+      "name_key": "presetAvatars.male.authoritative"
+    }
+  ],
+  "default_fallback": "instructor_f01"
+}

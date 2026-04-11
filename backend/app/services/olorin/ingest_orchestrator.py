@@ -22,6 +22,7 @@ from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
 from app.models.pipeline_stage import StageName, StageStatus
 from app.services.olorin.face_extraction import (
+    FaceExtractionError,
     FaceExtractionService,
     NoFaceDetectedError,
 )
@@ -790,40 +791,37 @@ async def _run_face_extraction(
 
     cue_map = await _build_cue_map_for_face_extraction(content)
 
-    with tempfile.TemporaryDirectory() as tmpdir_str:
-        tmpdir_path = Path(tmpdir_str)
-        try:
-            video_path = await _download_video(job.video_url, tmpdir_path)
-        except Exception as exc:
-            for character in content.interactive_characters:
-                if resume_subtask and character.name != resume_subtask:
-                    continue
-                await job.start_stage_subtask(
-                    StageName.FACE_EXTRACTION, character.name,
-                )
-                await job.fail_stage_subtask(
-                    StageName.FACE_EXTRACTION,
-                    character.name,
-                    f"video download failed: {exc}",
-                )
-            return
+    # Try downloading the video for frame extraction. On failure, ALL
+    # characters get the default fallback avatar — the pipeline does NOT
+    # halt. This covers expired YouTube cookies, removed videos, and
+    # network blips, all of which previously blocked the entire ingest.
+    video_path: Optional[Path] = None
+    download_error: Optional[str] = None
+    tmpdir_obj = tempfile.TemporaryDirectory()
+    tmpdir_path = Path(tmpdir_obj.name)
+    try:
+        video_path = await _download_video(job.video_url, tmpdir_path)
+    except Exception as exc:
+        download_error = f"video download failed: {exc}"
+        logger.warning(
+            "face_extraction: video download failed, "
+            "falling back to default avatar for all characters",
+            extra={"job_id": job.job_id, "error": download_error[:200]},
+        )
 
+    try:
         for character in content.interactive_characters:
             if resume_subtask and character.name != resume_subtask:
                 continue
 
-            # Re-read stage fresh on every iteration — the prior iteration's
-            # saves orphan any cached reference.
             stage = job.get_or_create_stage(StageName.FACE_EXTRACTION)
             existing = stage.subtasks.get(character.name)
             if existing and existing.status == StageStatus.COMPLETED:
                 continue
 
-            if character.frame_url:
-                # Manual portrait upload path: character already has a
-                # frame_url from the portraits endpoint. Preserve the
-                # "manually resolved" audit marker via a dedicated atomic
-                # mutator so it survives retry_stage / retry_subtask.
+            if character.frame_url and character.portrait_source in (
+                "custom_upload", "preset_avatar",
+            ):
                 await job.mark_manual_portrait_subtask(
                     StageName.FACE_EXTRACTION,
                     character.name,
@@ -835,6 +833,11 @@ async def _run_face_extraction(
                 StageName.FACE_EXTRACTION, character.name,
             )
 
+            # If video download failed, skip YuNet and go straight to fallback
+            if download_error or video_path is None:
+                await _apply_fallback_avatar(content, character, job)
+                continue
+
             segments = _segments_for_character(cue_map, character.name, content)
             try:
                 url = await face_svc.extract_portrait(
@@ -844,20 +847,67 @@ async def _run_face_extraction(
                     content_id=str(content.id),
                 )
                 character.frame_url = url
+                character.portrait_source = "auto_detected"
                 await content.save()
                 await job.complete_stage_subtask(
                     StageName.FACE_EXTRACTION, character.name,
                 )
-            except NoFaceDetectedError as exc:
-                await job.fail_stage_subtask(
-                    StageName.FACE_EXTRACTION,
+            except (NoFaceDetectedError, FaceExtractionError) as exc:
+                logger.info(
+                    "face_extraction: YuNet failed for %s, "
+                    "applying default fallback avatar",
                     character.name,
-                    f"no face detected: {exc}",
+                    extra={"job_id": job.job_id, "error": str(exc)[:200]},
                 )
+                await _apply_fallback_avatar(content, character, job)
             except Exception as exc:
-                await job.fail_stage_subtask(
-                    StageName.FACE_EXTRACTION, character.name, str(exc),
+                logger.warning(
+                    "face_extraction: unexpected error for %s, "
+                    "applying default fallback avatar",
+                    character.name,
+                    extra={"job_id": job.job_id, "error": str(exc)[:200]},
                 )
+                await _apply_fallback_avatar(content, character, job)
+    finally:
+        tmpdir_obj.cleanup()
+
+
+# Marker stamped on face_extraction subtasks that used the auto-fallback
+# avatar. Distinguished from MANUAL_PORTRAIT_UPLOAD_MARKER so the
+# frontend can render a "please review" badge prompting the admin to
+# pick a better avatar.
+FACE_FALLBACK_MARKER = "auto-fallback:default-avatar"
+
+
+async def _apply_fallback_avatar(
+    content: Content,
+    character,
+    job: IngestJob,
+) -> None:
+    """Assign the default preset avatar to a character after face detection failure.
+
+    Non-blocking: marks the subtask COMPLETED with the fallback audit
+    marker so the pipeline can continue through voice_cloning and beyond.
+    The admin can always swap to a better avatar later via the portrait
+    picker.
+    """
+    from app.services.olorin.avatar_gallery import (
+        avatar_static_url as _avatar_url,
+        get_default_fallback as _default_fallback,
+        resolve_voice_id as _resolve_voice,
+    )
+    fallback = _default_fallback()
+    character.frame_url = _avatar_url(fallback)
+    character.portrait_source = "auto_fallback"
+    character.preset_avatar_id = fallback["id"]
+    if not character.voice_id:
+        character.voice_id = _resolve_voice(fallback)
+    await content.save()
+    await job.mark_manual_portrait_subtask(
+        StageName.FACE_EXTRACTION,
+        character.name,
+        FACE_FALLBACK_MARKER,
+    )
 
 
 async def _run_voice_cloning(
@@ -880,6 +930,31 @@ async def _run_voice_cloning(
         stage = job.get_or_create_stage(StageName.VOICE_CLONING)
         existing = stage.subtasks.get(character.name)
         if existing and existing.status == StageStatus.COMPLETED:
+            continue
+
+        # Skip voice cloning for characters using a preset or fallback
+        # avatar — they already have a gender-matched ElevenLabs preset
+        # voice_id assigned by the face_extraction fallback path or the
+        # admin portrait picker. Cloning would be wasteful (no unique
+        # voice sample to clone from) and may fail on missing dialogue
+        # audio, blocking the pipeline for no benefit.
+        if getattr(character, "portrait_source", None) in (
+            "preset_avatar", "auto_fallback",
+        ):
+            logger.info(
+                "voice_cloning: skipping %s (portrait_source=%s, "
+                "using preset voice %s)",
+                character.name,
+                character.portrait_source,
+                character.voice_id,
+                extra={"job_id": job.job_id},
+            )
+            await job.start_stage_subtask(
+                StageName.VOICE_CLONING, character.name,
+            )
+            await job.complete_stage_subtask(
+                StageName.VOICE_CLONING, character.name,
+            )
             continue
 
         await job.start_stage_subtask(

@@ -61,6 +61,7 @@ COPY --chown=bayit:bayit bayit-training/app/main.py ./app/main.py
 COPY --chown=bayit:bayit bayit-training/app/api/router_registry.py ./app/api/router_registry.py
 
 COPY --chown=bayit:bayit shared/i18n/locales ./shared/i18n/locales
+COPY --chown=bayit:bayit shared/assets/avatars/training ./shared/assets/avatars/training
 
 USER bayit
 
