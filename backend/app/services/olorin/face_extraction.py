@@ -46,7 +46,14 @@ class NoFaceDetectedError(FaceExtractionError):
 
 
 class FaceExtractionService:
-    MAX_FALLBACK_ATTEMPTS = 5
+    # Bumped from 5 → 20 for training screen-share content where the
+    # instructor's face is only visible in a minority of frames. The
+    # ranker orders candidates by segment length, but a single 9-minute
+    # tutorial that is 70% IDE screen-share will only surface a face in
+    # ~30% of sampled frames. 20 attempts gives a ~99.97% probability
+    # of hitting at least one face-visible frame in that scenario
+    # (vs. ~83% at 5 attempts).
+    MAX_FALLBACK_ATTEMPTS = 20
     CROP_PADDING_RATIO = 0.3
     MIN_CONFIDENCE = 0.6
     NMS_THRESHOLD = 0.3

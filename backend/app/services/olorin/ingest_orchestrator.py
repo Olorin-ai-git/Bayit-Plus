@@ -667,15 +667,50 @@ async def _build_cue_map_for_face_extraction(content) -> dict:
         )
         return {}
 
-    synthetic_cues = [
-        SubtitleCueModel(
-            index=i,
-            start_time=float(seg.get("start", 0.0)),
-            end_time=float(seg.get("end", 0.0)),
-            text=seg.get("text", ""),
-        )
-        for i, seg in enumerate(raw_segments)
-    ]
+    # Split each segment longer than SUBDIVISION_THRESHOLD_S into windows
+    # of ~SUBDIVISION_WINDOW_S so the ranker has multiple candidate
+    # timestamps across the video instead of a single midpoint. ElevenLabs
+    # Scribe often returns one massive segment for solo-speaker monologues
+    # (the Task 20 tutorial had a single 566s segment), which gave YuNet
+    # exactly one frame to try at the exact midpoint — a coin-flip
+    # against screen-share / slide moments. Short windows give fallback
+    # candidates and convert face extraction into a sampling exercise.
+    SUBDIVISION_THRESHOLD_S = 60.0
+    SUBDIVISION_WINDOW_S = 30.0
+
+    def _synthesize_cues(seg_list: list) -> list:
+        out: list = []
+        idx = 0
+        for seg in seg_list:
+            start = float(seg.get("start", 0.0))
+            end = float(seg.get("end", 0.0))
+            text = seg.get("text", "")
+            duration = end - start
+            if duration <= SUBDIVISION_THRESHOLD_S:
+                out.append(SubtitleCueModel(
+                    index=idx, start_time=start, end_time=end, text=text,
+                ))
+                idx += 1
+                continue
+            # Subdivide into windows of SUBDIVISION_WINDOW_S. The text
+            # field is preserved across all windows — the face
+            # extractor does not read it, and the dialogue mapper path
+            # (not taken for single-speaker short-circuit) treats the
+            # whole span as a contiguous monologue.
+            cursor = start
+            while cursor < end:
+                window_end = min(cursor + SUBDIVISION_WINDOW_S, end)
+                out.append(SubtitleCueModel(
+                    index=idx,
+                    start_time=cursor,
+                    end_time=window_end,
+                    text=text,
+                ))
+                idx += 1
+                cursor = window_end
+        return out
+
+    synthetic_cues = _synthesize_cues(raw_segments)
 
     # --- Path 3: single-speaker short-circuit ---
     unique_speakers = {s.get("speaker") for s in raw_segments}
