@@ -21,6 +21,7 @@ from app.models.content import Content, ProcessingState
 from app.models.ingest_job import IngestJob
 from app.models.integration_partner import IntegrationPartner
 from app.models.pipeline_stage import StageName, StageStatus
+from app.services.olorin.chapter_extraction import ChapterExtractionService
 from app.services.olorin.face_extraction import (
     FaceExtractionError,
     FaceExtractionService,
@@ -270,6 +271,47 @@ async def _stage_subtitles(
     partner = await _fetch_partner(job.partner_id)
     transcript_text = getattr(content, "transcript", None) or ""
     await _run_subtitles(job, content, partner, transcript_text)
+
+
+async def _stage_chapters(
+    job: IngestJob, resume_subtask: Optional[str] = None,
+) -> None:
+    """Adapter: extract chapters via native-first / AI-fallback strategy.
+
+    Non-blocking: any exception from ChapterExtractionService is logged and
+    swallowed so the pipeline can proceed to finalization. The runner will
+    mark this stage COMPLETED on return. A subsequent retry-stage call can
+    re-attempt extraction without re-running upstream stages.
+    """
+    content = await Content.get(job.content_id)
+    if not content:
+        raise RuntimeError(f"content {job.content_id} not found")
+
+    transcript_text = getattr(content, "transcript", None) or ""
+    duration_hint = 0.0
+    segments = getattr(content, "transcript_segments", None) or []
+    if segments:
+        duration_hint = float(segments[-1].get("end", 0.0) or 0.0)
+
+    svc = ChapterExtractionService()
+    try:
+        source, count = await svc.extract(
+            content_id=str(content.id),
+            content_title=content.title or "",
+            video_url=job.video_url,
+            transcript=transcript_text,
+            duration_hint=duration_hint,
+        )
+        logger.info(
+            "chapters: %s produced %d entries",
+            source, count,
+            extra={"job_id": job.job_id, "content_id": str(content.id)},
+        )
+    except Exception as exc:
+        logger.warning(
+            "chapters: extraction failed (non-blocking)",
+            extra={"job_id": job.job_id, "error": str(exc)[:200]},
+        )
 
 
 async def _stage_trivia(

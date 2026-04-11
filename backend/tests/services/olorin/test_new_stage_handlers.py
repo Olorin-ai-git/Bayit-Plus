@@ -535,3 +535,81 @@ async def test_sync_content_state_sets_failed_when_any_stage_failed():
 
     assert fake_content.processing_state == ProcessingState.FAILED
     fake_content.save.assert_awaited_once()
+
+
+# ---------------------------------------------------------------------------
+# _stage_chapters tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_stage_chapters_persists_native_chapters():
+    from app.services.olorin.ingest_orchestrator import _stage_chapters
+
+    content = _make_content()
+    object.__setattr__(content, "transcript", "lorem ipsum")
+    job = _make_job()
+
+    extract_mock = AsyncMock(return_value=("youtube_native", 5))
+
+    with (
+        patch(
+            "app.services.olorin.ingest_orchestrator.Content.get",
+            new=AsyncMock(return_value=content),
+        ),
+        patch(
+            "app.services.olorin.ingest_orchestrator.ChapterExtractionService"
+        ) as svc_cls,
+    ):
+        svc_cls.return_value.extract = extract_mock
+        await _stage_chapters(job, resume_subtask=None)
+
+    extract_mock.assert_awaited_once()
+    kwargs = extract_mock.await_args.kwargs
+    assert kwargs["content_id"] == "content-xyz"
+    assert kwargs["video_url"] == "https://example.com/video.mp4"
+
+
+@pytest.mark.asyncio
+async def test_stage_chapters_does_not_raise_when_extractor_returns_zero():
+    """ai_failed must not raise — chapters are non-blocking."""
+    from app.services.olorin.ingest_orchestrator import _stage_chapters
+
+    content = _make_content()
+    object.__setattr__(content, "transcript", "x")
+    job = _make_job()
+
+    with (
+        patch(
+            "app.services.olorin.ingest_orchestrator.Content.get",
+            new=AsyncMock(return_value=content),
+        ),
+        patch(
+            "app.services.olorin.ingest_orchestrator.ChapterExtractionService"
+        ) as svc_cls,
+    ):
+        svc_cls.return_value.extract = AsyncMock(return_value=("ai_failed", 0))
+        await _stage_chapters(job, resume_subtask=None)
+
+
+@pytest.mark.asyncio
+async def test_stage_chapters_swallows_extractor_exceptions():
+    """Unexpected service exceptions must be swallowed so finalization runs."""
+    from app.services.olorin.ingest_orchestrator import _stage_chapters
+
+    content = _make_content()
+    object.__setattr__(content, "transcript", "x")
+    job = _make_job()
+
+    with (
+        patch(
+            "app.services.olorin.ingest_orchestrator.Content.get",
+            new=AsyncMock(return_value=content),
+        ),
+        patch(
+            "app.services.olorin.ingest_orchestrator.ChapterExtractionService"
+        ) as svc_cls,
+    ):
+        svc_cls.return_value.extract = AsyncMock(
+            side_effect=RuntimeError("anthropic 503"),
+        )
+        await _stage_chapters(job, resume_subtask=None)
