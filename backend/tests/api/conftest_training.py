@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 
 from app.api.routes.training.dependencies import (
     get_current_training_user,
+    require_superadmin,
     require_training_admin,
     require_training_teacher_or_admin,
 )
@@ -73,6 +74,31 @@ async def training_viewer_client(mock_training_viewer):
         yield ac
 
     app.dependency_overrides.pop(get_current_training_user, None)
+
+
+@pytest_asyncio.fixture
+async def training_superadmin_client(mock_training_admin):
+    """AsyncClient with superadmin auth override."""
+    superadmin_user = MagicMock()
+    superadmin_user.id = "training_superadmin_001"
+    superadmin_user.email = "superadmin@olorin.ai"
+    superadmin_user.role = "superadmin"
+    superadmin_user.display_name = "Superadmin"
+    superadmin_user.partner_id = "superadmin"
+    superadmin_user.department = None
+    superadmin_user.status = "active"
+
+    app.dependency_overrides[get_current_training_user] = lambda: superadmin_user
+    app.dependency_overrides[require_superadmin] = lambda: superadmin_user
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        yield ac
+
+    app.dependency_overrides.pop(get_current_training_user, None)
+    app.dependency_overrides.pop(require_superadmin, None)
 
 
 @pytest_asyncio.fixture

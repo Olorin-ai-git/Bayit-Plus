@@ -167,6 +167,18 @@ async def require_training_teacher_or_admin(
     return user
 
 
+async def require_superadmin(
+    user: TrainingUser = Depends(get_current_training_user),
+) -> TrainingUser:
+    """Require superadmin role — gates all /superadmin routes."""
+    if user.role != "superadmin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superadmin access required",
+        )
+    return user
+
+
 from app.services.training.credit_service import TrainingCreditService
 
 _credit_service: TrainingCreditService | None = None

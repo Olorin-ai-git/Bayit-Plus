@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr, Field
 from pymongo import ASCENDING, IndexModel
 
 
-TrainingRole = Literal["admin", "viewer", "teacher"]
+TrainingRole = Literal["admin", "viewer", "teacher", "superadmin"]
 TrainingUserStatus = Literal["pending", "active", "deactivated"]
 
 
