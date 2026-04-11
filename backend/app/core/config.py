@@ -32,6 +32,7 @@ from app.core.config_domains.monitoring import MonitoringConfigMixin
 from app.core.config_domains.olorin_compat import OlorinCompatConfigMixin
 from app.core.config_domains.restored_fields import RestoredFieldsMixin
 from app.core.config_domains.payments import PaymentsConfigMixin
+from app.core.config_domains.provider_costs import ProviderCostsConfigMixin
 from app.core.config_domains.voice import VoiceConfigMixin
 from app.core.config_domains.zehani import ZehAniConfigMixin
 from app.core.config_domains.zehani_grandparent import ZehAniGrandparentConfigMixin
@@ -57,6 +58,7 @@ class Settings(
     RestoredFieldsMixin,
     BackwardCompatPropertiesMixin,
     PaymentsConfigMixin,
+    ProviderCostsConfigMixin,
     FreemiumConfigMixin,
     BetaCreditsConfigMixin,
     AINLPConfigMixin,

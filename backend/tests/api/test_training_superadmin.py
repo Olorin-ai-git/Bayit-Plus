@@ -148,6 +148,52 @@ async def test_checkout_uses_platform_config_price_id(
     assert captured_price_ids == ["price_test_team_monthly"]
 
 
+# ── _CostAccumulator (Task 6) ──────────────────────────────────────────────────
+
+
+def test_cost_accumulator_total():
+    """_CostAccumulator.total() sums all provider costs with Decimal precision."""
+    from decimal import Decimal
+    from app.services.olorin.pipeline_cost_tracker import _CostAccumulator
+
+    acc = _CostAccumulator(
+        elevenlabs=Decimal("0.14"),
+        claude=Decimal("0.03"),
+        openai=Decimal("0.01"),
+    )
+    assert abs(acc.total() - Decimal("0.18")) < Decimal("0.0001")
+
+
+def test_cost_accumulator_add_elevenlabs_stt():
+    """add_elevenlabs_stt accumulates cost proportional to duration."""
+    from decimal import Decimal
+    from unittest.mock import patch
+    from app.services.olorin.pipeline_cost_tracker import _CostAccumulator
+
+    acc = _CostAccumulator()
+    with patch(
+        "app.services.olorin.pipeline_cost_tracker.settings"
+    ) as mock_settings:
+        mock_settings.ELEVENLABS_STT_COST_PER_SECOND = 0.0004
+        acc.add_elevenlabs_stt(100.0)  # 100 seconds * $0.0004 = $0.04
+
+    assert abs(acc.elevenlabs - Decimal("0.04")) < Decimal("0.0001")
+    assert acc.claude == Decimal("0.0")
+    assert acc.openai == Decimal("0.0")
+
+
+def test_cost_accumulator_starts_at_zero():
+    """_CostAccumulator initialises all providers at zero."""
+    from decimal import Decimal
+    from app.services.olorin.pipeline_cost_tracker import _CostAccumulator
+
+    acc = _CostAccumulator()
+    assert acc.elevenlabs == Decimal("0.0")
+    assert acc.claude == Decimal("0.0")
+    assert acc.openai == Decimal("0.0")
+    assert acc.total() == Decimal("0.0")
+
+
 @pytest.mark.asyncio
 async def test_checkout_falls_back_to_settings_when_no_platform_config_price(
     training_admin_client: AsyncClient,

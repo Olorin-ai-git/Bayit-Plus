@@ -38,6 +38,10 @@ from app.services.olorin.video_transcriber import transcribe_video
 # failure to stamp the error field for us.
 MANUAL_PORTRAIT_UPLOAD_MARKER = "manually-resolved:portrait-upload"
 
+from app.services.olorin.pipeline_cost_tracker import (
+    _CostAccumulator,
+    write_pipeline_cost,
+)
 from app.services.vod_interaction.dialogue_mapper import dialogue_mapper_service
 from app.services.vod_interaction.voice_cloner import (
     character_voice_cloner_service,
@@ -47,6 +51,11 @@ from app.services.vod_interaction.voice_cloner import (
 logger = get_logger(__name__)
 
 ALL_CAPABILITIES = ("characters", "subtitles", "trivia", "search")
+
+# Per-job cost accumulators keyed by job_id.  Populated at pipeline start,
+# consumed at finalization, and deleted on completion or failure to avoid
+# leaking memory from long-running workers.
+_job_cost_accumulators: dict[str, _CostAccumulator] = {}
 
 
 async def _fire_webhook(
@@ -106,6 +115,8 @@ async def run_pipeline(job: IngestJob) -> None:
     3. On any stage failure, flip processing_state to FAILED
     4. _run_finalization stage flips to READY on success
     """
+    _job_cost_accumulators[job.job_id] = _CostAccumulator()
+
     content = await Content.get(job.content_id)
     if content:
         content.processing_state = ProcessingState.PROCESSING
@@ -119,6 +130,9 @@ async def run_pipeline(job: IngestJob) -> None:
             "pipeline failed for job %s at stage %s",
             job.job_id, job.first_failed_stage().name.value,
         )
+        # Discard accumulator on failure — no PipelineCost written for
+        # incomplete runs; the dashboard only tracks successful ingestions.
+        _job_cost_accumulators.pop(job.job_id, None)
         content = await Content.get(job.content_id)
         if content:
             content.processing_state = ProcessingState.FAILED
@@ -345,6 +359,13 @@ async def _run_transcription(
             "transcription produced no text (audio may be silent, "
             "empty, or unrecognized language)"
         )
+
+    # Accumulate ElevenLabs Scribe cost based on billed audio duration.
+    # Only on the successful path — failed transcriptions still incur the
+    # charge but the pipeline halts, so no PipelineCost document is written.
+    acc = _job_cost_accumulators.get(job.job_id)
+    if acc is not None and result.duration_seconds > 0:
+        acc.add_elevenlabs_stt(result.duration_seconds)
 
     content.transcript = result.full_text
     content.transcript_segments = [
@@ -1082,3 +1103,16 @@ async def _run_finalization(
         "finalization: content marked READY",
         extra={"job_id": job.job_id, "content_id": job.content_id},
     )
+
+    # Write cost record — try/except inside write_pipeline_cost; never blocks.
+    acc = _job_cost_accumulators.pop(job.job_id, None)
+    if acc is not None:
+        partner = await _fetch_partner(job.partner_id)
+        await write_pipeline_cost(
+            acc,
+            org_id=str(partner.id),
+            partner_id=job.partner_id,
+            content_id=job.content_id,
+            video_title=content.title or "",
+            started_at=job.created_at,
+        )
