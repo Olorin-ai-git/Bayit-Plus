@@ -49,7 +49,6 @@ def register_routes(app: FastAPI) -> None:
     prefix = settings.API_V1_PREFIX
 
     from app.api.routes.training import router as training_router
-    from app.api.routes.companion import router as companion_router
     from app.api.routes.vod_interactions import router as vod_router
     from app.api.routes.pause_ask_jobs import router as pause_ask_router
     from app.api.routes.talk_back.talk_back_core import (
@@ -57,11 +56,6 @@ def register_routes(app: FastAPI) -> None:
     )
 
     app.include_router(training_router, prefix=prefix, tags=["training"])
-    app.include_router(
-        companion_router,
-        prefix=f"{prefix}/training/companion",
-        tags=["companion"],
-    )
     app.include_router(vod_router, prefix=prefix, tags=["vod-interactions"])
     app.include_router(pause_ask_router, prefix=prefix, tags=["pause-ask"])
     app.include_router(talk_back_router, prefix=prefix, tags=["talk-back"])

@@ -29,6 +29,7 @@ from app.api.routes.training.analytics_export import (
     router as analytics_export_router,
 )
 from app.api.routes.training.portraits import router as portraits_router
+from app.api.routes.training.companion import router as companion_router
 
 router = APIRouter(prefix="/training")
 
@@ -51,3 +52,4 @@ router.include_router(scorm_interact_router)
 router.include_router(onboarding_router)
 router.include_router(analytics_export_router)
 router.include_router(portraits_router)
+router.include_router(companion_router, prefix="/companion")
