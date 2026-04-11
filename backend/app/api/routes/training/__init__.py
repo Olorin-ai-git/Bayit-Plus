@@ -4,6 +4,8 @@ from fastapi import APIRouter
 
 from app.api.routes.training.auth import router as auth_router
 from app.api.routes.training.content import router as content_router
+from app.api.routes.training.content_enrichment import router as content_enrichment_router
+from app.api.routes.training.content_retry import router as content_retry_router
 from app.api.routes.training.content_edit import router as content_edit_router
 from app.api.routes.training.password_reset import router as password_reset_router
 from app.api.routes.training.team import router as team_router
@@ -40,6 +42,8 @@ router = APIRouter(prefix="/training")
 router.include_router(auth_router)
 router.include_router(password_reset_router)
 router.include_router(content_router)
+router.include_router(content_enrichment_router)
+router.include_router(content_retry_router)
 router.include_router(content_edit_router)
 router.include_router(team_router)
 router.include_router(progress_router)
