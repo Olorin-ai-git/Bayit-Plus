@@ -70,7 +70,13 @@ def _call_claude(prompt: str, content_id: str, label: str) -> dict:
             messages=[{"role": "user", "content": prompt}],
         )
         raw = next((b.text for b in resp.content if b.type == "text"), "{}")
-        return json.loads(raw)
+        # Strip markdown code fences (```json ... ```)
+        stripped = raw.strip()
+        if stripped.startswith("```"):
+            stripped = stripped.split("\n", 1)[-1]
+            if stripped.endswith("```"):
+                stripped = stripped[:-3].strip()
+        return json.loads(stripped)
     except json.JSONDecodeError:
         logger.warning("Training companion %s: invalid JSON", label,
                        extra={"content_id": content_id})
