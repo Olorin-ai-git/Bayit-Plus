@@ -27,6 +27,7 @@ from app.models.chapters import VideoChapters
 from app.models.talk_back_point import ContentTalkBack
 from app.models.talk_back_attempt import TalkBackAttempt
 from app.models.user import User
+from app.models.subtitles import SubtitleTrackDoc
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -41,6 +42,7 @@ SERVICE_MODELS: List[Type[Document]] = [
     ContentTalkBack,
     TalkBackAttempt,
     User,
+    SubtitleTrackDoc,
 ]
 
 
@@ -58,6 +60,8 @@ def register_routes(app: FastAPI) -> None:
         router as talk_back_router,
     )
     from app.api.routes.search_scenes import router as search_scenes_router
+    from app.api.routes.subtitles_tracks import router as subtitles_tracks_router
+    from app.api.routes.subtitles_cues import router as subtitles_cues_router
 
     app.include_router(training_router, prefix=prefix, tags=["training"])
     app.include_router(vod_router, prefix=prefix, tags=["vod-interactions"])
@@ -70,6 +74,12 @@ def register_routes(app: FastAPI) -> None:
     app.include_router(talk_back_router, prefix=prefix, tags=["talk-back"])
     app.include_router(
         search_scenes_router, prefix=prefix, tags=["search-scenes"]
+    )
+    app.include_router(
+        subtitles_tracks_router, prefix=prefix, tags=["subtitles"]
+    )
+    app.include_router(
+        subtitles_cues_router, prefix=prefix, tags=["subtitles"]
     )
 
     logger.info(
