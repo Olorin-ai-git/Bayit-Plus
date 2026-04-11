@@ -451,5 +451,23 @@ async def get_content_characters(
 def _serialize_character(idx: int, c) -> dict:
     """Serialize a character from Content.interactive_characters."""
     if isinstance(c, dict):
-        return {"id": str(idx), "name": c.get("name", ""), "role": c.get("role", "")}
-    return {"id": str(idx), "name": getattr(c, "name", ""), "role": getattr(c, "role", "")}
+        return {
+            "id": str(idx),
+            "name": c.get("name", ""),
+            "role": c.get("role", ""),
+            "frame_url": c.get("frame_url") or None,
+            "voice_id": c.get("voice_id") or None,
+            "description": c.get("description") or None,
+            "portrait_source": c.get("portrait_source") or None,
+            "preset_avatar_id": c.get("preset_avatar_id") or None,
+        }
+    return {
+        "id": str(idx),
+        "name": getattr(c, "name", ""),
+        "role": getattr(c, "role", ""),
+        "frame_url": getattr(c, "frame_url", None) or None,
+        "voice_id": getattr(c, "voice_id", None) or None,
+        "description": getattr(c, "description", None) or None,
+        "portrait_source": getattr(c, "portrait_source", None) or None,
+        "preset_avatar_id": getattr(c, "preset_avatar_id", None) or None,
+    }
