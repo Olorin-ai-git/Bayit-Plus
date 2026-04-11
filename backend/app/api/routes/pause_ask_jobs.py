@@ -27,7 +27,10 @@ from app.models.pause_ask_job import (
     TERMINAL_STATUSES,
 )
 from app.models.user import User
-from app.api.dependencies.training_context import deduct_training_credits_if_applicable
+from app.api.dependencies.training_context import (
+    deduct_training_credits_if_applicable,
+    get_training_partner_id,
+)
 from app.services.beta.credit_service import credit_service
 from app.services.vod_interaction.pause_ask_orchestrator import (
     pause_ask_orchestrator,
@@ -93,35 +96,38 @@ async def submit_job(
     )
     await deduct_training_credits_if_applicable(current_user, training_feature)
 
-    # Credit check and deduction
-    is_lip_sync = body.mode == "lip_sync"
-    credit_amount = (
-        settings.CREDIT_RATE_VOD_PAUSE_ASK
-        if is_lip_sync
-        else settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
-    )
-
-    has_balance = await credit_service.has_sufficient_credits(
-        user_id=str(current_user.id),
-        amount=credit_amount,
-    )
-    if not has_balance:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Insufficient credits",
+    # B2C credit check — skip for training portal users (already handled above)
+    is_training_user = get_training_partner_id(current_user) is not None
+    credit_amount = 0
+    if not is_training_user:
+        is_lip_sync = body.mode == "lip_sync"
+        credit_amount = (
+            settings.CREDIT_RATE_VOD_PAUSE_ASK
+            if is_lip_sync
+            else settings.CREDIT_RATE_VOD_PAUSE_ASK_VOICE_ONLY
         )
 
-    charged, _ = await credit_service.charge_credits(
-        user_id=str(current_user.id),
-        amount=credit_amount,
-        reason="pause_ask_job_submit",
-        metadata={"content_id": body.content_id, "mode": body.mode},
-    )
-    if not charged:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Credit deduction failed",
+        has_balance = await credit_service.has_sufficient_credits(
+            user_id=str(current_user.id),
+            amount=credit_amount,
         )
+        if not has_balance:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail="Insufficient credits",
+            )
+
+        charged, _ = await credit_service.charge_credits(
+            user_id=str(current_user.id),
+            amount=credit_amount,
+            reason="pause_ask_job_submit",
+            metadata={"content_id": body.content_id, "mode": body.mode},
+        )
+        if not charged:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail="Credit deduction failed",
+            )
 
     # Create job
     job_id = str(uuid.uuid4())
@@ -132,7 +138,7 @@ async def submit_job(
         question=body.question,
         mode=body.mode,
         language_hint=body.language_hint,
-        portal="consumer",
+        portal="training" if is_training_user else "consumer",
         user_id=str(current_user.id),
         credits_charged=credit_amount,
     )
