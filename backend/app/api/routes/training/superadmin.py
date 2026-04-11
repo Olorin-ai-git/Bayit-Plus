@@ -8,6 +8,7 @@ GET  /training/superadmin/costs/runs  — superadmin only — paginated run list
 """
 
 import calendar
+import logging
 import re
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -28,6 +29,7 @@ from app.models.training_user import TrainingUser
 router = APIRouter(prefix="/superadmin", tags=["training-superadmin"])
 public_router = APIRouter(prefix="/config", tags=["training-config"])
 
+logger = logging.getLogger(__name__)
 _STRIPE_PRICE_ID_RE = re.compile(r"^price_[a-zA-Z0-9]+$")
 
 
@@ -106,6 +108,7 @@ async def update_platform_config(
         for plan in body.subscription_plans:
             if plan.price_monthly <= 0 or plan.price_annual <= 0:
                 raise HTTPException(422, f"subscription_plans.{plan.id}: prices must be positive")
+            # Empty string is allowed — superadmin can save a plan before Stripe IDs are configured
             if plan.stripe_price_id_monthly and not _STRIPE_PRICE_ID_RE.match(plan.stripe_price_id_monthly):
                 raise HTTPException(422, f"Invalid Stripe Price ID: {plan.stripe_price_id_monthly}")
             if plan.stripe_price_id_annual and not _STRIPE_PRICE_ID_RE.match(plan.stripe_price_id_annual):
@@ -114,6 +117,7 @@ async def update_platform_config(
 
     cfg.updated_at = datetime.now(timezone.utc)
     await cfg.save()
+    logger.info("platform_config_updated", extra={"updated_fields": list(body.model_fields_set)})
     return cfg
 
 
@@ -121,9 +125,13 @@ async def update_platform_config(
 
 
 def _month_bounds(period: Optional[str]):
-    """Return (start, end) UTC datetimes for the given YYYY-MM period string."""
+    """Parse YYYY-MM period string; return (year, month, start, end) UTC datetimes."""
     if period:
-        year, month = int(period[:4]), int(period[5:7])
+        try:
+            year, month = int(period[:4]), int(period[5:7])
+            datetime(year, month, 1, tzinfo=timezone.utc)  # raises ValueError if invalid
+        except (ValueError, IndexError):
+            raise HTTPException(status_code=422, detail="period must be in YYYY-MM format (e.g. '2025-04')")
     else:
         today = date.today()
         year, month = today.year, today.month
