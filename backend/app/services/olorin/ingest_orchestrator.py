@@ -932,30 +932,13 @@ async def _run_voice_cloning(
         if existing and existing.status == StageStatus.COMPLETED:
             continue
 
-        # Skip voice cloning for characters using a preset or fallback
-        # avatar — they already have a gender-matched ElevenLabs preset
-        # voice_id assigned by the face_extraction fallback path or the
-        # admin portrait picker. Cloning would be wasteful (no unique
-        # voice sample to clone from) and may fail on missing dialogue
-        # audio, blocking the pipeline for no benefit.
-        if getattr(character, "portrait_source", None) in (
-            "preset_avatar", "auto_fallback",
-        ):
-            logger.info(
-                "voice_cloning: skipping %s (portrait_source=%s, "
-                "using preset voice %s)",
-                character.name,
-                character.portrait_source,
-                character.voice_id,
-                extra={"job_id": job.job_id},
-            )
-            await job.start_stage_subtask(
-                StageName.VOICE_CLONING, character.name,
-            )
-            await job.complete_stage_subtask(
-                StageName.VOICE_CLONING, character.name,
-            )
-            continue
+        # Voice cloning is ALWAYS attempted regardless of portrait_source.
+        # The voice comes from the video audio, not from the face — a
+        # stock avatar + the real instructor's cloned voice is the correct
+        # default for screen-share tutorials where the instructor is
+        # audible but not visible enough for YuNet. The preset voice_id
+        # set by the fallback path is only a safety net; cloning replaces
+        # it with the real voice when it succeeds.
 
         await job.start_stage_subtask(
             StageName.VOICE_CLONING, character.name,

@@ -27,7 +27,8 @@ import numpy as np
 from beanie import PydanticObjectId
 from bson.errors import InvalidId
 from fastapi import (
-    APIRouter, Depends, File, Form, HTTPException, UploadFile, status,
+    APIRouter, BackgroundTasks, Depends, File, Form, HTTPException,
+    UploadFile, status,
 )
 
 from app.api.routes.training.dependencies import (
@@ -342,6 +343,61 @@ async def _resolve_face_extraction_subtask(
     )
 
 
+async def _retrigger_voice_cloning_if_needed(
+    content_id: str,
+    character_name: str,
+) -> None:
+    """Re-run voice cloning for a character after a portrait change.
+
+    When the pipeline completed with a preset/fallback voice (because
+    voice_cloning was skipped or used a generic voice), and the admin
+    later changes the portrait, the voice should be re-cloned from the
+    actual video audio so the lip-sync response matches the real
+    instructor's voice.
+
+    This runs as a background task so the portrait endpoint returns
+    immediately. The voice_cloning subtask is reset and re-run via
+    the resumable retry_subtask path.
+    """
+    from app.services.olorin.ingest_orchestrator import retry_subtask
+
+    job = await IngestJob.find_one(
+        {"content_id": content_id}, sort=[("created_at", -1)],
+    )
+    if not job:
+        return
+
+    vc_stage = job.get_stage(StageName.VOICE_CLONING)
+    if not vc_stage:
+        return
+
+    subtask = vc_stage.subtasks.get(character_name)
+    if not subtask:
+        return
+
+    # Only retrigger if the character's voice was never actually cloned
+    # (i.e. it was skipped or used a preset). If voice_clone_status is
+    # "cloned", the voice is already the real instructor's voice.
+    content = await Content.get(content_id)
+    if not content:
+        return
+    character = _find_character(content.interactive_characters, character_name)
+    if not character:
+        return
+    if getattr(character, "voice_clone_status", None) == "cloned":
+        return
+
+    logger.info(
+        "retriggering voice cloning after portrait change",
+        extra={
+            "content_id": content_id,
+            "character": character_name,
+            "job_id": job.job_id,
+        },
+    )
+    await retry_subtask(job, StageName.VOICE_CLONING, character_name)
+
+
 @_content_router.post(
     "/{content_id}/characters/{character_name}/portrait",
     status_code=status.HTTP_200_OK,
@@ -349,6 +405,7 @@ async def _resolve_face_extraction_subtask(
 async def set_character_portrait(
     content_id: str,
     character_name: str,
+    background_tasks: BackgroundTasks,
     portrait: Optional[UploadFile] = File(None),
     preset_id: Optional[str] = Form(None),
     admin: TrainingUser = Depends(require_training_admin),
@@ -396,9 +453,13 @@ async def set_character_portrait(
 
     # --- Preset path ---
     if preset_id:
-        return await _apply_preset_portrait(
+        result = await _apply_preset_portrait(
             content, character, preset_id, content_id,
         )
+        background_tasks.add_task(
+            _retrigger_voice_cloning_if_needed, content_id, character_name,
+        )
+        return result
 
     # --- Upload path ---
     if portrait.content_type not in ALLOWED_CONTENT_TYPES:
@@ -439,6 +500,10 @@ async def set_character_portrait(
     await content.save()
 
     await _resolve_face_extraction_subtask(content_id, character_name)
+
+    background_tasks.add_task(
+        _retrigger_voice_cloning_if_needed, content_id, character_name,
+    )
 
     return {
         "frame_url": portrait_url,
