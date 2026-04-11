@@ -56,7 +56,7 @@ class TrainingCreditService:
         if cost == 0:
             return (True, -1)
 
-        coll = IntegrationPartner.get_motor_collection()
+        coll = IntegrationPartner.get_pymongo_collection()
 
         result = await coll.find_one_and_update(
             {
