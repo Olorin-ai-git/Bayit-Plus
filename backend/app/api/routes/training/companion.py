@@ -1,22 +1,22 @@
-"""Training AI Companion — wraps B2C companion with training auth.
+"""Training AI Companion — cached, credit-aware, preview-safe.
 
-The B2C companion endpoints use get_current_active_user which requires
-RS256 tokens from auth.olorin.ai. Training portal users authenticate
-with HS256 JWTs that are rejected by decode_token. This module re-
-exposes the same endpoint logic under training auth.
+Results are cached per (content_id, language, tab). First successful
+call deducts credits and stores the result. Subsequent calls return
+cached data for free. Preview mode skips credit deduction entirely.
 """
 
 import json
 import uuid
+from typing import Optional
 
 import anthropic
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 from app.api.routes.companion import (
     CompanionContextResponse,
     CompanionCulturalResponse,
     CompanionQuizResponse,
-    CompanionRequest,
     CompanionVocabularyResponse,
     QuizQuestion,
     VocabularyItem,
@@ -35,6 +35,14 @@ logger = get_logger(__name__)
 router = APIRouter(tags=["training-companion"])
 
 _credit_svc: TrainingCreditService | None = None
+# Cache: {(content_id, language, tab): response_dict}
+_cache: dict[tuple[str, str, str], dict] = {}
+
+
+class TrainingCompanionRequest(BaseModel):
+    content_id: str
+    language: str = "en"
+    preview: bool = False
 
 
 def _get_credit_svc() -> TrainingCreditService:
@@ -54,11 +62,32 @@ async def _deduct(user: TrainingUser, feature: str) -> None:
         )
 
 
+def _get_cached(
+    content_id: str, language: str, tab: str,
+) -> Optional[dict]:
+    return _cache.get((content_id, language, tab))
+
+
+def _set_cached(
+    content_id: str, language: str, tab: str, data: dict,
+) -> None:
+    _cache[(content_id, language, tab)] = data
+
+
 def _transcript_excerpt(content) -> str:
     raw = getattr(content, "transcript_segments", None) or []
     if not raw:
         return ""
     return " ".join(seg.get("text", "") for seg in raw[:50]).strip()[:2000]
+
+
+def _strip_fences(raw: str) -> str:
+    stripped = raw.strip()
+    if stripped.startswith("```"):
+        stripped = stripped.split("\n", 1)[-1]
+        if stripped.endswith("```"):
+            stripped = stripped[:-3].strip()
+    return stripped
 
 
 def _call_claude(prompt: str, content_id: str, label: str) -> dict:
@@ -70,13 +99,7 @@ def _call_claude(prompt: str, content_id: str, label: str) -> dict:
             messages=[{"role": "user", "content": prompt}],
         )
         raw = next((b.text for b in resp.content if b.type == "text"), "{}")
-        # Strip markdown code fences (```json ... ```)
-        stripped = raw.strip()
-        if stripped.startswith("```"):
-            stripped = stripped.split("\n", 1)[-1]
-            if stripped.endswith("```"):
-                stripped = stripped[:-3].strip()
-        return json.loads(stripped)
+        return json.loads(_strip_fences(raw))
     except json.JSONDecodeError:
         logger.warning("Training companion %s: invalid JSON", label,
                        extra={"content_id": content_id})
@@ -102,10 +125,14 @@ def _ensure_ids(items: list) -> None:
 
 @router.post("/context", response_model=CompanionContextResponse)
 async def context(
-    req: CompanionRequest,
+    req: TrainingCompanionRequest,
     _user: TrainingUser = Depends(get_current_training_user),
 ) -> CompanionContextResponse:
-    await _deduct(_user, "companion")
+    cached = _get_cached(req.content_id, req.language, "context")
+    if cached:
+        return CompanionContextResponse(**cached)
+    if not req.preview:
+        await _deduct(_user, "companion")
     content = await _fetch_content(req.content_id)
     prompt = _base_prompt(
         _build_content_summary(content), _transcript_excerpt(content),
@@ -118,15 +145,21 @@ async def context(
         f"Respond in {req.language}. Return ONLY JSON, no markdown."
     )
     data = _call_claude(prompt, req.content_id, "context")
+    if data:
+        _set_cached(req.content_id, req.language, "context", data)
     return CompanionContextResponse(**data) if data else CompanionContextResponse()
 
 
 @router.post("/quiz", response_model=CompanionQuizResponse)
 async def quiz(
-    req: CompanionRequest,
+    req: TrainingCompanionRequest,
     _user: TrainingUser = Depends(get_current_training_user),
 ) -> CompanionQuizResponse:
-    await _deduct(_user, "companion")
+    cached = _get_cached(req.content_id, req.language, "quiz")
+    if cached:
+        return CompanionQuizResponse(**cached)
+    if not req.preview:
+        await _deduct(_user, "companion")
     content = await _fetch_content(req.content_id)
     prompt = _base_prompt(
         _build_content_summary(content), _transcript_excerpt(content),
@@ -141,15 +174,22 @@ async def quiz(
     data = _call_claude(prompt, req.content_id, "quiz")
     qs = data.get("questions", [])
     _ensure_ids(qs)
-    return CompanionQuizResponse(questions=[QuizQuestion(**q) for q in qs])
+    result = {"questions": [QuizQuestion(**q).model_dump() for q in qs]}
+    if qs:
+        _set_cached(req.content_id, req.language, "quiz", result)
+    return CompanionQuizResponse(**result)
 
 
 @router.post("/vocabulary", response_model=CompanionVocabularyResponse)
 async def vocabulary(
-    req: CompanionRequest,
+    req: TrainingCompanionRequest,
     _user: TrainingUser = Depends(get_current_training_user),
 ) -> CompanionVocabularyResponse:
-    await _deduct(_user, "companion")
+    cached = _get_cached(req.content_id, req.language, "vocabulary")
+    if cached:
+        return CompanionVocabularyResponse(**cached)
+    if not req.preview:
+        await _deduct(_user, "companion")
     content = await _fetch_content(req.content_id)
     prompt = _base_prompt(
         _build_content_summary(content), _transcript_excerpt(content),
@@ -163,15 +203,22 @@ async def vocabulary(
     data = _call_claude(prompt, req.content_id, "vocabulary")
     ts = data.get("terms", [])
     _ensure_ids(ts)
-    return CompanionVocabularyResponse(terms=[VocabularyItem(**t) for t in ts])
+    result = {"terms": [VocabularyItem(**t).model_dump() for t in ts]}
+    if ts:
+        _set_cached(req.content_id, req.language, "vocabulary", result)
+    return CompanionVocabularyResponse(**result)
 
 
 @router.post("/cultural", response_model=CompanionCulturalResponse)
 async def cultural(
-    req: CompanionRequest,
+    req: TrainingCompanionRequest,
     _user: TrainingUser = Depends(get_current_training_user),
 ) -> CompanionCulturalResponse:
-    await _deduct(_user, "cultural")
+    cached = _get_cached(req.content_id, req.language, "cultural")
+    if cached:
+        return CompanionCulturalResponse(**cached)
+    if not req.preview:
+        await _deduct(_user, "cultural")
     content = await _fetch_content(req.content_id)
     prompt = _base_prompt(_build_content_summary(content), "") + (
         "Identify 3-6 cultural references in this content. Return JSON:\n"
@@ -183,4 +230,7 @@ async def cultural(
     data = _call_claude(prompt, req.content_id, "cultural")
     rs = data.get("references", [])
     _ensure_ids(rs)
-    return CompanionCulturalResponse(references=[CulturalReference(**r) for r in rs])
+    result = {"references": [CulturalReference(**r).model_dump() for r in rs]}
+    if rs:
+        _set_cached(req.content_id, req.language, "cultural", result)
+    return CompanionCulturalResponse(**result)
