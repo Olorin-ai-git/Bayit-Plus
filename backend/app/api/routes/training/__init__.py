@@ -30,6 +30,10 @@ from app.api.routes.training.analytics_export import (
 )
 from app.api.routes.training.portraits import router as portraits_router
 from app.api.routes.training.companion import router as companion_router
+from app.api.routes.training.superadmin import (
+    public_router as config_router,
+    router as superadmin_router,
+)
 
 router = APIRouter(prefix="/training")
 
@@ -53,3 +57,5 @@ router.include_router(onboarding_router)
 router.include_router(analytics_export_router)
 router.include_router(portraits_router)
 router.include_router(companion_router, prefix="/companion")
+router.include_router(superadmin_router)
+router.include_router(config_router)
