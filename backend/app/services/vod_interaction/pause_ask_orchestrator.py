@@ -82,21 +82,30 @@ class PauseAskOrchestrator:
         if not character:
             raise ValueError(f"Character not found: {job.character}")
 
-        # Create ephemeral session
-        session = VODInteractionSession(
-            user_id=job.user_id,
-            profile_id=job.user_id,
-            content_id=job.content_id,
-            character_name=character.name,
-            character_description=character.description,
-            character_voice_id=character.voice_id,
-            character_frame_url=character.frame_url,
-            scene_context=character.movie_context,
-            persona_mode=getattr(content, "persona_mode", "character"),
-            audience_description=getattr(content, "audience_description", ""),
-            status="active",
+        # Reuse existing session for same user+content+character to preserve memory
+        session = await VODInteractionSession.find_one(
+            {
+                "user_id": job.user_id,
+                "content_id": job.content_id,
+                "character_name": character.name,
+                "status": "active",
+            }
         )
-        await session.insert()
+        if not session:
+            session = VODInteractionSession(
+                user_id=job.user_id,
+                profile_id=job.user_id,
+                content_id=job.content_id,
+                character_name=character.name,
+                character_description=character.description,
+                character_voice_id=character.voice_id,
+                character_frame_url=character.frame_url,
+                scene_context=character.movie_context,
+                persona_mode=getattr(content, "persona_mode", "character"),
+                audience_description=getattr(content, "audience_description", ""),
+                status="active",
+            )
+            await session.insert()
         job.session_id = str(session.id)
         await job.save()
 
@@ -168,7 +177,8 @@ class PauseAskOrchestrator:
                     )
 
         finally:
-            session.status = "completed"
+            # Keep session active to preserve conversation history
+            session.updated_at = datetime.utcnow()
             await session.save()
 
     async def _run_staged_pipeline(
