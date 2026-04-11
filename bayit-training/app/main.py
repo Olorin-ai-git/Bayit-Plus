@@ -108,10 +108,9 @@ app.add_middleware(CorrelationIdMiddleware)
 register_routes(app)
 
 # Serve preset avatar PNGs at /static/avatars/training/*.png
-# The shared assets directory sits one level above the backend dir
-# in the repo layout; inside the Docker container it is copied to
-# the same relative position by the Dockerfile COPY step.
-_avatars_dir = Path(__file__).resolve().parents[2] / "shared" / "assets" / "avatars" / "training"
+# In Docker: main.py is at /app/app/main.py, avatars at /app/shared/...
+# parents[1] = /app (the WORKDIR).
+_avatars_dir = Path(__file__).resolve().parents[1] / "shared" / "assets" / "avatars" / "training"
 if _avatars_dir.is_dir():
     app.mount(
         "/static/avatars/training",
