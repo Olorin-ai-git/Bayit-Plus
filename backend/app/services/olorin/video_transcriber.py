@@ -7,7 +7,9 @@ via ElevenLabs Scribe v2 API.
 
 import asyncio
 import logging
+import os
 import re
+import shutil
 import tempfile
 from dataclasses import dataclass, field
 from typing import Optional
@@ -67,43 +69,81 @@ async def _download_video(url: str, dest: str) -> str:
     return await _download_via_ytdlp(url, dest)
 
 
-def _ytdlp_command(url: str, dest: str) -> list[str]:
+def _ytdlp_command(url: str, dest: str, cookies_path: Optional[str]) -> list[str]:
     """Build the yt-dlp argv for a given url/dest.
 
-    Injects ``--cookies <path>`` when ``settings.YTDLP_COOKIES_FILE`` is set.
-    YouTube's anti-bot rejects unauthenticated downloads from datacenter IPs
-    (Hetzner, GCloud, AWS) so the VPS deployment relies on a mounted
-    Netscape-format cookies.txt. Local dev from a residential IP can leave
-    the setting unset.
+    Injects ``--cookies <cookies_path>`` when cookies_path is provided.
+    Callers pass a path to a WRITABLE copy of the cookies file because
+    yt-dlp updates session cookies in place on exit; passing a read-only
+    mounted file causes an OSError: Read-only file system crash after
+    the download otherwise completes.
+
+    Also enables ``--remote-components ejs:github`` so yt-dlp can fetch
+    YouTube's JS challenge solver from the github component registry at
+    runtime. Without this, YouTube silently drops some formats
+    (SABR/n-sig challenges) and downloads fail with "Some formats may be
+    missing. Ensure you have a supported JavaScript runtime".
     """
     args = [
         "yt-dlp",
         "--no-playlist",
         "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
         "--merge-output-format", "mp4",
+        "--remote-components", "ejs:github",
     ]
-    cookies_file = settings.YTDLP_COOKIES_FILE
-    if cookies_file:
-        args.extend(["--cookies", cookies_file])
+    if cookies_path:
+        args.extend(["--cookies", cookies_path])
     args.extend(["-o", dest, url])
     return args
 
 
 async def _download_via_ytdlp(url: str, dest: str) -> str:
-    """Download video via yt-dlp (YouTube, Vimeo, etc.)."""
-    args = _ytdlp_command(url, dest)
-    proc = await asyncio.create_subprocess_exec(
-        *args,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-    stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=300)
-    if proc.returncode != 0:
-        raise RuntimeError(
-            f"yt-dlp failed (exit {proc.returncode}): {stderr.decode()[:500]}"
+    """Download video via yt-dlp (YouTube, Vimeo, etc.).
+
+    Handles the cookies-file-is-read-only problem by copying the mounted
+    cookies.txt to a tempfile on each invocation, passing the tempfile
+    to yt-dlp, then discarding it. This means any server-side cookie
+    rotations within a single download do not persist back to the
+    mounted source — acceptable because the cookies.txt is expected to
+    be refreshed manually from a browser export, not updated in situ.
+    """
+    src_cookies = settings.YTDLP_COOKIES_FILE
+    tmp_cookies_path: Optional[str] = None
+    if src_cookies:
+        if not os.path.exists(src_cookies):
+            raise RuntimeError(
+                f"YTDLP_COOKIES_FILE points to missing path: {src_cookies!r}"
+            )
+        fd, tmp_cookies_path = tempfile.mkstemp(
+            prefix="ytdlp-cookies-", suffix=".txt",
         )
-    logger.info("Downloaded video via yt-dlp", extra={"url": url[:80]})
-    return dest
+        os.close(fd)
+        shutil.copyfile(src_cookies, tmp_cookies_path)
+        os.chmod(tmp_cookies_path, 0o600)
+
+    try:
+        args = _ytdlp_command(url, dest, tmp_cookies_path)
+        proc = await asyncio.create_subprocess_exec(
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=300)
+        if proc.returncode != 0:
+            raise RuntimeError(
+                f"yt-dlp failed (exit {proc.returncode}): {stderr.decode()[:500]}"
+            )
+        logger.info("Downloaded video via yt-dlp", extra={"url": url[:80]})
+        return dest
+    finally:
+        if tmp_cookies_path and os.path.exists(tmp_cookies_path):
+            try:
+                os.unlink(tmp_cookies_path)
+            except OSError:
+                logger.warning(
+                    "failed to unlink temporary cookies file",
+                    extra={"path": tmp_cookies_path},
+                )
 
 
 async def _extract_audio(video_path: str) -> str:

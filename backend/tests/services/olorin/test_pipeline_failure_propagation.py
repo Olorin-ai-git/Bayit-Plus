@@ -164,26 +164,30 @@ async def test_finalization_happy_path_flips_content_ready():
 def test_ytdlp_command_omits_cookies_when_unset():
     from app.services.olorin.video_transcriber import _ytdlp_command
 
-    with patch("app.services.olorin.video_transcriber.settings") as s:
-        s.YTDLP_COOKIES_FILE = None
-        args = _ytdlp_command("https://youtu.be/abc", "/tmp/out.mp4")
+    args = _ytdlp_command("https://youtu.be/abc", "/tmp/out.mp4", None)
 
     assert "--cookies" not in args
     assert args[0] == "yt-dlp"
     assert "https://youtu.be/abc" in args
     assert "/tmp/out.mp4" in args
+    # Remote-components flag is always injected — yt-dlp needs it to
+    # solve YouTube's JS n-sig challenge from a datacenter IP.
+    assert "--remote-components" in args
+    assert "ejs:github" in args
 
 
 def test_ytdlp_command_injects_cookies_when_set():
     from app.services.olorin.video_transcriber import _ytdlp_command
 
-    with patch("app.services.olorin.video_transcriber.settings") as s:
-        s.YTDLP_COOKIES_FILE = "/run/secrets/youtube-cookies.txt"
-        args = _ytdlp_command("https://youtu.be/abc", "/tmp/out.mp4")
+    args = _ytdlp_command(
+        "https://youtu.be/abc",
+        "/tmp/out.mp4",
+        "/tmp/ytdlp-cookies-xyz.txt",
+    )
 
     assert "--cookies" in args
     idx = args.index("--cookies")
-    assert args[idx + 1] == "/run/secrets/youtube-cookies.txt"
+    assert args[idx + 1] == "/tmp/ytdlp-cookies-xyz.txt"
 
 
 # ---------------------------------------------------------------------------
