@@ -622,6 +622,81 @@ async def _download_video(video_url: str, tmpdir: Path) -> Path:
     return dest
 
 
+async def _build_cue_map_for_face_extraction(content) -> dict:
+    """Return ``{character_name: [SubtitleCueModel, ...]}`` for face extraction.
+
+    Source-of-truth priority:
+
+    1. A persisted ``SubtitleTrack`` if one exists (classic VOD path).
+    2. The transcript segments captured by Stage 0 transcription,
+       converted into synthetic ``SubtitleCueModel`` instances. This is
+       the training path: training content rarely has an external
+       subtitle track, but every row runs ElevenLabs Scribe, which
+       produces diarized segments on ``content.transcript_segments``.
+    3. **Single-speaker short-circuit.** When the transcript has exactly
+       one speaker AND the content has exactly one character, we skip
+       the LLM dialogue mapper entirely and assign every segment to that
+       character directly. The mapper was built for multi-speaker drama
+       where Claude has to infer who said what from context — for a
+       solo-instructor tutorial it's strictly harmful because it can
+       reject mappings it's not confident about, returning ``{}``.
+
+    Without this short-circuit, solo-speaker training videos (the 90%
+    case) silently fail face extraction with "no speech segments for
+    character", which was the root cause of the Task 20 regression
+    after all the other pipeline bugs were fixed.
+    """
+    from app.models.subtitles import SubtitleCueModel
+
+    characters = content.interactive_characters or []
+    character_names = [c.name for c in characters]
+
+    # --- Path 1: real subtitle track ---
+    track = await find_subtitle_track(str(content.id))
+    if track and track.cues:
+        return await dialogue_mapper_service.map_dialogue_to_characters(
+            track.cues, character_names, content.title or str(content.id),
+        )
+
+    # --- Synthesize cues from transcript segments ---
+    raw_segments = getattr(content, "transcript_segments", None) or []
+    if not raw_segments:
+        logger.info(
+            "face_extraction: no transcript segments and no subtitle track",
+            extra={"content_id": str(content.id)},
+        )
+        return {}
+
+    synthetic_cues = [
+        SubtitleCueModel(
+            index=i,
+            start_time=float(seg.get("start", 0.0)),
+            end_time=float(seg.get("end", 0.0)),
+            text=seg.get("text", ""),
+        )
+        for i, seg in enumerate(raw_segments)
+    ]
+
+    # --- Path 3: single-speaker short-circuit ---
+    unique_speakers = {s.get("speaker") for s in raw_segments}
+    if len(unique_speakers) <= 1 and len(character_names) == 1:
+        logger.info(
+            "face_extraction: single-speaker short-circuit, assigning all "
+            "cues to sole character",
+            extra={
+                "content_id": str(content.id),
+                "character": character_names[0],
+                "cue_count": len(synthetic_cues),
+            },
+        )
+        return {character_names[0]: synthetic_cues}
+
+    # --- Path 2: multi-speaker LLM mapping against synthetic cues ---
+    return await dialogue_mapper_service.map_dialogue_to_characters(
+        synthetic_cues, character_names, content.title or str(content.id),
+    )
+
+
 def _segments_for_character(
     cue_map: dict, character_name: str, content,
 ) -> list:
@@ -678,13 +753,7 @@ async def _run_face_extraction(
 
     face_svc = FaceExtractionService(storage_service=storage_service)
 
-    track = await find_subtitle_track(str(content.id))
-    cue_map: dict = {}
-    if track and track.cues:
-        character_names = [c.name for c in content.interactive_characters]
-        cue_map = await dialogue_mapper_service.map_dialogue_to_characters(
-            track.cues, character_names, content.title or str(content.id),
-        )
+    cue_map = await _build_cue_map_for_face_extraction(content)
 
     with tempfile.TemporaryDirectory() as tmpdir_str:
         tmpdir_path = Path(tmpdir_str)
