@@ -3,11 +3,10 @@
 import logging
 from typing import List, Optional
 
-from beanie import PydanticObjectId
-from bson.errors import InvalidId
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from app.api.routes.training.content_utils import load_content_for_partner
 from app.api.routes.training.dependencies import (
     get_current_training_user,
     require_training_admin,
@@ -239,9 +238,7 @@ async def get_content_item(
     user: TrainingUser = Depends(get_current_training_user),
 ):
     """Get a single content item by ID."""
-    content = await Content.get(content_id)
-    if not content or content.partner_id != user.partner_id:
-        raise HTTPException(status_code=404, detail="Content not found")
+    content = await load_content_for_partner(content_id, user.partner_id, user_role=user.role)
     return _content_response(content)
 
 
@@ -256,17 +253,7 @@ async def get_content_status(
     the latest IngestJob so the admin UI can render stage + subtask progress
     and surface granular retry affordances.
     """
-    try:
-        content_oid = PydanticObjectId(content_id)
-    except (InvalidId, TypeError, ValueError):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
-        )
-    content = await Content.get(content_oid)
-    if not content or content.partner_id != user.partner_id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
-        )
+    content = await load_content_for_partner(content_id, user.partner_id, user_role=user.role)
     job = await IngestJob.find_one(
         {"content_id": content_id}, sort=[("created_at", -1)],
     )
@@ -331,17 +318,7 @@ async def retry_content_ingest(
             detail="subtask query param requires stage to also be specified",
         )
 
-    try:
-        content_oid = PydanticObjectId(content_id)
-    except (InvalidId, TypeError, ValueError):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
-        )
-    content = await Content.get(content_oid)
-    if not content or content.partner_id != admin.partner_id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found",
-        )
+    content = await load_content_for_partner(content_id, admin.partner_id)
 
     job = await IngestJob.find_one(
         {"content_id": content_id}, sort=[("created_at", -1)],
@@ -401,9 +378,7 @@ async def delete_content(
     admin: TrainingUser = Depends(require_training_admin),
 ):
     """Soft-delete training content (preserves progress records)."""
-    content = await Content.get(PydanticObjectId(content_id))
-    if not content or content.partner_id != admin.partner_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
+    content = await load_content_for_partner(content_id, admin.partner_id)
     content.partner_id = None  # type: ignore[assignment]
     await content.save()
     return {"deleted": True, "content_id": content_id}
@@ -415,9 +390,7 @@ async def get_content_chapters(
     user: TrainingUser = Depends(get_current_training_user),
 ):
     """Get chapters for a training content item."""
-    content = await Content.get(PydanticObjectId(content_id))
-    if not content or content.partner_id != user.partner_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
+    await load_content_for_partner(content_id, user.partner_id, user_role=user.role)
     video_chapters = await VideoChapters.get_for_content(content_id)
     if not video_chapters:
         return {"content_id": content_id, "chapters": []}
@@ -436,9 +409,7 @@ async def get_content_characters(
     user: TrainingUser = Depends(get_current_training_user),
 ):
     """Get extracted characters/speakers for a content item."""
-    content = await Content.get(content_id)
-    if not content or content.partner_id != user.partner_id:
-        raise HTTPException(status_code=404, detail="Content not found")
+    content = await load_content_for_partner(content_id, user.partner_id, user_role=user.role)
 
     characters = content.interactive_characters or []
     return {
