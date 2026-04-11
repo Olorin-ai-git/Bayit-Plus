@@ -143,6 +143,7 @@ class PauseAskOrchestrator:
                 character_name=result.character_name,
                 duration=result.character_video_duration,
             )
+            job.stage = job.status.value
             job.completed_at = datetime.utcnow()
             job.progress_message = "Ready"
             await job.save()
@@ -236,7 +237,7 @@ class PauseAskOrchestrator:
         voice_id = (
             session.character_voice_id or settings.CHARACTER_VOICE_DEFAULT
         )
-        voice_only_fallback = False
+        voice_only_fallback = voice_only
         character_frame_url = session.character_frame_url or ""
 
         if voice_only:
