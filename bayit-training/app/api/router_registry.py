@@ -24,6 +24,9 @@ from app.models.content import Content
 from app.models.vod_interaction import VODInteractionSession
 from app.models.b2b_content_source import B2BContentSource
 from app.models.chapters import VideoChapters
+from app.models.talk_back_point import ContentTalkBack
+from app.models.talk_back_attempt import TalkBackAttempt
+from app.models.user import User
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -35,6 +38,9 @@ SERVICE_MODELS: List[Type[Document]] = [
     VODInteractionSession,
     B2BContentSource,
     VideoChapters,
+    ContentTalkBack,
+    TalkBackAttempt,
+    User,
 ]
 
 
@@ -44,6 +50,11 @@ def register_routes(app: FastAPI) -> None:
 
     from app.api.routes.training import router as training_router
     from app.api.routes.companion import router as companion_router
+    from app.api.routes.vod_interactions import router as vod_router
+    from app.api.routes.pause_ask_jobs import router as pause_ask_router
+    from app.api.routes.talk_back.talk_back_core import (
+        router as talk_back_router,
+    )
 
     app.include_router(training_router, prefix=prefix, tags=["training"])
     app.include_router(
@@ -51,6 +62,9 @@ def register_routes(app: FastAPI) -> None:
         prefix=f"{prefix}/training/companion",
         tags=["companion"],
     )
+    app.include_router(vod_router, prefix=prefix, tags=["vod-interactions"])
+    app.include_router(pause_ask_router, prefix=prefix, tags=["pause-ask"])
+    app.include_router(talk_back_router, prefix=prefix, tags=["talk-back"])
 
     logger.info(
         "Training routes registered",
