@@ -106,12 +106,15 @@ class CharacterVoiceClonerService:
     ) -> VoiceCloneResult:
         """Clone voice for a single named character.
 
-        Looks up the character in content.interactive_characters, fetches
-        subtitle cues, and delegates to _clone_single.  Saves content on
-        completion (mirroring clone_character_voices behaviour).
+        Three-path cue resolution (mirrors _build_cue_map_for_face_extraction):
+        1. Real subtitle track exists -> LLM dialogue mapper.
+        2. No subtitle track -> synthesize cues from transcript_segments
+           with 30s subdivision for long segments.
+        3. Single-speaker short-circuit -> skip LLM mapper when transcript
+           has <=1 unique speaker and content has exactly 1 character.
 
         Raises:
-            ValueError: if character_name is not found in content.interactive_characters.
+            ValueError: if character_name is not found.
         """
         char = next(
             (c for c in (content.interactive_characters or []) if c.name == character_name),
@@ -123,13 +126,7 @@ class CharacterVoiceClonerService:
             )
 
         content_id = str(content.id)
-        track = await find_subtitle_track(content_id)
-        cues = []
-        if track and track.cues:
-            cue_map = await dialogue_mapper_service.map_dialogue_to_characters(
-                track.cues, [character_name], content.title or content_id,
-            )
-            cues = cue_map.get(character_name, [])
+        cues = await self._build_cue_map_for_voice(content, character_name)
 
         timeout = settings.VOICE_CLONE_FFMPEG_TIMEOUT
         audio_filter = settings.VOICE_CLONE_AUDIO_FILTER
@@ -139,6 +136,78 @@ class CharacterVoiceClonerService:
 
         await content.save()
         return result
+
+    async def _build_cue_map_for_voice(
+        self, content: Content, character_name: str,
+    ) -> List[SubtitleCueModel]:
+        """Build cues for voice cloning with transcript-segment fallback.
+
+        Mirrors _build_cue_map_for_face_extraction in ingest_orchestrator:
+        real subtitle track -> synthetic cues from transcript -> single-
+        speaker short-circuit.
+        """
+        content_id = str(content.id)
+        characters = content.interactive_characters or []
+
+        # Path 1: real subtitle track
+        track = await find_subtitle_track(content_id)
+        if track and track.cues:
+            cue_map = await dialogue_mapper_service.map_dialogue_to_characters(
+                track.cues, [character_name], content.title or content_id,
+            )
+            return cue_map.get(character_name, [])
+
+        # Synthesize cues from transcript segments
+        raw_segments = getattr(content, "transcript_segments", None) or []
+        if not raw_segments:
+            logger.info(
+                "voice_clone: no transcript segments and no subtitle track",
+                extra={"content_id": content_id, "character": character_name},
+            )
+            return []
+
+        subdivision_threshold_s = 60.0
+        subdivision_window_s = 30.0
+        synthetic: List[SubtitleCueModel] = []
+        idx = 0
+        for seg in raw_segments:
+            start = float(seg.get("start", 0.0))
+            end = float(seg.get("end", 0.0))
+            text = seg.get("text", "")
+            duration = end - start
+            if duration <= subdivision_threshold_s:
+                synthetic.append(SubtitleCueModel(
+                    index=idx, start_time=start, end_time=end, text=text,
+                ))
+                idx += 1
+                continue
+            cursor = start
+            while cursor < end:
+                window_end = min(cursor + subdivision_window_s, end)
+                synthetic.append(SubtitleCueModel(
+                    index=idx, start_time=cursor, end_time=window_end, text=text,
+                ))
+                idx += 1
+                cursor = window_end
+
+        # Path 3: single-speaker short-circuit
+        unique_speakers = {s.get("speaker") for s in raw_segments}
+        if len(unique_speakers) <= 1 and len(characters) == 1:
+            logger.info(
+                "voice_clone: single-speaker short-circuit",
+                extra={
+                    "content_id": content_id,
+                    "character": character_name,
+                    "cue_count": len(synthetic),
+                },
+            )
+            return synthetic
+
+        # Path 2: multi-speaker LLM mapping against synthetic cues
+        cue_map = await dialogue_mapper_service.map_dialogue_to_characters(
+            synthetic, [character_name], content.title or content_id,
+        )
+        return cue_map.get(character_name, [])
 
     async def _clone_single(
         self, content: Content, char, cues: List[SubtitleCueModel],
