@@ -57,6 +57,7 @@ def register_routes(app: FastAPI) -> None:
     from app.api.routes.talk_back.talk_back_core import (
         router as talk_back_router,
     )
+    from app.api.routes.search_scenes import router as search_scenes_router
 
     app.include_router(training_router, prefix=prefix, tags=["training"])
     app.include_router(vod_router, prefix=prefix, tags=["vod-interactions"])
@@ -67,6 +68,9 @@ def register_routes(app: FastAPI) -> None:
     )
     app.include_router(pause_ask_router, prefix=prefix, tags=["pause-ask"])
     app.include_router(talk_back_router, prefix=prefix, tags=["talk-back"])
+    app.include_router(
+        search_scenes_router, prefix=prefix, tags=["search-scenes"]
+    )
 
     logger.info(
         "Training routes registered",
