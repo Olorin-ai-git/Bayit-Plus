@@ -37,6 +37,18 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+_MAX_ERROR_LEN = 500
+
+
+def _sanitize_pipeline_error(error: str) -> str:
+    """Truncate and strip filesystem paths from pipeline error strings."""
+    import re
+    sanitized = re.sub(r"(/[\w./-]{10,})", "<path>", error)
+    if len(sanitized) > _MAX_ERROR_LEN:
+        return sanitized[:_MAX_ERROR_LEN] + "..."
+    return sanitized
+
+
 class SubtaskExecution(BaseModel):
     """Per-character tracking inside a stage (e.g. per-character voice clone)."""
 
@@ -73,7 +85,7 @@ class StageExecution(BaseModel):
     def mark_failed(self, error: str) -> None:
         self.status = StageStatus.FAILED
         self.completed_at = _utcnow()
-        self.error = error
+        self.error = _sanitize_pipeline_error(error)
 
     def add_subtask(self, name: str) -> SubtaskExecution:
         if name not in self.subtasks:
@@ -106,7 +118,7 @@ class StageExecution(BaseModel):
         task = self.subtasks[name]
         task.status = StageStatus.FAILED
         task.completed_at = _utcnow()
-        task.error = error
+        task.error = _sanitize_pipeline_error(error)
         task.retry_count += 1
 
     def all_subtasks_complete(self) -> bool:
