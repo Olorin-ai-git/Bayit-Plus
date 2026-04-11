@@ -7,7 +7,7 @@ read or upsert it.
 """
 
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from beanie import Document
 from pydantic import BaseModel, Field
@@ -130,7 +130,7 @@ class PlatformConfig(Document):
         default=_CONFIG_TYPE_KEY,
         description="Discriminator key — always 'platform'; used as unique index key",
     )
-    tier_limits: dict = Field(
+    tier_limits: Dict[str, int] = Field(
         default_factory=lambda: dict(_DEFAULT_TIER_LIMITS),
         description="Monthly credit quota per subscription tier",
     )

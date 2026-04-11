@@ -6,19 +6,29 @@ OpenAI) so the dashboard can aggregate spend by partner, org, or time.
 """
 
 from datetime import datetime
+from decimal import Decimal
 from typing import Optional
 
 from beanie import Document
-from pydantic import BaseModel, Field
+from bson.decimal128 import Decimal128
+from pydantic import BaseModel, Field, field_validator
 from pymongo import DESCENDING, IndexModel
 
 
 class StepCosts(BaseModel):
     """Per-provider cost breakdown for a single pipeline run."""
 
-    elevenlabs: float = Field(default=0.0, ge=0.0, description="ElevenLabs TTS/voice cost in USD")
-    claude: float = Field(default=0.0, ge=0.0, description="Anthropic Claude cost in USD")
-    openai: float = Field(default=0.0, ge=0.0, description="OpenAI cost in USD")
+    elevenlabs: Decimal = Field(default=Decimal("0.0"), ge=0, description="ElevenLabs TTS/voice cost in USD")
+    claude: Decimal = Field(default=Decimal("0.0"), ge=0, description="Anthropic Claude cost in USD")
+    openai: Decimal = Field(default=Decimal("0.0"), ge=0, description="OpenAI cost in USD")
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def convert_decimal128(cls, v):
+        """Convert MongoDB Decimal128 to Python Decimal."""
+        if isinstance(v, Decimal128):
+            return Decimal(str(v.to_decimal()))
+        return v
 
 
 class PipelineCost(Document):
@@ -35,7 +45,15 @@ class PipelineCost(Document):
     started_at: datetime = Field(..., description="Pipeline run start timestamp (UTC)")
     completed_at: datetime = Field(..., description="Pipeline run completion timestamp (UTC)")
     steps: StepCosts = Field(default_factory=StepCosts, description="Per-provider cost breakdown")
-    total: float = Field(default=0.0, ge=0.0, description="Sum of all step costs in USD")
+    total: Decimal = Field(default=Decimal("0.0"), ge=0, description="Sum of all step costs in USD")
+
+    @field_validator("total", mode="before")
+    @classmethod
+    def convert_total_decimal128(cls, v):
+        """Convert MongoDB Decimal128 to Python Decimal."""
+        if isinstance(v, Decimal128):
+            return Decimal(str(v.to_decimal()))
+        return v
 
     class Settings:
         name = "pipeline_costs"
