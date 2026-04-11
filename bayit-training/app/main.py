@@ -47,6 +47,8 @@ async def lifespan(service_app: FastAPI):
     try:
         from app.core.database import connect_to_mongo_subset
         from app.api.router_registry import SERVICE_MODELS
+        from app.models.platform_config import PlatformConfig
+        from pymongo.errors import DuplicateKeyError
 
         await connect_to_mongo_subset(document_models=SERVICE_MODELS)
         database = get_database()
@@ -55,6 +57,15 @@ async def lifespan(service_app: FastAPI):
             "MongoDB connection established",
             extra={"service": SERVICE_NAME, "model_count": len(SERVICE_MODELS)},
         )
+
+        try:
+            await PlatformConfig.get_singleton()
+            logger.info("PlatformConfig singleton ready", extra={"service": SERVICE_NAME})
+        except DuplicateKeyError:
+            logger.info(
+                "PlatformConfig singleton already seeded by another worker",
+                extra={"service": SERVICE_NAME},
+            )
     except Exception as e:
         logger.error("MongoDB connection failed: %s", e, exc_info=True)
         raise

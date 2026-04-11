@@ -28,6 +28,8 @@ from app.models.talk_back_point import ContentTalkBack
 from app.models.talk_back_attempt import TalkBackAttempt
 from app.models.user import User
 from app.models.subtitles import SubtitleTrackDoc
+from app.models.pipeline_cost import PipelineCost
+from app.models.platform_config import PlatformConfig
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -43,6 +45,8 @@ SERVICE_MODELS: List[Type[Document]] = [
     TalkBackAttempt,
     User,
     SubtitleTrackDoc,
+    PipelineCost,
+    PlatformConfig,
 ]
 
 
