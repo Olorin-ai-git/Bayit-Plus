@@ -30,6 +30,8 @@ from app.models.user import User
 from app.models.subtitles import SubtitleTrackDoc
 from app.models.pipeline_cost import PipelineCost
 from app.models.platform_config import PlatformConfig
+from app.models.pause_ask_job import PauseAskJob
+from app.models.child_avatar import ChildAvatar
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -47,6 +49,8 @@ SERVICE_MODELS: List[Type[Document]] = [
     SubtitleTrackDoc,
     PipelineCost,
     PlatformConfig,
+    PauseAskJob,
+    ChildAvatar,
 ]
 
 

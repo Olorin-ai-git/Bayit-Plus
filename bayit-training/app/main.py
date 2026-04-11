@@ -103,6 +103,12 @@ async def health_check():
     return {"status": "healthy", "service": SERVICE_NAME}
 
 
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestTimingMiddleware)
+app.add_middleware(CorrelationIdMiddleware)
+
+# CORS middleware - added LAST = outermost (wraps all responses including errors)
+# This ensures CORS headers are added even to error responses (500, 502, etc.)
 cors_origins = settings.parsed_cors_origins
 app.add_middleware(
     CORSMiddleware,
@@ -111,10 +117,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(RequestTimingMiddleware)
-app.add_middleware(CorrelationIdMiddleware)
 
 register_routes(app)
 
