@@ -17,6 +17,7 @@ class StageName(str, Enum):
     TRANSCRIPTION = "transcription"
     CHARACTER_EXTRACTION = "character_extraction"
     SUBTITLES = "subtitles"
+    CHAPTERS = "chapters"
     FACE_EXTRACTION = "face_extraction"
     VOICE_CLONING = "voice_cloning"
     TRIVIA = "trivia"

@@ -306,6 +306,21 @@ async def test_retry_subtask_exception_marks_stage_failed_with_new_error():
     assert "retry also failed" in vc_after.subtasks["bob"].error
 
 
+def test_chapters_stage_name_exists():
+    """CHAPTERS stage must exist between SUBTITLES and FACE_EXTRACTION."""
+    from app.models.pipeline_stage import StageName
+
+    names = list(StageName)
+    assert StageName.CHAPTERS in names
+    sub_idx = names.index(StageName.SUBTITLES)
+    chap_idx = names.index(StageName.CHAPTERS)
+    face_idx = names.index(StageName.FACE_EXTRACTION)
+    assert sub_idx < chap_idx < face_idx, (
+        f"declaration order broken: SUBTITLES={sub_idx} CHAPTERS={chap_idx} "
+        f"FACE_EXTRACTION={face_idx}"
+    )
+
+
 @pytest.mark.asyncio
 async def test_stage_fails_when_handler_leaves_subtasks_non_terminal():
     """A buggy handler that adds a subtask but forgets to complete it
