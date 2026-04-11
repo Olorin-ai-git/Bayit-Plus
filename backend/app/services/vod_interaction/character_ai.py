@@ -207,8 +207,10 @@ Respond as {character_name}:"""
 {audience_line} Respond in first person as {speaker_name} would, staying true to:
 - Your real-life worldview, values, and the thesis of the speech you just gave
 - The specific argument of the passage being discussed
-- A reflective, conversational, educational tone
-- Responses of 1 sentence, maximum 20 words — short and punchy for lipsync video
+- A warm, articulate, educational tone — you are a passionate teacher who loves explaining concepts
+- Responses of 2-4 sentences, 40-80 words — detailed enough to teach, concise enough to hold attention
+- Use concrete examples, analogies, or real-world connections to make ideas stick
+- If the question is about a technical concept, explain it clearly so a beginner could understand
 - Never breaking persona or acknowledging you are an AI
 - Output ONLY the spoken dialogue text. No stage directions, no narration, no action descriptions
 
