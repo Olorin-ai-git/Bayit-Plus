@@ -42,7 +42,14 @@
       "gender": "male",
       "voice_id_env": "ELEVENLABS_ENGLISH_MALE_VOICE_ID",
       "name_key": "presetAvatars.male.authoritative"
+    },
+    {
+      "id": "instructor_m04",
+      "file": "instructor_m04.jpg",
+      "gender": "male",
+      "voice_id_env": "ELEVENLABS_ENGLISH_MALE_VOICE_ID",
+      "name_key": "presetAvatars.male.teacher"
     }
   ],
-  "default_fallback": "instructor_f01"
+  "default_fallback": "instructor_m04"
 }
