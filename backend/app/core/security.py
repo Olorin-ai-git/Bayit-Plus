@@ -1,3 +1,4 @@
+import time
 from datetime import timedelta
 from typing import Callable, List, Optional
 
@@ -20,6 +21,10 @@ logger = get_logger(__name__)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
+
+# Short-lived cache for token → User to avoid re-verifying + DB lookup on every poll
+_user_cache: dict[str, tuple["User", float]] = {}
+_USER_CACHE_TTL = 60  # seconds
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -64,6 +69,13 @@ async def get_current_user(
     )
 
     token = credentials.credentials
+
+    # Check cache to avoid re-verifying + DB lookup on repeated polls
+    now = time.monotonic()
+    cached = _user_cache.get(token)
+    if cached and (now - cached[1]) < _USER_CACHE_TTL:
+        return cached[0]
+
     payload = await decode_token(token)
 
     if payload is None:
@@ -102,6 +114,13 @@ async def get_current_user(
 
     if user is None:
         raise credentials_exception
+
+    # Cache for subsequent polls within TTL
+    _user_cache[token] = (user, now)
+    if len(_user_cache) > 200:
+        expired = [k for k, (_, t) in _user_cache.items() if (now - t) > _USER_CACHE_TTL]
+        for k in expired:
+            del _user_cache[k]
 
     return user
 

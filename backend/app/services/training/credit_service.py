@@ -62,9 +62,19 @@ class TrainingCreditService:
             {
                 "partner_id": partner_id,
                 "$expr": {
-                    "$lte": [
-                        {"$add": ["$training_config.credits_used", cost]},
-                        "$training_config.credit_limit_monthly",
+                    "$and": [
+                        {
+                            "$lte": [
+                                {"$add": ["$training_config.credits_used", cost]},
+                                "$training_config.credit_limit_monthly",
+                            ]
+                        },
+                        {
+                            "$gte": [
+                                "$training_config.credits_remaining",
+                                cost,
+                            ]
+                        },
                     ]
                 },
             },

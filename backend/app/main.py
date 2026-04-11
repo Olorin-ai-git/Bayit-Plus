@@ -82,10 +82,6 @@ def _validate_configuration() -> None:
             warnings.append("GCS_BUCKET_NAME configured but STORAGE_TYPE is 'local'")
 
     # Check interactive mission API keys (non-blocking warnings)
-    if hasattr(settings, "DID_API_KEY") and not settings.DID_API_KEY:
-        warnings.append(
-            "DID_API_KEY not configured - lip-sync generation will not work"
-        )
     if hasattr(settings, "STABILITY_API_KEY") and not settings.STABILITY_API_KEY:
         warnings.append(
             "STABILITY_API_KEY not configured - scene in-painting will not work"
