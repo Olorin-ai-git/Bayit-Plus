@@ -19,6 +19,8 @@ node_modules/
 # Shared (exclude large directories, keep i18n for backend)
 shared/node_modules/
 shared/assets/
+# Re-include avatar PNGs needed by the training service
+!shared/assets/avatars/training/
 shared/models/
 shared/components/
 shared/hooks/
