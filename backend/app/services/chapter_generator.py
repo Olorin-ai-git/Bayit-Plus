@@ -434,6 +434,107 @@ async def generate_chapters_from_transcript(
         )
 
 
+async def generate_chapters_from_transcript_generic(
+    content_id: str,
+    content_title: str,
+    duration: Union[str, int, float],
+    transcript: str,
+) -> GeneratedChapters:
+    """Generate English chapters from a generic (non-news) transcript.
+
+    Unlike ``generate_chapters_from_transcript`` (which is hardcoded for
+    Hebrew news broadcasts and uses a news category enum), this returns
+    English titles with category="general" — appropriate for training
+    content, tutorials, talks, podcasts. On Claude failure returns an
+    empty ``GeneratedChapters`` with source="ai_failed" so the caller can
+    distinguish "no chapters available" from "we never tried".
+    """
+    duration_seconds = parse_duration_to_seconds(duration)
+
+    max_transcript = 8000
+    if len(transcript) > max_transcript:
+        transcript = transcript[:max_transcript] + "..."
+
+    prompt = f"""Analyze the following video transcript and produce a chapter
+breakdown for navigation.
+
+Title: {content_title}
+Duration: {int(duration_seconds)} seconds ({int(duration_seconds // 60)} minutes)
+
+Transcript:
+{transcript}
+
+Return JSON in this exact shape:
+{{
+    "chapters": [
+        {{
+            "start_time": 0,
+            "end_time": 120,
+            "title": "Short chapter title",
+            "summary": "One-sentence description"
+        }}
+    ]
+}}
+
+Rules:
+1. Identify natural topic shifts in the transcript.
+2. Produce 3-8 chapters depending on length.
+3. Each chapter must be at least 60 seconds long.
+4. Times must be contiguous: end_time of chapter N == start_time of chapter N+1.
+5. The final chapter's end_time must equal {int(duration_seconds)}.
+6. Titles in English, plain prose, no emojis.
+7. Return ONLY the JSON object, no prose around it."""
+
+    try:
+        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=2000,
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        response_text = response.content[0].text.strip()
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]
+        if response_text.startswith("```"):
+            response_text = response_text[3:]
+        if response_text.endswith("```"):
+            response_text = response_text[:-3]
+
+        data = json.loads(response_text)
+        chapters: List[ChapterItem] = []
+        for c in data.get("chapters", []):
+            title = str(c.get("title", "")).strip()
+            chapters.append(ChapterItem(
+                start_time=float(c.get("start_time", 0)),
+                end_time=float(c.get("end_time", duration_seconds)),
+                title=title,
+                title_en=title,
+                category="general",
+                summary=c.get("summary"),
+            ))
+
+        return GeneratedChapters(
+            chapters=chapters,
+            content_id=content_id,
+            content_title=content_title,
+            total_duration=duration_seconds,
+            source="ai_transcript",
+        )
+    except Exception as e:
+        logger.error(
+            "Generic chapter generation failed",
+            extra={"error": str(e), "content_id": content_id},
+        )
+        return GeneratedChapters(
+            chapters=[],
+            content_id=content_id,
+            content_title=content_title,
+            total_duration=duration_seconds,
+            source="ai_failed",
+        )
+
+
 def chapters_to_dict(gen_chapters: GeneratedChapters) -> Dict[str, Any]:
     """Convert generated chapters to dictionary for API response"""
     return {
