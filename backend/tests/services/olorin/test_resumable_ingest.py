@@ -321,6 +321,35 @@ def test_chapters_stage_name_exists():
     )
 
 
+def test_pipeline_order_includes_chapters_between_subtitles_and_face():
+    from app.models.pipeline_stage import StageName
+    from app.services.olorin.resumable_ingest import PIPELINE_ORDER
+
+    assert StageName.CHAPTERS in PIPELINE_ORDER
+    order = list(PIPELINE_ORDER)
+    assert order.index(StageName.SUBTITLES) + 1 == order.index(StageName.CHAPTERS)
+    assert order.index(StageName.CHAPTERS) + 1 == order.index(StageName.FACE_EXTRACTION)
+
+
+def test_runner_rejects_missing_chapters_handler():
+    """The missing-handler check in ResumablePipelineRunner.__init__ must
+    flag CHAPTERS like every other stage."""
+    from app.models.pipeline_stage import StageName
+    from app.services.olorin.resumable_ingest import (
+        PIPELINE_ORDER,
+        ResumablePipelineRunner,
+    )
+
+    async def _noop(job, resume_subtask=None):
+        return None
+
+    handlers = {name: _noop for name in PIPELINE_ORDER}
+    handlers.pop(StageName.CHAPTERS, None)
+
+    with pytest.raises(ValueError, match="chapters"):
+        ResumablePipelineRunner(stage_handlers=handlers)
+
+
 @pytest.mark.asyncio
 async def test_stage_fails_when_handler_leaves_subtasks_non_terminal():
     """A buggy handler that adds a subtask but forgets to complete it

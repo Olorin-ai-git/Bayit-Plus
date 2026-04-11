@@ -47,6 +47,7 @@ PIPELINE_ORDER = (
     StageName.TRANSCRIPTION,
     StageName.CHARACTER_EXTRACTION,
     StageName.SUBTITLES,
+    StageName.CHAPTERS,
     StageName.FACE_EXTRACTION,
     StageName.VOICE_CLONING,
     StageName.TRIVIA,
