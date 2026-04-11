@@ -12,6 +12,7 @@ from openai import APIConnectionError, RateLimitError
 
 from app.core.config import settings
 from app.core.retry import async_retry
+from app.services.olorin.pipeline_cost_tracker import track_openai_embedding_usage
 from app.services.olorin.resilience import OPENAI_BREAKER, circuit_breaker
 from app.services.olorin.search.client import client_manager
 
@@ -38,6 +39,8 @@ async def _generate_embedding_with_resilience(text: str, openai_client) -> List[
         model=settings.EMBEDDING_MODEL,
         input=text,
     )
+    if response.usage:
+        track_openai_embedding_usage(response.usage.total_tokens)
     return response.data[0].embedding
 
 

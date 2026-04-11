@@ -13,6 +13,7 @@ from typing import List, Optional
 from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
 from app.models.vod_interaction import ContentCharacter
+from app.services.olorin.pipeline_cost_tracker import track_claude_usage
 from app.services.olorin.video_transcriber import TranscriptSegment
 
 logger = logging.getLogger(__name__)
@@ -87,6 +88,7 @@ async def extract_speakers_from_transcript(
             max_tokens=2048,
             messages=[{"role": "user", "content": prompt}],
         )
+        track_claude_usage(response.usage.input_tokens, response.usage.output_tokens)
         text = response.content[0].text.strip()
         speakers = json.loads(text)
     except json.JSONDecodeError:

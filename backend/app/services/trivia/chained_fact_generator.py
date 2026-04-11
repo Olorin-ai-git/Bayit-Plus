@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, field_validator
 from app.core.config import settings
 from app.models.content import Content
 from app.models.trivia import TriviaFactModel
+from app.services.olorin.pipeline_cost_tracker import track_claude_usage
 from app.services.security_utils import sanitize_ai_output, sanitize_for_prompt
 from app.services.tmdb_service import TMDBService
 
@@ -133,6 +134,7 @@ async def generate_chained_facts(
             max_tokens=settings.TRIVIA_AI_MAX_TOKENS,
             messages=[{"role": "user", "content": prompt}],
         )
+        track_claude_usage(response.usage.input_tokens, response.usage.output_tokens)
         content_text = response.content[0].text if response.content else "[]"
         content_text = _extract_json(content_text)
         parsed = json.loads(content_text.strip())

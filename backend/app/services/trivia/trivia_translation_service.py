@@ -12,6 +12,7 @@ from anthropic.types import TextBlock
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.olorin.metering.service import MeteringService
+from app.services.olorin.pipeline_cost_tracker import track_claude_usage
 from app.models.integration_partner import RateLimitConfig
 from app.services.olorin.rate_limiter import PartnerRateLimiter
 from app.services.trivia.trivia_text_sanitizer import TriviaTextSanitizer
@@ -184,6 +185,7 @@ English text: {sanitized_text}
                 max_tokens=settings.CLAUDE_MAX_TOKENS_SHORT,
                 messages=[{"role": "user", "content": prompt}]
             )
+            track_claude_usage(message.usage.input_tokens, message.usage.output_tokens)
 
             # Extract response
             content_block = message.content[0]

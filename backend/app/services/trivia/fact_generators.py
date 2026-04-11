@@ -13,6 +13,7 @@ from anthropic import AsyncAnthropic
 from app.core.config import settings
 from app.models.content import Content
 from app.models.trivia import TriviaFactModel
+from app.services.olorin.pipeline_cost_tracker import track_claude_usage
 from app.services.security_utils import sanitize_ai_output, sanitize_for_prompt
 from app.services.tmdb_service import TMDBService
 from app.services.trivia.chained_fact_generator import (  # noqa: F401
@@ -161,6 +162,7 @@ Return ONLY a JSON array, no other text."""
             max_tokens=settings.TRIVIA_AI_MAX_TOKENS,
             messages=[{"role": "user", "content": prompt}],
         )
+        track_claude_usage(response.usage.input_tokens, response.usage.output_tokens)
 
         content_text = response.content[0].text if response.content else "[]"
         content_text = _extract_json_from_response(content_text)

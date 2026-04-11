@@ -40,6 +40,8 @@ MANUAL_PORTRAIT_UPLOAD_MARKER = "manually-resolved:portrait-upload"
 
 from app.services.olorin.pipeline_cost_tracker import (
     _CostAccumulator,
+    clear_current_accumulator,
+    set_current_accumulator,
     write_pipeline_cost,
 )
 from app.services.vod_interaction.dialogue_mapper import dialogue_mapper_service
@@ -115,7 +117,9 @@ async def run_pipeline(job: IngestJob) -> None:
     3. On any stage failure, flip processing_state to FAILED
     4. _run_finalization stage flips to READY on success
     """
-    _job_cost_accumulators[job.job_id] = _CostAccumulator()
+    acc = _CostAccumulator()
+    _job_cost_accumulators[job.job_id] = acc
+    set_current_accumulator(acc)
 
     content = await Content.get(job.content_id)
     if content:
@@ -123,7 +127,10 @@ async def run_pipeline(job: IngestJob) -> None:
         await content.save()
 
     runner = _build_runner()
-    await runner.run_all(job)
+    try:
+        await runner.run_all(job)
+    finally:
+        clear_current_accumulator()
 
     if job.first_failed_stage() is not None:
         logger.warning(
@@ -149,8 +156,15 @@ async def run_pipeline(job: IngestJob) -> None:
 
 async def resume_pipeline(job: IngestJob) -> None:
     """Resume a failed pipeline from its first non-completed stage."""
+    acc = _CostAccumulator()
+    _job_cost_accumulators[job.job_id] = acc
+    set_current_accumulator(acc)
+
     runner = _build_runner()
-    await runner.resume(job)
+    try:
+        await runner.resume(job)
+    finally:
+        clear_current_accumulator()
     await _sync_content_state(job)
 
 
