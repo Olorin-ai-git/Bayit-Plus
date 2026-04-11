@@ -165,7 +165,7 @@ async def test_e2e_full_pipeline_happy_path(e2e_patches):
     assert e2e_patches["run_finalization"].await_count == 1
 
     # Every stage is COMPLETED in the job's stages list.
-    assert len(job.stages) == 8
+    assert len(job.stages) == 9
     for stage in job.stages:
         assert stage.status == StageStatus.COMPLETED, (
             f"{stage.name} is {stage.status}, expected COMPLETED"

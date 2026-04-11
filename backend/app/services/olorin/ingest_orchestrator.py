@@ -219,6 +219,7 @@ def _build_runner() -> ResumablePipelineRunner:
         StageName.TRANSCRIPTION: _stage_transcription,
         StageName.CHARACTER_EXTRACTION: _stage_character_extraction,
         StageName.SUBTITLES: _stage_subtitles,
+        StageName.CHAPTERS: _stage_chapters,
         StageName.FACE_EXTRACTION: _run_face_extraction,
         StageName.VOICE_CLONING: _run_voice_cloning,
         StageName.TRIVIA: _stage_trivia,

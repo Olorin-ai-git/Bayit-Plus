@@ -375,3 +375,11 @@ async def test_stage_fails_when_handler_leaves_subtasks_non_terminal():
     # SUBTITLES comes BEFORE VOICE_CLONING now, so it will have run.
     handlers[StageName.TRIVIA].assert_not_awaited()
     handlers[StageName.FINALIZATION].assert_not_awaited()
+
+
+def test_build_runner_registers_chapters_handler():
+    from app.models.pipeline_stage import StageName
+    from app.services.olorin.ingest_orchestrator import _build_runner
+
+    runner = _build_runner()
+    assert StageName.CHAPTERS in runner._handlers
