@@ -422,3 +422,55 @@ async def test_e2e_resume_picks_up_after_failure_without_rerunning_completed(
     assert e2e_patches["run_finalization"].await_count == 1
 
     assert content.processing_state == ProcessingState.READY
+
+
+@pytest.mark.asyncio
+async def test_pipeline_persists_native_chapters_when_present(monkeypatch):
+    """End-to-end: native chapters from yt-dlp metadata reach VideoChapters."""
+    create_or_update_mock = AsyncMock()
+    monkeypatch.setattr(
+        "app.services.olorin.chapter_extraction.VideoChapters.create_or_update",
+        create_or_update_mock,
+    )
+    monkeypatch.setattr(
+        "app.services.olorin.chapter_extraction.fetch_native_chapters_via_ytdlp",
+        AsyncMock(return_value=(
+            [
+                {"start_time": 0.0, "end_time": 60.0, "title": "Intro"},
+                {"start_time": 60.0, "end_time": 240.0, "title": "Demo"},
+            ],
+            240.0,
+        )),
+    )
+    monkeypatch.setattr(
+        "app.services.olorin.chapter_extraction.generate_chapters_from_transcript_generic",
+        AsyncMock(side_effect=AssertionError("AI must not be called when native present")),
+    )
+
+    from app.services.olorin.ingest_orchestrator import _stage_chapters
+
+    content = MagicMock()
+    content.id = "content-e2e"
+    content.title = "Demo Video"
+    object.__setattr__(content, "transcript", "lorem ipsum")
+    object.__setattr__(content, "transcript_segments", [
+        {"start": 0.0, "end": 240.0, "text": "x", "speaker": "speaker_0"},
+    ])
+
+    job = MagicMock()
+    job.job_id = "job-e2e"
+    job.content_id = "content-e2e"
+    job.video_url = "https://youtu.be/abc"
+
+    monkeypatch.setattr(
+        "app.services.olorin.ingest_orchestrator.Content.get",
+        AsyncMock(return_value=content),
+    )
+
+    await _stage_chapters(job, resume_subtask=None)
+
+    create_or_update_mock.assert_awaited_once()
+    kwargs = create_or_update_mock.await_args.kwargs
+    assert kwargs["source"] == "youtube_native"
+    assert len(kwargs["chapters"]) == 2
+    assert kwargs["chapters"][0].title == "Intro"
