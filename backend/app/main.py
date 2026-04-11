@@ -425,6 +425,11 @@ from app.middleware.security_headers import SecurityHeadersMiddleware
 app.add_middleware(InputSanitizationMiddleware, enable_logging=True)
 logger.info("Input sanitization middleware enabled")
 
+from app.middleware.body_size_limit import BodySizeLimitMiddleware
+
+app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.MAX_REQUEST_BODY_BYTES)
+logger.info("Body size limit middleware enabled (max %d bytes)", settings.MAX_REQUEST_BODY_BYTES)
+
 # Security headers middleware - adds OWASP security headers to all responses
 app.add_middleware(SecurityHeadersMiddleware)
 logger.info("Security headers middleware enabled (CSP, HSTS, X-Frame-Options, etc.)")

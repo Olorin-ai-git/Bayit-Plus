@@ -135,6 +135,11 @@ class Settings(
         description="Redis connection URL. Empty disables Redis with graceful degradation.",
     )
 
+    MAX_REQUEST_BODY_BYTES: int = Field(
+        default=1_048_576,
+        description="Global max request body size in bytes. File upload routes are exempt.",
+    )
+
     # Olorin platform (nested)
     olorin: OlorinSettings = Field(
         default_factory=OlorinSettings,
