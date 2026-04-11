@@ -251,6 +251,84 @@ def _parse_response(data: dict) -> TranscriptionResult:
     )
 
 
+async def fetch_native_chapters_via_ytdlp(
+    url: str,
+) -> tuple[list[dict], float]:
+    """Probe a video URL for native chapter metadata via yt-dlp.
+
+    Returns ``(chapters, duration_seconds)`` where chapters is a list of
+    ``{"start_time": float, "end_time": float, "title": str}`` dicts (empty
+    when the source has no native chapter feed). Raises ``RuntimeError`` on
+    yt-dlp failure (cookies expired, video removed, network error) so the
+    caller can degrade to AI generation cleanly.
+
+    Uses ``--skip-download --print-json`` so this is a fast metadata probe
+    even for hour-long videos. Reuses the cookies-tempfile pattern from
+    ``_download_via_ytdlp`` because yt-dlp writes session cookies back on
+    exit.
+    """
+    src_cookies = settings.YTDLP_COOKIES_FILE
+    tmp_cookies_path: Optional[str] = None
+    if src_cookies:
+        if not os.path.exists(src_cookies):
+            raise RuntimeError(
+                f"YTDLP_COOKIES_FILE points to missing path: {src_cookies!r}"
+            )
+        fd, tmp_cookies_path = tempfile.mkstemp(
+            prefix="ytdlp-cookies-", suffix=".txt",
+        )
+        os.close(fd)
+        shutil.copyfile(src_cookies, tmp_cookies_path)
+        os.chmod(tmp_cookies_path, 0o600)
+
+    try:
+        args = [
+            "yt-dlp",
+            "--skip-download",
+            "--no-playlist",
+            "--print-json",
+            "--remote-components", "ejs:github",
+        ]
+        if tmp_cookies_path:
+            args.extend(["--cookies", tmp_cookies_path])
+        args.append(url)
+
+        proc = await asyncio.create_subprocess_exec(
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+        if proc.returncode != 0:
+            raise RuntimeError(
+                f"yt-dlp metadata probe failed (exit {proc.returncode}): "
+                f"{stderr.decode(errors='ignore')[:300]}"
+            )
+
+        import json as _json
+        data = _json.loads(stdout.decode())
+        raw_chapters = data.get("chapters") or []
+        duration = float(data.get("duration") or 0.0)
+
+        chapters: list[dict] = []
+        for c in raw_chapters:
+            chapters.append({
+                "start_time": float(c.get("start_time", 0.0)),
+                "end_time": float(c.get("end_time", 0.0)),
+                "title": str(c.get("title", "")).strip(),
+            })
+        return chapters, duration
+    finally:
+        if tmp_cookies_path and os.path.exists(tmp_cookies_path):
+            try:
+                os.unlink(tmp_cookies_path)
+            except OSError:
+                logger.warning(
+                    "failed to unlink temporary cookies file",
+                    extra={"path": tmp_cookies_path},
+                )
+
+
 async def transcribe_video(
     video_url: str,
     language_code: Optional[str] = None,
