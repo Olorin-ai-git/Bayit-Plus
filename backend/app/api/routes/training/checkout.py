@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
+from app.models.platform_config import PlatformConfig
 from app.api.routes.training.dependencies import require_training_admin
 from app.api.routes.olorin.webhooks import send_webhook_event
 from app.models.training_user import TrainingUser
@@ -18,7 +19,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 router = APIRouter(prefix="/checkout", tags=["training-checkout"])
 
-TIER_PRICE_MAP: dict[str, str] = {
+_SETTINGS_PRICE_FALLBACK: dict[str, str] = {
     "team": settings.STRIPE_PRICE_TRAINING_TEAM,
     "organization": settings.STRIPE_PRICE_TRAINING_ORG,
 }
@@ -33,6 +34,7 @@ class CheckoutRequest(BaseModel):
     """Request body for checkout session creation."""
 
     tier: str = Field(pattern=r"^(team|organization)$")
+    billing_period: str = Field(default="monthly", pattern=r"^(monthly|annual)$")
 
 
 @router.post("/create-session")
@@ -69,11 +71,25 @@ async def create_checkout_session(
         partner.training_config = tc
         await partner.save()
 
-    price_id = TIER_PRICE_MAP.get(body.tier)
+    cfg = await PlatformConfig.get_singleton()
+    plan = next((p for p in cfg.subscription_plans if p.id == body.tier), None)
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unknown tier: {body.tier}",
+        )
+
+    price_id = (
+        plan.stripe_price_id_monthly
+        if body.billing_period == "monthly"
+        else plan.stripe_price_id_annual
+    )
+    if not price_id:
+        price_id = _SETTINGS_PRICE_FALLBACK.get(body.tier, "")
     if not price_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Price not configured for tier",
+            detail=f"No Stripe Price ID configured for tier: {body.tier}",
         )
 
     try:
