@@ -36,10 +36,6 @@ class PipelineCost(Document):
     completed_at: datetime = Field(..., description="Pipeline run completion timestamp (UTC)")
     steps: StepCosts = Field(default_factory=StepCosts, description="Per-provider cost breakdown")
     total: float = Field(default=0.0, ge=0.0, description="Sum of all step costs in USD")
-    pipeline_run_id: Optional[str] = Field(
-        default=None,
-        description="Reference to the IngestJob or pipeline run that produced this record",
-    )
 
     class Settings:
         name = "pipeline_costs"
@@ -49,9 +45,5 @@ class PipelineCost(Document):
             IndexModel(
                 [("partner_id", DESCENDING), ("started_at", DESCENDING)],
                 name="partner_timeline",
-            ),
-            IndexModel(
-                [("org_id", DESCENDING), ("started_at", DESCENDING)],
-                name="org_timeline",
             ),
         ]

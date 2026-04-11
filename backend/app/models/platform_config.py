@@ -150,10 +150,6 @@ class PlatformConfig(Document):
         default_factory=lambda: datetime.now(timezone.utc),
         description="Timestamp of last superadmin update (UTC)",
     )
-    updated_by: Optional[str] = Field(
-        default=None,
-        description="Firebase UID of the superadmin who last modified this document",
-    )
 
     class Settings:
         name = "platform_config"
