@@ -142,7 +142,7 @@ async def verify_email(request: Request, body: VerifyEmailRequest):
         )
 
     # Read attempts from raw MongoDB (field not on Pydantic model)
-    raw_doc = await VerificationToken.get_motor_collection().find_one(
+    raw_doc = await VerificationToken.get_pymongo_collection().find_one(
         {"_id": token_doc.id}
     )
     attempts = (raw_doc or {}).get("attempts", 0)
@@ -153,7 +153,7 @@ async def verify_email(request: Request, body: VerifyEmailRequest):
         )
 
     if not hmac.compare_digest(token_doc.token, body.code):
-        await VerificationToken.get_motor_collection().update_one(
+        await VerificationToken.get_pymongo_collection().update_one(
             {"_id": token_doc.id},
             {"$inc": {"attempts": 1}},
         )
