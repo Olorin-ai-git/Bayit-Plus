@@ -32,12 +32,15 @@ YT_API_BASE = "https://www.googleapis.com/youtube/v3"
 
 def _extract_youtube_video_id(url: str) -> str | None:
     """Extract video ID from a YouTube URL."""
-    parsed = urlparse(url)
+    parsed = urlparse(url.rstrip("."))
     if parsed.hostname in ("youtu.be",):
-        return parsed.path.lstrip("/").split("/")[0] or None
+        raw = parsed.path.lstrip("/").split("/")[0]
+        return re.sub(r"[^a-zA-Z0-9_-]", "", raw) or None
     qs = parse_qs(parsed.query)
     vid = qs.get("v", [None])[0]
-    return vid if vid else None
+    if vid:
+        return re.sub(r"[^a-zA-Z0-9_-]", "", vid) or None
+    return None
 
 
 def _parse_iso8601_duration(iso_duration: str) -> float:
