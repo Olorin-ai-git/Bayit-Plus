@@ -40,6 +40,7 @@ from app.api.routes.training.source_connections import (
     router as source_connections_router,
 )
 from app.api.routes.training.source_browser import router as source_browser_router
+from app.api.routes.training.proxy_stream import router as proxy_stream_router
 
 router = APIRouter(prefix="/training")
 
@@ -69,3 +70,4 @@ router.include_router(superadmin_router)
 router.include_router(config_router)
 router.include_router(source_connections_router)
 router.include_router(source_browser_router)
+router.include_router(proxy_stream_router)
