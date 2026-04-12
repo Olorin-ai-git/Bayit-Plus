@@ -10,6 +10,7 @@ from app.models.b2b_content_source import B2BContentSource
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingUser
 from app.api.routes.training.dependencies import require_training_admin
+from app.api.routes.training.tier_gates import require_tier
 from app.services.olorin.source_sync import sync_source
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ async def import_source(
     body: BYOCImportRequest,
     background_tasks: BackgroundTasks,
     admin: TrainingUser = Depends(require_training_admin),
+    _tier: TrainingUser = Depends(require_tier("organization")),
 ):
     """Import a content source and queue sync (admin only)."""
     partner = await IntegrationPartner.find_one(

@@ -111,6 +111,9 @@ async def _get_partner_tier(partner_id: str) -> str:
     return tier
 
 
+SCORM_ALLOWED_TIERS = {"enterprise"}
+
+
 @router.post("", response_model=ExportResponse)
 async def create_export(
     req: CreateExportRequest,
@@ -118,6 +121,11 @@ async def create_export(
 ):
     """Create a new SCORM export job."""
     tier = await _get_partner_tier(user.partner_id)
+    if tier not in SCORM_ALLOWED_TIERS:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="SCORM export requires Enterprise tier",
+        )
     expiry_days = req.token_expiry_days or settings.SCORM_TOKEN_EXPIRY_DAYS
     token_expires = datetime.now(timezone.utc) + timedelta(
         days=expiry_days

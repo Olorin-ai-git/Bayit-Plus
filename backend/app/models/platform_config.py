@@ -27,6 +27,29 @@ _DEFAULT_TIER_LIMITS: dict = {
     "enterprise": 10000,
 }
 
+_DEFAULT_SEAT_LIMITS: dict = {
+    "free": 5,
+    "team": 25,
+    "organization": 100,
+}
+
+_DEFAULT_VIDEO_LIMITS: dict = {
+    "free": 3,
+    "team": 10,
+}
+
+_DEFAULT_FEATURE_GATES: dict = {
+    "team": [
+        "pause_ask", "lip_sync", "companion", "chapters",
+        "quizzes", "csv_export", "progress",
+    ],
+    "organization": [
+        "watch_party", "bulk_import", "branding",
+        "assignments", "department_analytics",
+    ],
+    "enterprise": ["scorm_export", "custom_integrations"],
+}
+
 
 # ---------------------------------------------------------------------------
 # Embedded sub-documents
@@ -141,6 +164,18 @@ class PlatformConfig(Document):
     feature_costs: List[FeatureCost] = Field(
         default_factory=lambda: list(_DEFAULT_FEATURE_COSTS),
         description="Per-use credit costs for optional interactive features",
+    )
+    seat_limits: Dict[str, int] = Field(
+        default_factory=lambda: dict(_DEFAULT_SEAT_LIMITS),
+        description="Maximum employees per subscription tier (absent = unlimited)",
+    )
+    video_limits: Dict[str, int] = Field(
+        default_factory=lambda: dict(_DEFAULT_VIDEO_LIMITS),
+        description="Maximum training videos per subscription tier (absent = unlimited)",
+    )
+    feature_gates: Dict[str, List[str]] = Field(
+        default_factory=lambda: dict(_DEFAULT_FEATURE_GATES),
+        description="Features unlocked at each tier level (cumulative upward)",
     )
     subscription_plans: List[SubscriptionPlan] = Field(
         default_factory=lambda: list(_DEFAULT_PLANS),

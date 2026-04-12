@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingUser
 from app.api.routes.training.dependencies import require_training_admin
+from app.api.routes.training.tier_gates import resolve_partner_tier
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,14 @@ async def update_settings(
         )
 
     tc = partner.training_config or {}
+
+    if body.logo_url is not None or body.accent_color is not None:
+        tier = await resolve_partner_tier(admin.partner_id)
+        if tier not in {"organization", "enterprise"}:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Custom branding requires Organization tier",
+            )
 
     if body.org_name is not None:
         tc["org_display_name"] = body.org_name

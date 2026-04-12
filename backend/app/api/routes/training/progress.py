@@ -10,6 +10,7 @@ from app.api.routes.training.dependencies import (
     get_current_training_user,
     require_training_admin,
 )
+from app.api.routes.training.tier_gates import require_tier
 from app.api.routes.olorin.webhooks import send_webhook_event
 from app.models.integration_partner import IntegrationPartner
 from app.models.content import Content
@@ -215,6 +216,7 @@ def _aggregate_departments(
 @router.get("/analytics/departments")
 async def get_department_analytics(
     admin: TrainingUser = Depends(require_training_admin),
+    _tier: TrainingUser = Depends(require_tier("organization")),
 ):
     """Get department-level aggregated analytics."""
     analytics = await get_analytics(admin)

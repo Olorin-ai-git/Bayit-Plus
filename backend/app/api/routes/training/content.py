@@ -24,9 +24,12 @@ from app.services.olorin.ingest_orchestrator import (
     create_ingest_job,
     run_pipeline,
 )
+from app.api.routes.training.tier_gates import resolve_partner_tier
 from app.utils.video_url_utils import validate_video_url
 
 logger = logging.getLogger(__name__)
+
+VIDEO_LIMITS: dict[str, int] = {"free": 3, "team": 10}
 router = APIRouter(prefix="/content", tags=["training-content"])
 
 class IngestRequest(BaseModel):
@@ -66,6 +69,17 @@ async def ingest_content(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found",
         )
+    tier = await resolve_partner_tier(admin.partner_id)
+    limit = VIDEO_LIMITS.get(tier)
+    if limit is not None:
+        current_count = await Content.find(
+            {"partner_id": admin.partner_id}
+        ).count()
+        if current_count >= limit:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail=f"Video limit reached ({limit}). Upgrade your plan for more.",
+            )
     content = Content(
         title=body.title,
         description=body.description,

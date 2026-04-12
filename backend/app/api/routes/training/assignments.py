@@ -13,6 +13,7 @@ from app.api.routes.training.dependencies import (
     get_current_training_user,
     require_training_admin,
 )
+from app.api.routes.training.tier_gates import require_tier
 from app.models.content import Content, ProcessingState
 from app.models.training_assignment import TrainingAssignment
 from app.models.training_user import TrainingUser
@@ -37,6 +38,7 @@ class CreateAssignmentRequest(BaseModel):
 async def create_assignment(
     body: CreateAssignmentRequest,
     admin: TrainingUser = Depends(require_training_admin),
+    _tier: TrainingUser = Depends(require_tier("organization")),
 ):
     """Assign content to employees.
 

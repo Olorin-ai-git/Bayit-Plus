@@ -24,6 +24,9 @@ from app.services.bayit_email_service import get_bayit_email_service
 from app.services.email_templates import get_template_renderer
 from starlette.requests import Request
 from app.core.rate_limiter import limiter, RATE_LIMITS
+from app.api.routes.training.tier_gates import resolve_partner_tier
+
+SEAT_LIMITS: dict[str, int] = {"free": 5, "team": 25, "organization": 100}
 
 logger = logging.getLogger(__name__)
 
@@ -164,6 +167,18 @@ async def invite_employees(
     admin: TrainingUser = Depends(require_training_admin),
 ):
     """Invite employees to the training organization."""
+    tier = await resolve_partner_tier(admin.partner_id)
+    limit = SEAT_LIMITS.get(tier)
+    if limit is not None:
+        member_count = await TrainingUser.find(
+            {"partner_id": admin.partner_id}
+        ).count()
+        new_count = member_count + len(body.emails)
+        if new_count > limit:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail=f"Employee limit reached ({limit}). Upgrade your plan for more seats.",
+            )
     partner = await IntegrationPartner.find_one(
         {"partner_id": admin.partner_id}
     )
