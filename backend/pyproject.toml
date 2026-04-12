@@ -95,6 +95,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 markers = [
     "google_api: marks tests that call real Google APIs (deselect with -m 'not google_api')",
+    "e2e: marks end-to-end browser tests requiring a running portal (deselect with -m 'not e2e')",
 ]
 
 [dependency-groups]
