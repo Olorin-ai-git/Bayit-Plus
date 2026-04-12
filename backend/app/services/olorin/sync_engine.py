@@ -6,7 +6,8 @@ from app.core.logging_config import get_logger
 from app.models.content import Content
 from app.models.source_connection import SourceConnection
 from app.models.synced_container import SyncedContainer
-from app.services.olorin.source_connector import _get_provider, _get_token, import_from_source
+from app.services.olorin.source_connector import import_from_source
+from app.services.olorin.source_helpers import get_provider, get_valid_token
 
 logger = get_logger(__name__)
 
@@ -43,8 +44,8 @@ async def _poll_single_container(sc: SyncedContainer) -> None:
         await sc.save()
         return
 
-    provider = _get_provider(conn)
-    token = await _get_token(conn)
+    provider = get_provider(conn)
+    token = await get_valid_token(conn)
 
     # List all videos in the source folder (paginate through all)
     source_video_ids: set[str] = set()

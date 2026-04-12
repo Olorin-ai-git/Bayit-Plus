@@ -1,7 +1,6 @@
 """Proxy streaming for authenticated-source video playback."""
 
 import logging
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
@@ -9,51 +8,14 @@ from fastapi.responses import StreamingResponse
 import httpx
 
 from app.api.routes.training.dependencies import get_current_training_user
-from app.core.config import settings
 from app.models.content import Content
 from app.models.source_connection import SourceConnection
 from app.models.training_user import TrainingUser
-from app.services.olorin.source_providers.google_workspace import GoogleWorkspaceProvider
-from app.services.olorin.source_providers.panopto import PanoptoProvider
-from app.services.olorin.token_encryption import decrypt_token, encrypt_token
+from app.services.olorin.source_helpers import get_provider, get_valid_token
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["training-proxy"])
-
-
-def _get_provider(conn: SourceConnection):
-    if conn.provider == "google_workspace":
-        return GoogleWorkspaceProvider(
-            client_id=settings.SOURCE_GOOGLE_CLIENT_ID,
-            client_secret=settings.SOURCE_GOOGLE_CLIENT_SECRET,
-        )
-    return PanoptoProvider(
-        client_id=settings.SOURCE_PANOPTO_CLIENT_ID,
-        client_secret=settings.SOURCE_PANOPTO_CLIENT_SECRET,
-        server_url=conn.panopto_server_url or "",
-    )
-
-
-async def _ensure_valid_token(conn: SourceConnection) -> str:
-    """Get a valid access token, refreshing if expired."""
-    enc_key = settings.SOURCE_TOKEN_ENCRYPTION_KEY
-    access_token = decrypt_token(conn.encrypted_access_token, enc_key)
-    now = datetime.now(timezone.utc)
-    if conn.token_expires_at and conn.token_expires_at <= now:
-        provider = _get_provider(conn)
-        refresh = decrypt_token(conn.encrypted_refresh_token, enc_key)
-        try:
-            tokens = await provider.refresh_access_token(refresh)
-        except Exception:
-            conn.status = "needs_reauth"
-            await conn.save()
-            raise HTTPException(503, "Source needs re-authorization")
-        conn.encrypted_access_token = encrypt_token(tokens.access_token, enc_key)
-        conn.token_expires_at = now
-        await conn.save()
-        access_token = tokens.access_token
-    return access_token
 
 
 @router.get("/content/{content_id}/proxy-stream")
@@ -78,8 +40,14 @@ async def proxy_stream(
     if not conn or conn.status != "active":
         raise HTTPException(503, "Source connection unavailable")
 
-    access_token = await _ensure_valid_token(conn)
-    provider = _get_provider(conn)
+    try:
+        access_token = await get_valid_token(conn)
+    except Exception:
+        conn.status = "needs_reauth"
+        await conn.save()
+        raise HTTPException(503, "Source needs re-authorization")
+
+    provider = get_provider(conn)
     stream_url = await provider.get_stream_url(access_token, content.source_ref)
 
     upstream_headers = {"Authorization": f"Bearer {access_token}"}
@@ -133,8 +101,14 @@ async def get_embed_url(
     if not conn or conn.status != "active":
         raise HTTPException(503, "Source connection unavailable")
 
-    access_token = await _ensure_valid_token(conn)
-    provider = _get_provider(conn)
+    try:
+        access_token = await get_valid_token(conn)
+    except Exception:
+        conn.status = "needs_reauth"
+        await conn.save()
+        raise HTTPException(503, "Source needs re-authorization")
+
+    provider = get_provider(conn)
     embed_url = await provider.get_embed_url(access_token, content.source_ref)
 
     return {

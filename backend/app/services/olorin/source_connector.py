@@ -9,41 +9,10 @@ from app.models.content import Content, ProcessingState
 from app.models.integration_partner import IntegrationPartner
 from app.models.source_connection import SourceConnection
 from app.services.olorin.ingest_orchestrator import create_ingest_job, run_pipeline
-from app.services.olorin.source_providers.google_workspace import GoogleWorkspaceProvider
-from app.services.olorin.source_providers.panopto import PanoptoProvider
+from app.services.olorin.source_helpers import get_provider, get_valid_token
 from app.services.olorin.storage_service import storage_service
-from app.services.olorin.token_encryption import decrypt_token, encrypt_token
 
 logger = get_logger(__name__)
-
-
-def _get_provider(conn: SourceConnection):
-    if conn.provider == "google_workspace":
-        return GoogleWorkspaceProvider(
-            client_id=settings.SOURCE_GOOGLE_CLIENT_ID,
-            client_secret=settings.SOURCE_GOOGLE_CLIENT_SECRET,
-        )
-    return PanoptoProvider(
-        client_id=settings.SOURCE_PANOPTO_CLIENT_ID,
-        client_secret=settings.SOURCE_PANOPTO_CLIENT_SECRET,
-        server_url=conn.panopto_server_url or "",
-    )
-
-
-async def _get_token(conn: SourceConnection) -> str:
-    enc_key = settings.SOURCE_TOKEN_ENCRYPTION_KEY
-    access_token = decrypt_token(conn.encrypted_access_token, enc_key)
-    now = datetime.now(timezone.utc)
-    if conn.token_expires_at and conn.token_expires_at <= now:
-        provider = _get_provider(conn)
-        refresh = decrypt_token(conn.encrypted_refresh_token, enc_key)
-        tokens = await provider.refresh_access_token(refresh)
-        conn.encrypted_access_token = encrypt_token(tokens.access_token, enc_key)
-        conn.token_expires_at = now
-        conn.updated_at = now
-        await conn.save()
-        access_token = tokens.access_token
-    return access_token
 
 
 async def import_from_source(
@@ -63,8 +32,8 @@ async def import_from_source(
         logger.error("Partner not found", extra={"partner_id": partner_id})
         return
 
-    provider = _get_provider(conn)
-    token = await _get_token(conn)
+    provider = get_provider(conn)
+    token = await get_valid_token(conn)
 
     for video_id in video_ids:
         try:

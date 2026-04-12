@@ -7,16 +7,13 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, s
 from pydantic import BaseModel, Field
 
 from app.api.routes.training.dependencies import require_training_admin
-from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.content import Content
 from app.models.source_connection import SourceConnection
 from app.models.synced_container import SyncedContainer
 from app.models.training_user import TrainingUser
 from app.services.olorin.source_connector import import_from_source
-from app.services.olorin.source_providers.google_workspace import GoogleWorkspaceProvider
-from app.services.olorin.source_providers.panopto import PanoptoProvider
-from app.services.olorin.token_encryption import decrypt_token, encrypt_token
+from app.services.olorin.source_helpers import get_provider, get_valid_token
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/source-browser", tags=["training-source-browser"])
@@ -31,37 +28,6 @@ class SyncCreateRequest(BaseModel):
     folder_id: str
     folder_path: str
     poll_interval_hours: int = Field(default=24, ge=6, le=168)
-
-
-# --- helpers ----------------------------------------------------------------
-
-def _get_provider(conn: SourceConnection):
-    if conn.provider == "google_workspace":
-        return GoogleWorkspaceProvider(
-            client_id=settings.SOURCE_GOOGLE_CLIENT_ID,
-            client_secret=settings.SOURCE_GOOGLE_CLIENT_SECRET,
-        )
-    return PanoptoProvider(
-        client_id=settings.SOURCE_PANOPTO_CLIENT_ID,
-        client_secret=settings.SOURCE_PANOPTO_CLIENT_SECRET,
-        server_url=conn.panopto_server_url or "",
-    )
-
-
-async def _get_access_token(conn: SourceConnection) -> str:
-    enc_key = settings.SOURCE_TOKEN_ENCRYPTION_KEY
-    token = decrypt_token(conn.encrypted_access_token, enc_key)
-    now = datetime.now(timezone.utc)
-    if conn.token_expires_at and conn.token_expires_at <= now:
-        provider = _get_provider(conn)
-        refresh = decrypt_token(conn.encrypted_refresh_token, enc_key)
-        tokens = await provider.refresh_access_token(refresh)
-        conn.encrypted_access_token = encrypt_token(tokens.access_token, enc_key)
-        conn.token_expires_at = now
-        conn.updated_at = now
-        await conn.save()
-        token = tokens.access_token
-    return token
 
 
 async def _resolve_conn(connection_id: str, partner_id: str) -> SourceConnection:
@@ -97,8 +63,8 @@ async def browse_folders(
     admin: TrainingUser = Depends(require_training_admin),
 ):
     conn = await _resolve_conn(connection_id, admin.partner_id)
-    page = await _get_provider(conn).list_folders(
-        await _get_access_token(conn),
+    page = await get_provider(conn).list_folders(
+        await get_valid_token(conn),
         parent_folder_id=parent_folder_id,
         page_token=page_token,
     )
@@ -113,8 +79,8 @@ async def list_videos(
     admin: TrainingUser = Depends(require_training_admin),
 ):
     conn = await _resolve_conn(connection_id, admin.partner_id)
-    page = await _get_provider(conn).list_videos(
-        await _get_access_token(conn), folder_id=folder_id, page_token=page_token,
+    page = await get_provider(conn).list_videos(
+        await get_valid_token(conn), folder_id=folder_id, page_token=page_token,
     )
     existing = await _existing_source_refs(
         admin.partner_id, connection_id, [v.video_id for v in page.items]
@@ -131,8 +97,8 @@ async def search_videos(
     admin: TrainingUser = Depends(require_training_admin),
 ):
     conn = await _resolve_conn(connection_id, admin.partner_id)
-    page = await _get_provider(conn).search_videos(
-        await _get_access_token(conn), query=q, page_token=page_token,
+    page = await get_provider(conn).search_videos(
+        await get_valid_token(conn), query=q, page_token=page_token,
     )
     existing = await _existing_source_refs(
         admin.partner_id, connection_id, [v.video_id for v in page.items]
