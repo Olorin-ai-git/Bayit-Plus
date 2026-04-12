@@ -38,7 +38,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xauth \
     libgl1 \
     libglib2.0-0 \
+    curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Deno (required by yt-dlp for YouTube JS extraction)
+RUN curl -fsSL https://dl.deno.land/release/v2.2.11/deno-x86_64-unknown-linux-gnu.zip -o /tmp/deno.zip \
+    && unzip -o /tmp/deno.zip -d /usr/local/bin \
+    && chmod +x /usr/local/bin/deno \
+    && rm /tmp/deno.zip
 
 # Create non-root user
 RUN useradd -m -u 1000 bayit && \
