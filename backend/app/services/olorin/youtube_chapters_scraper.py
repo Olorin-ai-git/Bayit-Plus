@@ -1,14 +1,22 @@
 """Fetch YouTube native chapters from the public watch page HTML.
 
-Cookie-free, IP-independent, no API key. The watch page embeds two JSON
-blobs: ``ytInitialData`` (the rendered UI tree, including
-``macroMarkersListItemRenderer`` entries for chapters, populated by
-YouTube's backend from description timestamps, Studio editor chapters,
-and ML auto-generated chapters) and ``ytInitialPlayerResponse`` (the
-player config, including ``videoDetails.lengthSeconds``). Parsing these
-is equivalent to what yt-dlp does internally, minus yt-dlp's bot-flagged
-request fingerprint that triggers the "Sign in to confirm you're not a
-bot" wall on VPS IPs.
+Cookie-free, no API key. The watch page embeds two JSON blobs:
+``ytInitialData`` (the rendered UI tree, including
+``macroMarkersListItemRenderer`` chapter entries and a
+``macroMarkersListEntity`` heatmap) and ``ytInitialPlayerResponse`` (the
+player config, normally containing ``videoDetails.lengthSeconds``).
+Parsing these is equivalent to what yt-dlp does internally, minus
+yt-dlp's bot-flagged request fingerprint that triggers the "Sign in to
+confirm you're not a bot" wall on VPS IPs.
+
+Duration extraction is two-tier because YouTube's bot-guard response
+(issued to VPS-range IPs even for HTTP 200 watch page requests) ships a
+degraded ``ytInitialPlayerResponse`` with ``playabilityStatus =
+LOGIN_REQUIRED`` and no ``videoDetails``. The ``ytInitialData`` blob is
+left intact, including chapter markers and the 100-bucket heatmap entity
+whose last marker's ``startMillis + durationMillis`` equals the full
+video length. We probe ``videoDetails.lengthSeconds`` first and fall
+back to the heatmap when it is absent.
 """
 import json
 import logging
@@ -158,6 +166,50 @@ def _extract_duration_seconds(blob: Any) -> float:
     return walk(blob) or 0.0
 
 
+def _extract_duration_from_heatmap(blob: Any) -> float:
+    """Fallback: derive duration from the heatmap marker list.
+
+    YouTube's heatmap (``markerType`` ``MARKER_TYPE_HEATMAP``) covers the
+    whole video in fixed-width buckets. The last marker's
+    ``startMillis + durationMillis`` equals the full video length in
+    milliseconds. Used when ``videoDetails.lengthSeconds`` is absent
+    because YouTube served a bot-guarded player response.
+    """
+    def walk(obj: Any) -> Optional[float]:
+        if isinstance(obj, dict):
+            entity = obj.get("macroMarkersListEntity")
+            if isinstance(entity, dict):
+                markers_list = entity.get("markersList") or {}
+                if (
+                    isinstance(markers_list, dict)
+                    and markers_list.get("markerType") == "MARKER_TYPE_HEATMAP"
+                ):
+                    markers = markers_list.get("markers") or []
+                    if isinstance(markers, list) and markers:
+                        last = markers[-1]
+                        if isinstance(last, dict):
+                            try:
+                                start = int(last.get("startMillis", 0))
+                                dur = int(last.get("durationMillis", 0))
+                            except (TypeError, ValueError):
+                                return None
+                            total_ms = start + dur
+                            if total_ms > 0:
+                                return total_ms / 1000.0
+            for value in obj.values():
+                found = walk(value)
+                if found is not None:
+                    return found
+        elif isinstance(obj, list):
+            for item in obj:
+                found = walk(item)
+                if found is not None:
+                    return found
+        return None
+
+    return walk(blob) or 0.0
+
+
 def _build_chapter_entries(
     markers: list[dict], duration_seconds: float
 ) -> list[dict]:
@@ -256,6 +308,15 @@ async def fetch_native_chapters_via_html(
         if found > 0:
             duration_seconds = found
             break
+
+    if duration_seconds == 0.0:
+        for blob in (data_blob, player_blob):
+            if blob is None:
+                continue
+            found = _extract_duration_from_heatmap(blob)
+            if found > 0:
+                duration_seconds = found
+                break
 
     markers: list[dict] = []
     if data_blob is not None:

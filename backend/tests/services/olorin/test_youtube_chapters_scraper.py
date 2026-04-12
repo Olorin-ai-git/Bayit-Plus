@@ -7,6 +7,7 @@ import pytest
 import respx
 
 from app.services.olorin.youtube_chapters_scraper import (
+    _extract_duration_from_heatmap,
     _extract_duration_seconds,
     _extract_title,
     _parse_blob,
@@ -75,6 +76,66 @@ class TestExtractDurationSeconds:
     def test_missing_returns_zero(self):
         assert _extract_duration_seconds({}) == 0.0
         assert _extract_duration_seconds({"videoDetails": {}}) == 0.0
+
+
+class TestExtractDurationFromHeatmap:
+    def _heatmap(self, markers):
+        return {
+            "macroMarkersListEntity": {
+                "markersList": {
+                    "markerType": "MARKER_TYPE_HEATMAP",
+                    "markers": markers,
+                },
+            },
+        }
+
+    def test_computes_last_marker_end(self):
+        blob = self._heatmap(
+            [
+                {"startMillis": "0", "durationMillis": "2820"},
+                {"startMillis": "2820", "durationMillis": "2820"},
+                {"startMillis": "279180", "durationMillis": "2820"},
+            ]
+        )
+        assert _extract_duration_from_heatmap(blob) == 282.0
+
+    def test_nested_entity(self):
+        blob = {
+            "frameworkUpdates": {
+                "entityBatchUpdate": {
+                    "mutations": [
+                        {"payload": self._heatmap(
+                            [{"startMillis": "0", "durationMillis": "120000"}]
+                        )}
+                    ]
+                }
+            }
+        }
+        assert _extract_duration_from_heatmap(blob) == 120.0
+
+    def test_ignores_non_heatmap_marker_type(self):
+        blob = {
+            "macroMarkersListEntity": {
+                "markersList": {
+                    "markerType": "MARKER_TYPE_CHAPTER",
+                    "markers": [{"startMillis": "0", "durationMillis": "99999"}],
+                },
+            },
+        }
+        assert _extract_duration_from_heatmap(blob) == 0.0
+
+    def test_missing_returns_zero(self):
+        assert _extract_duration_from_heatmap({}) == 0.0
+        assert _extract_duration_from_heatmap({"x": 1}) == 0.0
+
+    def test_empty_markers_returns_zero(self):
+        assert _extract_duration_from_heatmap(self._heatmap([])) == 0.0
+
+    def test_non_numeric_millis_returns_zero(self):
+        blob = self._heatmap(
+            [{"startMillis": "abc", "durationMillis": "xyz"}]
+        )
+        assert _extract_duration_from_heatmap(blob) == 0.0
 
 
 class TestExtractTitle:
@@ -182,6 +243,42 @@ async def test_transport_error_propagates():
             await fetch_native_chapters_via_html(
                 "https://www.youtube.com/watch?v=abcdefghijk"
             )
+
+
+@pytest.mark.asyncio
+async def test_bot_guarded_player_response_uses_heatmap_duration():
+    """When YouTube serves a LOGIN_REQUIRED player response (no videoDetails),
+    duration must fall back to the heatmap marker list so chapters are not
+    rejected by the end_time > start_time check.
+    """
+    data = (
+        '{"contents":{"m":['
+        '{"macroMarkersListItemRenderer":'
+        '{"title":{"simpleText":"Intro"},"timeDescription":{"simpleText":"0:00"}}},'
+        '{"macroMarkersListItemRenderer":'
+        '{"title":{"simpleText":"Body"},"timeDescription":{"simpleText":"1:00"}}},'
+        '{"macroMarkersListItemRenderer":'
+        '{"title":{"simpleText":"Outro"},"timeDescription":{"simpleText":"4:00"}}}'
+        ']},'
+        '"frameworkUpdates":{"entityBatchUpdate":{"mutations":[{"payload":'
+        '{"macroMarkersListEntity":{"markersList":{'
+        '"markerType":"MARKER_TYPE_HEATMAP",'
+        '"markers":[{"startMillis":"0","durationMillis":"300000"}]'
+        "}}}}]}}}"
+    )
+    player = '{"playabilityStatus":{"status":"LOGIN_REQUIRED"}}'
+    html = _minimal_html(data_json=data, player_json=player)
+    with respx.mock() as mock:
+        mock.get("https://www.youtube.com/watch?v=abcdefghijk").mock(
+            return_value=httpx.Response(200, text=html)
+        )
+        chapters, duration = await fetch_native_chapters_via_html(
+            "https://www.youtube.com/watch?v=abcdefghijk"
+        )
+    assert duration == 300.0
+    assert len(chapters) == 3
+    assert [c["title"] for c in chapters] == ["Intro", "Body", "Outro"]
+    assert chapters[-1]["end_time"] == 300.0
 
 
 @pytest.mark.asyncio
