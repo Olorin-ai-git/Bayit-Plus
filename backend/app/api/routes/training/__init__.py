@@ -36,6 +36,9 @@ from app.api.routes.training.superadmin import (
     public_router as config_router,
     router as superadmin_router,
 )
+from app.api.routes.training.source_connections import (
+    router as source_connections_router,
+)
 
 router = APIRouter(prefix="/training")
 
@@ -63,3 +66,4 @@ router.include_router(portraits_router)
 router.include_router(companion_router, prefix="/companion")
 router.include_router(superadmin_router)
 router.include_router(config_router)
+router.include_router(source_connections_router)
