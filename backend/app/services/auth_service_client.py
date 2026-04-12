@@ -408,6 +408,105 @@ class AuthServiceClient:
                 logger.error("auth_service_request_error", error=str(e))
                 raise ValueError(f"Failed to connect to auth service: {str(e)}")
 
+    async def verify_email_code(
+        self,
+        email: str,
+        code: str,
+    ) -> dict:
+        """
+        Verify email code via auth service.
+
+        Args:
+            email: User email
+            code: 6-digit verification code
+
+        Returns:
+            Dict with user_id, email, name, role, access_token, refresh_token
+
+        Raises:
+            ValueError: If verification fails
+        """
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    f"{self.base_url}/api/v1/auth/verify-email-code",
+                    json={
+                        "email": email,
+                        "code": code,
+                        "tenant_id": self.tenant_id,
+                    },
+                    headers=self._get_auth_headers(),
+                    timeout=self.timeout,
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info(
+                        "auth_service_verify_email_code_success",
+                        user_id=data.get("user_id"),
+                        email=email,
+                    )
+                    return data
+                else:
+                    error_detail = self._extract_error(
+                        response, "Email verification failed"
+                    )
+                    logger.warning(
+                        "auth_service_verify_email_code_failed",
+                        status_code=response.status_code,
+                        detail=error_detail,
+                        email=email,
+                    )
+                    raise ValueError(error_detail)
+
+            except httpx.RequestError as e:
+                logger.error("auth_service_request_error", error=str(e))
+                raise ValueError(f"Failed to connect to auth service: {str(e)}")
+
+    async def resend_verification_code(self, email: str) -> None:
+        """
+        Resend verification code via auth service.
+
+        Args:
+            email: User email
+
+        Raises:
+            ValueError: If resend fails
+        """
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    f"{self.base_url}/api/v1/auth/resend-verification-code",
+                    json={
+                        "email": email,
+                        "tenant_id": self.tenant_id,
+                    },
+                    headers=self._get_auth_headers(),
+                    timeout=self.timeout,
+                )
+
+                if response.status_code in (200, 204):
+                    logger.info(
+                        "auth_service_resend_verification_success",
+                        email=email,
+                    )
+                    return
+                else:
+                    error_detail = self._extract_error(
+                        response, "Resend verification failed"
+                    )
+                    logger.warning(
+                        "auth_service_resend_verification_failed",
+                        status_code=response.status_code,
+                        detail=error_detail,
+                        email=email,
+                    )
+                    raise ValueError(error_detail)
+
+            except httpx.RequestError as e:
+                logger.error("auth_service_request_error", error=str(e))
+                raise ValueError(f"Failed to connect to auth service: {str(e)}")
+
     async def create_user_in_bayit_db(
         self,
         auth_service_user_id: str,
