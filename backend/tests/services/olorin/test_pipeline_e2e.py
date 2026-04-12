@@ -426,20 +426,26 @@ async def test_e2e_resume_picks_up_after_failure_without_rerunning_completed(
 
 @pytest.mark.asyncio
 async def test_pipeline_persists_native_chapters_when_present(monkeypatch):
-    """End-to-end: native chapters from yt-dlp metadata reach VideoChapters."""
+    """End-to-end: native chapters from HTML scrape reach VideoChapters."""
     create_or_update_mock = AsyncMock()
     monkeypatch.setattr(
         "app.services.olorin.chapter_extraction.VideoChapters.create_or_update",
         create_or_update_mock,
     )
     monkeypatch.setattr(
-        "app.services.olorin.chapter_extraction.fetch_native_chapters_via_ytdlp",
+        "app.services.olorin.chapter_extraction.fetch_native_chapters_via_html",
         AsyncMock(return_value=(
             [
                 {"start_time": 0.0, "end_time": 60.0, "title": "Intro"},
                 {"start_time": 60.0, "end_time": 240.0, "title": "Demo"},
             ],
             240.0,
+        )),
+    )
+    monkeypatch.setattr(
+        "app.services.olorin.chapter_extraction.fetch_native_chapters_via_ytdlp",
+        AsyncMock(side_effect=AssertionError(
+            "yt-dlp must not run when HTML scrape present"
         )),
     )
     monkeypatch.setattr(
