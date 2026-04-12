@@ -1,4 +1,5 @@
 """Demo portal video upload and ingest endpoints."""
+import re
 import uuid as _uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -135,16 +136,27 @@ async def demo_ingest_video(
             detail="Could not determine video duration. Try a different URL or upload the file directly.",
         )
 
+    is_streaming_url = bool(re.search(
+        r"https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/",
+        video_url,
+    ))
+
     if duration > max_seconds:
-        try:
-            video_url = await truncate_and_upload(video_url, max_seconds, user_id)
+        if is_streaming_url:
+            # YouTube/Vimeo: skip download+truncate, cap duration for pipeline
+            # The player streams directly; pipeline processes first N minutes
             truncated = True
             duration = float(max_seconds)
-        except ValueError:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Video truncation failed. Try a shorter video or upload directly.",
-            )
+        else:
+            try:
+                video_url = await truncate_and_upload(video_url, max_seconds, user_id)
+                truncated = True
+                duration = float(max_seconds)
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Video truncation failed. Try a shorter video or upload directly.",
+                )
 
     content = Content(
         title=request.title or "User Video",
