@@ -238,6 +238,7 @@ class PauseAskOrchestrator:
             memory_context=memory_context,
             persona_mode=session.persona_mode or "character",
             audience_description=session.audience_description or "",
+            compact=job.portal == "demo",
         )
 
         # Content moderation

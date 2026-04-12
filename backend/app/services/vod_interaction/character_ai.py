@@ -30,7 +30,8 @@ class CharacterAIService:
         child_name: str = "",
         memory_context: str = "",
         persona_mode: PersonaMode = "character",
-        audience_description: str = ""
+        audience_description: str = "",
+        compact: bool = False,
     ) -> CharacterResponse:
         """
         Generate in-character response to user message
@@ -57,13 +58,17 @@ class CharacterAIService:
                 memory_context=memory_context,
                 persona_mode=persona_mode,
                 audience_description=audience_description,
+                compact=compact,
             )
+
+            max_tokens = 80 if compact else settings.VOD_INTERACTION_AI_MAX_TOKENS
 
             logger.info(
                 "Generating character response",
                 extra={
                     "character_name": character_name,
-                    "message_length": len(user_message)
+                    "message_length": len(user_message),
+                    "compact": compact,
                 }
             )
 
@@ -72,7 +77,7 @@ class CharacterAIService:
                 model=settings.VOD_INTERACTION_AI_MODEL,
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_message}],
-                max_tokens=settings.VOD_INTERACTION_AI_MAX_TOKENS
+                max_tokens=max_tokens,
             )
 
             response_text = response.content[0].text
@@ -109,7 +114,8 @@ class CharacterAIService:
         child_name: str = "",
         memory_context: str = "",
         persona_mode: PersonaMode = "character",
-        audience_description: str = ""
+        audience_description: str = "",
+        compact: bool = False,
     ) -> str:
         """Build system prompt for character dialogue generation.
 
@@ -124,6 +130,7 @@ class CharacterAIService:
                 speaker_description=character_description,
                 audience_description=audience_description,
                 memory_context=memory_context,
+                compact=compact,
             )
 
         history_text = self._format_history(history, child_name=child_name)
@@ -146,6 +153,12 @@ class CharacterAIService:
             else "A child's avatar is talking to you."
         )
 
+        length_rule = (
+            "- Keeping responses to 1 sentence, maximum 20 words — short and punchy for lipsync video"
+            if compact
+            else "- Keeping responses to 2-3 sentences, 30-60 words — detailed enough to engage, concise enough for lipsync"
+        )
+
         return f"""You are {character_name} from this scene:
 
 Scene Context: {scene_context}{description_block}{context_block}{memory_block}
@@ -156,7 +169,7 @@ Scene Context: {scene_context}{description_block}{context_block}{memory_block}
 - Speaking naturally and warmly to a child (simple Hebrew or English)
 - Address the child by their name when it feels natural
 - Being educational and encouraging when appropriate
-- Keeping responses to 1 sentence, maximum 20 words — short and punchy for lipsync video
+{length_rule}
 - Never breaking character or acknowledging you are an AI
 - Output ONLY the spoken dialogue text. No action descriptions, no stage directions, no gestures, no narration (e.g. never write "*waves hand*", "smiles and says", "leans forward" etc.)
 
@@ -173,6 +186,7 @@ Respond as {character_name}:"""
         speaker_description: str = "",
         audience_description: str = "",
         memory_context: str = "",
+        compact: bool = False,
     ) -> str:
         """Build system prompt for a real historical speaker addressing an
         educational audience (EDU content).
@@ -201,6 +215,12 @@ Respond as {character_name}:"""
             else "You are speaking with a thoughtful adult listener."
         )
 
+        length_rule = (
+            "- Responses of 1-2 sentences, 15-30 words — brief and punchy for a demo lipsync video"
+            if compact
+            else "- Responses of 2-4 sentences, 40-80 words — detailed enough to teach, concise enough to hold attention"
+        )
+
         return f"""You are {speaker_name}, speaking directly with a listener about the ideas in your speech:
 {context_block}{description_block}{memory_block}
 
@@ -208,7 +228,7 @@ Respond as {character_name}:"""
 - Your real-life worldview, values, and the thesis of the speech you just gave
 - The specific argument of the passage being discussed
 - A warm, articulate, educational tone — you are a passionate teacher who loves explaining concepts
-- Responses of 2-4 sentences, 40-80 words — detailed enough to teach, concise enough to hold attention
+{length_rule}
 - Use concrete examples, analogies, or real-world connections to make ideas stick
 - If the question is about a technical concept, explain it clearly so a beginner could understand
 - Never breaking persona or acknowledging you are an AI
