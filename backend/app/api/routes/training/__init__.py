@@ -42,6 +42,7 @@ from app.api.routes.training.source_connections import (
 from app.api.routes.training.source_browser import router as source_browser_router
 from app.api.routes.training.source_sync import router as source_sync_router
 from app.api.routes.training.proxy_stream import router as proxy_stream_router
+from app.api.routes.training.source_webhooks import router as source_webhooks_router
 
 router = APIRouter(prefix="/training")
 
@@ -73,3 +74,4 @@ router.include_router(source_connections_router)
 router.include_router(source_browser_router)
 router.include_router(source_sync_router)
 router.include_router(proxy_stream_router)
+router.include_router(source_webhooks_router)
