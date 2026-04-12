@@ -78,6 +78,10 @@ class TrainingUser(Document):
     status: TrainingUserStatus = Field(
         default="pending", description="Account status"
     )
+    email_verified: bool = Field(
+        default=True,
+        description="Email verification status (default True for backward compat)",
+    )
 
     invited_by: Optional[str] = Field(
         default=None, description="ID of admin who sent the invite"
