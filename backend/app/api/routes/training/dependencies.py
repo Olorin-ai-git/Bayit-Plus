@@ -144,7 +144,7 @@ async def require_training_admin(
     user: TrainingUser = Depends(get_current_training_user),
 ) -> TrainingUser:
     """Require admin role and an active trial or paid subscription."""
-    if user.role != "admin":
+    if user.role not in {"admin", "superadmin"}:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
@@ -173,7 +173,7 @@ async def require_training_teacher_or_admin(
     user: TrainingUser = Depends(get_current_training_user),
 ) -> TrainingUser:
     """D-13: teacher or admin can read reports and post overrides; viewer cannot."""
-    if user.role not in {"admin", "teacher"}:
+    if user.role not in {"admin", "superadmin", "teacher"}:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Teacher or admin access required",
