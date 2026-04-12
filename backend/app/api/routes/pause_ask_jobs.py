@@ -12,6 +12,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
+from app.api.dependencies.olorin_tier import is_demo_portal_request
 from app.api.routes.olorin.dependencies import (
     get_current_partner,
     verify_capability,
@@ -31,6 +32,7 @@ from app.api.dependencies.training_context import (
     deduct_training_credits_if_applicable,
     get_training_partner_id,
 )
+from app.services import demo_usage_service
 from app.services.beta.credit_service import credit_service
 from app.services.vod_interaction.pause_ask_orchestrator import (
     pause_ask_orchestrator,
@@ -96,10 +98,25 @@ async def submit_job(
     )
     await deduct_training_credits_if_applicable(current_user, training_feature)
 
-    # B2C credit check — skip for training portal users (already handled above)
+    # Credit / usage gating — three mutually exclusive paths:
+    # 1. Training portal users: handled above via deduct_training_credits_if_applicable
+    # 2. Demo portal users: per-feature usage caps via demo_usage_service
+    # 3. B2C users: Beta credit system
     is_training_user = get_training_partner_id(current_user) is not None
+    is_demo = is_demo_portal_request(request)
     credit_amount = 0
-    if not is_training_user:
+
+    if is_demo and not is_training_user:
+        allowed = await demo_usage_service.check_limit(
+            str(current_user.id), "pause_ask",
+        )
+        if not allowed:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Demo pause & ask limit reached",
+            )
+        await demo_usage_service.increment(str(current_user.id), "pause_ask")
+    elif not is_training_user:
         is_lip_sync = body.mode == "lip_sync"
         credit_amount = (
             settings.CREDIT_RATE_VOD_PAUSE_ASK
@@ -138,7 +155,7 @@ async def submit_job(
         question=body.question,
         mode=body.mode,
         language_hint=body.language_hint,
-        portal="training" if is_training_user else "consumer",
+        portal="training" if is_training_user else ("demo" if is_demo else "consumer"),
         user_id=str(current_user.id),
         credits_charged=credit_amount,
     )
