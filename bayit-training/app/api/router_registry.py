@@ -37,6 +37,7 @@ from app.models.character import Character
 from app.models.source_connection import SourceConnection
 from app.models.synced_container import SyncedContainer
 from app.models.scorm_export import ScormExport
+from app.models.verification import VerificationToken
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -61,6 +62,7 @@ SERVICE_MODELS: List[Type[Document]] = [
     SourceConnection,
     SyncedContainer,
     ScormExport,
+    VerificationToken,
 ]
 
 
