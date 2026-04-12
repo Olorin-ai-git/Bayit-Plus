@@ -1,5 +1,6 @@
 """Training email verification endpoints."""
 
+import hmac
 import logging
 import secrets
 from datetime import datetime, timedelta, timezone
@@ -117,16 +118,10 @@ def _user_response(user: TrainingUser) -> dict:
 async def verify_email(request: Request, body: VerifyEmailRequest):
     """Verify email with 6-digit code and issue tokens."""
     user = await TrainingUser.find_one({"email": body.email})
-    if not user:
+    if not user or user.email_verified:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No account found for this email",
-        )
-
-    if getattr(user, "email_verified", True):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already verified",
+            detail="Verification failed. Please request a new code.",
         )
 
     token_doc = await VerificationToken.find_one(
@@ -150,7 +145,7 @@ async def verify_email(request: Request, body: VerifyEmailRequest):
             detail="Too many incorrect attempts. Request a new code.",
         )
 
-    if token_doc.token != body.code:
+    if not hmac.compare_digest(token_doc.token, body.code):
         await VerificationToken.find_one({"_id": token_doc.id}).update(
             {"$inc": {"attempts": 1}}
         )
@@ -229,7 +224,7 @@ async def resend_code(request: Request, body: ResendCodeRequest):
     if not user:
         return  # Silent to prevent enumeration
 
-    if getattr(user, "email_verified", True):
+    if user.email_verified:
         return  # Already verified
 
     partner = await IntegrationPartner.find_one(

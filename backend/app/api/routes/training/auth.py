@@ -149,7 +149,7 @@ async def login(request: Request, body: LoginRequest):
             detail="Account deactivated",
         )
 
-    if not getattr(user, "email_verified", True):
+    if not user.email_verified:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Email not verified. Please check your inbox for the verification code.",
