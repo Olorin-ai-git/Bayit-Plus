@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import pymongo
 from beanie import Document
@@ -164,6 +164,36 @@ class Content(Document):
 
     # Training platform (org-scoped content)
     partner_id: Optional[str] = None  # Training org partner_id for scoping
+
+    # Authenticated source connector fields
+    source_type: Literal["url", "google_workspace", "panopto"] = Field(
+        default="url",
+        description="Content source: public URL or authenticated platform",
+    )
+    source_connection_id: Optional[str] = Field(
+        default=None,
+        description="SourceConnection.connection_id for authenticated sources",
+    )
+    source_ref: Optional[str] = Field(
+        default=None,
+        description="Provider file/session ID for duplicate detection",
+    )
+    source_path: Optional[str] = Field(
+        default=None,
+        description="Folder breadcrumb in source platform",
+    )
+    source_status: Literal["available", "unavailable", "connection_lost"] = Field(
+        default="available",
+        description="Source availability for embed/proxy playback",
+    )
+    source_embed_url: Optional[str] = Field(
+        default=None,
+        description="Cached platform embed URL (short-lived)",
+    )
+    source_unavailable_since: Optional[datetime] = Field(
+        default=None,
+        description="When source was first detected as unavailable",
+    )
 
     # TMDB Integration
     tmdb_id: Optional[int] = None
