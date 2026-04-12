@@ -34,6 +34,9 @@ from app.models.pause_ask_job import PauseAskJob
 from app.models.child_avatar import ChildAvatar
 from app.models.film_memory import VODFilmMemory
 from app.models.character import Character
+from app.models.source_connection import SourceConnection
+from app.models.synced_container import SyncedContainer
+from app.models.scorm_export import ScormExport
 
 SERVICE_MODELS: List[Type[Document]] = [
     IntegrationPartner,
@@ -55,6 +58,9 @@ SERVICE_MODELS: List[Type[Document]] = [
     ChildAvatar,
     VODFilmMemory,
     Character,
+    SourceConnection,
+    SyncedContainer,
+    ScormExport,
 ]
 
 
