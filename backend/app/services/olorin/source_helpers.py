@@ -34,7 +34,10 @@ async def get_valid_token(conn: SourceConnection) -> str:
     enc_key = settings.SOURCE_TOKEN_ENCRYPTION_KEY
     access_token = decrypt_token(conn.encrypted_access_token, enc_key)
     now = datetime.now(timezone.utc)
-    if conn.token_expires_at and conn.token_expires_at <= now:
+    expires = conn.token_expires_at
+    if expires and expires.tzinfo is None:
+        expires = expires.replace(tzinfo=timezone.utc)
+    if expires and expires <= now:
         provider = get_provider(conn)
         refresh = decrypt_token(conn.encrypted_refresh_token, enc_key)
         tokens = await provider.refresh_access_token(refresh)
