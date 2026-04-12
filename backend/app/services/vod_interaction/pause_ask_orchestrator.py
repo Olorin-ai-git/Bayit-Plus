@@ -79,8 +79,12 @@ class PauseAskOrchestrator:
             if c.name.lower() == job.character.lower():
                 character = c
                 break
+        # Fall back to first character if requested name not found
+        # (demo portal always sends "Instructor" regardless of extracted names)
+        if not character and chars:
+            character = chars[0]
         if not character:
-            raise ValueError(f"Character not found: {job.character}")
+            raise ValueError(f"No characters available for content: {job.content_id}")
 
         # Reuse existing session for same user+content+character to preserve memory
         session = await VODInteractionSession.find_one(

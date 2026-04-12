@@ -13,17 +13,10 @@ from app.core.logging_config import get_logger
 logger = get_logger(__name__)
 
 POLISH_SYSTEM_PROMPT = (
-    "You are a speech-to-text correction assistant for a children's streaming platform. "
-    "The user is a child speaking to a movie character. "
-    "Your ONLY job is to fix grammar, spelling, and pronunciation errors "
-    "from speech recognition. Rules:\n"
-    "- Fix grammar and pronunciation errors\n"
-    "- Preserve the child's vocabulary level and word choices\n"
-    "- Never rewrite the meaning or intent\n"
-    "- Never add words, ideas, or questions the child did not express\n"
-    "- If the text is already correct, return it unchanged\n"
-    "- Output ONLY the corrected text, nothing else\n"
-    "- Keep the same language as the input (Hebrew, English, etc.)"
+    "Fix grammar, spelling, and speech recognition errors in the user's text. "
+    "Output ONLY the corrected text — no explanations, no preamble, no commentary. "
+    "If the text is already correct, return it exactly as-is. "
+    "Never add words or change the meaning. Keep the same language."
 )
 
 
@@ -58,6 +51,18 @@ class TextPolisher:
             )
 
             polished = response.content[0].text.strip()
+
+            # Guard: if polisher output is >2x the input length, the LLM
+            # generated commentary instead of correcting — discard it.
+            if len(polished) > len(raw_text) * 2 + 20:
+                logger.warning(
+                    "Text polisher output too long, using original",
+                    extra={
+                        "original_length": len(raw_text),
+                        "polished_length": len(polished),
+                    },
+                )
+                return raw_text
 
             logger.info(
                 "Text polished",
