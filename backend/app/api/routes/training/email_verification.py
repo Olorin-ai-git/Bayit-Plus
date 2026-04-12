@@ -141,7 +141,11 @@ async def verify_email(request: Request, body: VerifyEmailRequest):
             detail="Verification code expired. Please request a new one.",
         )
 
-    attempts = getattr(token_doc, "attempts", 0)
+    # Read attempts from raw MongoDB (field not on Pydantic model)
+    raw_doc = await VerificationToken.get_motor_collection().find_one(
+        {"_id": token_doc.id}
+    )
+    attempts = (raw_doc or {}).get("attempts", 0)
     if attempts >= MAX_CODE_ATTEMPTS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -149,8 +153,9 @@ async def verify_email(request: Request, body: VerifyEmailRequest):
         )
 
     if not hmac.compare_digest(token_doc.token, body.code):
-        await VerificationToken.find_one({"_id": token_doc.id}).update(
-            {"$inc": {"attempts": 1}}
+        await VerificationToken.get_motor_collection().update_one(
+            {"_id": token_doc.id},
+            {"$inc": {"attempts": 1}},
         )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
