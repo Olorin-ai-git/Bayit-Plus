@@ -62,6 +62,7 @@ from app.models.training_assignment import TrainingAssignment
 from app.models.training_progress import TrainingProgress
 from app.models.training_user import TrainingUser
 from app.models.scorm_export import ScormExport
+from app.models.source_connection import SourceConnection
 from app.models.jerusalem_content import (JerusalemContentItem,
                                           JerusalemContentSource)
 from app.models.jewish_calendar import JewishCalendarCache
@@ -533,6 +534,8 @@ async def connect_to_mongo():
                 TrainingAssignment,
                 # SCORM export
                 ScormExport,
+                # OAuth source connections (Google Workspace, Panopto)
+                SourceConnection,
             ]
         )
         logger.info("Olorin models included in main database (Phase 1)")
