@@ -21,6 +21,7 @@ from app.core.config_domains.hebrew_phases10_11 import HebrewPhases10To11ConfigM
 from app.core.config_domains.interactive import InteractiveConfigMixin
 from app.core.config_domains.interactive_movies import InteractiveMoviesConfigMixin
 from app.core.config_domains.scorm import ScormConfigMixin
+from app.core.config_domains.source_connector import SourceConnectorConfigMixin
 from app.core.config_domains.training_credits import TrainingCreditsConfigMixin
 from app.core.config_domains.kids_documentary import KidsDocumentaryConfigMixin
 from app.core.config_domains.kids_trivia import KidsTriviaConfigMixin
@@ -82,6 +83,7 @@ class Settings(
     InteractiveConfigMixin,
     InteractiveMoviesConfigMixin,
     ScormConfigMixin,
+    SourceConnectorConfigMixin,
     TrainingCreditsConfigMixin,
     ZehAniGrandparentConfigMixin,
     OlorinCompatConfigMixin,
