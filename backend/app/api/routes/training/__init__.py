@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from app.api.routes.training.auth import router as auth_router
+from app.api.routes.training.email_verification import router as email_verification_router
 from app.api.routes.training.content import router as content_router
 from app.api.routes.training.content_enrichment import router as content_enrichment_router
 from app.api.routes.training.content_retry import router as content_retry_router
@@ -47,6 +48,7 @@ from app.api.routes.training.source_webhooks import router as source_webhooks_ro
 router = APIRouter(prefix="/training")
 
 router.include_router(auth_router)
+router.include_router(email_verification_router)
 router.include_router(password_reset_router)
 router.include_router(content_router)
 router.include_router(content_enrichment_router)

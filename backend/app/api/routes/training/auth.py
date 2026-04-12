@@ -114,26 +114,23 @@ async def register(request: Request, body: RegisterRequest):
         partner_id=partner_id,
         role="admin",
         display_name=body.display_name,
-        status="active",
-        activated_at=datetime.now(timezone.utc),
+        status="pending",
+        email_verified=False,
     )
     await user.insert()
-    logger.info("Training org registered: %s", partner_id)
-    token = create_training_token(user)
+    logger.info("Training org registered (pending verification): %s", partner_id)
+
+    # Send verification code
+    from app.api.routes.training.email_verification import send_verification_code
+    try:
+        await send_verification_code(user, body.org_name)
+    except Exception as e:
+        logger.warning("Failed to send verification code: %s", str(e))
+
     return {
-        "token": token,
-        "refresh_token": create_training_refresh_token(user),
-        "user": _user_response(user),
-        "organization": {
-            "partner_id": partner_id, "org_name": body.org_name,
-            "tier": training_config.org_tier,
-            "credits_remaining": training_config.credit_limit_monthly,
-            "trial_ends_at": (
-                training_config.trial_ends_at.isoformat()
-                if training_config.trial_ends_at else None
-            ),
-            "stripe_subscription_id": None,
-        },
+        "email_verification_required": True,
+        "email": body.email,
+        "message": "Verification code sent to your email",
     }
 
 @router.post("/login")
@@ -150,6 +147,12 @@ async def login(request: Request, body: LoginRequest):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account deactivated",
+        )
+
+    if not getattr(user, "email_verified", True):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified. Please check your inbox for the verification code.",
         )
 
     user.last_login_at = datetime.now(timezone.utc)
