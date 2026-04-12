@@ -1,5 +1,6 @@
 """Source browser and video import routes."""
 
+from dataclasses import asdict
 from typing import List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
@@ -60,7 +61,7 @@ async def browse_folders(
         parent_folder_id=parent_folder_id,
         page_token=page_token,
     )
-    return {"folders": [f.model_dump() for f in page.items], "next_page_token": page.next_page_token}
+    return {"folders": [asdict(f) for f in page.items], "next_page_token": page.next_page_token}
 
 
 @router.get("/{connection_id}/videos")
@@ -77,7 +78,7 @@ async def list_videos(
     existing = await _existing_source_refs(
         admin.partner_id, connection_id, [v.video_id for v in page.items]
     )
-    videos = [{**v.model_dump(), "already_imported": v.video_id in existing} for v in page.items]
+    videos = [{**asdict(v), "already_imported": v.video_id in existing} for v in page.items]
     return {"videos": videos, "next_page_token": page.next_page_token}
 
 
@@ -95,7 +96,7 @@ async def search_videos(
     existing = await _existing_source_refs(
         admin.partner_id, connection_id, [v.video_id for v in page.items]
     )
-    videos = [{**v.model_dump(), "already_imported": v.video_id in existing} for v in page.items]
+    videos = [{**asdict(v), "already_imported": v.video_id in existing} for v in page.items]
     return {"videos": videos, "next_page_token": page.next_page_token}
 
 
