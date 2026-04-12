@@ -158,10 +158,12 @@ async def demo_ingest_video(
                     detail="Video truncation failed. Try a shorter video or upload directly.",
                 )
 
+    stream_type = "youtube" if is_streaming_url else "mp4"
+
     content = Content(
         title=request.title or "User Video",
         stream_url=video_url,
-        stream_type="mp4",
+        stream_type=stream_type,
         persona_mode="speaker",
         is_published=False,
         expires_at=datetime.now(timezone.utc) + timedelta(hours=24),
