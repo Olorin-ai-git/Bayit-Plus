@@ -144,24 +144,32 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
             user=existing_user.to_response().dict(),
         )
 
-    # New user — register at auth service
+    # New user — register at auth service, then issue token.
+    # Email verification may return a pending response (no tokens),
+    # so we always use issue_token_internal for demo accounts.
     try:
         auth_response = await auth_client.register(
             email=email,
             password=password,
             name=email.split("@")[0],
         )
-    except ValueError as e:
-        # Auth service may already have this email (registered via
-        # another tenant). Try login instead.
+    except ValueError:
+        # User may already exist in auth service (registered via
+        # another tenant or previous attempt). Continue to token issuance.
+        auth_response = None
+
+    # If register returned tokens (auto-verified domain), use them directly.
+    # Otherwise, issue tokens via internal API (bypasses email verification).
+    if auth_response and auth_response.get("access_token"):
+        token_response = auth_response
+    else:
         try:
-            auth_response = await auth_client.login(
+            token_response = await auth_client.issue_token_internal(
                 email=email,
-                password=password,
             )
-        except ValueError:
+        except ValueError as e:
             logger.warning(
-                "Demo token registration failed",
+                "Demo token issuance failed",
                 extra={"email": email, "error": str(e)},
             )
             raise HTTPException(
@@ -171,10 +179,10 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
 
     # Create local user in Bayit+ DB
     user = await auth_client.create_user_in_bayit_db(
-        auth_service_user_id=auth_response["user_id"],
-        email=auth_response["email"],
-        name=auth_response.get("name", email.split("@")[0]),
-        role=auth_response.get("role", "user"),
+        auth_service_user_id=token_response["user_id"],
+        email=token_response["email"],
+        name=token_response.get("name", email.split("@")[0]),
+        role=token_response.get("role", "user"),
     )
 
     user.olorin_tier = "free"
@@ -194,7 +202,7 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
     )
 
     return DemoTokenResponse(
-        token=auth_response["access_token"],
-        refresh_token=auth_response.get("refresh_token"),
+        token=token_response["access_token"],
+        refresh_token=token_response.get("refresh_token"),
         user=user.to_response().dict(),
     )
