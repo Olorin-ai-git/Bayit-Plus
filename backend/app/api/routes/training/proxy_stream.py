@@ -2,12 +2,17 @@
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
 import httpx
 
-from app.api.routes.training.dependencies import get_current_training_user
+from app.api.routes.training.dependencies import (
+    get_current_training_user,
+    get_training_user_from_token,
+)
 from app.models.content import Content
 from app.models.source_connection import SourceConnection
 from app.models.training_user import TrainingUser
@@ -22,8 +27,19 @@ router = APIRouter(tags=["training-proxy"])
 async def proxy_stream(
     content_id: str,
     request: Request,
-    user: TrainingUser = Depends(get_current_training_user),
+    token: Optional[str] = Query(None, description="JWT for video element auth"),
 ):
+    # HTML <video> elements cannot send Authorization headers.
+    # Try Authorization header first, fall back to ?token= query param.
+    auth_header = request.headers.get("authorization", "")
+    jwt_str = ""
+    if auth_header.lower().startswith("bearer "):
+        jwt_str = auth_header[7:]
+    elif token:
+        jwt_str = token
+    if not jwt_str:
+        raise HTTPException(401, "Authentication required")
+    user = await get_training_user_from_token(jwt_str)
     content = await Content.get(content_id)
     if not content or content.partner_id != user.partner_id:
         raise HTTPException(404, "Content not found")

@@ -93,10 +93,8 @@ async def validate_refresh_token(refresh_token: str) -> TrainingUser:
     return user
 
 
-async def get_current_training_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> TrainingUser:
-    """Authenticate a training platform user from JWT."""
+async def _resolve_user_from_jwt(token: str) -> TrainingUser:
+    """Decode a training JWT and return the user. Raises 401 on failure."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid training credentials",
@@ -105,7 +103,7 @@ async def get_current_training_user(
 
     try:
         payload = jwt.decode(
-            credentials.credentials,
+            token,
             settings.SECRET_KEY,
             algorithms=[settings.ALGORITHM],
         )
@@ -124,6 +122,22 @@ async def get_current_training_user(
         raise credentials_exception
 
     return user
+
+
+async def get_current_training_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> TrainingUser:
+    """Authenticate a training platform user from JWT."""
+    return await _resolve_user_from_jwt(credentials.credentials)
+
+
+async def get_training_user_from_token(token: str) -> TrainingUser:
+    """Authenticate from a raw JWT string (e.g. query param).
+
+    Used by the proxy-stream endpoint where <video> elements cannot
+    send Authorization headers.
+    """
+    return await _resolve_user_from_jwt(token)
 
 
 async def require_training_admin(
