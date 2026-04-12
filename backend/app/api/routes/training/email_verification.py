@@ -52,8 +52,11 @@ async def send_verification_code(
     # Rate limit check
     one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
     recent = await VerificationToken.find(
-        {"user_id": str(user.id), "type": "training_email_verify"},
-        VerificationToken.created_at >= one_hour_ago,
+        {
+            "user_id": str(user.id),
+            "type": "training_email_verify",
+            "created_at": {"$gte": one_hour_ago},
+        }
     ).count()
     if recent >= MAX_RESEND_PER_HOUR:
         raise ValueError("Too many verification requests. Please wait.")
