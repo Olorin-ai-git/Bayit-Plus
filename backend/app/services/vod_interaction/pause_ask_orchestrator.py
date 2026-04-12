@@ -92,6 +92,18 @@ class PauseAskOrchestrator:
             }
         )
         if not session:
+            # Build scene context: character's movie_context enriched with
+            # the content transcript so the AI can answer content-specific
+            # questions (critical for user-uploaded / "Try Your Own" videos).
+            scene_ctx = character.movie_context or ""
+            transcript = getattr(content, "transcript", None) or ""
+            if transcript:
+                scene_ctx = (
+                    f"{scene_ctx}\n\n--- Video Transcript ---\n{transcript[:8000]}"
+                    if scene_ctx
+                    else f"--- Video Transcript ---\n{transcript[:8000]}"
+                )
+
             session = VODInteractionSession(
                 user_id=job.user_id,
                 profile_id=job.user_id,
@@ -99,8 +111,8 @@ class PauseAskOrchestrator:
                 character_name=character.name,
                 character_description=character.description,
                 character_voice_id=character.voice_id,
-                character_frame_url=character.frame_url,
-                scene_context=character.movie_context,
+                character_frame_url=character.frame_url or "",
+                scene_context=scene_ctx,
                 persona_mode=getattr(content, "persona_mode", "character"),
                 audience_description=getattr(content, "audience_description", ""),
                 status="active",
@@ -237,8 +249,15 @@ class PauseAskOrchestrator:
         voice_id = (
             session.character_voice_id or settings.CHARACTER_VOICE_DEFAULT
         )
-        voice_only_fallback = voice_only
         character_frame_url = session.character_frame_url or ""
+        # Use default instructor avatar when character has no extracted frame
+        if not character_frame_url:
+            character_frame_url = settings.PAUSE_ASK_DEFAULT_AVATAR_URL
+            logger.info(
+                "Using default avatar for lip-sync",
+                extra={"job_id": job.job_id},
+            )
+        voice_only_fallback = voice_only
 
         if voice_only:
             # Voice-only: TTS only, no lip-sync

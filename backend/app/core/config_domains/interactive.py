@@ -179,6 +179,11 @@ class InteractiveConfigMixin:
     PAUSE_ASK_POLL_INTERVAL_SECONDS: int = Field(
         default=5, env="PAUSE_ASK_POLL_INTERVAL_SECONDS",
     )
+    PAUSE_ASK_DEFAULT_AVATAR_URL: str = Field(
+        default="https://cdn.bayit.tv/demo/default-instructor-avatar.jpg",
+        env="PAUSE_ASK_DEFAULT_AVATAR_URL",
+        description="Fallback avatar image for lip-sync when character has no frame",
+    )
 
     CREDIT_RATE_VOD_FEATURE_UNLOCK: int = Field(
         default=1, ge=0,
