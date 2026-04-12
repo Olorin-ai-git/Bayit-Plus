@@ -198,3 +198,38 @@ async def demo_ingest_video(
         truncated=truncated,
         processed_duration_seconds=duration,
     )
+
+
+class DemoJobStatusResponse(BaseModel):
+    job_id: str
+    overall_status: str
+    capabilities: dict = Field(default_factory=dict)
+    content_id: Optional[str] = None
+
+
+@router.get(
+    "/jobs/{job_id}/status",
+    response_model=DemoJobStatusResponse,
+    summary="Check demo ingest job status",
+)
+async def demo_job_status(
+    job_id: str,
+    user: User = Depends(get_current_user),
+) -> DemoJobStatusResponse:
+    """Poll demo ingest job progress (user-auth, no partner key needed)."""
+    job = await IngestJob.find_one(
+        IngestJob.job_id == job_id,
+        IngestJob.partner_id == "demo",
+    )
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ingest job not found",
+        )
+
+    return DemoJobStatusResponse(
+        job_id=job.job_id,
+        overall_status=job.overall_status,
+        capabilities=job.capabilities or {},
+        content_id=job.content_id,
+    )
