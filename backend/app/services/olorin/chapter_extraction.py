@@ -26,6 +26,10 @@ from app.services.chapter_generator import (
 from app.services.olorin.video_transcriber import (
     fetch_native_chapters_via_ytdlp,
 )
+from app.services.olorin.youtube_chapters_scraper import (
+    fetch_native_chapters_via_html,
+)
+from app.services.youtube_validator.url_parser import is_youtube_url
 
 logger = logging.getLogger(__name__)
 
@@ -48,15 +52,32 @@ class ChapterExtractionService:
         """
         native_chapters: list[dict] = []
         native_duration: float = duration_hint
-        try:
-            native_chapters, native_duration = await fetch_native_chapters_via_ytdlp(
-                video_url,
-            )
-        except Exception as exc:
-            logger.info(
-                "chapter_extraction: native probe failed, falling back to AI",
-                extra={"content_id": content_id, "error": str(exc)[:200]},
-            )
+        native_source_label = "ytdlp"
+
+        if is_youtube_url(video_url):
+            try:
+                native_chapters, native_duration = (
+                    await fetch_native_chapters_via_html(video_url)
+                )
+                native_source_label = "html_scrape"
+            except Exception as exc:
+                logger.info(
+                    "chapter_extraction: html scrape probe failed, trying yt-dlp",
+                    extra={"content_id": content_id, "error": str(exc)[:200]},
+                )
+                native_chapters = []
+
+        if not native_chapters:
+            try:
+                native_chapters, native_duration = (
+                    await fetch_native_chapters_via_ytdlp(video_url)
+                )
+                native_source_label = "ytdlp"
+            except Exception as exc:
+                logger.info(
+                    "chapter_extraction: native probe failed, falling back to AI",
+                    extra={"content_id": content_id, "error": str(exc)[:200]},
+                )
 
         if native_chapters:
             items = [
@@ -80,7 +101,10 @@ class ChapterExtractionService:
             logger.info(
                 "chapter_extraction: persisted %d native chapters",
                 len(items),
-                extra={"content_id": content_id},
+                extra={
+                    "content_id": content_id,
+                    "native_source": native_source_label,
+                },
             )
             return "youtube_native", len(items)
 
