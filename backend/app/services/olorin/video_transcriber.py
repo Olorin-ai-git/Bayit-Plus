@@ -184,6 +184,31 @@ async def _call_elevenlabs_stt(
         return resp.json()
 
 
+async def _call_elevenlabs_stt_url(
+    source_url: str,
+    language_code: Optional[str] = None,
+) -> dict:
+    """Send a public URL to ElevenLabs Scribe v2 (no download needed)."""
+    form_data = {
+        "model_id": (None, SCRIBE_MODEL),
+        "source_url": (None, source_url),
+        "diarize": (None, "true"),
+        "tag_audio_events": (None, "false"),
+        "timestamps_granularity": (None, "word"),
+    }
+    if language_code:
+        form_data["language_code"] = (None, language_code)
+
+    async with httpx.AsyncClient(timeout=600.0) as client:
+        resp = await client.post(
+            ELEVENLABS_STT_URL,
+            headers={"xi-api-key": settings.ELEVENLABS_API_KEY},
+            files=form_data,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+
 def _group_words_into_segments(words: list[dict]) -> list[TranscriptSegment]:
     """Group consecutive same-speaker words into segments."""
     segments: list[TranscriptSegment] = []
@@ -329,6 +354,11 @@ async def fetch_native_chapters_via_ytdlp(
                 )
 
 
+_YOUTUBE_PATTERN = re.compile(
+    r"https?://(www\.)?(youtube\.com|youtu\.be)/",
+)
+
+
 async def transcribe_video(
     video_url: str,
     language_code: Optional[str] = None,
@@ -336,7 +366,9 @@ async def transcribe_video(
     """
     Transcribe a video with speaker diarization.
 
-    Downloads video, extracts audio, sends to ElevenLabs Scribe v2.
+    For YouTube URLs: sends the URL directly to ElevenLabs Scribe v2
+    via source_url (no download needed, bypasses VPS IP blocks).
+    For other URLs: downloads video, extracts audio, uploads to Scribe.
 
     Args:
         video_url: URL of the video to transcribe
@@ -345,16 +377,23 @@ async def transcribe_video(
     Returns:
         TranscriptionResult with full text, diarized segments, speaker count
     """
-    with tempfile.TemporaryDirectory() as tmpdir:
-        video_path = f"{tmpdir}/video.mp4"
-        await _download_video(video_url, video_path)
-        audio_path = await _extract_audio(video_path)
-
+    if _YOUTUBE_PATTERN.search(video_url):
         logger.info(
-            "Transcribing video via ElevenLabs Scribe v2",
+            "Transcribing YouTube video via ElevenLabs Scribe v2 source_url",
             extra={"url": video_url[:80]},
         )
-        raw = await _call_elevenlabs_stt(audio_path, language_code)
+        raw = await _call_elevenlabs_stt_url(video_url, language_code)
+    else:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            video_path = f"{tmpdir}/video.mp4"
+            await _download_video(video_url, video_path)
+            audio_path = await _extract_audio(video_path)
+
+            logger.info(
+                "Transcribing video via ElevenLabs Scribe v2",
+                extra={"url": video_url[:80]},
+            )
+            raw = await _call_elevenlabs_stt(audio_path, language_code)
 
     result = _parse_response(raw)
     logger.info(
