@@ -52,6 +52,11 @@ class SourceConnectorConfigMixin:
         env="SOURCE_TEMP_MAX_AGE_HOURS",
         description="Max hours before orphaned temp files are cleaned up",
     )
+    SOURCE_SIGNED_URL_EXPIRY_SECONDS: int = Field(
+        default=86400, ge=300, le=604800,
+        env="SOURCE_SIGNED_URL_EXPIRY_SECONDS",
+        description="Signed URL lifetime in seconds for temp import video access",
+    )
 
     # Sync defaults
     SOURCE_SYNC_DEFAULT_POLL_HOURS: int = Field(
