@@ -312,8 +312,13 @@ async def login(request: Request, credentials: UserLogin):
             detail="Account is inactive. Please contact support.",
         )
 
-    # Enforce email verification for non-admin users
-    if not user.email_verified and not user.is_admin_role():
+    # Enforce email verification for non-admin users.
+    # Skip for demo guest accounts (guest-*@playground.olorin.ai) —
+    # these are created by the demo-token flow and never verify email.
+    is_demo_guest = user.email.startswith("guest-") and user.email.endswith(
+        "@playground.olorin.ai"
+    )
+    if not user.email_verified and not user.is_admin_role() and not is_demo_guest:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Please verify your email address before logging in. Check your inbox for the verification link.",
