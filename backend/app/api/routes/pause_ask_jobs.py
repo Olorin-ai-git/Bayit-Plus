@@ -54,6 +54,11 @@ class SubmitJobRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=500)
     mode: str = Field(default="lip_sync", pattern="^(lip_sync|voice)$")
     language_hint: str = Field(default="", max_length=10)
+    upgrade_for: Optional[str] = Field(
+        default=None,
+        description="Job ID of an earlier voice job this upgrades to lip-sync. "
+        "Skips usage/credit gating since the original job already counted.",
+    )
 
 
 class SubmitJobResponse(BaseModel):
@@ -92,21 +97,35 @@ async def submit_job(
             detail="Pause & Ask feature is disabled",
         )
 
-    # Training portal credit deduction (no-op for B2C users)
-    training_feature = (
-        "pause_ask_lipsync" if body.mode == "lip_sync" else "pause_ask_voice"
-    )
-    await deduct_training_credits_if_applicable(current_user, training_feature)
+    # Training portal credit deduction (no-op for B2C users).
+    # Skipped for upgrade jobs — the original voice job already deducted.
+    if not body.upgrade_for:
+        training_feature = (
+            "pause_ask_lipsync" if body.mode == "lip_sync" else "pause_ask_voice"
+        )
+        await deduct_training_credits_if_applicable(
+            current_user, training_feature,
+        )
 
     # Credit / usage gating — three mutually exclusive paths:
     # 1. Training portal users: handled above via deduct_training_credits_if_applicable
     # 2. Demo portal users: per-feature usage caps via demo_usage_service
     # 3. B2C users: Beta credit system
+    # Skipped entirely for upgrade jobs (lipsync upgrade of a prior voice job).
     is_training_user = get_training_partner_id(current_user) is not None
     is_demo = is_demo_portal_request(request)
     credit_amount = 0
+    is_upgrade = bool(body.upgrade_for)
 
-    if is_demo and not is_training_user:
+    if is_upgrade:
+        # Validate the original job exists and belongs to this user
+        original = await PauseAskJob.find_one({"job_id": body.upgrade_for})
+        if not original or original.user_id != str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid upgrade_for job reference",
+            )
+    elif is_demo and not is_training_user:
         allowed = await demo_usage_service.check_limit(
             str(current_user.id), "pause_ask",
         )
