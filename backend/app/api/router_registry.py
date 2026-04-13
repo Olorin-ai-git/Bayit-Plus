@@ -666,6 +666,11 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import demo_tracking
     app.include_router(demo_tracking.router, prefix=prefix, tags=["demo"])
 
+    # Playground Analytics (playground.olorin.ai — event ingestion + admin dashboard)
+    from app.api.routes import demo_analytics, demo_analytics_admin
+    app.include_router(demo_analytics.router, prefix=prefix, tags=["demo", "analytics"])
+    app.include_router(demo_analytics_admin.router, prefix=prefix, tags=["demo", "analytics"])
+
     # Demo Portal Video Upload & Ingest (demo.olorin.ai — Firebase-authed)
     from app.api.routes import demo_ingest
     app.include_router(demo_ingest.router, prefix=prefix, tags=["demo-ingest"])

@@ -184,6 +184,8 @@ from app.models.demo_feature_usage import DemoFeatureUsage
 from app.models.consumer_submission import ConsumerSubmission
 # Demo portal access codes (demo.olorin.ai private codes)
 from app.models.demo_code import DemoCode
+# Playground portal analytics events (playground.olorin.ai)
+from app.models.playground_event import PlaygroundEvent
 
 
 class Database:
@@ -511,6 +513,8 @@ async def connect_to_mongo():
         ConsumerSubmission,
         # Demo portal access codes (demo.olorin.ai private codes)
         DemoCode,
+        # Playground portal analytics events (playground.olorin.ai)
+        PlaygroundEvent,
     ]
 
     # Conditionally add Olorin models based on database separation setting
