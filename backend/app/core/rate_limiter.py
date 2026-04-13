@@ -70,8 +70,8 @@ try:
 
     # Rate limit configurations (relaxed 10x when DEBUG=True)
     RATE_LIMITS = {
-        "login": _dev_limit("5/minute"),  # 5 login attempts per minute
-        "register": _dev_limit("3/hour"),  # 3 registrations per hour
+        "login": _dev_limit("50/minute"),  # 50 login attempts per minute
+        "register": _dev_limit("50/hour"),  # 50 registrations per hour
         "oauth_callback": _dev_limit("10/minute"),  # 10 OAuth attempts per minute
         "password_reset": _dev_limit("3/hour"),  # 3 password reset requests per hour
         "partner_register": _dev_limit("3/hour"),  # 3 partner registrations per hour per IP
@@ -154,7 +154,7 @@ try:
         # VOD Pause & Ask (expensive: 2x animation + AI + polish)
         "vod_interaction_pause_ask": _dev_limit("10/minute"),
         # Demo portal token auth (demo.olorin.ai AuthGate)
-        "demo_token": _dev_limit("5/minute"),
+        "demo_token": _dev_limit("50/minute"),
         # Guest Demo Pause & Ask (unauthenticated pricing-page free tier)
         "guest_demo_pause_ask": _dev_limit("5/minute"),
         # Consumer URL submission (demo — unauthenticated)
