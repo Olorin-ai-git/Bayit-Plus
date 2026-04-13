@@ -144,9 +144,8 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
             user=existing_user.to_response().dict(),
         )
 
-    # New user — register at auth service, then issue token.
-    # Email verification may return a pending response (no tokens),
-    # so we always use issue_token_internal for demo accounts.
+    # New user — register at auth service, auto-verify, then login.
+    # Demo/guest accounts skip email verification entirely.
     try:
         auth_response = await auth_client.register(
             email=email,
@@ -155,21 +154,30 @@ async def demo_token(request: Request, body: DemoTokenRequest) -> DemoTokenRespo
         )
     except ValueError:
         # User may already exist in auth service (registered via
-        # another tenant or previous attempt). Continue to token issuance.
+        # another tenant or previous attempt). Continue to login.
         auth_response = None
 
-    # If register returned tokens (auto-verified domain), use them directly.
-    # Otherwise, issue tokens via internal API (bypasses email verification).
+    # Auto-verify the demo user so login succeeds.
+    # Demo accounts (guest-*@playground.olorin.ai) don't need email verification.
+    auth_user = await User.find_one({"email": email})
+    if auth_user and not auth_user.email_verified:
+        auth_user.email_verified = True
+        await auth_user.save()
+        logger.info("Auto-verified demo user email", extra={"email": email})
+
+    # If register returned tokens, use them directly.
+    # Otherwise, login with the derived password to get tokens.
     if auth_response and auth_response.get("access_token"):
         token_response = auth_response
     else:
         try:
-            token_response = await auth_client.issue_token_internal(
+            token_response = await auth_client.login(
                 email=email,
+                password=password,
             )
         except ValueError as e:
             logger.warning(
-                "Demo token issuance failed",
+                "Demo token login failed after register",
                 extra={"email": email, "error": str(e)},
             )
             raise HTTPException(
