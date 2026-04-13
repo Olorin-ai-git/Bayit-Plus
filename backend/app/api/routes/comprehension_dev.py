@@ -96,14 +96,34 @@ async def _find_or_create_session(
     ).first_or_none()
     if existing is not None:
         return existing
+
+    # Resolve voice_id/frame_url from Content if not provided in request
+    voice_id = req.character_voice_id
+    frame_url = req.character_frame_url
+    if not voice_id or not frame_url:
+        from app.models.content import Content
+        from beanie import PydanticObjectId
+
+        content = await Content.get(PydanticObjectId(req.content_id))
+        if content:
+            chars = getattr(content, "interactive_characters", []) or []
+            for c in chars:
+                if c.name.lower() == req.character_name.lower():
+                    voice_id = voice_id or c.voice_id
+                    frame_url = frame_url or c.frame_url
+                    break
+            if not voice_id and chars:
+                voice_id = chars[0].voice_id
+                frame_url = frame_url or chars[0].frame_url
+
     session = ComprehensionSession(
         user_id=req.user_id,
         profile_id=req.profile_id,
         content_id=req.content_id,
         character_name=req.character_name,
         scene_context=req.scene_context,
-        character_voice_id=req.character_voice_id,
-        character_frame_url=req.character_frame_url,
+        character_voice_id=voice_id,
+        character_frame_url=frame_url,
         rubric_config_id=req.rubric_config_id,
     )
     await session.insert()
