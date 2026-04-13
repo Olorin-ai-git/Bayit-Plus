@@ -79,8 +79,8 @@ class RubricScore(BaseModel):
     )
     rationale: str = Field(
         ...,
-        max_length=240,
-        description="One-sentence explanation of the score (D-04)",
+        max_length=500,
+        description="Brief explanation of the score",
     )
 
     @computed_field
