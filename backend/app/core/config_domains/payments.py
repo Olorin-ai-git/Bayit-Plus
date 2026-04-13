@@ -37,6 +37,11 @@ class PaymentsConfigMixin:
         env="DEMO_PORTAL_ORIGINS",
         description="Comma-separated origins for the demo portal (bypass tier gating)"
     )
+    DEMO_PORTAL_CLIENT_TYPES: str = Field(
+        default="",
+        env="DEMO_PORTAL_CLIENT_TYPES",
+        description="Comma-separated X-Client-Type values treated as demo portal (e.g. playground-ios)"
+    )
     GUEST_DEMO_MAX_INTERACTIONS: int = Field(
         default=10,
         env="GUEST_DEMO_MAX_INTERACTIONS",

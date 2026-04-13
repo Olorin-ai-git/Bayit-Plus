@@ -10,13 +10,32 @@ _tier_service = OlorinTierService()
 
 
 def is_demo_portal_request(request: Request) -> bool:
-    """Check if the request originates from the demo portal."""
-    raw = getattr(settings, "DEMO_PORTAL_ORIGINS", "") or ""
-    if not raw:
-        return False
-    allowed = {o.strip().rstrip("/") for o in raw.split(",") if o.strip()}
-    origin = (request.headers.get("origin") or "").rstrip("/")
-    return origin in allowed
+    """Check if the request originates from the demo portal.
+
+    Matches on either the Origin header (web portals) or the
+    X-Client-Type header (native apps like playground-ios).
+    """
+    # Web: check Origin header against DEMO_PORTAL_ORIGINS
+    origins_raw = getattr(settings, "DEMO_PORTAL_ORIGINS", "") or ""
+    if origins_raw:
+        allowed_origins = {
+            o.strip().rstrip("/") for o in origins_raw.split(",") if o.strip()
+        }
+        origin = (request.headers.get("origin") or "").rstrip("/")
+        if origin in allowed_origins:
+            return True
+
+    # Native: check X-Client-Type header against DEMO_PORTAL_CLIENT_TYPES
+    clients_raw = getattr(settings, "DEMO_PORTAL_CLIENT_TYPES", "") or ""
+    if clients_raw:
+        allowed_clients = {
+            c.strip() for c in clients_raw.split(",") if c.strip()
+        }
+        client_type = (request.headers.get("x-client-type") or "").strip()
+        if client_type in allowed_clients:
+            return True
+
+    return False
 
 
 def require_lip_sync(user) -> None:
