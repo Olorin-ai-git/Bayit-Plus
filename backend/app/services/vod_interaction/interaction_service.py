@@ -277,7 +277,8 @@ class VODInteractionService:
                 audience_description=session.audience_description or "",
             )
 
-            if BLOCKED_RESPONSE_PATTERNS.search(character_response.text):
+            is_speaker_content = (session.persona_mode or "character") == "speaker"
+            if not is_speaker_content and BLOCKED_RESPONSE_PATTERNS.search(character_response.text):
                 logger.warning(
                     "Character response failed content moderation",
                     extra={

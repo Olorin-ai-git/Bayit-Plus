@@ -241,9 +241,12 @@ class PauseAskOrchestrator:
             compact=job.portal == "demo",
         )
 
-        # Content moderation
+        # Content moderation — skip child-safety filter for speaker/EDU
+        # content (training videos naturally discuss safety hazards, chemicals,
+        # fatalities, etc.)
         response_text = character_response.text
-        if BLOCKED_RESPONSE_PATTERNS.search(response_text):
+        is_speaker_content = (session.persona_mode or "character") == "speaker"
+        if not is_speaker_content and BLOCKED_RESPONSE_PATTERNS.search(response_text):
             logger.warning(
                 "Character response blocked by content filter",
                 extra={"job_id": job.job_id},
@@ -522,9 +525,10 @@ class PauseAskOrchestrator:
             ]
             prior_user_messages = film_user_messages + prior_user_messages
 
-        # 4. Content moderation
+        # 4. Content moderation — skip child-safety filter for speaker/EDU
         response_text = character_response.text
-        if BLOCKED_RESPONSE_PATTERNS.search(response_text):
+        is_speaker_content = (session.persona_mode or "character") == "speaker"
+        if not is_speaker_content and BLOCKED_RESPONSE_PATTERNS.search(response_text):
             logger.warning(
                 "Pause & Ask character response blocked by content filter",
                 extra={
