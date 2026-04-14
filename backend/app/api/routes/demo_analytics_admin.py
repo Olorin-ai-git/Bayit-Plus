@@ -40,7 +40,7 @@ async def get_summary(
         {"$group": {"_id": "$session_id", "track": {"$first": "$track"}}},
         {"$group": {"_id": "$track", "count": {"$sum": 1}}},
     ]
-    track_counts = await PlaygroundEvent.get_motor_collection().aggregate(pipeline_sessions).to_list(length=None)
+    track_counts = await PlaygroundEvent.get_pymongo_collection().aggregate(pipeline_sessions).to_list(length=None)
     sessions_by_track = {doc["_id"]: doc["count"] for doc in track_counts}
     total_sessions = sum(sessions_by_track.values())
 
@@ -48,7 +48,7 @@ async def get_summary(
         {"$match": {"created_at": {"$gte": since}}},
         {"$group": {"_id": "$event_name", "count": {"$sum": 1}}},
     ]
-    event_counts = await PlaygroundEvent.get_motor_collection().aggregate(pipeline_events).to_list(length=None)
+    event_counts = await PlaygroundEvent.get_pymongo_collection().aggregate(pipeline_events).to_list(length=None)
     events_by_type = {doc["_id"]: doc["count"] for doc in event_counts}
 
     pipeline_stops = [
@@ -61,7 +61,7 @@ async def get_summary(
             "count": {"$sum": 1},
         }},
     ]
-    stop_docs = await PlaygroundEvent.get_motor_collection().aggregate(pipeline_stops).to_list(length=None)
+    stop_docs = await PlaygroundEvent.get_pymongo_collection().aggregate(pipeline_stops).to_list(length=None)
     viewed: dict[str, int] = {}
     completed: dict[str, int] = {}
     for doc in stop_docs:
@@ -85,7 +85,7 @@ async def get_summary(
             "sessions": {"$addToSet": "$session_id"},
         }},
     ]
-    daily_raw = await PlaygroundEvent.get_motor_collection().aggregate(pipeline_daily).to_list(length=None)
+    daily_raw = await PlaygroundEvent.get_pymongo_collection().aggregate(pipeline_daily).to_list(length=None)
     daily_map: dict[str, dict] = {}
     for doc in daily_raw:
         d = doc["_id"]["date"]
@@ -110,7 +110,7 @@ async def get_summary(
         {"$sort": {"count": -1}},
         {"$limit": 10},
     ]
-    cta_docs = await PlaygroundEvent.get_motor_collection().aggregate(pipeline_ctas).to_list(length=None)
+    cta_docs = await PlaygroundEvent.get_pymongo_collection().aggregate(pipeline_ctas).to_list(length=None)
     top_ctas = [
         TopCta(
             type=doc["_id"]["type"],
@@ -156,7 +156,7 @@ async def get_funnel(
             },
         }},
     ]
-    sessions = await PlaygroundEvent.get_motor_collection().aggregate(pipeline).to_list(length=None)
+    sessions = await PlaygroundEvent.get_pymongo_collection().aggregate(pipeline).to_list(length=None)
     total = len(sessions)
     if total == 0:
         return FunnelResponse(period=period, stages=[])
