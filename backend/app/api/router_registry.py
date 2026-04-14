@@ -662,6 +662,10 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import demo_proxy
     app.include_router(demo_proxy.router, prefix=prefix, tags=["demo"])
 
+    # Demo Portal Admin Routes (code generation/management — admin-only)
+    from app.api.routes import demo_admin
+    app.include_router(demo_admin.router, prefix=prefix, tags=["demo", "admin"])
+
     # Demo Portal Lead Tracking (demo.olorin.ai — Firebase-authed)
     from app.api.routes import demo_tracking
     app.include_router(demo_tracking.router, prefix=prefix, tags=["demo"])

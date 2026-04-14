@@ -68,3 +68,23 @@ class TrackProgressRequest(BaseModel):
 
 class TrackStatusResponse(BaseModel):
     status: str
+
+
+class CreateDemoCodeRequest(BaseModel):
+    code: Optional[str] = Field(default=None, max_length=128)
+    content_ids: List[str] = Field(..., min_length=1, max_length=50)
+    expires_in_days: int = Field(default=90, ge=1, le=730)
+    max_uses: Optional[int] = Field(default=None, ge=1, le=10000)
+
+
+class DemoCodeItem(BaseModel):
+    code: str
+    content_ids: List[str]
+    expires_at: str
+    max_uses: Optional[int] = None
+    use_count: int
+
+
+class ListDemoCodesResponse(BaseModel):
+    codes: List[DemoCodeItem]
+    total: int
