@@ -1694,6 +1694,29 @@ files = [
 testing = ["hatch", "pre-commit", "pytest", "tox"]
 
 [[package]]
+name = "fal-client"
+version = "0.13.2"
+description = "Python client for fal.ai"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "fal_client-0.13.2-py3-none-any.whl", hash = "sha256:1f26efc21067de136026086f44aa32655e457a9a3b67fb20617bba930953d553"},
+    {file = "fal_client-0.13.2.tar.gz", hash = "sha256:d543d4ff49f27d84bc03852bd1c6aa343604e07d5ed31b9df78d625e010308cb"},
+]
+
+[package.dependencies]
+httpx = ">=0.21.0,<1"
+httpx-sse = ">=0.4.0,<0.5"
+msgpack = ">=1.0.7,<2"
+websockets = ">=12.0"
+
+[package.extras]
+dev = ["fal_client[docs,test]"]
+docs = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
+test = ["pillow", "pytest", "pytest-asyncio", "pytest-mock"]
+
+[[package]]
 name = "fastapi"
 version = "0.128.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -2578,6 +2601,18 @@ cli = ["click (==8.*)", "pygments (==2.*)", "rich (>=10,<14)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
 zstd = ["zstandard (>=0.18.0)"]
+
+[[package]]
+name = "httpx-sse"
+version = "0.4.3"
+description = "Consume Server-Sent Event (SSE) messages with HTTPX."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "httpx_sse-0.4.3-py3-none-any.whl", hash = "sha256:0ac1c9fe3c0afad2e0ebb25a934a59f4c7823b60792691f779fad2c5568830fc"},
+    {file = "httpx_sse-0.4.3.tar.gz", hash = "sha256:9b1ed0127459a66014aec3c56bebd93da3c1bc8bb6618c8082039a44889a755d"},
+]
 
 [[package]]
 name = "idna"
@@ -3541,7 +3576,7 @@ version = "1.1.2"
 description = "MessagePack serializer"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "msgpack-1.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0051fffef5a37ca2cd16978ae4f0aef92f164df86823871b5162812bebecd8e2"},
     {file = "msgpack-1.1.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a605409040f2da88676e9c9e5853b3449ba8011973616189ea5ee55ddbc5bc87"},
@@ -8475,4 +8510,4 @@ test = ["pytest (>=8.1,<9.0)", "pytest-rerunfailures (>=14.0,<15.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "a5df4dea8b5b2a81f1dac94c4f87cc259f97f3b48584699ee278d93b4485ebc9"
+content-hash = "f3a71d541007667a36207a1e6b5b53a66efe7c498f878238be39aecc9a569834"
