@@ -11,7 +11,12 @@ TrialOutcome = Literal["converted", "cancelled", "locked", "purged"]
 
 
 class TrialHistory(Document):
-    email: Indexed(str, unique=True)  # type: ignore[valid-type]
+    # NOTE: email is intentionally NOT unique here. Application-layer dedup
+    # in trial_dedup.check_duplicate is the authoritative gate and respects
+    # the domain-conversion carveout (a previously-converted user is allowed
+    # to start a new trial under specific conditions). A DB unique constraint
+    # would short-circuit that carveout with DuplicateKeyError.
+    email: Indexed(str)  # type: ignore[valid-type]
     email_domain: Indexed(str)  # type: ignore[valid-type]
     card_fingerprint: Indexed(str) | None = None  # type: ignore[valid-type]
     partner_id: str
