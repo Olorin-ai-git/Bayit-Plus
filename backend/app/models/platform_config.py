@@ -45,9 +45,9 @@ _DEFAULT_FEATURE_GATES: dict = {
     ],
     "organization": [
         "watch_party", "bulk_import", "branding",
-        "assignments", "department_analytics",
+        "assignments", "department_analytics", "scorm_export",
     ],
-    "enterprise": ["scorm_export", "custom_integrations"],
+    "enterprise": ["custom_integrations"],
 }
 
 
