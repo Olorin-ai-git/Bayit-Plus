@@ -102,6 +102,8 @@ async def test_signup_creates_partner_and_stripe_sub():
     data = resp.json()
     assert data["access_token"] == "tok_access"
     assert data["organization"]["tier"] == "trial"
+    assert data["organization"]["org_name"] == "Acme"
+    assert data["organization"]["credits_remaining"] == 50
     assert data["organization"]["trial_config"]["state"] == "active"
     assert data["user"]["email"] == "alice@acme.corp"
 

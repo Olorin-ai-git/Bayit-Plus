@@ -165,7 +165,8 @@ async def _signup_trial_internal(
             "display_name": user.display_name, "partner_id": user.partner_id,
         },
         "organization": {
-            "partner_id": partner_id, "name": org_name, "tier": "trial",
+            "partner_id": partner_id, "org_name": org_name, "tier": "trial",
+            "credits_remaining": td.eval_credits,
             "trial_config": trial_config.model_dump(mode="json"),
         },
     }
