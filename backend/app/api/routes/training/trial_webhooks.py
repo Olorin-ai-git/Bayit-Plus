@@ -58,8 +58,16 @@ async def handle_invoice_paid(event: dict) -> None:
     seat_limit = pc.seat_limits.get(selected_tier, pc.seat_limits.get("team"))
 
     now = datetime.now(timezone.utc)
+    # State filter scopes the conversion to trials that are actually eligible.
+    # A partner already in converted/cancelled/purged must not be reconverted
+    # by a replayed invoice.paid.
     await IntegrationPartner.get_pymongo_collection().update_one(
-        {"_id": partner.id},
+        {
+            "_id": partner.id,
+            "training_config.trial_config.state": {
+                "$in": ["active", "grace"],
+            },
+        },
         {"$set": {
             "training_config.trial_config.state": "converted",
             "training_config.org_tier": selected_tier,
@@ -112,8 +120,14 @@ async def handle_invoice_payment_failed(event: dict) -> None:
     now = datetime.now(timezone.utc)
     locked_at = now + timedelta(days=pc.trial_defaults.grace_days)
 
+    # State filter for race safety: if the cron scheduler also fires the
+    # active->grace transition for the same partner, only one update wins
+    # and the second sees state != "active" and no-ops.
     await IntegrationPartner.get_pymongo_collection().update_one(
-        {"_id": partner.id},
+        {
+            "_id": partner.id,
+            "training_config.trial_config.state": "active",
+        },
         {"$set": {
             "training_config.trial_config.state": "grace",
             "training_config.trial_config.locked_at": locked_at,
@@ -186,8 +200,16 @@ async def handle_subscription_deleted(event: dict) -> None:
     now = datetime.now(timezone.utc)
     purge_at = now + timedelta(days=pc.trial_defaults.lock_days)
 
+    # State filter ensures cancellation only applies if the partner is in a
+    # cancellable state. Prevents racing with another transition that might
+    # have already moved the trial to converted or purged.
     await IntegrationPartner.get_pymongo_collection().update_one(
-        {"_id": partner.id},
+        {
+            "_id": partner.id,
+            "training_config.trial_config.state": {
+                "$in": ["active", "grace", "locked"],
+            },
+        },
         {"$set": {
             "training_config.trial_config.state": "cancelled",
             "training_config.trial_config.purge_at": purge_at,

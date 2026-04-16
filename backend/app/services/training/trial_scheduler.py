@@ -78,8 +78,14 @@ async def _handle_active(
 
     if expires_at and now >= expires_at:
         locked_at = now + timedelta(days=pc.trial_defaults.grace_days)
+        # Filter on current state so a concurrent webhook (also racing to
+        # transition active->grace) doesn't overwrite our locked_at value.
+        # Whichever update fires second sees state != active and no-ops.
         await coll.update_one(
-            {"_id": doc_id},
+            {
+                "_id": doc_id,
+                "training_config.trial_config.state": "active",
+            },
             {"$set": {
                 "training_config.trial_config.state": "grace",
                 "training_config.trial_config.locked_at": locked_at,
@@ -123,8 +129,14 @@ async def _handle_grace(
         return
 
     purge_at = now + timedelta(days=pc.trial_defaults.lock_days)
+    # State filter ensures a concurrent transition (e.g. a webhook moving
+    # this partner directly to cancelled) wins cleanly without us
+    # clobbering its purge_at with a different value.
     await IntegrationPartner.get_pymongo_collection().update_one(
-        {"_id": doc_id},
+        {
+            "_id": doc_id,
+            "training_config.trial_config.state": "grace",
+        },
         {"$set": {
             "training_config.trial_config.state": "locked",
             "training_config.trial_config.purge_at": purge_at,
@@ -149,8 +161,13 @@ async def _handle_locked(
         return
 
     if now >= purge_at:
+        # State filter prevents racing with a manual unlock or another
+        # transition path that has moved this partner out of locked.
         await IntegrationPartner.get_pymongo_collection().update_one(
-            {"_id": doc_id},
+            {
+                "_id": doc_id,
+                "training_config.trial_config.state": "locked",
+            },
             {"$set": {
                 "training_config.trial_config.state": "purged",
                 "training_config.branding": None,
