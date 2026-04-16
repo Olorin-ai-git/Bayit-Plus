@@ -11,6 +11,12 @@ from app.models.integration_partner import IntegrationPartner
 from app.models.platform_config import PlatformConfig
 from app.api.routes.training.dependencies import require_training_admin
 from app.api.routes.olorin.webhooks import send_webhook_event
+from app.api.routes.training.trial_webhooks import (
+    handle_invoice_paid,
+    handle_invoice_payment_failed,
+    handle_subscription_deleted,
+    handle_trial_will_end,
+)
 from app.models.training_user import TrainingUser
 
 logger = logging.getLogger(__name__)
@@ -142,10 +148,14 @@ async def training_stripe_webhook(request: Request):
     try:
         if event_type == "checkout.session.completed":
             await _handle_checkout_completed(event["data"]["object"])
-        elif event_type == "customer.subscription.deleted":
-            await _handle_subscription_deleted(event["data"]["object"])
+        elif event_type == "invoice.paid":
+            await handle_invoice_paid(event)
         elif event_type == "invoice.payment_failed":
-            await _handle_invoice_payment_failed(event["data"]["object"])
+            await handle_invoice_payment_failed(event)
+        elif event_type == "customer.subscription.trial_will_end":
+            await handle_trial_will_end(event)
+        elif event_type == "customer.subscription.deleted":
+            await handle_subscription_deleted(event)
         elif event_type == "customer.subscription.updated":
             await _handle_subscription_updated(event["data"]["object"])
         else:
@@ -183,45 +193,6 @@ async def _handle_checkout_completed(session: dict) -> None:
             "tier": tier,
             "credits": credits,
         })
-
-
-async def _handle_subscription_deleted(subscription: dict) -> None:
-    """Revert to team tier on subscription cancellation."""
-    partner_id = subscription.get("metadata", {}).get("partner_id")
-    if not partner_id:
-        logger.warning("Subscription deleted without partner_id metadata")
-        return
-
-    await IntegrationPartner.find_one(
-        {"partner_id": partner_id}
-    ).update({"$set": {
-        "training_config.org_tier": "team",
-        "training_config.stripe_subscription_id": None,
-        "training_config.credit_limit_monthly": 500,
-    }})
-    logger.info("Training subscription cancelled: %s", partner_id)
-    partner = await IntegrationPartner.find_one({"partner_id": partner_id})
-    if partner:
-        await send_webhook_event(partner, "training.subscription_cancelled", {
-            "partner_id": partner_id,
-        })
-
-
-async def _handle_invoice_payment_failed(invoice: dict) -> None:
-    """Mark org as past-due when invoice payment fails."""
-    sub_id = invoice.get("subscription")
-    if not sub_id:
-        return
-    partner = await IntegrationPartner.find_one(
-        {"training_config.stripe_subscription_id": sub_id}
-    )
-    if not partner:
-        logger.warning("Invoice payment failed for unknown subscription: %s", sub_id)
-        return
-    await IntegrationPartner.find_one(
-        {"partner_id": partner.partner_id}
-    ).update({"$set": {"training_config.payment_status": "past_due"}})
-    logger.warning("Payment failed for %s, marked past_due", partner.partner_id)
 
 
 async def _handle_subscription_updated(subscription: dict) -> None:
