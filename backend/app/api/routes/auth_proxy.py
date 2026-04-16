@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
+from app.core.security import get_current_active_user
 from app.models.user import TokenResponse, UserCreate, UserLogin
 from app.services.auth_service_client import get_auth_service_client
 
@@ -459,3 +460,49 @@ async def auth_proxy_health():
         "auth_service": "https://auth.olorin.ai",
         "proxy_version": "v2",
     }
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("3/hour")
+async def delete_current_user(
+    request: Request,
+    current_user=Depends(get_current_active_user),
+):
+    """
+    Permanently delete the current user's account.
+
+    Atomic semantics: forwards the user's access token to olorin-auth
+    /account/delete first, then removes the Bayit+ User doc only on
+    success. If olorin-auth fails, the Bayit+ record is preserved.
+    """
+    auth_client = get_auth_service_client()
+
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing bearer token",
+        )
+    access_token = auth_header.split(" ", 1)[1]
+
+    try:
+        await auth_client.delete_account(access_token=access_token)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Account deletion failed: {e}",
+        )
+
+    try:
+        await current_user.delete()
+        logger.info("bayit_user_deleted", user_id=str(current_user.id))
+    except Exception as e:
+        logger.error(
+            "bayit_user_delete_failed_after_auth_delete",
+            user_id=str(current_user.id),
+            error=str(e),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Account deleted in auth service but Bayit+ record cleanup failed",
+        )

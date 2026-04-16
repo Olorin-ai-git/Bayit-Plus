@@ -580,6 +580,35 @@ class AuthServiceClient:
         return user
 
 
+    async def delete_account(self, access_token: str) -> None:
+        """
+        Forward account deletion to olorin-auth.
+
+        Args:
+            access_token: The end-user's access token — olorin-auth identifies
+                the user from this token (not from service-to-service identity).
+
+        Raises:
+            ValueError: On any non-204 response from olorin-auth.
+        """
+        headers = self._get_auth_headers()
+        headers["Authorization"] = f"Bearer {access_token}"
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            response = await client.delete(
+                f"{self.base_url}/account/delete",
+                headers=headers,
+            )
+        if response.status_code != 204:
+            detail = self._extract_error(response, "Account deletion failed")
+            logger.error(
+                "auth_service_delete_account_failed",
+                status=response.status_code,
+                detail=detail,
+            )
+            raise ValueError(detail)
+
+
 _auth_service_client: Optional[AuthServiceClient] = None
 
 
