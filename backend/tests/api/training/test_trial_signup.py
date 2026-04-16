@@ -135,7 +135,10 @@ async def test_signup_blocked_by_dedup():
                 })
 
     assert resp.status_code == 409
-    assert "trial has already been used" in resp.json()["detail"]
+    # Detail must be the generic blocked message — see trial_signup
+    # GENERIC_BLOCKED_MESSAGE. Distinct strings would leak email-state
+    # to enumeration attacks.
+    assert "Signup not permitted" in resp.json()["detail"]
 
 
 @pytest.mark.asyncio
@@ -153,7 +156,8 @@ async def test_signup_rejects_existing_email():
             resp = await ac.post("/api/v1/training/auth/signup-with-trial", json=_VALID_BODY)
 
     assert resp.status_code == 409
-    assert "already registered" in resp.json()["detail"]
+    # Same generic message as the dedup path — see GENERIC_BLOCKED_MESSAGE.
+    assert "Signup not permitted" in resp.json()["detail"]
 
 
 @pytest.mark.asyncio

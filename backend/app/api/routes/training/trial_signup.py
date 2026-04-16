@@ -29,6 +29,13 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 router = APIRouter(tags=["training-auth"])
 
+# Unified 409 message — distinct messages for "email exists" vs "trial used"
+# leaked email-state information that an attacker could enumerate.
+GENERIC_BLOCKED_MESSAGE = (
+    "Signup not permitted for this email. "
+    "Contact support if you believe this is an error."
+)
+
 
 def serialize_organization_with_trial(partner) -> dict:
     """Build the Organization dict shape that the frontend Organization type expects.
@@ -154,12 +161,16 @@ async def _signup_trial_internal(
 ) -> dict:
     """Core trial signup logic shared by email/password and OAuth endpoints."""
     if await TrainingUser.find_one({"email": email}):
-        raise HTTPException(status.HTTP_409_CONFLICT, detail="Email already registered")
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, detail=GENERIC_BLOCKED_MESSAGE,
+        )
     domain = email.rsplit("@", 1)[-1].lower()
     fp = _get_card_fingerprint(stripe_payment_method_id)
     if await check_duplicate(email=email, domain=domain, fp=fp):
         await trial_emails.send_retrial_blocked(email)
-        raise HTTPException(status.HTTP_409_CONFLICT, detail="A trial has already been used for this account or organization")
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, detail=GENERIC_BLOCKED_MESSAGE,
+        )
 
     cfg = await PlatformConfig.get_singleton()
     td = cfg.trial_defaults
