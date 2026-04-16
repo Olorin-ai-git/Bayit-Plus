@@ -1,7 +1,5 @@
 """Cross-video knowledge search: RAG across all org training content."""
 
-import json
-
 import anthropic
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -91,9 +89,9 @@ def _build_prompt(question: str, segments: list[dict]) -> str:
     )
 
 
-def _call_claude(prompt: str) -> str:
-    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-    resp = client.messages.create(
+async def _call_claude(prompt: str) -> str:
+    client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+    resp = await client.messages.create(
         model=settings.CLAUDE_MODEL,
         max_tokens=1024,
         messages=[{"role": "user", "content": prompt}],
@@ -115,7 +113,9 @@ async def ask_knowledge(
         )
 
     svc = _get_credit_svc()
-    ok, _ = await svc.deduct(partner_id=user.partner_id, feature="semantic_search")
+    ok, remaining = await svc.deduct(
+        partner_id=user.partner_id, feature="companion"
+    )
     if not ok:
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
@@ -187,9 +187,13 @@ async def ask_knowledge(
 
     try:
         prompt = _build_prompt(req.question, segments)
-        answer = _call_claude(prompt)
+        answer = await _call_claude(prompt)
     except anthropic.APIError as exc:
         logger.error("Knowledge ask AI error", extra={"error": str(exc)})
         raise HTTPException(status_code=502, detail="AI service unavailable")
 
+    logger.info("Knowledge ask completed", extra={
+        "partner_id": user.partner_id, "question_length": len(req.question),
+        "source_count": len(sources), "credits_remaining": remaining,
+    })
     return AskResponse(answer=answer, sources=sources)
