@@ -6,6 +6,8 @@ import logging
 
 from fastapi import HTTPException, status
 
+from beanie import PydanticObjectId
+
 from app.models.integration_partner import IntegrationPartner
 
 logger = logging.getLogger(__name__)
@@ -49,7 +51,7 @@ async def check_trial_permits(partner, feature: str) -> None:
         )
 
 
-async def decrement_trial_cap(partner_id, feature: str) -> bool:
+async def decrement_trial_cap(partner_id: PydanticObjectId, feature: str) -> bool:
     """Atomic decrement of trial_config.<feature>_remaining.
 
     Uses $inc: -1 with a $gt: 0 filter guard so it never goes negative.
