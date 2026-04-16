@@ -151,12 +151,37 @@ async def list_content(
     for cid in content_ids:
         vc = await VideoChapters.get_for_content(cid)
         chapter_count_map[cid] = len(vc.chapters) if vc else 0
+    tier = await resolve_partner_tier(user.partner_id)
+    video_quota = None
+    if user.role in ("admin", "teacher"):
+        monthly_limit = MONTHLY_VIDEO_LIMITS.get(tier)
+        if monthly_limit is not None:
+            first_of_month = datetime.now(timezone.utc).replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0,
+            )
+            monthly_count = await Content.find(
+                {"partner_id": user.partner_id, "created_at": {"$gte": first_of_month}},
+            ).count()
+            video_quota = {
+                "used": monthly_count,
+                "limit": monthly_limit,
+                "period": "monthly",
+            }
+        else:
+            total_limit = TOTAL_VIDEO_LIMITS.get(tier)
+            if total_limit is not None:
+                video_quota = {
+                    "used": len(items),
+                    "limit": total_limit,
+                    "period": "total",
+                }
     return {
         "content": [
             _content_response(c, status_map, chapter_count_map.get(str(c.id)))
             for c in items
         ],
         "total": len(items),
+        "video_quota": video_quota,
     }
 
 

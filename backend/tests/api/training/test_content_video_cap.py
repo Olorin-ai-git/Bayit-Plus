@@ -114,3 +114,73 @@ async def test_free_tier_uses_total_count():
         find_call_args = find_mock.call_args[0][0]
         assert "created_at" not in find_call_args
         assert find_call_args["partner_id"] == "test-partner"
+
+
+def _mock_find_sort_to_list(return_value):
+    """Build a mock chain: find(...).sort(...).to_list() -> return_value."""
+    chain = MagicMock()
+    chain.sort.return_value.to_list = AsyncMock(return_value=return_value)
+    return chain
+
+
+@pytest.mark.asyncio
+async def test_list_content_includes_monthly_quota_for_team():
+    """Team tier admin sees video_quota with monthly period and correct count."""
+    admin = _make_admin()
+
+    # Content.find is called twice:
+    # 1) Content.find(query).sort("-_id").to_list() -> content items
+    # 2) Content.find(monthly_query).count() -> monthly count
+    sortable = _mock_find_sort_to_list([])
+
+    countable = MagicMock()
+    countable.count = AsyncMock(return_value=7)
+
+    content_find_mock = MagicMock(side_effect=[sortable, countable])
+    ingest_chain = _mock_find_sort_to_list([])
+
+    with (
+        patch(f"{_CONTENT}.Content") as MockContent,
+        patch(f"{_CONTENT}.IngestJob") as MockIngest,
+        patch(f"{_CONTENT}.VideoChapters") as MockVC,
+        patch(f"{_CONTENT}.resolve_partner_tier", new_callable=AsyncMock, return_value="team"),
+        patch(f"{_CONTENT}.get_current_training_user", return_value=admin),
+    ):
+        MockContent.find = content_find_mock
+        MockIngest.find = MagicMock(return_value=ingest_chain)
+        MockVC.get_for_content = AsyncMock(return_value=None)
+
+        from app.api.routes.training.content import list_content
+
+        result = await list_content(user=admin)
+
+    assert result["video_quota"] is not None
+    assert result["video_quota"]["used"] == 7
+    assert result["video_quota"]["limit"] == 20
+    assert result["video_quota"]["period"] == "monthly"
+
+
+@pytest.mark.asyncio
+async def test_list_content_no_quota_for_organization():
+    """Organization tier has no cap -- video_quota should be None."""
+    admin = _make_admin()
+
+    content_chain = _mock_find_sort_to_list([])
+    ingest_chain = _mock_find_sort_to_list([])
+
+    with (
+        patch(f"{_CONTENT}.Content") as MockContent,
+        patch(f"{_CONTENT}.IngestJob") as MockIngest,
+        patch(f"{_CONTENT}.VideoChapters") as MockVC,
+        patch(f"{_CONTENT}.resolve_partner_tier", new_callable=AsyncMock, return_value="organization"),
+        patch(f"{_CONTENT}.get_current_training_user", return_value=admin),
+    ):
+        MockContent.find = MagicMock(return_value=content_chain)
+        MockIngest.find = MagicMock(return_value=ingest_chain)
+        MockVC.get_for_content = AsyncMock(return_value=None)
+
+        from app.api.routes.training.content import list_content
+
+        result = await list_content(user=admin)
+
+    assert result["video_quota"] is None
