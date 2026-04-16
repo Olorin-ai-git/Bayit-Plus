@@ -160,6 +160,110 @@ async def test_checkout_completed_sets_credits_remaining():
 
 
 @pytest.mark.asyncio
+async def test_checkout_completed_idempotent():
+    """Replayed event_id is short-circuited; credits not reset twice."""
+    session = {
+        "id": "cs_test_replay",
+        "subscription": "sub_replay",
+        "metadata": {"partner_id": "test-partner", "tier": "team"},
+    }
+    event_id = "evt_replay_123"
+
+    mock_partner = MagicMock()
+    # Simulate that event_id was already recorded from the first call.
+    mock_partner.training_config = {
+        "processed_stripe_events": [event_id],
+        "stripe_subscription_id": "sub_replay",
+    }
+
+    mock_query_obj = MagicMock()
+    mock_query_obj.update = AsyncMock()
+    mock_collection = MagicMock()
+    mock_collection.update_one = AsyncMock()
+
+    async def _async_partner(*args, **kwargs):
+        return mock_partner
+
+    def _sync_find_one(*args, **kwargs):
+        return _async_partner()
+
+    with (
+        patch(f"{_MOD}.IntegrationPartner") as MockIP,
+        patch(f"{_MOD}.send_webhook_event", new_callable=AsyncMock),
+    ):
+        MockIP.find_one = _sync_find_one
+        MockIP.get_pymongo_collection.return_value = mock_collection
+
+        from app.api.routes.training.checkout import _handle_checkout_completed
+
+        await _handle_checkout_completed(session, event_id=event_id)
+
+        # The credit-reset chained update must NOT have been called the
+        # second time around.
+        mock_query_obj.update.assert_not_awaited()
+        # The processed-events $addToSet must also not have been called
+        # (short-circuit returns before the write).
+        mock_collection.update_one.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_checkout_completed_records_event_id_first_time():
+    """First-time event_id triggers credit reset AND records event_id."""
+    session = {
+        "id": "cs_test_first",
+        "subscription": "sub_first",
+        "metadata": {"partner_id": "test-partner", "tier": "team"},
+    }
+    event_id = "evt_first_456"
+
+    # Partner with empty processed_stripe_events list
+    mock_partner_existing = MagicMock()
+    mock_partner_existing.training_config = {
+        "processed_stripe_events": [],
+    }
+    mock_partner_after = MagicMock()
+    mock_query_obj = MagicMock()
+    mock_query_obj.update = AsyncMock()
+    mock_collection = MagicMock()
+    mock_collection.update_one = AsyncMock()
+
+    find_one_call_count = 0
+
+    def _sync_find_one(*args, **kwargs):
+        nonlocal find_one_call_count
+        find_one_call_count += 1
+        # 1st call: idempotency lookup -> existing partner
+        # 2nd call: credit-reset chain target -> chainable query
+        # 3rd call: post-update partner reload -> awaitable
+        if find_one_call_count == 1:
+            async def _aw():
+                return mock_partner_existing
+            return _aw()
+        if find_one_call_count == 2:
+            return mock_query_obj
+
+        async def _aw2():
+            return mock_partner_after
+        return _aw2()
+
+    with (
+        patch(f"{_MOD}.IntegrationPartner") as MockIP,
+        patch(f"{_MOD}.send_webhook_event", new_callable=AsyncMock),
+    ):
+        MockIP.find_one = _sync_find_one
+        MockIP.get_pymongo_collection.return_value = mock_collection
+
+        from app.api.routes.training.checkout import _handle_checkout_completed
+
+        await _handle_checkout_completed(session, event_id=event_id)
+
+    mock_query_obj.update.assert_awaited_once()
+    mock_collection.update_one.assert_awaited_once()
+    add_to_set = mock_collection.update_one.call_args[0][1]["$addToSet"]
+    assert add_to_set["training_config.processed_stripe_events"] == event_id
+
+
+@pytest.mark.asyncio
 async def test_checkout_completed_org_tier_sets_2000_credits_remaining():
     """checkout.session.completed for organization tier sets credits_remaining=2000."""
     session = {

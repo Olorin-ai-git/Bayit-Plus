@@ -323,3 +323,93 @@ async def test_extend_trial_rejects_unknown_partner():
         with pytest.raises(HTTPException) as exc:
             await extend_trial("ghost", req, _make_superadmin())
         assert exc.value.status_code == 404
+
+
+# ------------------------------------------------------------------
+# POST /checkout/convert-now
+# ------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_convert_now_succeeds_during_active_trial():
+    """Active trial: Stripe modify is called with trial_end=now, returns 200."""
+    from app.api.routes.training.checkout import convert_now_endpoint
+
+    partner = _make_partner(_active_tc())
+
+    with (
+        patch(f"{_CHECKOUT_MOD}.IntegrationPartner") as MockIP,
+        patch(f"{_CHECKOUT_MOD}.stripe") as mock_stripe,
+    ):
+        MockIP.find_one = AsyncMock(return_value=partner)
+        mock_stripe.Subscription.modify.return_value = {}
+
+        result = await convert_now_endpoint(_make_admin())
+
+    assert result["status"] == "conversion_initiated"
+    mock_stripe.Subscription.modify.assert_called_once_with(
+        "sub_test", trial_end="now",
+    )
+
+
+@pytest.mark.asyncio
+async def test_convert_now_succeeds_during_grace():
+    """Grace trial can also be force-converted."""
+    from app.api.routes.training.checkout import convert_now_endpoint
+
+    partner = _make_partner(_grace_tc())
+
+    with (
+        patch(f"{_CHECKOUT_MOD}.IntegrationPartner") as MockIP,
+        patch(f"{_CHECKOUT_MOD}.stripe") as mock_stripe,
+    ):
+        MockIP.find_one = AsyncMock(return_value=partner)
+        mock_stripe.Subscription.modify.return_value = {}
+
+        result = await convert_now_endpoint(_make_admin())
+
+    assert result["status"] == "conversion_initiated"
+
+
+@pytest.mark.asyncio
+async def test_convert_now_rejects_paid_org():
+    """Partner with no trial_config (paid org) returns 400."""
+    from app.api.routes.training.checkout import convert_now_endpoint
+
+    partner = _make_partner_no_trial()
+
+    with patch(f"{_CHECKOUT_MOD}.IntegrationPartner") as MockIP:
+        MockIP.find_one = AsyncMock(return_value=partner)
+
+        with pytest.raises(HTTPException) as exc:
+            await convert_now_endpoint(_make_admin())
+        assert exc.value.status_code == 400
+        assert "No active trial" in exc.value.detail
+
+
+@pytest.mark.asyncio
+async def test_convert_now_rejects_converted_trial():
+    """Already-converted trial cannot be re-converted."""
+    from app.api.routes.training.checkout import convert_now_endpoint
+
+    partner = _make_partner(_converted_tc())
+
+    with patch(f"{_CHECKOUT_MOD}.IntegrationPartner") as MockIP:
+        MockIP.find_one = AsyncMock(return_value=partner)
+
+        with pytest.raises(HTTPException) as exc:
+            await convert_now_endpoint(_make_admin())
+        assert exc.value.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_convert_now_rejects_no_partner():
+    """Missing partner returns 404."""
+    from app.api.routes.training.checkout import convert_now_endpoint
+
+    with patch(f"{_CHECKOUT_MOD}.IntegrationPartner") as MockIP:
+        MockIP.find_one = AsyncMock(return_value=None)
+
+        with pytest.raises(HTTPException) as exc:
+            await convert_now_endpoint(_make_admin())
+        assert exc.value.status_code == 404
