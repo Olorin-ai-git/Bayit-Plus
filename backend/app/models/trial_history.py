@@ -21,3 +21,4 @@ class TrialHistory(Document):
 
     class Settings:
         name = "trial_history"
+        indexes = ["email_domain", "card_fingerprint"]

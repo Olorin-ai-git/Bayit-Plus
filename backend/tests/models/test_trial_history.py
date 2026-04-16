@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 import pytest
+from pymongo.errors import DuplicateKeyError
 from app.models.trial_history import TrialHistory
 
 
@@ -26,9 +27,18 @@ async def test_trial_history_email_unique(olorin_db_client):
         card_fingerprint=None, partner_id="p2",
         started_at=datetime.now(timezone.utc),
     ).insert()
-    with pytest.raises(Exception):
+    with pytest.raises(DuplicateKeyError):
         await TrialHistory(
             email="bob@foo.com", email_domain="foo.com",
             card_fingerprint=None, partner_id="p3",
             started_at=datetime.now(timezone.utc),
         ).insert()
+
+
+@pytest.mark.asyncio
+async def test_trial_history_indexes_registered(olorin_db_client):
+    idx = await TrialHistory.get_pymongo_collection().index_information()
+    # Sanity: unique email, plus email_domain and card_fingerprint indexes
+    assert any(k.startswith("email_") and idx[k].get("unique") for k in idx), f"no unique email index: {idx}"
+    assert any("email_domain" in k for k in idx), f"no email_domain index: {idx}"
+    assert any("card_fingerprint" in k for k in idx), f"no card_fingerprint index: {idx}"
