@@ -35,7 +35,7 @@ _DEFAULT_SEAT_LIMITS: dict = {
 
 _DEFAULT_VIDEO_LIMITS: dict = {
     "free": 3,
-    "team": 10,
+    "team": 20,
 }
 
 _DEFAULT_FEATURE_GATES: dict = {
