@@ -12,6 +12,7 @@ from app.models.integration_partner import IntegrationPartner
 from app.models.platform_config import PlatformConfig
 from app.models.trial_history import TrialHistory
 from app.services.training import trial_emails
+from app.services.training.trial_purge import purge_partner_byoc_files
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +164,7 @@ async def _handle_locked(
     if now >= purge_at:
         # State filter prevents racing with a manual unlock or another
         # transition path that has moved this partner out of locked.
-        await IntegrationPartner.get_pymongo_collection().update_one(
+        result = await IntegrationPartner.get_pymongo_collection().update_one(
             {
                 "_id": doc_id,
                 "training_config.trial_config.state": "locked",
@@ -173,11 +174,31 @@ async def _handle_locked(
                 "training_config.branding": None,
             }},
         )
+        if result.modified_count == 0:
+            # Another transition path won the race — skip the destructive purge.
+            logger.info(
+                "trial.purge_skipped_not_locked",
+                extra={"partner_id": partner_slug},
+            )
+            return
         await TrialHistory.get_pymongo_collection().update_one(
             {"partner_id": partner_slug, "outcome": None},
             {"$set": {"outcome": "purged", "outcome_at": now}},
         )
-        logger.info("trial.locked_to_purged", extra={"partner_id": partner_slug})
+        try:
+            purge_summary = await purge_partner_byoc_files(partner_slug)
+        except Exception:
+            # BYOC deletion failure is logged but does not re-queue the partner —
+            # state is already "purged", orphan blobs are preferable to a stuck state.
+            logger.exception(
+                "trial.purge_files_failed",
+                extra={"partner_id": partner_slug},
+            )
+            purge_summary = {"failed": True}
+        logger.info(
+            "trial.locked_to_purged",
+            extra={"partner_id": partner_slug, **purge_summary},
+        )
         return
 
     sent = tc.get("sent_emails") or {}
