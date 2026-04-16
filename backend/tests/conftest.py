@@ -109,6 +109,7 @@ async def olorin_db_client():
         UsageRecord,
         WebhookDelivery,
     )
+    from app.models.trial_history import TrialHistory
 
     # Use test database name
     test_db_name = f"{settings.olorin.database.mongodb_db_name}_test"
@@ -127,6 +128,7 @@ async def olorin_db_client():
             ContentEmbedding,
             RecapSession,
             CulturalReference,
+            TrialHistory,
         ],
     )
 
