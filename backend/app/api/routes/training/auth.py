@@ -25,6 +25,7 @@ from app.services.email_templates import get_template_renderer
 from starlette.requests import Request
 from app.core.rate_limiter import limiter, RATE_LIMITS
 from app.api.routes.training.tier_gates import resolve_partner_tier
+from app.api.routes.training.trial_signup import router as trial_signup_router
 
 SEAT_LIMITS: dict[str, int] = {"free": 5, "team": 25, "organization": 100}
 
@@ -34,6 +35,7 @@ TRIAL_DURATION_DAYS, TRIAL_CREDIT_LIMIT, TRIAL_SEAT_LIMIT = 14, 50, 25
 INVITE_EXPIRE_DAYS = 7
 
 router = APIRouter(prefix="/auth", tags=["training-auth"])
+router.include_router(trial_signup_router)
 
 
 class RegisterRequest(BaseModel):
@@ -80,58 +82,14 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_410_GONE, deprecated=True)
 @limiter.limit(RATE_LIMITS.get("register", "3/hour"))
 async def register(request: Request, body: RegisterRequest):
-    """Register a new training organization and admin user."""
-    slug = body.org_name.lower().replace(" ", "-")[:30]
-    partner_id = f"training-{slug}-{secrets.token_hex(4)}"
-
-    partner, _api_key = await partner_service.create_partner(
-        partner_id=partner_id,
-        name=body.org_name,
-        name_en=body.org_name,
-        contact_email=body.email,
-        billing_tier="training",
-        capabilities=["video_ingest", "pause_ask", "subtitles", "trivia"],
+    """Deprecated: Use POST /auth/signup-with-trial instead."""
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail="Use /auth/signup-with-trial",
     )
-
-    training_config = TrainingConfig(
-        org_display_name=body.org_name,
-        org_tier="trial",
-        trial_ends_at=datetime.now(timezone.utc) + timedelta(days=TRIAL_DURATION_DAYS),
-        credit_limit_monthly=TRIAL_CREDIT_LIMIT,
-        seat_limit=TRIAL_SEAT_LIMIT,
-    )
-    partner.training_config = training_config  # type: ignore[attr-defined]
-    partner.capabilities = partner_service.get_training_tier_defaults()
-    await partner.save()
-    await seed_sample_content(partner_id, partner)
-
-    user = TrainingUser(
-        email=body.email,
-        password_hash=get_password_hash(body.password),
-        partner_id=partner_id,
-        role="admin",
-        display_name=body.display_name,
-        status="pending",
-        email_verified=False,
-    )
-    await user.insert()
-    logger.info("Training org registered (pending verification): %s", partner_id)
-
-    # Send verification code
-    from app.api.routes.training.email_verification import send_verification_code
-    try:
-        await send_verification_code(user, body.org_name)
-    except Exception as e:
-        logger.warning("Failed to send verification code: %s", str(e))
-
-    return {
-        "email_verification_required": True,
-        "email": body.email,
-        "message": "Verification code sent to your email",
-    }
 
 @router.post("/login")
 @limiter.limit(RATE_LIMITS.get("login", "5/minute"))
