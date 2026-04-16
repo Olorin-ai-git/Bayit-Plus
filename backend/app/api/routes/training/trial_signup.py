@@ -21,6 +21,7 @@ from app.api.routes.training.dependencies import (
 from app.api.routes.training.oauth_verify import verify_oauth_email
 from app.services.olorin.partner_service import partner_service
 from app.services.training.sample_content import seed_sample_content
+from app.services.training import trial_emails
 from app.services.training.trial_dedup import check_duplicate
 
 logger = logging.getLogger(__name__)
@@ -91,6 +92,7 @@ async def _signup_trial_internal(
     domain = email.rsplit("@", 1)[-1].lower()
     fp = _get_card_fingerprint(stripe_payment_method_id)
     if await check_duplicate(email=email, domain=domain, fp=fp):
+        await trial_emails.send_retrial_blocked(email)
         raise HTTPException(status.HTTP_409_CONFLICT, detail="A trial has already been used for this account or organization")
 
     cfg = await PlatformConfig.get_singleton()
@@ -150,6 +152,10 @@ async def _signup_trial_internal(
     )
     await user.insert()
     logger.info("Trial signup: partner=%s tier=%s", partner_id, selected_tier)
+    await trial_emails.send_trial_welcome(
+        partner.id, email, org_name,
+        trial_config.expires_at.strftime("%B %d, %Y"),
+    )
 
     return {
         "access_token": create_training_token(user),
@@ -168,7 +174,6 @@ async def _signup_trial_internal(
 @router.post("/signup-with-trial", status_code=status.HTTP_201_CREATED)
 @limiter.limit(RATE_LIMITS.get("register", "3/hour"))
 async def signup_with_trial(request: Request, body: SignupTrialRequest):
-    """Register a new training org with a Stripe-backed trial."""
     if not body.password and not body.id_token:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Either password or id_token is required")
     return await _signup_trial_internal(
@@ -176,22 +181,18 @@ async def signup_with_trial(request: Request, body: SignupTrialRequest):
         selected_tier=body.selected_tier, stripe_payment_method_id=body.stripe_payment_method_id,
     )
 
-
 @router.post("/signup-with-google-trial", status_code=status.HTTP_201_CREATED)
 @limiter.limit(RATE_LIMITS.get("register", "3/hour"))
 async def signup_google_trial(request: Request, body: OAuthTrialRequest):
-    """Register a new training org via Google OAuth with a Stripe-backed trial."""
     email = await verify_oauth_email("google", body.id_token)
     return await _signup_trial_internal(
         email=email, password=None, org_name=body.org_name,
         selected_tier=body.selected_tier, stripe_payment_method_id=body.stripe_payment_method_id,
     )
 
-
 @router.post("/signup-with-apple-trial", status_code=status.HTTP_201_CREATED)
 @limiter.limit(RATE_LIMITS.get("register", "3/hour"))
 async def signup_apple_trial(request: Request, body: OAuthTrialRequest):
-    """Register a new training org via Apple OAuth with a Stripe-backed trial."""
     email = await verify_oauth_email("apple", body.id_token)
     return await _signup_trial_internal(
         email=email, password=None, org_name=body.org_name,

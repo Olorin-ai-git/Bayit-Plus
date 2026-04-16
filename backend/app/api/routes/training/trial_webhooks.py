@@ -12,8 +12,17 @@ from app.api.routes.training.dependencies import _parse_trial_config
 from app.models.integration_partner import IntegrationPartner
 from app.models.platform_config import PlatformConfig
 from app.models.trial_history import TrialHistory
+from app.services.training import trial_emails
 
 logger = logging.getLogger(__name__)
+
+
+def _org_name(partner) -> str:
+    """Extract org display name from partner training_config."""
+    tc = partner.training_config
+    if isinstance(tc, dict):
+        return tc.get("org_display_name", partner.name or "")
+    return getattr(tc, "org_display_name", partner.name or "")
 
 
 async def _find_partner_by_sub(sub_id: str):
@@ -67,6 +76,9 @@ async def handle_invoice_paid(event: dict) -> None:
         "Trial converted for partner %s -> tier %s",
         partner.partner_id, selected_tier,
     )
+    await trial_emails.send_converted(
+        partner.id, partner.contact_email, _org_name(partner), selected_tier,
+    )
 
 
 async def handle_invoice_payment_failed(event: dict) -> None:
@@ -102,13 +114,15 @@ async def handle_invoice_payment_failed(event: dict) -> None:
         "Trial payment failed for %s, transitioned to grace (locked_at=%s)",
         partner.partner_id, locked_at.isoformat(),
     )
+    await trial_emails.send_payment_failed(
+        partner.id, partner.contact_email, _org_name(partner),
+    )
 
 
 async def handle_trial_will_end(event: dict) -> None:
-    """Task 15: customer.subscription.trial_will_end -> record warning sent.
+    """Task 15: customer.subscription.trial_will_end -> record + send warning.
 
     No state change. Idempotent via sent_emails dict check.
-    Email dispatch will be wired in Task 23.
     """
     subscription = event["data"]["object"]
     sub_id = subscription.get("id")
@@ -135,6 +149,9 @@ async def handle_trial_will_end(event: dict) -> None:
         }},
     )
     logger.info("Trial ending-soon email marked for %s", partner.partner_id)
+    await trial_emails.send_trial_ending_soon(
+        partner.id, partner.contact_email, _org_name(partner),
+    )
 
 
 async def handle_subscription_deleted(event: dict) -> None:
