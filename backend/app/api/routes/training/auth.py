@@ -25,7 +25,10 @@ from app.services.email_templates import get_template_renderer
 from starlette.requests import Request
 from app.core.rate_limiter import limiter, RATE_LIMITS
 from app.api.routes.training.tier_gates import resolve_partner_tier
-from app.api.routes.training.trial_signup import router as trial_signup_router
+from app.api.routes.training.trial_signup import (
+    router as trial_signup_router,
+    serialize_organization_with_trial,
+)
 
 SEAT_LIMITS: dict[str, int] = {"free": 5, "team": 25, "organization": 100}
 
@@ -435,18 +438,7 @@ async def _oauth_register(
         "token": token,
         "refresh_token": create_training_refresh_token(user),
         "user": _user_response(user),
-        "organization": {
-            "partner_id": partner_id,
-            "org_name": resolved_org,
-            "tier": training_config.org_tier,
-            "credits_remaining": training_config.credit_limit_monthly,
-            "trial_ends_at": (
-                training_config.trial_ends_at.isoformat()
-                if training_config.trial_ends_at
-                else None
-            ),
-            "stripe_subscription_id": None,
-        },
+        "organization": serialize_organization_with_trial(partner),
     }, True
 
 
@@ -542,23 +534,24 @@ async def get_me(
     partner = await IntegrationPartner.find_one(
         {"partner_id": user.partner_id}
     )
-    tc = (partner.training_config if partner else None) or {}
-    org_name = tc.get("org_display_name", user.partner_id)
-    tier = tc.get("org_tier", "team")
-    cap = tc.get("credit_limit_monthly", 0)
-    used = tc.get("credits_used", 0)
-    trial_raw = tc.get("trial_ends_at")
-    trial_str = trial_raw.isoformat() if hasattr(trial_raw, "isoformat") else trial_raw
+    if partner is None:
+        return {
+            "user": _user_response(user),
+            "organization": {
+                "partner_id": user.partner_id,
+                "org_name": user.partner_id,
+                "tier": "free",
+                "credits_remaining": 0,
+                "logo_url": None,
+                "accent_color": None,
+                "trial_ends_at": None,
+                "stripe_subscription_id": None,
+                "trial_config": None,
+            },
+        }
     return {
         "user": _user_response(user),
-        "organization": {
-            "partner_id": user.partner_id, "org_name": org_name,
-            "tier": tier, "credits_remaining": cap - used,
-            "logo_url": tc.get("logo_url"),
-            "accent_color": tc.get("accent_color"),
-            "trial_ends_at": trial_str,
-            "stripe_subscription_id": tc.get("stripe_subscription_id"),
-        },
+        "organization": serialize_organization_with_trial(partner),
     }
 
 

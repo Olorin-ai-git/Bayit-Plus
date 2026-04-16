@@ -30,6 +30,72 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 router = APIRouter(tags=["training-auth"])
 
 
+def serialize_organization_with_trial(partner) -> dict:
+    """Build the Organization dict shape that the frontend Organization type expects.
+
+    Used by /me, OAuth register, and trial signup endpoints to keep the
+    response shape consistent. Crucially, this serializes trial_config
+    when present so the frontend useTrialStatus hook does not falsely
+    classify trial orgs as "paid" after a page reload.
+    """
+    tc_data = getattr(partner, "training_config", None) or {}
+    if isinstance(tc_data, dict):
+        org_display_name = tc_data.get("org_display_name")
+        org_tier = tc_data.get("org_tier", "free")
+        credit_limit = tc_data.get("credit_limit_monthly", 0)
+        credits_used = tc_data.get("credits_used", 0)
+        credits_remaining_field = tc_data.get("credits_remaining")
+        logo_url = tc_data.get("logo_url")
+        accent_color = tc_data.get("accent_color")
+        stripe_subscription_id = tc_data.get("stripe_subscription_id")
+        trial_config = tc_data.get("trial_config")
+        trial_ends_at = tc_data.get("trial_ends_at")
+    else:
+        org_display_name = getattr(tc_data, "org_display_name", None)
+        org_tier = getattr(tc_data, "org_tier", "free")
+        credit_limit = getattr(tc_data, "credit_limit_monthly", 0)
+        credits_used = getattr(tc_data, "credits_used", 0)
+        credits_remaining_field = getattr(tc_data, "credits_remaining", None)
+        logo_url = getattr(tc_data, "logo_url", None)
+        accent_color = getattr(tc_data, "accent_color", None)
+        stripe_subscription_id = getattr(tc_data, "stripe_subscription_id", None)
+        trial_config = getattr(tc_data, "trial_config", None)
+        trial_ends_at = getattr(tc_data, "trial_ends_at", None)
+        if trial_config is not None and hasattr(trial_config, "model_dump"):
+            trial_config = trial_config.model_dump(mode="json")
+
+    if isinstance(trial_config, TrialConfig):
+        trial_config = trial_config.model_dump(mode="json")
+
+    if credits_remaining_field is None:
+        credits_remaining = max(credit_limit - credits_used, 0)
+    else:
+        credits_remaining = credits_remaining_field
+
+    if hasattr(trial_ends_at, "isoformat"):
+        trial_ends_at_str = trial_ends_at.isoformat()
+    else:
+        trial_ends_at_str = trial_ends_at
+
+    partner_id = (
+        getattr(partner, "partner_id", None)
+        or (str(partner.id) if hasattr(partner, "id") else "")
+    )
+    org_name = org_display_name or getattr(partner, "name", "") or ""
+
+    return {
+        "partner_id": partner_id,
+        "org_name": org_name,
+        "tier": org_tier,
+        "credits_remaining": credits_remaining,
+        "logo_url": logo_url,
+        "accent_color": accent_color,
+        "trial_ends_at": trial_ends_at_str,
+        "stripe_subscription_id": stripe_subscription_id,
+        "trial_config": trial_config,
+    }
+
+
 class SignupTrialRequest(BaseModel):
     email: EmailStr
     password: str | None = None
@@ -164,11 +230,7 @@ async def _signup_trial_internal(
             "id": str(user.id), "email": user.email, "role": user.role,
             "display_name": user.display_name, "partner_id": user.partner_id,
         },
-        "organization": {
-            "partner_id": partner_id, "org_name": org_name, "tier": "trial",
-            "credits_remaining": td.eval_credits,
-            "trial_config": trial_config.model_dump(mode="json"),
-        },
+        "organization": serialize_organization_with_trial(partner),
     }
 
 
