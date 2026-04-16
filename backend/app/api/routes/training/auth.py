@@ -119,10 +119,12 @@ async def login(request: Request, body: LoginRequest):
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
+    partner = await IntegrationPartner.find_one({"partner_id": user.partner_id})
     return {
         "token": token,
         "refresh_token": create_training_refresh_token(user),
         "user": _user_response(user),
+        "organization": serialize_organization_with_trial(partner) if partner else None,
     }
 
 @router.post("/invite", status_code=status.HTTP_201_CREATED)
@@ -352,10 +354,12 @@ async def refresh_token(body: RefreshRequest):
     user = await validate_refresh_token(body.refresh_token)
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
+    partner = await IntegrationPartner.find_one({"partner_id": user.partner_id})
     return {
         "token": create_training_token(user),
         "refresh_token": create_training_refresh_token(user),
         "user": _user_response(user),
+        "organization": serialize_organization_with_trial(partner) if partner else None,
     }
 
 
@@ -375,10 +379,12 @@ async def _oauth_login(email: str) -> dict:
     user.last_login_at = datetime.now(timezone.utc)
     await user.save()
     token = create_training_token(user)
+    partner = await IntegrationPartner.find_one({"partner_id": user.partner_id})
     return {
         "token": token,
         "refresh_token": create_training_refresh_token(user),
         "user": _user_response(user),
+        "organization": serialize_organization_with_trial(partner) if partner else None,
     }
 
 
