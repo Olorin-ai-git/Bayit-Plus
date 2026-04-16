@@ -149,27 +149,24 @@ async def training_stripe_webhook(request: Request):
     event_type = event["type"]
     logger.info("Training webhook received: %s", event_type)
 
-    try:
-        if event_type == "checkout.session.completed":
-            await _handle_checkout_completed(event["data"]["object"])
-        elif event_type == "invoice.paid":
-            await handle_invoice_paid(event)
-            try:
-                await _handle_invoice_paid(event["data"]["object"])
-            except Exception:
-                logger.exception("Credit reset failed for invoice.paid")
-        elif event_type == "invoice.payment_failed":
-            await handle_invoice_payment_failed(event)
-        elif event_type == "customer.subscription.trial_will_end":
-            await handle_trial_will_end(event)
-        elif event_type == "customer.subscription.deleted":
-            await handle_subscription_deleted(event)
-        elif event_type == "customer.subscription.updated":
-            await _handle_subscription_updated(event["data"]["object"])
-        else:
-            logger.info("Unhandled training webhook event: %s", event_type)
-    except Exception:
-        logger.exception("Training webhook processing error for %s", event_type)
+    # Exceptions from RECOGNIZED handlers must propagate so FastAPI returns
+    # 500 and Stripe retries the event. Swallowing them here was silently
+    # losing webhook events with no replay path.
+    if event_type == "checkout.session.completed":
+        await _handle_checkout_completed(event["data"]["object"])
+    elif event_type == "invoice.paid":
+        await handle_invoice_paid(event)
+        await _handle_invoice_paid(event["data"]["object"])
+    elif event_type == "invoice.payment_failed":
+        await handle_invoice_payment_failed(event)
+    elif event_type == "customer.subscription.trial_will_end":
+        await handle_trial_will_end(event)
+    elif event_type == "customer.subscription.deleted":
+        await handle_subscription_deleted(event)
+    elif event_type == "customer.subscription.updated":
+        await _handle_subscription_updated(event["data"]["object"])
+    else:
+        logger.info("Unhandled training webhook event: %s", event_type)
 
     return {"received": True}
 
