@@ -339,52 +339,8 @@ async def _send_invite_email(
 
 async def _verify_oauth_email(provider: str, id_token: str) -> str:
     """Verify an OAuth token and return the authenticated email."""
-    if provider == "google":
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.get(
-                "https://oauth2.googleapis.com/tokeninfo",
-                params={"id_token": id_token},
-            )
-        if resp.status_code != 200:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid Google ID token",
-            )
-        email = resp.json().get("email")
-        if not email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Google account has no email",
-            )
-        return email
-
-    # Apple: decode JWT payload (same logic as login_apple)
-    try:
-        parts = id_token.split(".")
-        if len(parts) != 3:
-            raise ValueError("Invalid JWT structure")
-        payload_b64 = parts[1]
-        padding = 4 - len(payload_b64) % 4
-        if padding != 4:
-            payload_b64 += "=" * padding
-        claims = json.loads(base64.urlsafe_b64decode(payload_b64))
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Apple identity token",
-        )
-    if claims.get("iss") != "https://appleid.apple.com":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token issuer",
-        )
-    email = claims.get("email")
-    if not email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Apple account has no email",
-        )
-    return email
+    from app.api.routes.training.oauth_verify import verify_oauth_email
+    return await verify_oauth_email(provider, id_token)
 
 
 @router.post("/refresh")

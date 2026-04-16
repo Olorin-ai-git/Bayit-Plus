@@ -187,3 +187,101 @@ async def test_register_endpoint_returns_410():
 
     assert resp.status_code == 410
     assert "signup-with-trial" in resp.json()["detail"]
+
+
+_OAUTH_BODY = {
+    "id_token": "fake_oauth_token",
+    "org_name": "OAuth Corp",
+    "selected_tier": "team",
+    "stripe_payment_method_id": "pm_oauth",
+}
+
+
+def _oauth_happy_path_patches(email: str, provider: str):
+    """Return a combined context manager stack for OAuth trial signup tests."""
+    from contextlib import contextmanager
+
+    @contextmanager
+    def _ctx():
+        with (
+            patch(f"{_MOD}.verify_oauth_email", new_callable=AsyncMock, return_value=email),
+            _stripe_mocks() as stripe_mock,
+            patch(f"{_MOD}.PlatformConfig") as MockPC,
+            patch(f"{_MOD}.check_duplicate", new_callable=AsyncMock, return_value=False),
+            patch(f"{_MOD}.partner_service") as mock_ps,
+            patch(f"{_MOD}.seed_sample_content", new_callable=AsyncMock),
+            patch(f"{_MOD}.TrainingUser") as MockTU,
+            patch(f"{_MOD}.TrialHistory") as MockTH,
+            patch(f"{_MOD}.create_training_token", return_value="tok_access"),
+            patch(f"{_MOD}.create_training_refresh_token", return_value="tok_refresh"),
+        ):
+            stripe_mock.PaymentMethod.retrieve.return_value = MagicMock(
+                card=MagicMock(fingerprint="fp_oauth"),
+            )
+            stripe_mock.Customer.create.return_value = MagicMock(id="cus_o")
+            stripe_mock.PaymentMethod.attach.return_value = None
+            stripe_mock.Customer.modify.return_value = None
+            stripe_mock.Subscription.create.return_value = MagicMock(
+                id="sub_o", status="trialing",
+            )
+            MockPC.get_singleton = AsyncMock(return_value=_mock_platform_config())
+            user_inst = MagicMock()
+            user_inst.id, user_inst.email = "u_o", email
+            user_inst.role, user_inst.display_name = "admin", email.split("@")[0]
+            user_inst.partner_id = "training-oauth-test"
+            user_inst.insert = AsyncMock()
+            MockTU.return_value = user_inst
+            MockTU.find_one = AsyncMock(return_value=None)
+            th_inst = MagicMock()
+            th_inst.insert = AsyncMock()
+            MockTH.return_value = th_inst
+            partner_inst = MagicMock()
+            partner_inst.save = AsyncMock()
+            mock_ps.create_partner = AsyncMock(return_value=(partner_inst, "key"))
+            mock_ps.get_training_tier_defaults.return_value = {}
+            yield
+    return _ctx()
+
+
+@pytest.mark.asyncio
+async def test_google_trial_signup():
+    """Google OAuth trial signup creates partner and returns tokens."""
+    from httpx import ASGITransport, AsyncClient
+    from app.main import app
+
+    with _oauth_happy_path_patches("g@foo.com", "google"):
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test",
+        ) as ac:
+            resp = await ac.post(
+                "/api/v1/training/auth/signup-with-google-trial",
+                json=_OAUTH_BODY,
+            )
+
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["access_token"] == "tok_access"
+    assert data["organization"]["tier"] == "trial"
+    assert data["user"]["email"] == "g@foo.com"
+
+
+@pytest.mark.asyncio
+async def test_apple_trial_signup():
+    """Apple OAuth trial signup creates partner and returns tokens."""
+    from httpx import ASGITransport, AsyncClient
+    from app.main import app
+
+    with _oauth_happy_path_patches("a@bar.com", "apple"):
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test",
+        ) as ac:
+            resp = await ac.post(
+                "/api/v1/training/auth/signup-with-apple-trial",
+                json=_OAUTH_BODY,
+            )
+
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["access_token"] == "tok_access"
+    assert data["organization"]["tier"] == "trial"
+    assert data["user"]["email"] == "a@bar.com"
