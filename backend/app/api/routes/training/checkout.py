@@ -192,6 +192,7 @@ async def _handle_checkout_completed(session: dict) -> None:
         "training_config.trial_ends_at": None,
         "training_config.credit_limit_monthly": credits,
         "training_config.credits_used": 0,
+        "training_config.credits_remaining": credits,
     }})
     logger.info("Training tier upgraded: %s -> %s", partner_id, tier)
     partner = await IntegrationPartner.find_one({"partner_id": partner_id})

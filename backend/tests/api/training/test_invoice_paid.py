@@ -93,3 +93,110 @@ async def test_invoice_paid_org_tier_uses_correct_limit():
         update_doc = call_args[0][1]["$set"]
         assert update_doc["training_config.credits_remaining"] == 2000
         assert update_doc["training_config.credits_used"] == 0
+
+
+@pytest.mark.asyncio
+async def test_checkout_completed_sets_credits_remaining():
+    """checkout.session.completed sets credits_remaining equal to tier credit limit."""
+    # find_one is called twice: once chained with .update() (returns query object),
+    # once awaited directly to fetch the partner for the webhook.
+    mock_query = MagicMock()
+    mock_query.update = AsyncMock()
+    mock_partner = MagicMock()
+
+    session = {
+        "id": "cs_test_123",
+        "subscription": "sub_new_456",
+        "metadata": {
+            "partner_id": "test-partner",
+            "tier": "team",
+        },
+    }
+
+    call_count = 0
+
+    async def _find_one_side_effect(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return mock_query
+        return mock_partner
+
+    with (
+        patch(f"{_MOD}.IntegrationPartner") as MockIP,
+        patch(f"{_MOD}.send_webhook_event", new_callable=AsyncMock),
+    ):
+        # First call returns the chainable query object (not awaited at find_one level);
+        # Beanie's FindOne.update() is the coroutine. We make find_one itself synchronous
+        # so the chain works: find_one(...).update(...) where update is the awaitable.
+        mock_query_obj = MagicMock()
+        mock_query_obj.update = AsyncMock()
+        mock_partner_obj = MagicMock()
+
+        find_one_call_count = 0
+
+        def _sync_find_one(*args, **kwargs):
+            nonlocal find_one_call_count
+            find_one_call_count += 1
+            if find_one_call_count == 1:
+                return mock_query_obj
+            # Second call is awaited directly — return an awaitable
+            async def _awaitable():
+                return mock_partner_obj
+            return _awaitable()
+
+        MockIP.find_one = _sync_find_one
+
+        from app.api.routes.training.checkout import _handle_checkout_completed
+
+        await _handle_checkout_completed(session)
+
+        mock_query_obj.update.assert_awaited_once()
+        set_doc = mock_query_obj.update.call_args[0][0]["$set"]
+        assert set_doc["training_config.credits_remaining"] == 500
+        assert set_doc["training_config.credits_used"] == 0
+        assert set_doc["training_config.credit_limit_monthly"] == 500
+        assert set_doc["training_config.org_tier"] == "team"
+
+
+@pytest.mark.asyncio
+async def test_checkout_completed_org_tier_sets_2000_credits_remaining():
+    """checkout.session.completed for organization tier sets credits_remaining=2000."""
+    session = {
+        "id": "cs_test_org",
+        "subscription": "sub_org_789",
+        "metadata": {
+            "partner_id": "org-partner",
+            "tier": "organization",
+        },
+    }
+
+    mock_query_obj = MagicMock()
+    mock_query_obj.update = AsyncMock()
+    mock_partner_obj = MagicMock()
+
+    find_one_call_count = 0
+
+    def _sync_find_one(*args, **kwargs):
+        nonlocal find_one_call_count
+        find_one_call_count += 1
+        if find_one_call_count == 1:
+            return mock_query_obj
+
+        async def _awaitable():
+            return mock_partner_obj
+        return _awaitable()
+
+    with (
+        patch(f"{_MOD}.IntegrationPartner") as MockIP,
+        patch(f"{_MOD}.send_webhook_event", new_callable=AsyncMock),
+    ):
+        MockIP.find_one = _sync_find_one
+
+        from app.api.routes.training.checkout import _handle_checkout_completed
+
+        await _handle_checkout_completed(session)
+
+        set_doc = mock_query_obj.update.call_args[0][0]["$set"]
+        assert set_doc["training_config.credits_remaining"] == 2000
+        assert set_doc["training_config.credits_used"] == 0
