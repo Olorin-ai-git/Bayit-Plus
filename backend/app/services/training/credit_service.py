@@ -37,6 +37,62 @@ class TrainingCreditService:
         """Return all feature rates. Used by pricing transparency UI."""
         return dict(self._rate_map)
 
+    async def _try_trial_deduct(
+        self,
+        coll,
+        partner_id: str,
+        cost: int,
+        feature: str,
+    ) -> tuple[bool, int] | None:
+        """Attempt trial-path deduction. Returns None if partner is not trial."""
+        path = "training_config.trial_config"
+        doc = await coll.find_one(
+            {
+                "partner_id": partner_id,
+                f"{path}.state": "active",
+            },
+            {"_id": 1},
+        )
+        if doc is None:
+            return None  # not an active trial — fall through to paid path
+
+        credit_path = f"{path}.eval_credits_remaining"
+        result = await coll.find_one_and_update(
+            {
+                "partner_id": partner_id,
+                f"{path}.state": "active",
+                credit_path: {"$gte": cost},
+            },
+            {"$inc": {credit_path: -cost}},
+            return_document=True,
+        )
+        if result is None:
+            logger.warning(
+                "Trial eval credit deduction failed — insufficient credits",
+                extra={
+                    "partner_id": partner_id,
+                    "feature": feature,
+                    "cost": cost,
+                },
+            )
+            return (False, 0)
+
+        remaining = (
+            result.get("training_config", {})
+            .get("trial_config", {})
+            .get("eval_credits_remaining", 0)
+        )
+        logger.info(
+            "Trial eval credits deducted",
+            extra={
+                "partner_id": partner_id,
+                "feature": feature,
+                "cost": cost,
+                "remaining": remaining,
+            },
+        )
+        return (True, remaining)
+
     async def deduct(
         self,
         partner_id: str,
@@ -45,9 +101,9 @@ class TrainingCreditService:
         """
         Atomically deduct credits for a training feature.
 
-        Uses MongoDB find_one_and_update with $inc for atomicity.
-        The query includes a balance check so the update only
-        applies if sufficient credits remain.
+        For trial orgs (active trial_config), decrements
+        eval_credits_remaining. For paid orgs, decrements
+        credits_remaining with monthly-limit guard.
 
         Returns:
             (success, credits_remaining)
@@ -58,6 +114,14 @@ class TrainingCreditService:
 
         coll = IntegrationPartner.get_pymongo_collection()
 
+        # ── Trial org path: eval_credits_remaining ──
+        trial_result = await self._try_trial_deduct(
+            coll, partner_id, cost, feature,
+        )
+        if trial_result is not None:
+            return trial_result
+
+        # ── Paid org path (unchanged) ──
         result = await coll.find_one_and_update(
             {
                 "partner_id": partner_id,
