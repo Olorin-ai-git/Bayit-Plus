@@ -147,13 +147,14 @@ async def training_stripe_webhook(request: Request):
         )
 
     event_type = event["type"]
-    logger.info("Training webhook received: %s", event_type)
+    event_id = event.get("id")
+    logger.info("Training webhook received: %s (id=%s)", event_type, event_id)
 
     # Exceptions from RECOGNIZED handlers must propagate so FastAPI returns
     # 500 and Stripe retries the event. Swallowing them here was silently
     # losing webhook events with no replay path.
     if event_type == "checkout.session.completed":
-        await _handle_checkout_completed(event["data"]["object"])
+        await _handle_checkout_completed(event["data"]["object"], event_id)
     elif event_type == "invoice.paid":
         await handle_invoice_paid(event)
         await _handle_invoice_paid(event["data"]["object"])
@@ -171,14 +172,37 @@ async def training_stripe_webhook(request: Request):
     return {"received": True}
 
 
-async def _handle_checkout_completed(session: dict) -> None:
-    """Upgrade org tier after successful checkout."""
+async def _handle_checkout_completed(
+    session: dict, event_id: str | None = None,
+) -> None:
+    """Upgrade org tier after successful checkout. Idempotent on event_id."""
     metadata = session.get("metadata", {})
     partner_id = metadata.get("partner_id")
     tier = metadata.get("tier")
     if not partner_id or not tier:
         logger.warning("Checkout session missing metadata: %s", session.get("id"))
         return
+
+    # Idempotency guard: a replayed checkout.session.completed must not
+    # reset credits_used=0 a second time after the customer has already
+    # consumed credits in the new billing cycle.
+    if event_id:
+        existing = await IntegrationPartner.find_one(
+            {"partner_id": partner_id}
+        )
+        if existing is not None:
+            tc_existing = existing.training_config or {}
+            processed = (
+                tc_existing.get("processed_stripe_events", [])
+                if isinstance(tc_existing, dict)
+                else getattr(tc_existing, "processed_stripe_events", [])
+            )
+            if event_id in (processed or []):
+                logger.info(
+                    "checkout.session.completed already processed: %s",
+                    event_id,
+                )
+                return
 
     credits = TIER_CREDITS_MAP.get(tier, 500)
     await IntegrationPartner.find_one(
@@ -191,6 +215,13 @@ async def _handle_checkout_completed(session: dict) -> None:
         "training_config.credits_used": 0,
         "training_config.credits_remaining": credits,
     }})
+    if event_id:
+        await IntegrationPartner.get_pymongo_collection().update_one(
+            {"partner_id": partner_id},
+            {"$addToSet": {
+                "training_config.processed_stripe_events": event_id,
+            }},
+        )
     logger.info("Training tier upgraded: %s -> %s", partner_id, tier)
     partner = await IntegrationPartner.find_one({"partner_id": partner_id})
     if partner:

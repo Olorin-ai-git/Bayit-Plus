@@ -60,6 +60,13 @@ class TrainingConfig(BaseModel):
     stripe_subscription_id: Optional[str] = Field(
         default=None, description="Stripe subscription ID"
     )
+    processed_stripe_events: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Stripe event IDs already processed by webhook handlers — "
+            "guards against replayed events being applied twice."
+        ),
+    )
     trial_config: TrialConfig | None = None
 
 
