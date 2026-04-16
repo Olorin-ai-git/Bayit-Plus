@@ -1,6 +1,7 @@
 """Training platform Stripe checkout routes (GTM-04)."""
 
 import logging
+from typing import Literal
 
 import stripe
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -9,7 +10,10 @@ from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.models.platform_config import PlatformConfig
-from app.api.routes.training.dependencies import require_training_admin
+from app.api.routes.training.dependencies import (
+    _parse_trial_config,
+    require_training_admin,
+)
 from app.api.routes.olorin.webhooks import send_webhook_event
 from app.api.routes.training.trial_webhooks import (
     handle_invoice_paid,
@@ -248,3 +252,78 @@ async def _handle_invoice_paid(invoice: dict) -> None:
         "Monthly credits reset: partner=%s limit=%d",
         partner.partner_id, limit,
     )
+
+
+# ── Task 17: Change selected tier mid-trial ──────────────────────────────────
+
+
+class ChangeTierRequest(BaseModel):
+    """Request body for switching selected tier during trial."""
+
+    selected_tier: Literal["team", "organization", "enterprise"]
+
+
+@router.post("/change-selected-tier")
+async def change_selected_tier(
+    req: ChangeTierRequest,
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Switch the selected post-trial tier while still trialing.
+
+    Updates both the Stripe subscription price and the persisted
+    TrialConfig.selected_tier so conversion (invoice.paid) picks
+    up the new tier.
+    """
+    partner = await IntegrationPartner.find_one(
+        {"partner_id": admin.partner_id}
+    )
+    if not partner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Organization not found",
+        )
+
+    tc = _parse_trial_config(partner)
+    if tc is None or tc.state not in ("active", "grace"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Can only change tier during active trial",
+        )
+
+    pc = await PlatformConfig.get_singleton()
+    new_price = next(
+        (
+            p.stripe_price_id_monthly
+            for p in pc.subscription_plans
+            if p.id == req.selected_tier
+        ),
+        None,
+    )
+    if not new_price:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"No price configured for tier {req.selected_tier}",
+        )
+
+    sub = stripe.Subscription.retrieve(tc.stripe_subscription_id)
+    stripe.Subscription.modify(
+        tc.stripe_subscription_id,
+        items=[{
+            "id": sub["items"]["data"][0].id,
+            "price": new_price,
+        }],
+        proration_behavior="none",
+        metadata={"selected_tier": req.selected_tier},
+    )
+
+    await IntegrationPartner.get_pymongo_collection().update_one(
+        {"_id": partner.id},
+        {"$set": {
+            "training_config.trial_config.selected_tier": req.selected_tier,
+        }},
+    )
+    logger.info(
+        "Trial tier changed: partner=%s -> %s",
+        admin.partner_id, req.selected_tier,
+    )
+    return {"selected_tier": req.selected_tier}
