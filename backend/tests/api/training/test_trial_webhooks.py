@@ -154,6 +154,43 @@ async def test_invoice_paid_transitions_to_converted():
 
 
 @pytest.mark.asyncio
+async def test_invoice_paid_promotes_subscription_id_and_seeds_credits():
+    """Conversion promotes sub_id to top-level + seeds initial credits."""
+    from app.api.routes.training.trial_webhooks import handle_invoice_paid
+
+    partner = _make_partner(_active_tc(selected_tier="organization"))
+    ip_coll = MagicMock()
+    ip_coll.update_one = AsyncMock()
+    th_coll = MagicMock()
+    th_coll.update_one = AsyncMock()
+
+    with (
+        patch(f"{_MOD}.IntegrationPartner") as MockIP,
+        patch(f"{_MOD}.PlatformConfig") as MockPC,
+        patch(f"{_MOD}.TrialHistory") as MockTH,
+        patch(f"{_MOD}.trial_emails") as mock_emails,
+    ):
+        MockIP.find_one = AsyncMock(return_value=partner)
+        MockIP.get_pymongo_collection.return_value = ip_coll
+        MockPC.get_singleton = AsyncMock(
+            return_value=_mock_platform_config()
+        )
+        MockTH.get_pymongo_collection.return_value = th_coll
+        mock_emails.send_converted = AsyncMock()
+
+        await handle_invoice_paid(_invoice_paid_event())
+
+    update_set = ip_coll.update_one.call_args[0][1]["$set"]
+    # The legacy credit-reset path queries training_config.stripe_subscription_id
+    # (top-level), so the new converted state must promote sub_id there.
+    assert update_set["training_config.stripe_subscription_id"] == "sub_test"
+    # Customer must start the first paid month with full credit allocation,
+    # not 0. organization tier in the mock has tier_limit 2000.
+    assert update_set["training_config.credits_remaining"] == 2000
+    assert update_set["training_config.credits_used"] == 0
+
+
+@pytest.mark.asyncio
 async def test_invoice_paid_idempotent():
     """Second call for already-converted trial is a no-op."""
     from app.api.routes.training.trial_webhooks import handle_invoice_paid

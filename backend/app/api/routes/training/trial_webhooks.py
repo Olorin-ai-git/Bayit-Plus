@@ -65,6 +65,15 @@ async def handle_invoice_paid(event: dict) -> None:
             "training_config.org_tier": selected_tier,
             "training_config.credit_limit_monthly": credit_limit,
             "training_config.seat_limit": seat_limit,
+            # Promote sub_id from trial_config to top-level training_config
+            # so the legacy _handle_invoice_paid credit-reset query in
+            # checkout.py can find the partner on subsequent invoices.
+            "training_config.stripe_subscription_id": tc.stripe_subscription_id,
+            # Seed full month allocation immediately on conversion so the
+            # newly-paid customer doesn't start with 0 credits before the
+            # first monthly billing cycle.
+            "training_config.credits_remaining": credit_limit,
+            "training_config.credits_used": 0,
         }},
     )
 
