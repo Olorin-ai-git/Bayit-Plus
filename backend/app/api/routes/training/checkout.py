@@ -150,6 +150,7 @@ async def training_stripe_webhook(request: Request):
             await _handle_checkout_completed(event["data"]["object"])
         elif event_type == "invoice.paid":
             await handle_invoice_paid(event)
+            await _handle_invoice_paid(event["data"]["object"])
         elif event_type == "invoice.payment_failed":
             await handle_invoice_payment_failed(event)
         elif event_type == "customer.subscription.trial_will_end":
@@ -216,4 +217,34 @@ async def _handle_subscription_updated(subscription: dict) -> None:
     ).update({"$set": update_fields})
     logger.info(
         "Subscription updated for %s: tier=%s status=%s", partner_id, tier, status_val
+    )
+
+
+async def _handle_invoice_paid(invoice: dict) -> None:
+    """Reset monthly credits on successful subscription payment."""
+    sub_id = invoice.get("subscription")
+    if not sub_id:
+        return
+
+    partner = await IntegrationPartner.find_one(
+        {"training_config.stripe_subscription_id": sub_id}
+    )
+    if not partner:
+        logger.warning("invoice.paid: no partner for subscription %s", sub_id)
+        return
+
+    tc = partner.training_config or {}
+    limit = tc.get("credit_limit_monthly", TIER_CREDITS_MAP.get("team", 500))
+
+    await IntegrationPartner.get_pymongo_collection().update_one(
+        {"_id": partner.id},
+        {"$set": {
+            "training_config.credits_used": 0,
+            "training_config.credits_remaining": limit,
+            "training_config.payment_status": "current",
+        }},
+    )
+    logger.info(
+        "Monthly credits reset: partner=%s limit=%d",
+        partner.partner_id, limit,
     )
