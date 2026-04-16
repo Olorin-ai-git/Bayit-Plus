@@ -107,7 +107,7 @@ async def _get_partner_tier(partner_id: str) -> str:
     tier = partner.billing_tier
     if tier == "training":
         config = partner.training_config or {}
-        return config.get("tier", "team")
+        return config.get("org_tier", "team")
     return tier
 
 

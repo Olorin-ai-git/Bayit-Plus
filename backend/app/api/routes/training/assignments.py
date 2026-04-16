@@ -12,15 +12,19 @@ from pydantic import BaseModel, Field
 from app.api.routes.training.dependencies import (
     get_current_training_user,
     require_training_admin,
+    _parse_trial_config,
 )
-from app.api.routes.training.tier_gates import require_tier
+from app.api.routes.training.tier_gates import require_tier_or_trial
 from app.models.content import Content, ProcessingState
 from app.models.training_assignment import TrainingAssignment
 from app.models.training_user import TrainingUser
+from app.services.training.trial_service import decrement_trial_cap
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/assignments", tags=["training-assignments"])
+
+_TRIAL_FEATURE = "assignments"
 
 
 class CreateAssignmentRequest(BaseModel):
@@ -38,7 +42,9 @@ class CreateAssignmentRequest(BaseModel):
 async def create_assignment(
     body: CreateAssignmentRequest,
     admin: TrainingUser = Depends(require_training_admin),
-    _tier: TrainingUser = Depends(require_tier("organization")),
+    tier_result: tuple = Depends(
+        require_tier_or_trial("organization", trial_feature=_TRIAL_FEATURE),
+    ),
 ):
     """Assign content to employees.
 
@@ -46,6 +52,7 @@ async def create_assignment(
     cannot consume PROCESSING or FAILED content, so assigning it would create
     a dead-end experience.
     """
+    _user, partner = tier_result
     try:
         content_oid = PydanticObjectId(body.content_id)
     except (InvalidId, TypeError, ValueError):
@@ -101,6 +108,18 @@ async def create_assignment(
         created_by=str(admin.id),
     )
     await assignment.insert()
+
+    # Decrement trial cap only for new assignments (not updates)
+    tc = _parse_trial_config(partner)
+    if tc is not None and tc.state == "active":
+        ok = await decrement_trial_cap(partner.id, _TRIAL_FEATURE)
+        if not ok:
+            await assignment.delete()
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail=f"Trial preview cap reached for {_TRIAL_FEATURE}. Upgrade.",
+            )
+
     return _assignment_response(assignment)
 
 
@@ -170,14 +189,9 @@ async def delete_assignment(
 
 
 def _assignment_response(a: TrainingAssignment) -> dict:
-    return {
-        "id": str(a.id),
-        "content_id": a.content_id,
-        "assigned_to": a.assigned_to,
-        "required": a.required,
-        "due_date": a.due_date.isoformat() if a.due_date else None,
-        "tags": a.tags,
-        "format_id": a.format_id,
-        "created_by": a.created_by,
-        "created_at": a.created_at.isoformat(),
-    }
+    return {"id": str(a.id), "content_id": a.content_id,
+            "assigned_to": a.assigned_to, "required": a.required,
+            "due_date": a.due_date.isoformat() if a.due_date else None,
+            "tags": a.tags, "format_id": a.format_id,
+            "created_by": a.created_by,
+            "created_at": a.created_at.isoformat()}
