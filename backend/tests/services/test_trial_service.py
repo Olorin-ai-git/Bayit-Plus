@@ -3,7 +3,11 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi import HTTPException
 from app.models.trial_config import TrialConfig
-from app.services.training.trial_service import check_trial_permits
+from app.models.integration_partner import IntegrationPartner
+from app.services.training.trial_service import (
+    check_trial_permits,
+    decrement_trial_cap,
+)
 
 
 def _make_partner(tc: TrialConfig | None):
@@ -73,3 +77,61 @@ async def test_viewer_feature_state_only():
 @pytest.mark.asyncio
 async def test_converted_state_is_noop():
     await check_trial_permits(_make_partner(_active_tc(state="converted")), "byoc_uploads")
+
+
+# ── decrement_trial_cap integration tests (require olorin_db_client) ──
+
+
+async def _create_trial_partner(byoc_remaining: int = 5) -> IntegrationPartner:
+    """Insert a partner with trial_config for decrement testing."""
+    tc = TrialConfig(
+        state="active",
+        started_at=datetime.now(timezone.utc),
+        expires_at=datetime.now(timezone.utc) + timedelta(days=14),
+        selected_tier="organization",
+        stripe_customer_id="cus_test",
+        stripe_subscription_id="sub_test",
+        eval_credits_remaining=50,
+        byoc_uploads_remaining=byoc_remaining,
+        xapi_exports_remaining=1,
+        assignments_remaining=3,
+        branding_uploads_remaining=1,
+    )
+    partner = IntegrationPartner(
+        partner_id=f"trial-test-{datetime.now(timezone.utc).timestamp()}",
+        name="Trial Test Org",
+        api_key_hash="$2b$12$fakehashfortesting000000000000000000000000000000",
+        api_key_prefix="trialtes",
+        contact_email="trial@test.olorin.ai",
+        billing_tier="training",
+        training_config={"trial_config": tc.model_dump(mode="json")},
+    )
+    await partner.insert()
+    return partner
+
+
+@pytest.mark.asyncio
+async def test_decrement_cap_returns_true_when_available(olorin_db_client):
+    p = await _create_trial_partner(byoc_remaining=3)
+    ok = await decrement_trial_cap(p.id, "byoc_uploads")
+    assert ok is True
+    refreshed = await IntegrationPartner.get(p.id)
+    tc = refreshed.training_config
+    if isinstance(tc, dict):
+        assert tc["trial_config"]["byoc_uploads_remaining"] == 2
+    else:
+        assert tc.trial_config.byoc_uploads_remaining == 2
+
+
+@pytest.mark.asyncio
+async def test_decrement_cap_returns_false_when_zero(olorin_db_client):
+    p = await _create_trial_partner(byoc_remaining=0)
+    ok = await decrement_trial_cap(p.id, "byoc_uploads")
+    assert ok is False
+
+
+@pytest.mark.asyncio
+async def test_decrement_rejects_unknown_feature(olorin_db_client):
+    p = await _create_trial_partner()
+    with pytest.raises(ValueError):
+        await decrement_trial_cap(p.id, "nonexistent_feature")
