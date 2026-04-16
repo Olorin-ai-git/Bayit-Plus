@@ -3,7 +3,11 @@ from pydantic import Field
 
 
 class TrainingCreditsConfigMixin:
-    """Per-feature credit costs for the training platform."""
+    """Per-feature credit costs and scheduler settings for the training platform."""
+
+    TRAINING_TRIAL_SCHEDULER_INTERVAL_MINUTES: int = Field(
+        default=60, ge=1, env="TRAINING_TRIAL_SCHEDULER_INTERVAL_MINUTES",
+        description="Interval in minutes between trial state transition checks")
 
     TRAINING_CREDIT_PAUSE_ASK_VOICE: int = Field(
         default=1, ge=0, env="TRAINING_CREDIT_PAUSE_ASK_VOICE",

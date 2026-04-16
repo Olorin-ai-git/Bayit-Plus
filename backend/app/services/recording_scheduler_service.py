@@ -70,6 +70,17 @@ class RecordingSchedulerService:
             replace_existing=True,
         )
 
+        from app.services.training.trial_scheduler import run_trial_scheduler
+
+        trial_interval = settings.TRAINING_TRIAL_SCHEDULER_INTERVAL_MINUTES
+        self._scheduler.add_job(
+            run_trial_scheduler,
+            trigger=IntervalTrigger(minutes=trial_interval),
+            id="training_trial_scheduler",
+            replace_existing=True,
+            max_instances=1,
+        )
+
         logger.info("Recording scheduler initialized")
 
     async def shutdown(self) -> None:
