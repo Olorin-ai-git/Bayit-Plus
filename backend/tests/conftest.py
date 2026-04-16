@@ -109,6 +109,7 @@ async def olorin_db_client():
         UsageRecord,
         WebhookDelivery,
     )
+    from app.models.platform_config import PlatformConfig
     from app.models.trial_history import TrialHistory
 
     # Use test database name
@@ -128,6 +129,7 @@ async def olorin_db_client():
             ContentEmbedding,
             RecapSession,
             CulturalReference,
+            PlatformConfig,
             TrialHistory,
         ],
     )
