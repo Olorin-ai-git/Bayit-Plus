@@ -1,7 +1,7 @@
 """Training platform BYOC (Bring Your Own Content) import endpoints."""
 
 import logging
-from typing import Literal
+from typing import Literal, Tuple
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -10,12 +10,14 @@ from app.models.b2b_content_source import B2BContentSource
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingUser
 from app.api.routes.training.dependencies import require_training_admin
-from app.api.routes.training.tier_gates import require_tier
-from app.services.olorin.source_sync import sync_source
+from app.api.routes.training.tier_gates import require_tier_or_trial
+from app.services.training.trial_service import decrement_trial_cap
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/byoc", tags=["training-byoc"])
+
+_TRIAL_FEATURE = "byoc_uploads"
 
 
 class BYOCImportRequest(BaseModel):
@@ -35,17 +37,12 @@ async def import_source(
     body: BYOCImportRequest,
     background_tasks: BackgroundTasks,
     admin: TrainingUser = Depends(require_training_admin),
-    _tier: TrainingUser = Depends(require_tier("organization")),
+    tier_result: Tuple = Depends(
+        require_tier_or_trial("organization", trial_feature=_TRIAL_FEATURE),
+    ),
 ):
     """Import a content source and queue sync (admin only)."""
-    partner = await IntegrationPartner.find_one(
-        {"partner_id": admin.partner_id}
-    )
-    if not partner:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Organization not found",
-        )
+    _user, partner = tier_result
 
     source = B2BContentSource(
         partner_id=admin.partner_id,
@@ -56,6 +53,19 @@ async def import_source(
         auto_process=True,
     )
     await source.insert()
+
+    # Decrement trial cap after successful insert
+    from app.api.routes.training.dependencies import _parse_trial_config
+
+    tc = _parse_trial_config(partner)
+    if tc is not None and tc.state == "active":
+        ok = await decrement_trial_cap(partner.id, _TRIAL_FEATURE)
+        if not ok:
+            await source.delete()
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail=f"Trial preview cap reached for {_TRIAL_FEATURE}. Upgrade.",
+            )
 
     background_tasks.add_task(sync_source, source, partner)
 

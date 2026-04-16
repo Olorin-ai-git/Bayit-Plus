@@ -1,6 +1,7 @@
 """Training platform Stripe checkout routes (GTM-04)."""
 
 import logging
+from typing import Literal
 
 import stripe
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -9,8 +10,17 @@ from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.models.platform_config import PlatformConfig
-from app.api.routes.training.dependencies import require_training_admin
+from app.api.routes.training.dependencies import (
+    _parse_trial_config,
+    require_training_admin,
+)
 from app.api.routes.olorin.webhooks import send_webhook_event
+from app.api.routes.training.trial_webhooks import (
+    handle_invoice_paid,
+    handle_invoice_payment_failed,
+    handle_subscription_deleted,
+    handle_trial_will_end,
+)
 from app.models.training_user import TrainingUser
 
 logger = logging.getLogger(__name__)
@@ -142,10 +152,18 @@ async def training_stripe_webhook(request: Request):
     try:
         if event_type == "checkout.session.completed":
             await _handle_checkout_completed(event["data"]["object"])
-        elif event_type == "customer.subscription.deleted":
-            await _handle_subscription_deleted(event["data"]["object"])
+        elif event_type == "invoice.paid":
+            await handle_invoice_paid(event)
+            try:
+                await _handle_invoice_paid(event["data"]["object"])
+            except Exception:
+                logger.exception("Credit reset failed for invoice.paid")
         elif event_type == "invoice.payment_failed":
-            await _handle_invoice_payment_failed(event["data"]["object"])
+            await handle_invoice_payment_failed(event)
+        elif event_type == "customer.subscription.trial_will_end":
+            await handle_trial_will_end(event)
+        elif event_type == "customer.subscription.deleted":
+            await handle_subscription_deleted(event)
         elif event_type == "customer.subscription.updated":
             await _handle_subscription_updated(event["data"]["object"])
         else:
@@ -174,6 +192,7 @@ async def _handle_checkout_completed(session: dict) -> None:
         "training_config.trial_ends_at": None,
         "training_config.credit_limit_monthly": credits,
         "training_config.credits_used": 0,
+        "training_config.credits_remaining": credits,
     }})
     logger.info("Training tier upgraded: %s -> %s", partner_id, tier)
     partner = await IntegrationPartner.find_one({"partner_id": partner_id})
@@ -183,45 +202,6 @@ async def _handle_checkout_completed(session: dict) -> None:
             "tier": tier,
             "credits": credits,
         })
-
-
-async def _handle_subscription_deleted(subscription: dict) -> None:
-    """Revert to team tier on subscription cancellation."""
-    partner_id = subscription.get("metadata", {}).get("partner_id")
-    if not partner_id:
-        logger.warning("Subscription deleted without partner_id metadata")
-        return
-
-    await IntegrationPartner.find_one(
-        {"partner_id": partner_id}
-    ).update({"$set": {
-        "training_config.org_tier": "team",
-        "training_config.stripe_subscription_id": None,
-        "training_config.credit_limit_monthly": 500,
-    }})
-    logger.info("Training subscription cancelled: %s", partner_id)
-    partner = await IntegrationPartner.find_one({"partner_id": partner_id})
-    if partner:
-        await send_webhook_event(partner, "training.subscription_cancelled", {
-            "partner_id": partner_id,
-        })
-
-
-async def _handle_invoice_payment_failed(invoice: dict) -> None:
-    """Mark org as past-due when invoice payment fails."""
-    sub_id = invoice.get("subscription")
-    if not sub_id:
-        return
-    partner = await IntegrationPartner.find_one(
-        {"training_config.stripe_subscription_id": sub_id}
-    )
-    if not partner:
-        logger.warning("Invoice payment failed for unknown subscription: %s", sub_id)
-        return
-    await IntegrationPartner.find_one(
-        {"partner_id": partner.partner_id}
-    ).update({"$set": {"training_config.payment_status": "past_due"}})
-    logger.warning("Payment failed for %s, marked past_due", partner.partner_id)
 
 
 async def _handle_subscription_updated(subscription: dict) -> None:
@@ -246,3 +226,108 @@ async def _handle_subscription_updated(subscription: dict) -> None:
     logger.info(
         "Subscription updated for %s: tier=%s status=%s", partner_id, tier, status_val
     )
+
+
+async def _handle_invoice_paid(invoice: dict) -> None:
+    """Reset monthly credits on successful subscription payment."""
+    sub_id = invoice.get("subscription")
+    if not sub_id:
+        return
+
+    partner = await IntegrationPartner.find_one(
+        {"training_config.stripe_subscription_id": sub_id}
+    )
+    if not partner:
+        logger.warning("invoice.paid: no partner for subscription %s", sub_id)
+        return
+
+    tc = partner.training_config or {}
+    limit = tc.get("credit_limit_monthly", TIER_CREDITS_MAP.get("team", 500))
+
+    await IntegrationPartner.get_pymongo_collection().update_one(
+        {"_id": partner.id},
+        {"$set": {
+            "training_config.credits_used": 0,
+            "training_config.credits_remaining": limit,
+            "training_config.payment_status": "current",
+        }},
+    )
+    logger.info(
+        "Monthly credits reset: partner=%s limit=%d",
+        partner.partner_id, limit,
+    )
+
+
+# ── Task 17: Change selected tier mid-trial ──────────────────────────────────
+
+
+class ChangeTierRequest(BaseModel):
+    """Request body for switching selected tier during trial."""
+
+    selected_tier: Literal["team", "organization", "enterprise"]
+
+
+@router.post("/change-selected-tier")
+async def change_selected_tier(
+    req: ChangeTierRequest,
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Switch the selected post-trial tier while still trialing.
+
+    Updates both the Stripe subscription price and the persisted
+    TrialConfig.selected_tier so conversion (invoice.paid) picks
+    up the new tier.
+    """
+    partner = await IntegrationPartner.find_one(
+        {"partner_id": admin.partner_id}
+    )
+    if not partner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Organization not found",
+        )
+
+    tc = _parse_trial_config(partner)
+    if tc is None or tc.state not in ("active", "grace"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Can only change tier during active trial",
+        )
+
+    pc = await PlatformConfig.get_singleton()
+    new_price = next(
+        (
+            p.stripe_price_id_monthly
+            for p in pc.subscription_plans
+            if p.id == req.selected_tier
+        ),
+        None,
+    )
+    if not new_price:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"No price configured for tier {req.selected_tier}",
+        )
+
+    sub = stripe.Subscription.retrieve(tc.stripe_subscription_id)
+    stripe.Subscription.modify(
+        tc.stripe_subscription_id,
+        items=[{
+            "id": sub["items"]["data"][0].id,
+            "price": new_price,
+        }],
+        proration_behavior="none",
+        metadata={"selected_tier": req.selected_tier},
+    )
+
+    await IntegrationPartner.get_pymongo_collection().update_one(
+        {"_id": partner.id},
+        {"$set": {
+            "training_config.trial_config.selected_tier": req.selected_tier,
+        }},
+    )
+    logger.info(
+        "Trial tier changed: partner=%s -> %s",
+        admin.partner_id, req.selected_tier,
+    )
+    return {"selected_tier": req.selected_tier}

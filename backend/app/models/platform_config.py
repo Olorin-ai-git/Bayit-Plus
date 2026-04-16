@@ -35,7 +35,7 @@ _DEFAULT_SEAT_LIMITS: dict = {
 
 _DEFAULT_VIDEO_LIMITS: dict = {
     "free": 3,
-    "team": 10,
+    "team": 20,
 }
 
 _DEFAULT_FEATURE_GATES: dict = {
@@ -72,6 +72,27 @@ class FeatureCost(BaseModel):
     id: str = Field(..., description="Feature slug (e.g. 'pause-ask')")
     name: str = Field(..., description="Human-readable label for UI display")
     credits: int = Field(..., ge=0, description="Credits consumed each time this feature is used")
+
+
+class TrialDefaults(BaseModel):
+    """Default quotas and timing for new trial signups."""
+
+    duration_days: int = 14
+    grace_days: int = 3
+    lock_days: int = 30
+    extension_max_days: int = 30
+    eval_credits: int = 50
+    byoc_uploads: int = 5
+    xapi_exports: int = 1
+    assignments: int = 3
+    branding_uploads: int = 1
+
+
+_DEFAULT_PUBLIC_EMAIL_DOMAINS: List[str] = [
+    "gmail.com", "outlook.com", "hotmail.com", "yahoo.com",
+    "icloud.com", "protonmail.com", "aol.com", "live.com",
+    "msn.com", "yandex.com", "mail.ru",
+]
 
 
 class SubscriptionPlan(BaseModel):
@@ -180,6 +201,14 @@ class PlatformConfig(Document):
     subscription_plans: List[SubscriptionPlan] = Field(
         default_factory=lambda: list(_DEFAULT_PLANS),
         description="Pricing configuration for each billable plan",
+    )
+    trial_defaults: TrialDefaults = Field(
+        default_factory=TrialDefaults,
+        description="Default quotas and timing applied to new trial signups",
+    )
+    public_email_domains: List[str] = Field(
+        default_factory=lambda: list(_DEFAULT_PUBLIC_EMAIL_DOMAINS),
+        description="Free email providers — signups from these domains get individual trials",
     )
     updated_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),

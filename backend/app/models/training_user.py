@@ -7,6 +7,8 @@ from beanie import Document
 from pydantic import BaseModel, EmailStr, Field
 from pymongo import ASCENDING, IndexModel
 
+from app.models.trial_config import TrialConfig
+
 
 TrainingRole = Literal["admin", "viewer", "teacher", "superadmin"]
 TrainingUserStatus = Literal["pending", "active", "deactivated"]
@@ -58,6 +60,7 @@ class TrainingConfig(BaseModel):
     stripe_subscription_id: Optional[str] = Field(
         default=None, description="Stripe subscription ID"
     )
+    trial_config: TrialConfig | None = None
 
 
 class TrainingUser(Document):

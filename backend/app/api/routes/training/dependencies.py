@@ -2,6 +2,7 @@
 
 import logging
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -10,6 +11,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingUser
+from app.models.trial_config import TrialConfig
+from app.services.training.trial_service import check_trial_permits
 
 logger = logging.getLogger(__name__)
 
@@ -124,11 +127,53 @@ async def _resolve_user_from_jwt(token: str) -> TrainingUser:
     return user
 
 
+def _parse_trial_config(partner) -> TrialConfig | None:
+    """Extract a TrialConfig from the partner's dict-based training_config.
+
+    Returns None when the partner has no training_config or no
+    trial_config key inside it — i.e. paid orgs.
+    """
+    tc_raw = partner.training_config
+    if tc_raw is None:
+        return None
+    if isinstance(tc_raw, dict):
+        inner = tc_raw.get("trial_config")
+    else:
+        inner = getattr(tc_raw, "trial_config", None)
+    if inner is None:
+        return None
+    if isinstance(inner, TrialConfig):
+        return inner
+    return TrialConfig(**inner)
+
+
+async def _load_partner_for_user(user: TrainingUser):
+    """Load the IntegrationPartner associated with a training user."""
+    return await IntegrationPartner.find_one(
+        {"partner_id": user.partner_id}
+    )
+
+
 async def get_current_training_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> TrainingUser:
-    """Authenticate a training platform user from JWT."""
-    return await _resolve_user_from_jwt(credentials.credentials)
+    """Authenticate a training platform user from JWT.
+
+    Also enforces trial state: viewers (and admins) on a locked /
+    cancelled / purged trial are blocked with 402.
+    """
+    user = await _resolve_user_from_jwt(credentials.credentials)
+
+    partner = await _load_partner_for_user(user)
+    if partner is not None:
+        tc = _parse_trial_config(partner)
+        # Wrap so check_trial_permits can access .training_config.trial_config
+        wrapper = SimpleNamespace(
+            training_config=SimpleNamespace(trial_config=tc)
+        )
+        await check_trial_permits(wrapper, "viewer_feature")
+
+    return user
 
 
 async def get_training_user_from_token(token: str) -> TrainingUser:
@@ -140,32 +185,35 @@ async def get_training_user_from_token(token: str) -> TrainingUser:
     return await _resolve_user_from_jwt(token)
 
 
+_ADMIN_BLOCK_STATES = {"locked", "cancelled", "purged"}
+
+
 async def require_training_admin(
     user: TrainingUser = Depends(get_current_training_user),
 ) -> TrainingUser:
-    """Require admin role and an active trial or paid subscription."""
+    """Require admin role and an active trial or paid subscription.
+
+    Uses TrialConfig.state instead of date-math so that the 3-day
+    grace window (state="grace") is respected.
+    """
     if user.role not in {"admin", "superadmin"}:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
         )
-    partner = await IntegrationPartner.find_one({"partner_id": user.partner_id})
-    if partner:
-        tc = partner.training_config if isinstance(partner.training_config, dict) else {}
-        trial_ends = tc.get("trial_ends_at")
-        subscription = tc.get("stripe_subscription_id")
-        if trial_ends is not None:
-            if trial_ends.tzinfo is None:
-                trial_ends = trial_ends.replace(tzinfo=timezone.utc)
-            if trial_ends < datetime.now(timezone.utc) and not subscription:
-                logger.warning(
-                    "Trial expired — admin operation blocked",
-                    extra={"partner_id": user.partner_id, "trial_ends_at": str(trial_ends)},
-                )
-                raise HTTPException(
-                    status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                    detail="Trial expired. Upgrade your plan to continue.",
-                )
+    partner = await _load_partner_for_user(user)
+    if partner is not None:
+        tc = _parse_trial_config(partner)
+        if tc is not None and tc.state in _ADMIN_BLOCK_STATES:
+            logger.warning(
+                "Trial %s — admin operation blocked",
+                tc.state,
+                extra={"partner_id": user.partner_id, "state": tc.state},
+            )
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail="Trial ended. Upgrade to resume admin actions.",
+            )
     return user
 
 

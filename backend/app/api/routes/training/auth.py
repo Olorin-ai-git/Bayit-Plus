@@ -25,6 +25,7 @@ from app.services.email_templates import get_template_renderer
 from starlette.requests import Request
 from app.core.rate_limiter import limiter, RATE_LIMITS
 from app.api.routes.training.tier_gates import resolve_partner_tier
+from app.api.routes.training.trial_signup import router as trial_signup_router
 
 SEAT_LIMITS: dict[str, int] = {"free": 5, "team": 25, "organization": 100}
 
@@ -34,6 +35,7 @@ TRIAL_DURATION_DAYS, TRIAL_CREDIT_LIMIT, TRIAL_SEAT_LIMIT = 14, 50, 25
 INVITE_EXPIRE_DAYS = 7
 
 router = APIRouter(prefix="/auth", tags=["training-auth"])
+router.include_router(trial_signup_router)
 
 
 class RegisterRequest(BaseModel):
@@ -80,58 +82,14 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_410_GONE, deprecated=True)
 @limiter.limit(RATE_LIMITS.get("register", "3/hour"))
 async def register(request: Request, body: RegisterRequest):
-    """Register a new training organization and admin user."""
-    slug = body.org_name.lower().replace(" ", "-")[:30]
-    partner_id = f"training-{slug}-{secrets.token_hex(4)}"
-
-    partner, _api_key = await partner_service.create_partner(
-        partner_id=partner_id,
-        name=body.org_name,
-        name_en=body.org_name,
-        contact_email=body.email,
-        billing_tier="training",
-        capabilities=["video_ingest", "pause_ask", "subtitles", "trivia"],
+    """Deprecated: Use POST /auth/signup-with-trial instead."""
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail="Use /auth/signup-with-trial",
     )
-
-    training_config = TrainingConfig(
-        org_display_name=body.org_name,
-        org_tier="trial",
-        trial_ends_at=datetime.now(timezone.utc) + timedelta(days=TRIAL_DURATION_DAYS),
-        credit_limit_monthly=TRIAL_CREDIT_LIMIT,
-        seat_limit=TRIAL_SEAT_LIMIT,
-    )
-    partner.training_config = training_config  # type: ignore[attr-defined]
-    partner.capabilities = partner_service.get_training_tier_defaults()
-    await partner.save()
-    await seed_sample_content(partner_id, partner)
-
-    user = TrainingUser(
-        email=body.email,
-        password_hash=get_password_hash(body.password),
-        partner_id=partner_id,
-        role="admin",
-        display_name=body.display_name,
-        status="pending",
-        email_verified=False,
-    )
-    await user.insert()
-    logger.info("Training org registered (pending verification): %s", partner_id)
-
-    # Send verification code
-    from app.api.routes.training.email_verification import send_verification_code
-    try:
-        await send_verification_code(user, body.org_name)
-    except Exception as e:
-        logger.warning("Failed to send verification code: %s", str(e))
-
-    return {
-        "email_verification_required": True,
-        "email": body.email,
-        "message": "Verification code sent to your email",
-    }
 
 @router.post("/login")
 @limiter.limit(RATE_LIMITS.get("login", "5/minute"))
@@ -381,52 +339,8 @@ async def _send_invite_email(
 
 async def _verify_oauth_email(provider: str, id_token: str) -> str:
     """Verify an OAuth token and return the authenticated email."""
-    if provider == "google":
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.get(
-                "https://oauth2.googleapis.com/tokeninfo",
-                params={"id_token": id_token},
-            )
-        if resp.status_code != 200:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid Google ID token",
-            )
-        email = resp.json().get("email")
-        if not email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Google account has no email",
-            )
-        return email
-
-    # Apple: decode JWT payload (same logic as login_apple)
-    try:
-        parts = id_token.split(".")
-        if len(parts) != 3:
-            raise ValueError("Invalid JWT structure")
-        payload_b64 = parts[1]
-        padding = 4 - len(payload_b64) % 4
-        if padding != 4:
-            payload_b64 += "=" * padding
-        claims = json.loads(base64.urlsafe_b64decode(payload_b64))
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Apple identity token",
-        )
-    if claims.get("iss") != "https://appleid.apple.com":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token issuer",
-        )
-    email = claims.get("email")
-    if not email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Apple account has no email",
-        )
-    return email
+    from app.api.routes.training.oauth_verify import verify_oauth_email
+    return await verify_oauth_email(provider, id_token)
 
 
 @router.post("/refresh")

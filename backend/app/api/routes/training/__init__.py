@@ -31,6 +31,13 @@ from app.api.routes.training.onboarding import router as onboarding_router
 from app.api.routes.training.analytics_export import (
     router as analytics_export_router,
 )
+from app.api.routes.training.compliance_export import (
+    router as compliance_export_router,
+)
+from app.api.routes.training.xapi_statements import (
+    router as xapi_router,
+)
+from app.api.routes.training.knowledge import router as knowledge_router
 from app.api.routes.training.portraits import router as portraits_router
 from app.api.routes.training.companion import router as companion_router
 from app.api.routes.training.superadmin import (
@@ -44,6 +51,7 @@ from app.api.routes.training.source_browser import router as source_browser_rout
 from app.api.routes.training.source_sync import router as source_sync_router
 from app.api.routes.training.proxy_stream import router as proxy_stream_router
 from app.api.routes.training.source_webhooks import router as source_webhooks_router
+from app.api.routes.training.trial_extend import router as trial_extend_router
 
 router = APIRouter(prefix="/training")
 
@@ -68,6 +76,9 @@ router.include_router(exports_router)
 router.include_router(scorm_interact_router)
 router.include_router(onboarding_router)
 router.include_router(analytics_export_router)
+router.include_router(compliance_export_router)
+router.include_router(xapi_router)
+router.include_router(knowledge_router)
 router.include_router(portraits_router)
 router.include_router(companion_router, prefix="/companion")
 router.include_router(superadmin_router)
@@ -77,3 +88,4 @@ router.include_router(source_browser_router)
 router.include_router(source_sync_router)
 router.include_router(proxy_stream_router)
 router.include_router(source_webhooks_router)
+router.include_router(trial_extend_router)

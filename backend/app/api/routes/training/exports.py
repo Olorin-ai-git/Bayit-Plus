@@ -107,11 +107,11 @@ async def _get_partner_tier(partner_id: str) -> str:
     tier = partner.billing_tier
     if tier == "training":
         config = partner.training_config or {}
-        return config.get("tier", "team")
+        return config.get("org_tier", "team")
     return tier
 
 
-SCORM_ALLOWED_TIERS = {"enterprise"}
+SCORM_ALLOWED_TIERS = {"organization", "enterprise"}
 
 
 @router.post("", response_model=ExportResponse)
@@ -124,7 +124,7 @@ async def create_export(
     if tier not in SCORM_ALLOWED_TIERS:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="SCORM export requires Enterprise tier",
+            detail="SCORM export requires Organization tier or higher",
         )
     expiry_days = req.token_expiry_days or settings.SCORM_TOKEN_EXPIRY_DAYS
     token_expires = datetime.now(timezone.utc) + timedelta(

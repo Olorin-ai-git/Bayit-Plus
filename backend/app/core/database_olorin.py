@@ -18,6 +18,7 @@ from app.models.cultural_reference import CulturalReference
 # Olorin.ai Platform models
 from app.models.integration_partner import (DubbingSession, IntegrationPartner,
                                             UsageRecord, WebhookDelivery)
+from app.models.trial_history import TrialHistory
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +73,7 @@ async def connect_to_olorin_mongo() -> None:
             ContentEmbedding,
             RecapSession,
             CulturalReference,
+            TrialHistory,
         ],
     )
 

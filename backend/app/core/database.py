@@ -61,6 +61,7 @@ from app.models.integration_partner import (DubbingSession, IntegrationPartner,
 from app.models.training_assignment import TrainingAssignment
 from app.models.training_progress import TrainingProgress
 from app.models.training_user import TrainingUser
+from app.models.trial_history import TrialHistory
 from app.models.scorm_export import ScormExport
 from app.models.source_connection import SourceConnection
 from app.models.synced_container import SyncedContainer
@@ -537,6 +538,8 @@ async def connect_to_mongo():
                 TrainingUser,
                 TrainingProgress,
                 TrainingAssignment,
+                # Trial signup dedup history (re-trial block)
+                TrialHistory,
                 # SCORM export
                 ScormExport,
                 # OAuth source connections (Google Workspace, Panopto)

@@ -1,6 +1,7 @@
 """Training platform content management routes."""
 
 import logging
+from datetime import datetime, timezone
 from typing import List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
@@ -29,7 +30,8 @@ from app.utils.video_url_utils import validate_video_url
 
 logger = logging.getLogger(__name__)
 
-VIDEO_LIMITS: dict[str, int] = {"free": 3, "team": 10}
+TOTAL_VIDEO_LIMITS: dict[str, int] = {"free": 3}
+MONTHLY_VIDEO_LIMITS: dict[str, int] = {"team": 20}
 router = APIRouter(prefix="/content", tags=["training-content"])
 
 class IngestRequest(BaseModel):
@@ -70,15 +72,29 @@ async def ingest_content(
             status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found",
         )
     tier = await resolve_partner_tier(admin.partner_id)
-    limit = VIDEO_LIMITS.get(tier)
-    if limit is not None:
+    monthly_limit = MONTHLY_VIDEO_LIMITS.get(tier)
+    total_limit = TOTAL_VIDEO_LIMITS.get(tier)
+
+    if monthly_limit is not None:
+        first_of_month = datetime.now(timezone.utc).replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0,
+        )
         current_count = await Content.find(
-            {"partner_id": admin.partner_id}
+            {"partner_id": admin.partner_id, "created_at": {"$gte": first_of_month}},
         ).count()
-        if current_count >= limit:
+        if current_count >= monthly_limit:
             raise HTTPException(
                 status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                detail=f"Video limit reached ({limit}). Upgrade your plan for more.",
+                detail=f"Monthly video limit reached ({monthly_limit}). Resets on the 1st.",
+            )
+    elif total_limit is not None:
+        current_count = await Content.find(
+            {"partner_id": admin.partner_id},
+        ).count()
+        if current_count >= total_limit:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail=f"Video limit reached ({total_limit}). Upgrade your plan for more.",
             )
     content = Content(
         title=body.title,
@@ -135,12 +151,37 @@ async def list_content(
     for cid in content_ids:
         vc = await VideoChapters.get_for_content(cid)
         chapter_count_map[cid] = len(vc.chapters) if vc else 0
+    tier = await resolve_partner_tier(user.partner_id)
+    video_quota = None
+    if user.role in ("admin", "teacher"):
+        monthly_limit = MONTHLY_VIDEO_LIMITS.get(tier)
+        if monthly_limit is not None:
+            first_of_month = datetime.now(timezone.utc).replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0,
+            )
+            monthly_count = await Content.find(
+                {"partner_id": user.partner_id, "created_at": {"$gte": first_of_month}},
+            ).count()
+            video_quota = {
+                "used": monthly_count,
+                "limit": monthly_limit,
+                "period": "monthly",
+            }
+        else:
+            total_limit = TOTAL_VIDEO_LIMITS.get(tier)
+            if total_limit is not None:
+                video_quota = {
+                    "used": len(items),
+                    "limit": total_limit,
+                    "period": "total",
+                }
     return {
         "content": [
             _content_response(c, status_map, chapter_count_map.get(str(c.id)))
             for c in items
         ],
         "total": len(items),
+        "video_quota": video_quota,
     }
 
 
