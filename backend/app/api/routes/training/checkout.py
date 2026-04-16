@@ -331,3 +331,40 @@ async def change_selected_tier(
         admin.partner_id, req.selected_tier,
     )
     return {"selected_tier": req.selected_tier}
+
+
+@router.post("/convert-now")
+async def convert_now_endpoint(
+    admin: TrainingUser = Depends(require_training_admin),
+):
+    """Immediately end trial and trigger Stripe conversion (charges card now)."""
+    partner = await IntegrationPartner.find_one(
+        {"partner_id": admin.partner_id}
+    )
+    if not partner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Organization not found",
+        )
+
+    tc = _parse_trial_config(partner)
+    if tc is None or tc.state not in ("active", "grace"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No active trial to convert",
+        )
+
+    try:
+        stripe.Subscription.modify(tc.stripe_subscription_id, trial_end="now")
+    except stripe.error.StripeError as exc:
+        logger.error("Convert-now Stripe modify failed: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Stripe error: {exc.user_message or str(exc)}",
+        )
+
+    logger.info(
+        "Trial convert-now triggered: partner=%s sub=%s",
+        admin.partner_id, tc.stripe_subscription_id,
+    )
+    return {"status": "conversion_initiated"}
