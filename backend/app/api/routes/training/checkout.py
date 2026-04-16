@@ -154,7 +154,10 @@ async def training_stripe_webhook(request: Request):
             await _handle_checkout_completed(event["data"]["object"])
         elif event_type == "invoice.paid":
             await handle_invoice_paid(event)
-            await _handle_invoice_paid(event["data"]["object"])
+            try:
+                await _handle_invoice_paid(event["data"]["object"])
+            except Exception:
+                logger.exception("Credit reset failed for invoice.paid")
         elif event_type == "invoice.payment_failed":
             await handle_invoice_payment_failed(event)
         elif event_type == "customer.subscription.trial_will_end":
