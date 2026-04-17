@@ -175,6 +175,17 @@ class Settings(
         ),
     )
 
+    # === Ask Olorin shared memory corpus (Phase 0 + Phase 1) ===
+    KNOWLEDGE_PINECONE_TOP_K_ORG: int = 40
+    KNOWLEDGE_PINECONE_TOP_K_TEAM: int = 20
+    KNOWLEDGE_CANONICAL_BOOST: float = 1.4
+    KNOWLEDGE_DOC_BOOST: float = 1.2
+    KNOWLEDGE_STALE_BOOST: float = 0.8
+    KNOWLEDGE_CANONICAL_CONFIDENCE_THRESHOLD: float = 0.85
+    KNOWLEDGE_MAX_SOURCES_DEFAULT: int = 5
+    KNOWLEDGE_HISTORY_USER_LIMIT: int = 30
+    KNOWLEDGE_HISTORY_USER_WINDOW_DAYS: int = 90
+
     @field_validator("SECRET_KEY")
     @classmethod
     def validate_secret_key(cls, v: str) -> str:
