@@ -198,3 +198,19 @@ async def verify_canonical(
         "partner_id": user.partner_id, "canonical_id": canonical_id,
     })
     return CanonicalResponse(canonical_id=canonical_id, status=cm.status)
+
+
+@router.delete("/canonical/{canonical_id}", response_model=CanonicalResponse)
+async def retract_canonical(
+    canonical_id: str,
+    user: TrainingUser = Depends(require_training_admin),
+):
+    cm = await _load_own(user.partner_id, canonical_id)
+    cm.status = "retracted"
+    cm.updated_at = datetime.now(timezone.utc)
+    await cm.save()
+    await _delete_from_pinecone(canonical_id)
+    logger.info("Canonical retracted", extra={
+        "partner_id": user.partner_id, "canonical_id": canonical_id,
+    })
+    return CanonicalResponse(canonical_id=canonical_id, status="retracted")
