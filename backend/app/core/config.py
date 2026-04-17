@@ -186,6 +186,16 @@ class Settings(
     KNOWLEDGE_HISTORY_USER_LIMIT: int = 30
     KNOWLEDGE_HISTORY_USER_WINDOW_DAYS: int = 90
 
+    # === Ask Olorin multi-format ingestion (Phase 2) ===
+    KNOWLEDGE_DOC_PER_FILE_MB_ORG: int = 25
+    KNOWLEDGE_DOC_PER_FILE_MB_ENTERPRISE: int = 100
+    KNOWLEDGE_DOC_TOTAL_MB_ORG: int = 1024
+    KNOWLEDGE_DOC_TOTAL_MB_ENTERPRISE: int = 10240
+    KNOWLEDGE_DOC_URL_HOURLY_ORG: int = 10
+    KNOWLEDGE_DOC_URL_HOURLY_ENTERPRISE: int = 50
+    KNOWLEDGE_DOC_CHUNK_TOKENS: int = 512
+    KNOWLEDGE_DOC_CHUNK_OVERLAP: int = 50
+
     @field_validator("SECRET_KEY")
     @classmethod
     def validate_secret_key(cls, v: str) -> str:
