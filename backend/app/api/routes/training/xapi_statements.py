@@ -107,7 +107,7 @@ def _gen(p: TrainingProgress, u: TrainingUser,
 
 def _resolve_tier(partner: IntegrationPartner) -> str:
     if partner.billing_tier == "training":
-        return (partner.training_config or {}).get("tier", "team")
+        return (partner.training_config or {}).get("org_tier", "team")
     return partner.billing_tier
 
 
