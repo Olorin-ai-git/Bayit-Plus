@@ -81,6 +81,16 @@ class RecordingSchedulerService:
             max_instances=1,
         )
 
+        from app.services.training.canonical_staleness import run_canonical_staleness_sweep
+
+        self._scheduler.add_job(
+            run_canonical_staleness_sweep,
+            trigger=IntervalTrigger(minutes=trial_interval),
+            id="canonical_staleness_sweep",
+            replace_existing=True,
+            max_instances=1,
+        )
+
         logger.info("Recording scheduler initialized")
 
     async def shutdown(self) -> None:
