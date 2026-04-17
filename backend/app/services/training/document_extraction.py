@@ -72,3 +72,45 @@ def extract_markdown_sections(text: str) -> list[dict]:
                 "text": body,
             })
     return sections
+
+
+import httpx  # noqa: E402  (appended block)
+from bs4 import BeautifulSoup
+
+
+class AuthWallError(Exception):
+    """Raised when URL requires authentication."""
+
+
+_URL_TIMEOUT_SECONDS = 15
+_HTML_TAGS_TO_REMOVE = {"script", "style", "nav", "aside", "footer", "header", "form"}
+
+
+async def fetch_url_content(url: str) -> dict:
+    """Fetch a single URL, extract main article text + title. No depth crawl."""
+    async with httpx.AsyncClient(follow_redirects=True, timeout=_URL_TIMEOUT_SECONDS) as c:
+        resp = await c.get(url, headers={"User-Agent": "OlorinBot/1.0 (+https://olorin.ai)"})
+
+    if resp.status_code in (401, 403):
+        raise AuthWallError(f"URL requires auth: HTTP {resp.status_code}")
+    if resp.status_code >= 400:
+        raise ValueError(f"URL fetch failed: HTTP {resp.status_code}")
+
+    content_type = resp.headers.get("content-type", "")
+    if "html" not in content_type.lower():
+        raise ValueError(f"Non-HTML content type: {content_type}")
+
+    soup = BeautifulSoup(resp.text, "lxml")
+    for tag_name in _HTML_TAGS_TO_REMOVE:
+        for t in soup.find_all(tag_name):
+            t.decompose()
+
+    title_tag = soup.find("h1") or soup.find("title")
+    title = title_tag.get_text(strip=True) if title_tag else url
+
+    main = soup.find("article") or soup.find("main") or soup.find("body") or soup
+    text = "\n\n".join(
+        line for line in (p.strip() for p in main.get_text("\n").splitlines()) if line
+    )
+
+    return {"text": text, "title": title, "source_url": url}
