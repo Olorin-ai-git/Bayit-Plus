@@ -43,6 +43,7 @@ from app.api.routes.training.knowledge_candidates import router as knowledge_can
 from app.api.routes.training.knowledge_canonical import router as knowledge_canonical_router
 from app.api.routes.training.knowledge_history import router as knowledge_history_router
 from app.api.routes.training import knowledge_documents
+from app.api.routes.training import superadmin_knowledge_canonical
 from app.api.routes.training.portraits import router as portraits_router
 from app.api.routes.training.companion import router as companion_router
 from app.api.routes.training.superadmin import (
@@ -89,6 +90,7 @@ router.include_router(knowledge_candidates_router)
 router.include_router(knowledge_canonical_router)
 router.include_router(knowledge_history_router)
 router.include_router(knowledge_documents.router)
+router.include_router(superadmin_knowledge_canonical.router)
 router.include_router(portraits_router)
 router.include_router(companion_router, prefix="/companion")
 router.include_router(superadmin_router)
