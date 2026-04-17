@@ -18,12 +18,19 @@ router = APIRouter(prefix="/knowledge", tags=["training-knowledge"])
 Tab = Literal["new", "all", "promoted", "dismissed"]
 
 
+class CandidateSourceOut(BaseModel):
+    content_id: str
+    content_title: str
+    timestamp_seconds: Optional[float] = None
+
+
 class CandidateItem(BaseModel):
     id: str
     question: str
     answer: str
     mode: str
     sources_count: int
+    sources: list[CandidateSourceOut] = []
     canonical_hits_count: int
     asker_user_id: Optional[str]
     created_at: datetime
@@ -73,12 +80,22 @@ async def _mark_dismissed(*, partner_id: str, candidate_id: str, reviewer_id: st
 
 
 def _to_item(row: dict) -> CandidateItem:
+    raw_sources = row.get("sources") or []
     return CandidateItem(
         id=str(row["_id"]),
         question=row["question"],
         answer=row.get("answer", ""),
         mode=row.get("mode", "blended"),
-        sources_count=len(row.get("sources") or []),
+        sources_count=len(raw_sources),
+        sources=[
+            CandidateSourceOut(
+                content_id=s.get("content_id", ""),
+                content_title=s.get("content_title", ""),
+                timestamp_seconds=s.get("timestamp_seconds"),
+            )
+            for s in raw_sources
+            if s.get("content_id")
+        ],
         canonical_hits_count=len(row.get("canonical_hits") or []),
         asker_user_id=row.get("asker_user_id"),
         created_at=row["created_at"],
