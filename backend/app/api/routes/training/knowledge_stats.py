@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from app.api.routes.training.dependencies import get_current_training_user
-from app.api.routes.training.knowledge import KNOWLEDGE_TIERS, _get_tier
+from app.api.routes.training.knowledge import KNOWLEDGE_TIERS_ORG_PLUS as KNOWLEDGE_TIERS, _get_tier
 from app.core.logging_config import get_logger
 from app.models.content import Content as ContentModel
 from app.models.training_user import TrainingUser

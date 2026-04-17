@@ -1,32 +1,26 @@
-"""Cross-video knowledge search: RAG across all org training content."""
+"""Cross-video knowledge search with unified scope + per-type boost + canonical-verbatim."""
 
 import anthropic
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from app.api.routes.training.dependencies import get_current_training_user
+from app.api.routes.training.dependencies import (
+    deduct_training_credits,
+    get_current_training_user,
+)
 from app.core.config import settings
 from app.core.logging_config import get_logger
-from app.models.content import Content
+from app.models.ask_candidate import AskCandidate, CandidateCanonicalHit, CandidateSource
 from app.models.integration_partner import IntegrationPartner
 from app.models.training_user import TrainingUser
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
-from app.services.olorin.search.pinecone_ops import safe_pinecone_query
-from app.services.training.credit_service import TrainingCreditService
+from app.services.olorin.search.unified_retrieval import CanonicalHit, UnifiedResults, query_unified_corpus
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/knowledge", tags=["training-knowledge"])
-
-KNOWLEDGE_TIERS = {"organization", "enterprise"}
-_credit_svc: TrainingCreditService | None = None
-
-
-def _get_credit_svc() -> TrainingCreditService:
-    global _credit_svc
-    if _credit_svc is None:
-        _credit_svc = TrainingCreditService(settings)
-    return _credit_svc
+KNOWLEDGE_TIERS_ORG_PLUS = {"organization", "enterprise"}
+KNOWLEDGE_TIERS_ANY = KNOWLEDGE_TIERS_ORG_PLUS | {"team"}
 
 
 class AskRequest(BaseModel):
@@ -34,7 +28,7 @@ class AskRequest(BaseModel):
     max_sources: int = Field(default=5, ge=1, le=10)
 
 
-class Source(BaseModel):
+class SourceOut(BaseModel):
     content_id: str
     content_title: str
     matched_text: str
@@ -43,60 +37,109 @@ class Source(BaseModel):
     relevance_score: float
 
 
+class CanonicalHitOut(BaseModel):
+    canonical_id: str
+    question: str
+    answer: str
+    boosted_score: float
+    status: str
+
+
 class AskResponse(BaseModel):
     answer: str
-    sources: list[Source]
+    sources: list[SourceOut]
+    mode: str
+    canonical_hits: list[CanonicalHitOut]
+    document_hits: list[dict]
+    credits_charged: int
 
 
 async def _get_tier(partner_id: str) -> str:
-    partner = await IntegrationPartner.find_one(
-        IntegrationPartner.partner_id == partner_id
-    )
+    partner = await IntegrationPartner.find_one(IntegrationPartner.partner_id == partner_id)
     if not partner:
         return "team"
     if partner.billing_tier == "training":
         return (partner.training_config or {}).get("org_tier", "team")
     return partner.billing_tier
 
-
-def _fmt_ts(seconds: float | None) -> str | None:
+def _fmt_ts(seconds):
     if seconds is None:
         return None
     m, s = divmod(int(seconds), 60)
     h, m = divmod(m, 60)
     return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
 
-
-def _build_prompt(question: str, segments: list[dict]) -> str:
-    ctx = ""
-    for seg in segments:
-        ts = _fmt_ts(seg.get("start_time"))
-        label = f'[Video: "{seg["title"]}"'
-        if ts:
-            label += f" at {ts}"
-        label += "]"
-        ctx += f"{label}\n{seg['text']}\n---\n"
-
+def _build_blend_prompt(question: str, unified: UnifiedResults) -> str:
+    parts = []
+    if unified.canonical_hits:
+        parts.append("=== Team-vetted answers (prefer when directly relevant) ===")
+        for h in unified.canonical_hits:
+            parts.append(f"[your team's memory]\nQ: {h.question}\nA: {h.answer}")
+    if unified.video_hits:
+        parts.append("=== Training videos ===")
+        for h in unified.video_hits:
+            ts = _fmt_ts(h.timestamp_seconds)
+            label = f'[Video: "{h.title}"' + (f" at {ts}]" if ts else "]")
+            parts.append(f"{label}\n{h.text}")
+    if unified.document_hits:
+        parts.append("=== Reference documents ===")
+        for h in unified.document_hits:
+            page = f", p.{h.page_number}" if h.page_number is not None else ""
+            parts.append(f"[Document: {h.title}{page}]\n{h.text}")
+    ctx = "\n---\n".join(parts) if parts else ""
     return (
         "You are an AI assistant for a corporate training platform. "
-        "Answer the employee's question using ONLY the training video "
-        "excerpts provided below. Cite specific videos by title when "
-        "referencing information. If the excerpts don't contain enough "
-        "information to answer, say so clearly.\n\n"
-        f"Question: {question}\n\n"
-        f"Training video excerpts:\n---\n{ctx}\n"
-        "Answer concisely, citing video titles."
+        "Use these sources to answer. Prefer team-vetted answers when they "
+        "directly match. Cite each source by its type: `your team's memory`, "
+        "`[Video Title @ mm:ss]`, `[Document Name, p.N]`. If the excerpts "
+        "don't contain enough information, say so clearly.\n\n"
+        f"Question: {question}\n\nSources:\n---\n{ctx}\n"
     )
-
 
 async def _call_claude(prompt: str) -> str:
     client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
     resp = await client.messages.create(
-        model=settings.CLAUDE_MODEL,
-        max_tokens=1024,
+        model=settings.CLAUDE_MODEL, max_tokens=1024,
         messages=[{"role": "user", "content": prompt}],
     )
     return next((b.text for b in resp.content if b.type == "text"), "")
+
+def _render_sources(unified: UnifiedResults) -> list[SourceOut]:
+    return [SourceOut(
+        content_id=h.content_id, content_title=h.title, matched_text=h.text,
+        timestamp_seconds=h.timestamp_seconds, timestamp_formatted=_fmt_ts(h.timestamp_seconds),
+        relevance_score=round(h.boosted_score, 3),
+    ) for h in unified.video_hits]
+
+def _render_canonical(hits: list[CanonicalHit]) -> list[CanonicalHitOut]:
+    return [CanonicalHitOut(
+        canonical_id=h.canonical_id, question=h.question, answer=h.answer,
+        boosted_score=round(h.boosted_score, 3), status=h.status,
+    ) for h in hits]
+
+async def _record_candidate(
+    *, user: TrainingUser, question: str, answer: str, mode: str,
+    sources: list[SourceOut], canonical: list[CanonicalHitOut],
+    credits_charged: int, scope: str,
+) -> None:
+    try:
+        await AskCandidate(
+            partner_id=user.partner_id, asker_user_id=str(user.id),
+            scope=scope, question=question, answer=answer, mode=mode,
+            sources=[CandidateSource(
+                content_id=s.content_id, content_title=s.content_title,
+                matched_text=s.matched_text, timestamp_seconds=s.timestamp_seconds,
+                relevance_score=s.relevance_score,
+            ) for s in sources],
+            canonical_hits=[CandidateCanonicalHit(
+                canonical_id=c.canonical_id, question=c.question,
+                answer=c.answer, boosted_score=c.boosted_score, status=c.status,
+            ) for c in canonical],
+            credits_charged=credits_charged,
+        ).insert()
+    except Exception as exc:
+        logger.warning("Candidate logging failed (non-blocking)",
+                       extra={"error": str(exc), "partner_id": user.partner_id})
 
 
 @router.post("/ask", response_model=AskResponse)
@@ -104,96 +147,52 @@ async def ask_knowledge(
     req: AskRequest,
     user: TrainingUser = Depends(get_current_training_user),
 ):
-    """Ask a question across all training content in the organization."""
     tier = await _get_tier(user.partner_id)
-    if tier not in KNOWLEDGE_TIERS:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Cross-video knowledge requires Organization tier or above",
-        )
-
-    svc = _get_credit_svc()
-    ok, remaining = await svc.deduct(
-        partner_id=user.partner_id, feature="companion"
-    )
-    if not ok:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Insufficient AI credits.",
-        )
+    if tier not in KNOWLEDGE_TIERS_ANY:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Ask Olorin requires at least team tier")
+    scope_label = "global" if tier == "team" else "partner"
 
     if not client_manager.is_initialized:
         await client_manager.initialize()
+    pinecone_index = client_manager.pinecone_index
+    if not pinecone_index:
+        raise HTTPException(status_code=502, detail="Search service unavailable")
 
     query_vec = await generate_embedding(req.question)
     if not query_vec:
         raise HTTPException(status_code=502, detail="Embedding service unavailable")
 
-    pinecone_index = client_manager.pinecone_index
-    if not pinecone_index:
-        raise HTTPException(status_code=502, detail="Search service unavailable")
-
-    results = await safe_pinecone_query(
-        pinecone_index,
-        vector=query_vec,
-        top_k=req.max_sources * 3,
-        filter_dict={
-            "partner_id": user.partner_id,
-            "embedding_type": {"$in": ["subtitle_segment", "description"]},
-        },
-        include_metadata=True,
+    unified = await query_unified_corpus(
+        index=pinecone_index, query_vec=query_vec,
+        partner_id=user.partner_id, tier=tier, max_sources=req.max_sources,
     )
 
-    if not results or not results.matches:
-        return AskResponse(answer="No relevant training content found.", sources=[])
+    sources = _render_sources(unified)
+    canonical_out = _render_canonical(unified.canonical_hits)
+    threshold = settings.KNOWLEDGE_CANONICAL_CONFIDENCE_THRESHOLD
 
-    content_ids = list({
-        m.metadata.get("content_id")
-        for m in results.matches if m.metadata
-    })
-    contents = await Content.find({"_id": {"$in": content_ids}}).to_list()
-    title_map = {str(c.id): c.title for c in contents}
+    if unified.canonical_hits and unified.canonical_hits[0].boosted_score >= threshold:
+        mode, answer, credits = "canonical_verbatim", unified.canonical_hits[0].answer, 0
+    elif unified.canonical_hits or unified.video_hits or unified.document_hits:
+        _ = await deduct_training_credits("companion", user)
+        try:
+            answer = await _call_claude(_build_blend_prompt(req.question, unified))
+        except anthropic.APIError as exc:
+            logger.error("Knowledge ask AI error", extra={"error": str(exc)})
+            raise HTTPException(status_code=502, detail="AI service unavailable")
+        mode = "blended" if (unified.canonical_hits or unified.document_hits) else "video_only"
+        credits = 1
+    else:
+        mode, answer, credits = "no_match", "No relevant training content found.", 0
 
-    segments: list[dict] = []
-    sources: list[Source] = []
-    seen = set()
-
-    for match in results.matches:
-        meta = match.metadata or {}
-        cid = meta.get("content_id")
-        text = meta.get("text", "").strip()
-        if not cid or not text:
-            continue
-
-        key = (cid, text[:80])
-        if key in seen:
-            continue
-        seen.add(key)
-
-        title = title_map.get(cid, cid)
-        start = meta.get("start_time")
-
-        segments.append({"title": title, "text": text, "start_time": start})
-        sources.append(Source(
-            content_id=cid, content_title=title, matched_text=text,
-            timestamp_seconds=start, timestamp_formatted=_fmt_ts(start),
-            relevance_score=round(match.score, 3),
-        ))
-        if len(segments) >= req.max_sources:
-            break
-
-    if not segments:
-        return AskResponse(answer="No relevant training content found.", sources=[])
-
-    try:
-        prompt = _build_prompt(req.question, segments)
-        answer = await _call_claude(prompt)
-    except anthropic.APIError as exc:
-        logger.error("Knowledge ask AI error", extra={"error": str(exc)})
-        raise HTTPException(status_code=502, detail="AI service unavailable")
-
+    await _record_candidate(
+        user=user, question=req.question, answer=answer, mode=mode,
+        sources=sources, canonical=canonical_out, credits_charged=credits, scope=scope_label,
+    )
     logger.info("Knowledge ask completed", extra={
-        "partner_id": user.partner_id, "question_length": len(req.question),
-        "source_count": len(sources), "credits_remaining": remaining,
+        "partner_id": user.partner_id, "mode": mode,
+        "source_count": len(sources), "credits_charged": credits,
     })
-    return AskResponse(answer=answer, sources=sources)
+    return AskResponse(answer=answer, sources=sources, mode=mode,
+                       canonical_hits=canonical_out, document_hits=[], credits_charged=credits)
