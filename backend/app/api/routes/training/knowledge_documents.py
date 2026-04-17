@@ -1,9 +1,12 @@
 """Document ingestion routes — upload/paste/url/list/delete/reingest. Admin-only."""
 
 import asyncio
+from datetime import datetime
+from typing import Optional
 
+from bson import ObjectId
 from fastapi import (
-    APIRouter, Depends, File, Form, HTTPException, UploadFile, status,
+    APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status,
 )
 from pydantic import BaseModel, Field
 
@@ -19,8 +22,11 @@ from app.services.training.document_quota import (
     check_total_storage,
     check_url_rate,
 )
+from app.services.olorin.search.client import client_manager
+from app.services.training.document_embedding import delete_document_vectors
 from app.services.training.document_storage import (
     build_document_gcs_path,
+    delete_document_blob,
     upload_document_bytes,
 )
 
@@ -160,3 +166,102 @@ async def ingest_url(
     )
     await _enqueue_ingest(doc)
     return IngestResponse(document_id=str(doc.id), status=doc.status)
+
+
+# ---------------------------------------------------------------------------
+# List + delete
+# ---------------------------------------------------------------------------
+
+class DocumentItem(BaseModel):
+    id: str
+    title: str
+    source_format: str
+    status: str
+    word_count: int
+    chunk_count: int
+    created_at: datetime
+    source_url: Optional[str] = None
+    last_reindexed_at: Optional[datetime] = None
+    error: Optional[str] = None
+
+
+class DocumentListResponse(BaseModel):
+    items: list[DocumentItem]
+    total: int
+
+
+async def _fetch_documents(
+    *, partner_id: str, limit: int, skip: int,
+) -> tuple[list[dict], int]:
+    coll = Document.get_motor_collection()
+    query = {"partner_id": partner_id}
+    cursor = coll.find(query).sort("created_at", -1).skip(skip).limit(limit)
+    rows = await cursor.to_list(length=limit)
+    total = await coll.count_documents(query)
+    return rows, total
+
+
+async def _load_own_document(partner_id: str, doc_id: str):
+    try:
+        oid = ObjectId(doc_id)
+    except Exception:
+        return None
+    d = await Document.get(oid)
+    if d is None or d.partner_id != partner_id:
+        return None
+    return d
+
+
+async def _get_index():
+    if not client_manager.is_initialized:
+        await client_manager.initialize()
+    return client_manager.pinecone_index
+
+
+def _to_doc_item(row: dict) -> DocumentItem:
+    return DocumentItem(
+        id=str(row["_id"]),
+        title=row["title"],
+        source_format=row["source_format"],
+        status=row["status"],
+        word_count=int(row.get("word_count") or 0),
+        chunk_count=int(row.get("chunk_count") or 0),
+        created_at=row["created_at"],
+        source_url=row.get("source_url"),
+        last_reindexed_at=row.get("last_reindexed_at"),
+        error=row.get("error"),
+    )
+
+
+@router.get("/documents", response_model=DocumentListResponse)
+async def list_documents(
+    limit: int = Query(default=50, ge=1, le=200),
+    skip: int = Query(default=0, ge=0),
+    user: TrainingUser = Depends(require_training_admin),
+):
+    rows, total = await _fetch_documents(
+        partner_id=user.partner_id, limit=limit, skip=skip,
+    )
+    return DocumentListResponse(items=[_to_doc_item(r) for r in rows], total=total)
+
+
+@router.delete("/documents/{document_id}")
+async def delete_document(
+    document_id: str,
+    user: TrainingUser = Depends(require_training_admin),
+):
+    d = await _load_own_document(user.partner_id, document_id)
+    if d is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    if d.chunk_count > 0:
+        idx = await _get_index()
+        if idx is not None:
+            await delete_document_vectors(idx, document_id=document_id, chunk_count=d.chunk_count)
+
+    if d.gcs_path:
+        await delete_document_blob(d.gcs_path)
+
+    await d.delete()
+    logger.info("Document deleted", extra={"partner_id": user.partner_id, "doc_id": document_id})
+    return {"ok": True}
