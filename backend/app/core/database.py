@@ -54,6 +54,7 @@ from app.models.friendship import (FriendRequest, GameResult, PlayerStats,
                                    UserFriendship)
 # Olorin.ai Platform models
 from app.models.ask_candidate import AskCandidate
+from app.models.canonical_memory import CanonicalMemory
 from app.models.b2b_content_source import B2BContentSource
 from app.models.challenge_nomination import ChallengeNomination
 from app.models.ingest_job import IngestJob
@@ -549,6 +550,8 @@ async def connect_to_mongo():
                 SyncedContainer,
                 # Ask Olorin memory review queue
                 AskCandidate,
+                # Ask Olorin vetted Q&A corpus
+                CanonicalMemory,
             ]
         )
         logger.info("Olorin models included in main database (Phase 1)")
