@@ -265,3 +265,47 @@ async def delete_document(
     await d.delete()
     logger.info("Document deleted", extra={"partner_id": user.partner_id, "doc_id": document_id})
     return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+# Reingest
+# ---------------------------------------------------------------------------
+
+from app.models.canonical_memory import CanonicalMemory  # noqa: E402
+
+
+async def _flag_citing_canonicals_pending(document_id: str) -> None:
+    coll = CanonicalMemory.get_motor_collection()
+    await coll.update_many(
+        {"citations.document_id": document_id, "status": {"$ne": "retracted"}},
+        {"$set": {"status": "pending_review"}},
+    )
+
+
+@router.post("/documents/{document_id}/reingest", response_model=IngestResponse)
+async def reingest_document(
+    document_id: str,
+    user: TrainingUser = Depends(require_training_admin),
+):
+    d = await _load_own_document(user.partner_id, document_id)
+    if d is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    if d.chunk_count > 0:
+        idx = await _get_index()
+        if idx is not None:
+            await delete_document_vectors(idx, document_id=document_id, chunk_count=d.chunk_count)
+
+    d.status = "pending"
+    d.error = None
+    d.chunk_count = 0
+    d.chunks = []
+    await d.save()
+
+    await _flag_citing_canonicals_pending(document_id)
+    await _enqueue_ingest(d)
+
+    logger.info("Document re-ingest enqueued", extra={
+        "partner_id": user.partner_id, "doc_id": document_id,
+    })
+    return IngestResponse(document_id=document_id, status="pending")
