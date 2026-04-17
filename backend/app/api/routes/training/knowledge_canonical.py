@@ -159,3 +159,42 @@ async def promote_canonical(
         },
     )
     return CanonicalResponse(canonical_id=str(cm.id), status=cm.status)
+
+
+@router.put("/canonical/{canonical_id}", response_model=CanonicalResponse)
+async def edit_canonical(
+    canonical_id: str,
+    req: CanonicalEditRequest,
+    user: TrainingUser = Depends(require_training_admin),
+):
+    cm = await _load_own(user.partner_id, canonical_id)
+    cm.question = req.question
+    cm.answer = req.answer
+    cm.citations = [Citation(**c.model_dump()) for c in req.citations]
+    cm.stale_after_months = req.stale_after_months
+    cm.status = "active"
+    cm.updated_at = datetime.now(timezone.utc)
+    cm.last_verified_at = cm.updated_at
+    await cm.save()
+    await _sync_to_pinecone(cm)
+    logger.info("Canonical edited", extra={
+        "partner_id": user.partner_id, "canonical_id": canonical_id,
+    })
+    return CanonicalResponse(canonical_id=canonical_id, status=cm.status)
+
+
+@router.post("/canonical/{canonical_id}/verify", response_model=CanonicalResponse)
+async def verify_canonical(
+    canonical_id: str,
+    user: TrainingUser = Depends(require_training_admin),
+):
+    cm = await _load_own(user.partner_id, canonical_id)
+    cm.status = "active"
+    cm.last_verified_at = datetime.now(timezone.utc)
+    cm.updated_at = cm.last_verified_at
+    await cm.save()
+    await _sync_to_pinecone(cm)
+    logger.info("Canonical re-verified", extra={
+        "partner_id": user.partner_id, "canonical_id": canonical_id,
+    })
+    return CanonicalResponse(canonical_id=canonical_id, status=cm.status)
