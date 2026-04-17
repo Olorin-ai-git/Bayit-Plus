@@ -1,6 +1,7 @@
 """Text extraction for PDF / markdown / URL sources."""
 
 import io
+import re
 
 from pypdf import PdfReader
 
@@ -33,3 +34,41 @@ def extract_pdf_pages(pdf_bytes: bytes) -> list[tuple[int, str]]:
         if text:
             pages.append((i, text))
     return pages
+
+
+_HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$", re.MULTILINE)
+
+
+def extract_markdown_sections(text: str) -> list[dict]:
+    """Split markdown on ATX headings; each section carries a heading_path ancestry."""
+    text = text.strip()
+    if not text:
+        return []
+
+    boundaries = [(m.start(), m.end(), len(m.group(1)), m.group(2).strip())
+                  for m in _HEADING_RE.finditer(text)]
+    if not boundaries:
+        return [{"heading_path": [], "text": text}]
+
+    sections: list[dict] = []
+    # Prefix content (before first heading) becomes its own section if non-empty
+    first_start = boundaries[0][0]
+    prefix = text[:first_start].strip()
+    if prefix:
+        sections.append({"heading_path": [], "text": prefix})
+
+    path: list[tuple[int, str]] = []  # (level, heading)
+    for i, (start, end, level, title) in enumerate(boundaries):
+        while path and path[-1][0] >= level:
+            path.pop()
+        path.append((level, title))
+
+        body_start = end
+        body_end = boundaries[i + 1][0] if i + 1 < len(boundaries) else len(text)
+        body = text[body_start:body_end].strip()
+        if body:
+            sections.append({
+                "heading_path": [h for _, h in path],
+                "text": body,
+            })
+    return sections
