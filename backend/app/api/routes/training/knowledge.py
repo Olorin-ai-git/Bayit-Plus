@@ -117,6 +117,15 @@ def _render_canonical(hits: list[CanonicalHit]) -> list[CanonicalHitOut]:
         boosted_score=round(h.boosted_score, 3), status=h.status,
     ) for h in hits]
 
+def _render_documents(unified: UnifiedResults) -> list[dict]:
+    return [{
+        "document_id": h.document_id,
+        "title": h.title,
+        "chunk_index": h.chunk_index,
+        "matched_text": h.text,
+        "page_number": h.page_number,
+    } for h in unified.document_hits]
+
 async def _record_candidate(
     *, user: TrainingUser, question: str, answer: str, mode: str,
     sources: list[SourceOut], canonical: list[CanonicalHitOut],
@@ -195,4 +204,5 @@ async def ask_knowledge(
         "source_count": len(sources), "credits_charged": credits,
     })
     return AskResponse(answer=answer, sources=sources, mode=mode,
-                       canonical_hits=canonical_out, document_hits=[], credits_charged=credits)
+                       canonical_hits=canonical_out, document_hits=_render_documents(unified),
+                       credits_charged=credits)
