@@ -40,6 +40,7 @@ from app.api.routes.training.xapi_statements import (
 from app.api.routes.training.knowledge import router as knowledge_router
 from app.api.routes.training.knowledge_stats import router as knowledge_stats_router
 from app.api.routes.training.knowledge_candidates import router as knowledge_candidates_router
+from app.api.routes.training.knowledge_canonical import router as knowledge_canonical_router
 from app.api.routes.training.portraits import router as portraits_router
 from app.api.routes.training.companion import router as companion_router
 from app.api.routes.training.superadmin import (
@@ -83,6 +84,7 @@ router.include_router(xapi_router)
 router.include_router(knowledge_router)
 router.include_router(knowledge_stats_router)
 router.include_router(knowledge_candidates_router)
+router.include_router(knowledge_canonical_router)
 router.include_router(portraits_router)
 router.include_router(companion_router, prefix="/companion")
 router.include_router(superadmin_router)
