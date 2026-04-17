@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Literal, Optional
 
 from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from app.api.routes.training.dependencies import require_superadmin
@@ -180,3 +180,54 @@ async def retract_global_canonical(
         "super_admin_id": str(user.id), "canonical_id": canonical_id,
     })
     return CanonicalResponse(canonical_id=canonical_id, status="retracted")
+
+
+class CanonicalItem(BaseModel):
+    canonical_id: str
+    question: str
+    answer: str
+    status: str
+    stale_after_months: Optional[int]
+    last_verified_at: Optional[datetime]
+    created_at: datetime
+
+
+class CanonicalListResponse(BaseModel):
+    items: list[CanonicalItem]
+    total: int
+
+
+async def _fetch_global_canonicals(
+    *, limit: int, skip: int,
+) -> tuple[list[dict], int]:
+    coll = CanonicalMemory.get_motor_collection()
+    query = {"scope": "global", "partner_id": None, "status": {"$ne": "retracted"}}
+    cursor = coll.find(query).sort("created_at", -1).skip(skip).limit(limit)
+    rows = await cursor.to_list(length=limit)
+    total = await coll.count_documents(query)
+    return rows, total
+
+
+def _to_canonical_item(row: dict) -> CanonicalItem:
+    return CanonicalItem(
+        canonical_id=str(row["_id"]),
+        question=row["question"],
+        answer=row["answer"],
+        status=row["status"],
+        stale_after_months=row.get("stale_after_months"),
+        last_verified_at=row.get("last_verified_at"),
+        created_at=row["created_at"],
+    )
+
+
+@router.get("/canonical", response_model=CanonicalListResponse)
+async def list_global_canonicals(
+    limit: int = Query(default=50, ge=1, le=200),
+    skip: int = Query(default=0, ge=0),
+    user: TrainingUser = Depends(require_superadmin),
+):
+    rows, total = await _fetch_global_canonicals(limit=limit, skip=skip)
+    return CanonicalListResponse(
+        items=[_to_canonical_item(r) for r in rows],
+        total=total,
+    )
