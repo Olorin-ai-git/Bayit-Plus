@@ -27,6 +27,7 @@ from app.services.olorin.ingest_orchestrator import (
 )
 from app.api.routes.training.tier_gates import resolve_partner_tier
 from app.utils.video_url_utils import validate_video_url
+from app.services.training.canonical_orphan import handle_content_deletion
 
 logger = logging.getLogger(__name__)
 
@@ -250,6 +251,13 @@ async def delete_content(
     content = await load_content_for_partner(content_id, admin.partner_id)
     content.partner_id = None  # type: ignore[assignment]
     await content.save()
+    try:
+        await handle_content_deletion(content_id)
+    except Exception as exc:
+        logger.warning(
+            "Canonical orphan hook failed (non-blocking)",
+            extra={"content_id": content_id, "error": str(exc)},
+        )
     return {"deleted": True, "content_id": content_id}
 
 
