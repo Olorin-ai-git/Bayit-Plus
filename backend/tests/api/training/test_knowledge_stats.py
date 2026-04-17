@@ -23,12 +23,14 @@ def _make_partner(tier: str = "organization"):
     """Build a mock partner whose `_get_tier` resolves to `tier`.
 
     `_get_tier` in knowledge.py reads `billing_tier == "training"` and then
-    pulls the sub-tier from `training_config["tier"]`.
+    pulls the sub-tier from `training_config["org_tier"]` (matches the
+    TrainingConfig pydantic model field, which is what the prod DB actually
+    writes).
     """
     partner = MagicMock()
     partner.partner_id = "p1"
     partner.billing_tier = "training"
-    partner.training_config = {"tier": tier}
+    partner.training_config = {"org_tier": tier}
     return partner
 
 
