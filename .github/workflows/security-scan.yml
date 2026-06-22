@@ -224,12 +224,15 @@ jobs:
       - name: Validate Python configuration
         working-directory: backend
         run: |
-          # Check that config.py uses environment variables
-          if ! grep -q "class.*BaseSettings" app/core/config.py; then
-            echo "❌ Configuration should use Pydantic BaseSettings"
+          # Confirm config.py uses Pydantic BaseSettings. The Settings class
+          # declares its bases across multiple lines, so check the import plus
+          # a Settings class rather than a single-line "class ... BaseSettings".
+          if ! grep -qE "import +BaseSettings|BaseSettings" app/core/config.py \
+             || ! grep -qE "^class +Settings" app/core/config.py; then
+            echo "Configuration should use Pydantic BaseSettings"
             exit 1
           fi
-          echo "✅ Configuration uses Pydantic BaseSettings"
+          echo "Configuration uses Pydantic BaseSettings"
 
   secret-manager-audit:
     name: Audit GCP Secret Manager setup
