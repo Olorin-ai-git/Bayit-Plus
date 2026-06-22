@@ -207,9 +207,15 @@ jobs:
             exit 1
           fi
 
-          # API keys
-          if git grep -E '(api[_-]?key|apikey).*[:=].*["\x27][a-zA-Z0-9_-]{20,}["\x27]' -- '*.py' '*.js' '*.ts' '*.tsx'; then
-            echo "❌ Found potential API keys in code"
+          # API keys: only flag a literal value DIRECTLY assigned to an api key
+          # field. Requiring the quote to immediately follow the assignment avoids
+          # false positives on env-var reads (os.environ.get("X_API_KEY")),
+          # test fixtures, and public identifiers passed as defaults, while still
+          # catching real hardcoded secrets like api_key = "sk-live-...".
+          if git grep -E '(api[_-]?key|apikey)["\x27]?[[:space:]]*[:=][[:space:]]*["\x27][a-zA-Z0-9_-]{20,}["\x27]' \
+               -- '*.py' '*.js' '*.ts' '*.tsx' \
+               ':(exclude)**/*test*' ':(exclude)**/*spec*' ':(exclude)**/tests/**'; then
+            echo "Found potential hardcoded API key value in code"
             exit 1
           fi
 
