@@ -45,13 +45,13 @@ interface Category {
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
-  all: '🌈',
-  cartoons: '🎬',
-  educational: '📚',
-  music: '🎵',
+  all: '',
+  cartoons: '',
+  educational: '',
+  music: '',
   hebrew: 'א',
-  stories: '📖',
-  jewish: '✡️',
+  stories: '',
+  jewish: '',
 };
 
 const KidsCard: React.FC<{
@@ -82,7 +82,7 @@ const KidsCard: React.FC<{
     }).start();
   };
 
-  const categoryIcon = CATEGORY_ICONS[item.category] || '🌈';
+  const categoryIcon = CATEGORY_ICONS[item.category] || '';
 
   return (
     <TouchableOpacity
@@ -246,7 +246,7 @@ export const ChildrenScreen: React.FC = () => {
             <GlassCategoryPill
               key={category.id}
               label={getLocalizedText(category, 'name')}
-              emoji={CATEGORY_ICONS[category.id] || '🌈'}
+              emoji={CATEGORY_ICONS[category.id] || ''}
               isActive={selectedCategory === category.id}
               onPress={() => setSelectedCategory(category.id)}
               hasTVPreferredFocus={index === 0}

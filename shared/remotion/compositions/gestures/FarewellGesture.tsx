@@ -42,7 +42,7 @@ export const FarewellGesture: React.FC = () => {
               textShadow: '0 0 10px #fbbf24',
             }}
           >
-            ✨
+            
           </div>
         );
       })}

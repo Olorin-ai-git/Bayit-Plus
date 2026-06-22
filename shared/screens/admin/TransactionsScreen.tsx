@@ -233,7 +233,7 @@ export const TransactionsScreen: React.FC = () => {
         style={styles.actionButton}
         onPress={() => handleViewDetails(transaction)}
       >
-        <Text style={styles.actionIcon}>👁️</Text>
+        <Text style={styles.actionIcon}></Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.actionButton}
@@ -246,7 +246,7 @@ export const TransactionsScreen: React.FC = () => {
           style={[styles.actionButton, styles.refundButton]}
           onPress={() => handleRefund(transaction)}
         >
-          <Text style={styles.actionIcon}>↩️</Text>
+          <Text style={styles.actionIcon}></Text>
         </TouchableOpacity>
       )}
     </View>
@@ -255,11 +255,11 @@ export const TransactionsScreen: React.FC = () => {
   const headerActions = (
     <View style={styles.headerActions}>
       <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilters(true)}>
-        <Text style={styles.filterButtonIcon}>🔍</Text>
+        <Text style={styles.filterButtonIcon}></Text>
         <Text style={styles.filterButtonText}>{t('admin.transactions.filters', 'Filters')}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.exportButton} onPress={handleExport}>
-        <Text style={styles.exportButtonText}>📥 {t('admin.transactions.export', 'Export')}</Text>
+        <Text style={styles.exportButtonText}>{t('admin.transactions.export', 'Export')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -441,7 +441,7 @@ export const TransactionsScreen: React.FC = () => {
               <View style={styles.detailsActions}>
                 {selectedTransaction?.status === 'completed' && (
                   <TouchableOpacity style={styles.refundDetailButton} onPress={() => { setShowDetails(false); handleRefund(selectedTransaction); }}>
-                    <Text style={styles.refundDetailButtonText}>↩️ {t('admin.transactions.processRefund', 'Process Refund')}</Text>
+                    <Text style={styles.refundDetailButtonText}>{t('admin.transactions.processRefund', 'Process Refund')}</Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity style={styles.closeButton} onPress={() => setShowDetails(false)}>

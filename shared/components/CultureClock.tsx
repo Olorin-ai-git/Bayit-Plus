@@ -153,14 +153,14 @@ export const CultureClock: React.FC<CultureClockProps> = ({
   // Get culture flag emoji
   const getCultureFlag = (): string => {
     const flags: Record<string, string> = {
-      israeli: '🇮🇱',
-      usa: '🇺🇸',
-      chinese: '🇨🇳',
-      japanese: '🇯🇵',
-      korean: '🇰🇷',
-      indian: '🇮🇳',
+      israeli: '',
+      usa: '',
+      chinese: '',
+      japanese: '',
+      korean: '',
+      indian: '',
     };
-    return flags[effectiveCultureId] || '🌍';
+    return flags[effectiveCultureId] || '';
   };
 
   // Variant-based styles

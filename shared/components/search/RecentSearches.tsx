@@ -83,7 +83,7 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
               isTV ? 'px-3 py-2 max-w-[300px]' : 'px-3 py-1 max-w-[200px]'
             }`}
           >
-            <Text className={isTV ? 'text-base' : 'text-sm'}>🕒</Text>
+            <Text className={isTV ? 'text-base' : 'text-sm'}></Text>
             <Text className={`text-white font-medium ${isTV ? 'text-base' : 'text-sm'}`} numberOfLines={1}>
               {query}
             </Text>

@@ -180,7 +180,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
       {/* Overall Mood */}
       {data.overall_mood && (
         <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/60 px-${isMobilePhone ? '4' : '6'} mb-${isMobilePhone ? '2' : '4'} ${isRTL ? 'text-right' : 'text-left'}`}>
-          🇮🇱 {getLocalizedText(data.overall_mood, data.overall_mood_en, data.overall_mood_es)}
+           {getLocalizedText(data.overall_mood, data.overall_mood_en, data.overall_mood_es)}
         </Text>
       )}
 

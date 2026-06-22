@@ -176,7 +176,7 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
               transform: [{ translateX: -8 }, { translateY: -8 }],
             }}
           >
-            <Text className="text-base" style={{ color: colors.warning }}>✡</Text>
+            <Text className="text-base" style={{ color: colors.warning }}></Text>
           </View>
         )}
       </View>
@@ -304,9 +304,9 @@ export const DualClock: React.FC<DualClockProps> = ({
   if (compact) {
     return (
       <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-        <Text className="text-xs">🇮🇱</Text>
+        <Text className="text-xs"></Text>
         <Text className="font-mono text-sm opacity-80" style={{ color: colors.text, textAlign }}>{israel.time}</Text>
-        {shabbat.is_shabbat && <Text className="text-base" style={{ color: colors.warning }}>✡</Text>}
+        {shabbat.is_shabbat && <Text className="text-base" style={{ color: colors.warning }}></Text>}
       </View>
     );
   }
@@ -320,7 +320,7 @@ export const DualClock: React.FC<DualClockProps> = ({
           minutes={israelParsed.minutes}
           size={140}
           label={t('clock.israel')}
-          flag="🇮🇱"
+          flag=""
           sublabel={israel.day}
           accentColor={colors.primary}
           isShabbat={shabbat.is_shabbat}
@@ -337,7 +337,7 @@ export const DualClock: React.FC<DualClockProps> = ({
           minutes={localParsed.minutes}
           size={140}
           label={t('clock.local')}
-          flag="📍"
+          flag=""
           sublabel={local.timezone.split('/')[1]?.replace('_', ' ')}
           accentColor={colors.primary}
         />
@@ -356,7 +356,7 @@ export const DualClock: React.FC<DualClockProps> = ({
           {shabbat.is_shabbat ? (
             <View className="flex-row items-center justify-between" style={{ flexDirection }}>
               <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-                <Text className="text-base" style={{ color: colors.warning }}>✡</Text>
+                <Text className="text-base" style={{ color: colors.warning }}></Text>
                 <Text className="text-base font-semibold" style={{ color: colors.warning.DEFAULT, textAlign }}>{t('clock.shabbatShalom')}</Text>
               </View>
               {shabbat.countdown && (
@@ -369,7 +369,7 @@ export const DualClock: React.FC<DualClockProps> = ({
           ) : shabbat.is_erev_shabbat ? (
             <View className="flex-row items-center justify-between" style={{ flexDirection }}>
               <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-                <Text className="text-base">🕯️</Text>
+                <Text className="text-base"></Text>
                 <Text className="text-base font-semibold" style={{ color: colors.secondary.DEFAULT, textAlign }}>{t('clock.erevShabbat')}</Text>
               </View>
               <View className="flex-row items-center" style={{ flexDirection }}>
@@ -421,9 +421,9 @@ export const MiniClock: React.FC = () => {
 
   return (
     <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-      <Text className="text-xs">🇮🇱</Text>
+      <Text className="text-xs"></Text>
       <Text className="font-mono text-sm opacity-80" style={{ color: colors.text, textAlign }}>{time || '--:--'}</Text>
-      {isShabbat && <Text className="text-xs" style={{ color: colors.warning }}>✡</Text>}
+      {isShabbat && <Text className="text-xs" style={{ color: colors.warning }}></Text>}
     </View>
   );
 };

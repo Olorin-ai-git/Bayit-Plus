@@ -46,11 +46,11 @@ export interface GlassModalProps {
 
 const getIconForType = (type: ModalType): string => {
   const icons: Record<ModalType, string> = {
-    error: '❌',
-    success: '✅',
-    warning: '⚠️',
-    info: 'ℹ️',
-    confirm: '❓',
+    error: '',
+    success: '',
+    warning: '',
+    info: '',
+    confirm: '',
   };
   return icons[type];
 };

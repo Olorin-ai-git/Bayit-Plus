@@ -56,7 +56,7 @@ class MongoDBConnection:
         if not raw_mongodb_uri:
             raise ConfigurationError(
                 "MONGODB_URI environment variable is required. "
-                "Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority"
+                "Format: mongodb+srv://<credentials>@cluster.mongodb.net/database?retryWrites=true&w=majority"
             )
 
         if not self.mongodb_db_name:
@@ -70,7 +70,7 @@ class MongoDBConnection:
             raise ConfigurationError(
                 f"MONGODB_URI contains a placeholder value: {raw_mongodb_uri}\n"
                 "Please replace with actual MongoDB Atlas connection string.\n"
-                "Format: mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority"
+                "Format: mongodb+srv://<credentials>@cluster.mongodb.net/?retryWrites=true&w=majority"
             )
 
         # Log URI format for debugging (without exposing credentials)
@@ -109,7 +109,7 @@ class MongoDBConnection:
             ConfigurationError: If URI format is invalid
         """
         # Pattern to extract username and password from MongoDB URI
-        # Format: mongodb+srv://username:password@host/...
+        # Format: mongodb+srv://<credentials>@host/...
         pattern = r"^(mongodb(?:\+srv)?://)([^:]+):([^@]+)@(.+)$"
         match = re.match(pattern, uri)
 

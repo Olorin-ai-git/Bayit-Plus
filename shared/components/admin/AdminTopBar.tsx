@@ -123,7 +123,7 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
             className="flex items-center"
             style={{ flexDirection }}
           >
-            <Text className="text-sm">🏠</Text>
+            <Text className="text-sm"></Text>
           </TouchableOpacity>
 
           {breadcrumbs.map((crumb, index) => (
@@ -158,11 +158,11 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
 
         {/* Quick Actions */}
         <TouchableOpacity className="w-10 h-10 rounded-lg bg-glass justify-center items-center border border-glassBorder">
-          <Text className="text-lg">🔔</Text>
+          <Text className="text-lg"></Text>
         </TouchableOpacity>
 
         <TouchableOpacity className="w-10 h-10 rounded-lg bg-glass justify-center items-center border border-glassBorder">
-          <Text className="text-lg">❓</Text>
+          <Text className="text-lg"></Text>
         </TouchableOpacity>
       </View>
     </View>

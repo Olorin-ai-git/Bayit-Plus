@@ -236,13 +236,13 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
   const getCultureFlag = useCallback((): string => {
     // Map culture IDs to flags
     const flags: Record<string, string> = {
-      israeli: '🇮🇱',
-      chinese: '🇨🇳',
-      japanese: '🇯🇵',
-      korean: '🇰🇷',
-      indian: '🇮🇳',
+      israeli: '',
+      chinese: '',
+      japanese: '',
+      korean: '',
+      indian: '',
     };
-    return flags[cultureId] || '🌍';
+    return flags[cultureId] || '';
   }, [cultureId]);
 
   // Dynamic accent color

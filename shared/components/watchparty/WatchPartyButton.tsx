@@ -72,7 +72,7 @@ export const WatchPartyButton: React.FC<WatchPartyButtonProps> = ({
             intensity="medium"
             borderColor="#10b981"
           >
-            <Text className="text-base">👥</Text>
+            <Text className="text-base"></Text>
             <Text className="text-sm font-medium text-green-500">{t('watchParty.active')}</Text>
             <View className="w-2 h-2 rounded-full bg-green-500" />
           </GlassView>
@@ -99,7 +99,7 @@ export const WatchPartyButton: React.FC<WatchPartyButtonProps> = ({
             intensity="medium"
             borderColor={isFocused ? '#9333ea' : undefined}
           >
-            <Text className="text-base">👥</Text>
+            <Text className="text-base"></Text>
             <Text className="text-sm font-medium text-white">{t('watchParty.title')}</Text>
           </GlassView>
         </Animated.View>
@@ -114,7 +114,7 @@ export const WatchPartyButton: React.FC<WatchPartyButtonProps> = ({
               onCreatePress();
             }}
           >
-            <Text className="text-base">➕</Text>
+            <Text className="text-base"></Text>
             <Text className="text-sm text-white">{t('watchParty.create')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -124,7 +124,7 @@ export const WatchPartyButton: React.FC<WatchPartyButtonProps> = ({
               onJoinPress();
             }}
           >
-            <Text className="text-base">🔗</Text>
+            <Text className="text-base"></Text>
             <Text className="text-sm text-white">{t('watchParty.join')}</Text>
           </TouchableOpacity>
         </GlassView>

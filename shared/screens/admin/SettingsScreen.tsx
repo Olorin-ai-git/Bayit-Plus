@@ -141,7 +141,7 @@ export const SettingsScreen: React.FC = () => {
       actions={
         hasChanges && (
           <TouchableOpacity className={`px-4 py-2 bg-green-600 rounded-md flex-row items-center ${saving ? 'opacity-60' : ''}`} onPress={handleSaveSettings} disabled={saving}>
-            {saving ? <GlassLoadingSpinner size="small" /> : <Text className="text-sm text-white font-semibold">💾 {t('admin.settings.save', 'Save Changes')}</Text>}
+            {saving ? <GlassLoadingSpinner size="small" /> : <Text className="text-sm text-white font-semibold">{t('admin.settings.save', 'Save Changes')}</Text>}
           </TouchableOpacity>
         )
       }

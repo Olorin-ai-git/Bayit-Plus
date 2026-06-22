@@ -452,7 +452,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
                 buttonState === 'listening' && styles.iconListening,
               ]}
             >
-              🎤
+              
             </Text>
           )}
         </Animated.View>
@@ -508,7 +508,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
               {isTranscribing ? (
                 <GlassLoadingSpinner size="large" />
               ) : (
-                <Text style={styles.modalIconText}>🎤</Text>
+                <Text style={styles.modalIconText}></Text>
               )}
             </View>
           </Animated.View>

@@ -121,28 +121,28 @@ export const AdminDashboardScreen: React.FC = () => {
             <StatCard
               title={t('admin.stats.totalUsers', 'Total Users')}
               value={formatNumber(stats.total_users)}
-              icon="👥"
+              icon=""
               color={colors.primary.DEFAULT}
               onPress={() => navigation.navigate('UsersList')}
             />
             <StatCard
               title={t('admin.stats.activeUsers', 'Active Users')}
               value={formatNumber(stats.active_users)}
-              icon="✅"
+              icon=""
               color={colors.success}
               trend={{ value: 12.5, isPositive: true }}
             />
             <StatCard
               title={t('admin.stats.newToday', 'New Today')}
               value={formatNumber(stats.new_users_today)}
-              icon="🆕"
+              icon=""
               color={colors.secondary}
               trend={{ value: 8.2, isPositive: true }}
             />
             <StatCard
               title={t('admin.stats.newThisWeek', 'New This Week')}
               value={formatNumber(stats.new_users_this_week)}
-              icon="📈"
+              icon=""
               color={colors.warning}
             />
           </View>
@@ -157,27 +157,27 @@ export const AdminDashboardScreen: React.FC = () => {
             <StatCard
               title={t('admin.stats.totalRevenue', 'Total Revenue')}
               value={formatCurrency(stats.total_revenue)}
-              icon="💰"
+              icon=""
               color={colors.success}
               onPress={() => navigation.navigate('BillingOverview')}
             />
             <StatCard
               title={t('admin.stats.revenueToday', 'Today')}
               value={formatCurrency(stats.revenue_today)}
-              icon="📊"
+              icon=""
               color={colors.primary.DEFAULT}
               trend={{ value: 15.3, isPositive: true }}
             />
             <StatCard
               title={t('admin.stats.revenueMonth', 'This Month')}
               value={formatCurrency(stats.revenue_this_month)}
-              icon="📅"
+              icon=""
               color={colors.secondary}
             />
             <StatCard
               title={t('admin.stats.arpu', 'ARPU')}
               value={`$${stats.avg_revenue_per_user.toFixed(2)}`}
-              icon="💵"
+              icon=""
               color={colors.warning}
             />
           </View>
@@ -192,14 +192,14 @@ export const AdminDashboardScreen: React.FC = () => {
             <StatCard
               title={t('admin.stats.activeSubscriptions', 'Active Subscriptions')}
               value={formatNumber(stats.active_subscriptions)}
-              icon="📦"
+              icon=""
               color={colors.primary.DEFAULT}
               onPress={() => navigation.navigate('Subscriptions')}
             />
             <StatCard
               title={t('admin.stats.churnRate', 'Churn Rate')}
               value={`${stats.churn_rate}%`}
-              icon="📉"
+              icon=""
               color={stats.churn_rate < 5 ? colors.success : colors.error}
               trend={{ value: 0.5, isPositive: stats.churn_rate < 5 }}
             />
@@ -250,22 +250,22 @@ export const AdminDashboardScreen: React.FC = () => {
           </Text>
           <View style={styles.quickActionsGrid}>
             <QuickAction
-              icon="👤"
+              icon=""
               label={t('admin.actions.addUser', 'Add User')}
               onPress={() => navigation.navigate('UserDetail', { userId: undefined })}
             />
             <QuickAction
-              icon="🎯"
+              icon=""
               label={t('admin.actions.newCampaign', 'New Campaign')}
               onPress={() => navigation.navigate('CampaignDetail', { campaignId: undefined })}
             />
             <QuickAction
-              icon="✉️"
+              icon=""
               label={t('admin.actions.sendEmail', 'Send Email')}
               onPress={() => navigation.navigate('EmailCampaigns')}
             />
             <QuickAction
-              icon="📊"
+              icon=""
               label={t('admin.actions.viewReports', 'View Reports')}
               onPress={() => navigation.navigate('BillingOverview')}
             />

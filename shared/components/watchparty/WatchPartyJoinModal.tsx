@@ -67,7 +67,7 @@ export const WatchPartyJoinModal: React.FC<WatchPartyJoinModalProps> = ({
             <GlassView className="w-full max-w-[400px] p-8 gap-6" intensity="high">
               <View className="items-center gap-3">
                 <View className="w-16 h-16 rounded-full bg-purple-500/20 items-center justify-center mb-3">
-                  <Text className="text-[32px]">🔗</Text>
+                  <Text className="text-[32px]"></Text>
                 </View>
                 <Text className="text-2xl font-semibold text-white">{t('watchParty.joinTitle')}</Text>
                 <Text className="text-sm text-white/70">{t('watchParty.enterCode')}</Text>

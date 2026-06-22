@@ -79,7 +79,7 @@ export const ClappingGesture: React.FC = () => {
               textShadow: '0 0 10px #22c55e',
             }}
           >
-            ✨
+            
           </div>
         );
       })}

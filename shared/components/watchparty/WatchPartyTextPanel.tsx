@@ -60,7 +60,7 @@ const TextOnlyParticipant: React.FC<{
     <GlassView className="flex-row items-center py-3 px-4 gap-3 min-w-[120px]" intensity="low">
       <View className={`w-8 h-8 rounded-full items-center justify-center ${isHost ? 'bg-amber-500/20' : 'bg-white/20'}`}>
         <Text className="text-sm font-semibold text-white">
-          {isHost ? '👑' : participant.user_name.charAt(0).toUpperCase()}
+          {isHost ? '' : participant.user_name.charAt(0).toUpperCase()}
         </Text>
       </View>
       <View className="gap-0.5">
@@ -120,7 +120,7 @@ export const WatchPartyTextPanel: React.FC<WatchPartyTextPanelProps> = ({
 
       {/* Text-Only Mode Indicator */}
       <View className="flex-row items-center justify-center gap-3 py-3 bg-purple-500/10 rounded-lg">
-        <Text className="text-base">💬</Text>
+        <Text className="text-base"></Text>
         <Text className="text-sm text-white/70">{t('watchParty.textOnlyMode')}</Text>
       </View>
 

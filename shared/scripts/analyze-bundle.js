@@ -118,7 +118,7 @@ function analyzeImports(rootDir) {
 }
 
 function main() {
-  log('\n📦 Bundle Size Analysis\n', 'bold');
+  log('\nBundle Size Analysis\n', 'bold');
 
   const rootDir = process.cwd();
   const sharedDir = path.join(rootDir);
@@ -127,12 +127,12 @@ function main() {
   log('Analyzing source code...', 'cyan');
   const { totalSize, files } = analyzeDirectory(sharedDir);
 
-  log(`\n📊 Total source code size: ${formatBytes(totalSize)}`, 'green');
+  log(`\nTotal source code size: ${formatBytes(totalSize)}`, 'green');
 
   // Find large files
   const largeFiles = findLargeFiles(files, 5120); // 5KB threshold
   if (largeFiles.length > 0) {
-    log('\n⚠️  Large files (>5KB):', 'yellow');
+    log('\n[WARN] Large files (>5KB):', 'yellow');
     largeFiles.slice(0, 10).forEach((file) => {
       log(`  ${file.path}: ${formatBytes(file.size)}`, 'yellow');
     });
@@ -143,19 +143,19 @@ function main() {
   }
 
   // Analyze imports
-  log('\n🔍 Analyzing dependencies...', 'cyan');
+  log('\nAnalyzing dependencies...', 'cyan');
   const importCounts = analyzeImports(sharedDir);
   const sortedImports = Object.entries(importCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15);
 
-  log('\n📚 Most imported dependencies:', 'green');
+  log('\nMost imported dependencies:', 'green');
   sortedImports.forEach(([dep, count]) => {
     log(`  ${dep}: ${count} imports`, 'green');
   });
 
   // Recommendations
-  log('\n💡 Optimization Recommendations:\n', 'bold');
+  log('\nOptimization Recommendations:\n', 'bold');
 
   const recommendations = [];
 
@@ -189,23 +189,23 @@ function main() {
 
   // Display recommendations
   recommendations.forEach((rec) => {
-    const icon = rec.type === 'warning' ? '⚠️' : 'ℹ️';
+    const icon = rec.type === 'warning' ? '[WARN]' : '[INFO]';
     const color = rec.type === 'warning' ? 'yellow' : 'cyan';
-    log(`${icon}  ${rec.message}`, color);
+    log(`${icon} ${rec.message}`, color);
   });
 
   // Bundle size targets
-  log('\n🎯 Bundle Size Targets:', 'bold');
+  log('\nBundle Size Targets:', 'bold');
   log('  Web: <5MB (gzipped)', 'green');
   log('  tvOS: <20MB (native bundle)', 'green');
 
   if (totalSize > 5 * 1024 * 1024) {
-    log(`\n  ❌ Source exceeds 5MB target. Current: ${formatBytes(totalSize)}`, 'red');
+    log(`\n  [FAIL] Source exceeds 5MB target. Current: ${formatBytes(totalSize)}`, 'red');
   } else {
-    log(`\n  ✅ Source within target. Current: ${formatBytes(totalSize)}`, 'green');
+    log(`\n  [OK] Source within target. Current: ${formatBytes(totalSize)}`, 'green');
   }
 
-  log('\n✨ Analysis complete!\n', 'bold');
+  log('\nAnalysis complete!\n', 'bold');
 }
 
 main();

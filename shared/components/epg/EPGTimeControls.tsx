@@ -67,7 +67,7 @@ export const EPGTimeControls: React.FC<EPGTimeControlsProps> = ({
             focusedButton === 'now' ? 'bg-purple-500/40 border-purple-500' : 'border-transparent'
           }`}
         >
-          <Text className="mr-2" style={{ fontSize: isTV ? 18 : 16 }}>🕐</Text>
+          <Text className="mr-2" style={{ fontSize: isTV ? 18 : 16 }}></Text>
           <Text className="text-purple-500 font-medium" style={{ fontSize: isTV ? 16 : 14 }}>
             {t('epg.jumpToNow', 'Now')}
           </Text>
@@ -97,7 +97,7 @@ export const EPGTimeControls: React.FC<EPGTimeControlsProps> = ({
           focusedButton === 'timezone' ? 'bg-black/30 border-purple-500' : 'border-transparent'
         }`}
       >
-        <Text className="mr-4" style={{ fontSize: isTV ? 20 : 18 }}>🌍</Text>
+        <Text className="mr-4" style={{ fontSize: isTV ? 20 : 18 }}></Text>
         <View className="items-start">
           <Text className="text-white/60 mb-0.5" style={{ fontSize: isTV ? 12 : 10 }}>
             {timezone === 'israel' ? t('epg.israelTime', 'Israel Time') : t('epg.localTime', 'Local Time')}

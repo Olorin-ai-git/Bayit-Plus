@@ -178,7 +178,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
         <View style={styles.gradientOverlay} />
 
         {/* Decorative Star of David */}
-        <Text style={styles.decorativeStar}>✡</Text>
+        <Text style={styles.decorativeStar}></Text>
 
         <View style={[styles.content, isRTL && styles.contentRTL]}>
           {/* Top Row: Title and Countdown */}

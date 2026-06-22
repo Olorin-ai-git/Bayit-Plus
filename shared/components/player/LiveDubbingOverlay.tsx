@@ -61,7 +61,7 @@ export const LiveDubbingOverlay: React.FC<LiveDubbingOverlayProps> = ({
         className={`flex-${flexDirection} items-center gap-2 px-3 py-1 mb-2 rounded-xl
           bg-purple-700/20 border border-purple-500/40`}
       >
-        <Text className="text-lg">🔊</Text>
+        <Text className="text-lg"></Text>
         <Text className={`${isTV ? 'text-base' : 'text-xs'} font-semibold text-purple-300`}>
           {t('dubbing.liveDubbing', 'Live Dubbing')}
         </Text>

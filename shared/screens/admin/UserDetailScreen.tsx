@@ -318,19 +318,19 @@ export const UserDetailScreen: React.FC = () => {
               style={styles.actionButton}
               onPress={() => setShowPasswordModal(true)}
             >
-              <Text style={styles.actionButtonText}>🔑 {t('admin.users.resetPassword', 'Reset Password')}</Text>
+              <Text style={styles.actionButtonText}>{t('admin.users.resetPassword', 'Reset Password')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, styles.dangerButton]}
               onPress={handleBanUser}
             >
-              <Text style={styles.dangerButtonText}>🚫 {t('admin.users.ban', 'Ban')}</Text>
+              <Text style={styles.dangerButtonText}>{t('admin.users.ban', 'Ban')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, styles.dangerButton]}
               onPress={handleDeleteUser}
             >
-              <Text style={styles.dangerButtonText}>🗑️ {t('common.delete', 'Delete')}</Text>
+              <Text style={styles.dangerButtonText}>{t('common.delete', 'Delete')}</Text>
             </TouchableOpacity>
           </View>
         )

@@ -35,7 +35,7 @@ export const DisagreementGesture: React.FC = () => {
           fontWeight: 'bold',
         }}
       >
-        ✕
+        
       </div>
 
       {/* Negative glow */}

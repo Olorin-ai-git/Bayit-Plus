@@ -35,7 +35,7 @@ export const AdjustsHatGesture: React.FC = () => {
               textShadow: '0 0 8px #a855f7',
             }}
           >
-            ✨
+            
           </div>
         );
       })}

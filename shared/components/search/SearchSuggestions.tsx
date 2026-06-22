@@ -92,7 +92,7 @@ const SuggestionItem: React.FC<{
         } ${isTV ? 'px-4 py-3' : 'px-4 py-2'}`}
         style={{ transform: [{ scale: scaleAnim }] }}
       >
-        <Text className={`opacity-50 ${isTV ? 'text-lg' : 'text-base'}`}>🔍</Text>
+        <Text className={`opacity-50 ${isTV ? 'text-lg' : 'text-base'}`}></Text>
         {renderHighlightedText()}
       </Animated.View>
     </TouchableOpacity>

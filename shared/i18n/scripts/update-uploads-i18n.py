@@ -50,10 +50,10 @@ def main():
 
     total_keys = count_keys(uploads_data['uploads'])
 
-    print(f"✅ Successfully updated admin.uploads section in en.json")
-    print(f"📊 Total i18n keys added: {total_keys}")
-    print(f"💾 Backup saved to: {backup_path}")
-    print(f"✨ Next step: Translate to 9 other languages (he, es, zh, fr, it, hi, ta, bn, ja)")
+    print(f"[OK] Successfully updated admin.uploads section in en.json")
+    print(f"Total i18n keys added: {total_keys}")
+    print(f"Backup saved to: {backup_path}")
+    print(f"Next step: Translate to 9 other languages (he, es, zh, fr, it, hi, ta, bn, ja)")
 
 if __name__ == '__main__':
     main()

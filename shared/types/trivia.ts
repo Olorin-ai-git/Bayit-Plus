@@ -162,9 +162,9 @@ export interface TriviaLanguageInfo {
 }
 
 export const TRIVIA_LANGUAGES: TriviaLanguageInfo[] = [
-  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '🇮🇱', rtl: true },
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', rtl: false },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', rtl: false },
+  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '', rtl: true },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '', rtl: false },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '', rtl: false },
 ]
 
 export function getTriviaLanguageInfo(code: string): TriviaLanguageInfo | undefined {

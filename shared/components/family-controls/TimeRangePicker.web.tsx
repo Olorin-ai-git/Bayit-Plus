@@ -120,7 +120,7 @@ export const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
       {isOvernightRange && (
         <View style={styles.warning}>
           <Text style={styles.warningText}>
-            ⚠️ Overnight range: Viewing allowed from {formatHour(startHour)} to{' '}
+             Overnight range: Viewing allowed from {formatHour(startHour)} to{' '}
             {formatHour(endHour)} the next day
           </Text>
         </View>

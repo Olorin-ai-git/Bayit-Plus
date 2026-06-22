@@ -314,7 +314,7 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
               onFocus={() => setFocusedButton('list')}
               activeOpacity={0.8}
             >
-              <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-white`}>{isInPlaylist ? '✓' : '+'}</Text>
+              <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-white`}>{isInPlaylist ? '' : '+'}</Text>
               <Text className={`${isTV ? 'text-base' : 'text-sm'} font-medium text-white`}>
                 {isInPlaylist ? t('content.inList') : t('content.addToList')}
               </Text>

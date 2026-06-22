@@ -111,7 +111,7 @@ export const ANIMATION_SEQUENCES: Record<AnimationSequence, SequenceDefinition> 
   },
 
   // 3. Process command: thinking → conjuring → presenting (6s)
-  // ✅ FULLY WORKING - All sprites available
+  // FULLY WORKING - All sprites available
   process_command: {
     id: 'process_command',
     steps: [
@@ -135,7 +135,7 @@ export const ANIMATION_SEQUENCES: Record<AnimationSequence, SequenceDefinition> 
   },
 
   // 5. Error shake: confused → shrugging (3s)
-  // ✅ FULLY WORKING - All sprites available
+  // FULLY WORKING - All sprites available
   error_shake: {
     id: 'error_shake',
     steps: [

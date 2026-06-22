@@ -215,7 +215,7 @@ export const RadioScreen: React.FC = () => {
           className="w-[60px] h-[60px] rounded-full bg-purple-600/20 justify-center items-center"
           style={isRTL ? { marginLeft: 20 } : { marginRight: 20 }}
         >
-          <Text className="text-3xl">📻</Text>
+          <Text className="text-3xl"></Text>
         </View>
         <View>
           <Text className="text-5xl font-bold text-white" style={{ textAlign }}>{t('radio.title')}</Text>
