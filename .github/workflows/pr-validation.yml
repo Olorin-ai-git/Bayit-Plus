@@ -19,10 +19,9 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: packages/ui/glass-components/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
-        working-directory: packages/ui/glass-components
+      - name: Install dependencies (workspace root)
         run: npm ci
 
       - name: Run notification system tests

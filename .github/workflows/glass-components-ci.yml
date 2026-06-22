@@ -24,9 +24,8 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install dependencies (workspace root)
         run: npm ci
-        working-directory: packages/ui/glass-components
 
       - name: Run linter
         run: npm run lint
@@ -74,9 +73,8 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install dependencies (workspace root)
         run: npm ci
-        working-directory: packages/ui/glass-components
 
       - name: Run performance tests
         run: |
