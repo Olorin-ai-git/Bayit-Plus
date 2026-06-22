@@ -15,6 +15,10 @@ env:
   PYTHON_VERSION: '3.11'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  # Required so .npmrc (@olorin GitHub Packages registry auth) resolves during
+  # npm ci; without it the postinstall path invokes yarn, which aborts on the
+  # unresolved ${GITHUB_TOKEN} placeholder.
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   lint:
@@ -126,7 +130,9 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: 1.7.1
+          # Must be >= the version that generated backend/poetry.lock (2.2.1) and
+          # support the PEP 621 [project] table; 1.7.1 fails with a 'name' error.
+          version: 2.2.1
           virtualenvs-create: true
           virtualenvs-in-project: true
 

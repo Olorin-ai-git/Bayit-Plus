@@ -17,6 +17,8 @@ concurrency:
 env:
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
+  # Lets .npmrc (@olorin GitHub Packages auth) resolve during npm ci.
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   tighten:

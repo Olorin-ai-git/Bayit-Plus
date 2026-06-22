@@ -6,6 +6,10 @@ on:
   push:
     branches: [develop, feature/*]
 
+env:
+  # Lets .npmrc (@olorin GitHub Packages auth) resolve during npm ci.
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   test-notification-system:
     name: Test Notification System

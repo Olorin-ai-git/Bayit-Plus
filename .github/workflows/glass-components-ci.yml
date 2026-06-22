@@ -10,6 +10,10 @@ on:
     paths:
       - 'packages/ui/glass-components/**'
 
+env:
+  # Lets .npmrc (@olorin GitHub Packages auth) resolve during npm ci.
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   test:
     name: Test & Build
