@@ -134,24 +134,13 @@ paths = [
   '''^\.gitleaks\.toml$''',
 ]
 
-# Ignore lock files and minified code
+# Ignore lock files, minified code, and known test/mock values
+# (merged into a single allowlist; gitleaks only permits one [allowlist] table)
 regexes = [
   '''poetry\.lock''',
   '''package-lock\.json''',
   '''yarn\.lock''',
   '''\.min\.js''',
-]
-
-# Ignore test fixtures with obvious mock values
-[[rules]]
-id = "test-mock-values"
-description = "Test mock values (not real secrets)"
-regex = '''(test-api-key|mock-secret|fake-password|example-key)'''
-tags = ["test", "mock"]
-
-[allowlist]
-# Allowlist test mock values
-regexes = [
   '''test-secret-key-minimum-32-chars-long''',
   '''test-api-key''',
   '''mock-.*''',
@@ -160,6 +149,13 @@ regexes = [
   '''sk_test_.*''',
   '''pk_test_.*''',
 ]
+
+# Ignore test fixtures with obvious mock values
+[[rules]]
+id = "test-mock-values"
+description = "Test mock values (not real secrets)"
+regex = '''(test-api-key|mock-secret|fake-password|example-key)'''
+tags = ["test", "mock"]
 
 # Additional entropy detection
 [extend.entropyDetection]
