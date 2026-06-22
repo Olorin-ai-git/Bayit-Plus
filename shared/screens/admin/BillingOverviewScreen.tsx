@@ -156,28 +156,28 @@ export const BillingOverviewScreen: React.FC = () => {
             <StatCard
               title={t('admin.billing.today', 'Today')}
               value={formatCurrency(overview?.today || 0)}
-              icon=""
+              icon="💰"
               color={colors.success}
               trend={{ value: 12.5, isPositive: true }}
             />
             <StatCard
               title={t('admin.billing.thisWeek', 'This Week')}
               value={formatCurrency(overview?.this_week || 0)}
-              icon=""
+              icon="📊"
               color={colors.primary}
               trend={{ value: 8.3, isPositive: true }}
             />
             <StatCard
               title={t('admin.billing.thisMonth', 'This Month')}
               value={formatCurrency(overview?.this_month || 0)}
-              icon=""
+              icon="📅"
               color={colors.secondary}
               trend={{ value: 15.2, isPositive: true }}
             />
             <StatCard
               title={t('admin.billing.thisYear', 'This Year')}
               value={formatCurrency(overview?.this_year || 0)}
-              icon=""
+              icon="📈"
               color={colors.warning}
             />
           </View>
@@ -232,7 +232,7 @@ export const BillingOverviewScreen: React.FC = () => {
               style={styles.quickActionCard}
               onPress={() => navigation.navigate('Transactions')}
             >
-              <Text style={styles.quickActionIcon}></Text>
+              <Text style={styles.quickActionIcon}>📋</Text>
               <Text style={styles.quickActionTitle}>{t('admin.billing.viewTransactions', 'Transactions')}</Text>
               <Text style={styles.quickActionDesc}>{t('admin.billing.viewAllTransactions', 'View all transactions')}</Text>
             </TouchableOpacity>
@@ -243,7 +243,7 @@ export const BillingOverviewScreen: React.FC = () => {
               <View style={styles.quickActionBadge}>
                 <Text style={styles.quickActionBadgeText}>{overview?.pending_refunds || 0}</Text>
               </View>
-              <Text style={styles.quickActionIcon}></Text>
+              <Text style={styles.quickActionIcon}>↩️</Text>
               <Text style={styles.quickActionTitle}>{t('admin.billing.refunds', 'Refunds')}</Text>
               <Text style={styles.quickActionDesc}>{t('admin.billing.manageRefunds', 'Manage refund requests')}</Text>
             </TouchableOpacity>
@@ -251,7 +251,7 @@ export const BillingOverviewScreen: React.FC = () => {
               style={styles.quickActionCard}
               onPress={() => navigation.navigate('Subscriptions')}
             >
-              <Text style={styles.quickActionIcon}></Text>
+              <Text style={styles.quickActionIcon}>📦</Text>
               <Text style={styles.quickActionTitle}>{t('admin.billing.subscriptions', 'Subscriptions')}</Text>
               <Text style={styles.quickActionDesc}>{t('admin.billing.manageSubscriptions', 'Manage subscriptions')}</Text>
             </TouchableOpacity>
@@ -259,7 +259,7 @@ export const BillingOverviewScreen: React.FC = () => {
               style={styles.quickActionCard}
               onPress={() => navigation.navigate('PlanManagement')}
             >
-              <Text style={styles.quickActionIcon}></Text>
+              <Text style={styles.quickActionIcon}>⚙️</Text>
               <Text style={styles.quickActionTitle}>{t('admin.billing.plans', 'Plans')}</Text>
               <Text style={styles.quickActionDesc}>{t('admin.billing.managePlans', 'Manage pricing plans')}</Text>
             </TouchableOpacity>
@@ -313,10 +313,10 @@ export const BillingOverviewScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>{t('admin.billing.paymentMethods', 'Payment Methods')}</Text>
           <View style={styles.paymentMethodsList}>
             {[
-              { method: 'Credit Card', percentage: 65, icon: '' },
-              { method: 'PayPal', percentage: 20, icon: '' },
-              { method: 'Apple Pay', percentage: 10, icon: '' },
-              { method: 'Google Pay', percentage: 5, icon: '' },
+              { method: 'Credit Card', percentage: 65, icon: '💳' },
+              { method: 'PayPal', percentage: 20, icon: '🅿️' },
+              { method: 'Apple Pay', percentage: 10, icon: '🍎' },
+              { method: 'Google Pay', percentage: 5, icon: '🤖' },
             ].map((item, index) => (
               <View key={index} style={styles.paymentMethodItem}>
                 <Text style={styles.paymentMethodIcon}>{item.icon}</Text>

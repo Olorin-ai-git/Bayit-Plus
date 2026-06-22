@@ -181,7 +181,7 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
                   {t('cities.jerusalem.title')}
                 </Text>
                 <Text style={[styles.titleEmoji, isRTL && styles.titleEmojiRTL]}>
-                  
+                  🇮🇱
                 </Text>
               </View>
             )}
@@ -212,7 +212,7 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
                   {t('cities.jerusalem.title')}
                 </Text>
                 <Text style={[styles.titleEmoji, isRTL && styles.titleEmojiRTL]}>
-                  
+                  🇮🇱
                 </Text>
               </View>
             )}
@@ -246,7 +246,7 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
                 {t('cities.jerusalem.title')}
               </Text>
               <Text style={[styles.titleEmoji, isRTL && styles.titleEmojiRTL]}>
-                
+                🇮🇱
               </Text>
             </View>
           )}

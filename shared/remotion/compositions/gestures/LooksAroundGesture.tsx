@@ -45,7 +45,7 @@ export const LooksAroundGesture: React.FC = () => {
             textShadow: '0 0 6px #60a5fa',
           }}
         >
-          
+          ✨
         </div>
       )}
     </AbsoluteFill>

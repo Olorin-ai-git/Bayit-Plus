@@ -141,7 +141,7 @@ export const SingleResultGesture: React.FC = () => {
               textShadow: '0 0 8px #a78bfa',
             }}
           >
-            
+            ✨
           </div>
         );
       })}

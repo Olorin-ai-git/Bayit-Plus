@@ -458,7 +458,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
                 focused ? 'border-purple-600 border-[3px] scale-110' : 'border-transparent'
               } ${(!input.trim() || isLoading) ? 'opacity-50' : ''}`}
             >
-              <Text className="text-lg text-white" style={{ transform: [{ scaleX: -1 }] }}></Text>
+              <Text className="text-lg text-white" style={{ transform: [{ scaleX: -1 }] }}>➤</Text>
             </Pressable>
           </View>
         </GlassView>

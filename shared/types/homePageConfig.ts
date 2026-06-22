@@ -20,13 +20,13 @@ export type HomeSectionId =
  * Icons for each section (emoji-based for cross-platform compatibility)
  */
 export const SECTION_ICONS: Record<HomeSectionId, string> = {
-  continue_watching: '▶',
-  live_tv: '',
-  trending: '',
-  jerusalem: '',
-  tel_aviv: '',
-  featured: '',
-  categories: '',
+  continue_watching: '▶️',
+  live_tv: '📺',
+  trending: '🔥',
+  jerusalem: '🕌',
+  tel_aviv: '🏙️',
+  featured: '⭐',
+  categories: '📂',
 };
 
 /**

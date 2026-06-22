@@ -196,7 +196,7 @@ export const UploadsScreen: React.FC = () => {
           <StatCard
             title="Total Uploads"
             value={stats?.total_jobs || 0}
-            icon=""
+            icon="📊"
             color={colors.primary}
           />
           <StatCard
@@ -208,13 +208,13 @@ export const UploadsScreen: React.FC = () => {
           <StatCard
             title="Completed"
             value={stats?.completed || 0}
-            icon=""
+            icon="✅"
             color={colors.success}
           />
           <StatCard
             title="Failed"
             value={stats?.failed || 0}
-            icon=""
+            icon="❌"
             color={colors.error}
           />
         </View>

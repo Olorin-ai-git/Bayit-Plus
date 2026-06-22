@@ -347,12 +347,12 @@ export const GlassLog: React.FC<GlassLogProps> = ({
 
       const count = filteredLogs.length;
       showToast(
-        `[OK] Copied ${count} log ${count === 1 ? 'entry' : 'entries'}`,
+        `✓ Copied ${count} log ${count === 1 ? 'entry' : 'entries'}`,
         'success'
       );
     } catch (error) {
       showToast(
-        `[FAIL] Failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `✗ Failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'danger'
       );
     }

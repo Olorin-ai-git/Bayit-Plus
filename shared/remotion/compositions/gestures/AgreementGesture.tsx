@@ -35,7 +35,7 @@ export const AgreementGesture: React.FC = () => {
           fontWeight: 'bold',
         }}
       >
-        
+        ✓
       </div>
 
       {/* Positive glow */}

@@ -298,25 +298,25 @@ export const UsersListScreen: React.FC = () => {
         style={styles.actionButton}
         onPress={() => handleViewUser(user)}
       >
-        <Text style={styles.actionIcon}></Text>
+        <Text style={styles.actionIcon}>👁️</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.actionButton}
         onPress={() => handleResetPassword(user)}
       >
-        <Text style={styles.actionIcon}></Text>
+        <Text style={styles.actionIcon}>🔑</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.actionButton}
         onPress={() => handleBanUser(user)}
       >
-        <Text style={styles.actionIcon}></Text>
+        <Text style={styles.actionIcon}>🚫</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.actionButton, styles.deleteButton]}
         onPress={() => handleDeleteUser(user)}
       >
-        <Text style={styles.actionIcon}></Text>
+        <Text style={styles.actionIcon}>🗑️</Text>
       </TouchableOpacity>
     </View>
   );
@@ -338,7 +338,7 @@ export const UsersListScreen: React.FC = () => {
         style={styles.filterButton}
         onPress={() => setShowFilters(true)}
       >
-        <Text style={styles.filterButtonIcon}></Text>
+        <Text style={styles.filterButtonIcon}>🔍</Text>
         <Text style={styles.filterButtonText}>
           {t('admin.users.filters', 'Filters')}
         </Text>
@@ -575,7 +575,7 @@ export const UsersListScreen: React.FC = () => {
                   handleBulkBan();
                 }}
               >
-                <Text style={styles.bulkActionIcon}></Text>
+                <Text style={styles.bulkActionIcon}>🚫</Text>
                 <Text style={styles.bulkActionText}>
                   {t('admin.users.bulkBan', 'Ban Selected Users')}
                 </Text>
@@ -588,7 +588,7 @@ export const UsersListScreen: React.FC = () => {
                   handleBulkDelete();
                 }}
               >
-                <Text style={styles.bulkActionIcon}></Text>
+                <Text style={styles.bulkActionIcon}>🗑️</Text>
                 <Text style={[styles.bulkActionText, styles.bulkActionDangerText]}>
                   {t('admin.users.bulkDelete', 'Delete Selected Users')}
                 </Text>

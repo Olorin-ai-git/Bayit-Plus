@@ -36,7 +36,7 @@ export function LLMSearchButton({
       activeOpacity={0.7}
     >
       {/* AI Icon */}
-      <Text className="text-xl"></Text>
+      <Text className="text-xl">🤖</Text>
 
       {/* Label */}
       <Text className="text-white font-semibold">{t('search.smartSearch')}</Text>

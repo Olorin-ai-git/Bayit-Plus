@@ -94,7 +94,7 @@ export const SuccessGesture: React.FC = () => {
               textShadow: '0 0 15px #22c55e',
             }}
           >
-            
+            ★
           </div>
         );
       })}

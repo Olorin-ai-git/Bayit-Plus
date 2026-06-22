@@ -28,16 +28,16 @@ import { logger } from "../utils/logger";
 
 // Language metadata matching Olorin ecosystem standards
 export const languages: LanguageInfo[] = [
-  { code: "he", name: "עברית", flag: "", rtl: true },
-  { code: "en", name: "English", flag: "", rtl: false },
-  { code: "es", name: "Español", flag: "", rtl: false },
-  { code: "zh", name: "中文", flag: "", rtl: false },
-  { code: "fr", name: "Français", flag: "", rtl: false },
-  { code: "it", name: "Italiano", flag: "", rtl: false },
-  { code: "hi", name: "हिन्दी", flag: "", rtl: false },
-  { code: "ta", name: "தமிழ्", flag: "", rtl: false },
-  { code: "bn", name: "বাংলা", flag: "", rtl: false },
-  { code: "ja", name: "日本語", flag: "", rtl: false },
+  { code: "he", name: "עברית", flag: "🇮🇱", rtl: true },
+  { code: "en", name: "English", flag: "🇺🇸", rtl: false },
+  { code: "es", name: "Español", flag: "🇪🇸", rtl: false },
+  { code: "zh", name: "中文", flag: "🇨🇳", rtl: false },
+  { code: "fr", name: "Français", flag: "🇫🇷", rtl: false },
+  { code: "it", name: "Italiano", flag: "🇮🇹", rtl: false },
+  { code: "hi", name: "हिन्दी", flag: "🇮🇳", rtl: false },
+  { code: "ta", name: "தமிழ्", flag: "🇮🇳", rtl: false },
+  { code: "bn", name: "বাংলা", flag: "🇧🇩", rtl: false },
+  { code: "ja", name: "日本語", flag: "🇯🇵", rtl: false },
 ];
 
 // Translation resources for all supported languages

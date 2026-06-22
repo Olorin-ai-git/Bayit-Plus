@@ -118,7 +118,7 @@ export const ConfusedGesture: React.FC = () => {
                 textShadow: '0 0 8px #f59e0b',
               }}
             >
-              
+              ★
             </div>
           );
         })}

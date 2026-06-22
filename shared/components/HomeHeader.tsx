@@ -35,12 +35,12 @@ export const HomeHeader: React.FC = () => {
       {/* Dual Clock Display */}
       <View className={`flex-row items-center bg-[#0a0a14cc] ${isTV ? 'px-6' : 'px-4'} ${isTV ? 'py-2' : 'py-1'} ${isTV ? 'rounded-2xl' : 'rounded-xl'} border border-purple-600/30 ${isTV ? 'gap-4' : 'gap-2'} ${isRTL ? 'flex-row-reverse' : ''}`}>
         <View className={`flex-row items-center ${isTV ? 'gap-2' : 'gap-1'}`}>
-          <Text className={isTV ? 'text-[32px]' : 'text-2xl'}></Text>
+          <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🇮🇱</Text>
           <Text className={`${isTV ? 'text-[28px]' : 'text-xl'} font-bold text-white`}>{israelTime}</Text>
         </View>
         <View className={`w-px ${isTV ? 'h-10' : 'h-8'} bg-white/20`} />
         <View className={`flex-row items-center ${isTV ? 'gap-2' : 'gap-1'}`}>
-          <Text className={isTV ? 'text-[32px]' : 'text-2xl'}></Text>
+          <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🇺🇸</Text>
           <Text className={`${isTV ? 'text-[28px]' : 'text-xl'} font-bold text-white`}>{localTime}</Text>
         </View>
       </View>

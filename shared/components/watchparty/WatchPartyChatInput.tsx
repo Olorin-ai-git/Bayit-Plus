@@ -12,7 +12,7 @@ import { GlassInput } from '../ui/GlassInput';
 import { GlassButton } from '../ui/GlassButton';
 import { isTV } from '../../utils/platform';
 
-const QUICK_EMOJIS = ['', '', '', '', '', ''];
+const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '👏', '🔥'];
 
 interface WatchPartyChatInputProps {
   onSend: (message: string, type?: string) => void;
@@ -120,7 +120,7 @@ export const WatchPartyChatInput: React.FC<WatchPartyChatInputProps> = ({
           onPress={() => setShowEmojis(!showEmojis)}
           className={`p-3 rounded-lg ${showEmojis ? 'bg-purple-500/30' : 'bg-white/20'}`}
         >
-          <Text className="text-xl"></Text>
+          <Text className="text-xl">😊</Text>
         </TouchableOpacity>
 
         <View className="flex-1">
@@ -135,7 +135,7 @@ export const WatchPartyChatInput: React.FC<WatchPartyChatInputProps> = ({
         </View>
 
         <GlassButton
-          title=""
+          title="➤"
           onPress={handleSend}
           variant="primary"
           size="sm"

@@ -195,20 +195,20 @@ export default function MorningRitualScreen() {
 
           <View className="flex-row justify-center gap-8 mb-8 flex-wrap">
             <View className="items-center gap-1">
-              <Text className={isTV ? 'text-[32px]' : 'text-2xl'}></Text>
+              <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🇮🇱</Text>
               <Text className="text-sm text-white/50">{t('ritual.israelTime')}</Text>
               <Text className={`${isTV ? 'text-[22px]' : 'text-lg'} font-semibold text-white`}>{aiBrief.israel_context?.israel_time}</Text>
             </View>
 
             <View className="items-center gap-1">
-              <Text className={isTV ? 'text-[32px]' : 'text-2xl'}></Text>
+              <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>📅</Text>
               <Text className="text-sm text-white/50">{t('ritual.day')}</Text>
               <Text className={`${isTV ? 'text-[22px]' : 'text-lg'} font-semibold text-white`}>{aiBrief.israel_context?.day_name_he}</Text>
             </View>
 
             {aiBrief.israel_context?.is_shabbat && (
               <GlassView className="flex-row items-center gap-2 px-4 py-2 rounded-lg" intensity="medium">
-                <Text className={isTV ? 'text-[32px]' : 'text-2xl'}></Text>
+                <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🕯️</Text>
                 <Text className="text-lg font-semibold text-yellow-400">{t('clock.shabbatShalom')}</Text>
               </GlassView>
             )}

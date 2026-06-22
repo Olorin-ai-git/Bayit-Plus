@@ -73,7 +73,7 @@ export function GlassLiveChannelCard({
               </View>
             ) : (
               <View style={styles.placeholderIcon}>
-                <Text style={styles.placeholderEmoji}></Text>
+                <Text style={styles.placeholderEmoji}>📺</Text>
               </View>
             )}
           </View>

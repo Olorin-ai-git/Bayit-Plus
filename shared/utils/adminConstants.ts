@@ -10,26 +10,26 @@ import { colors } from '@olorin/design-tokens';
 // ============================================
 
 export const ACTIVITY_ICONS: Record<string, string> = {
-  'user_created': '',
-  'user_updated': '',
-  'user_deleted': '',
-  'user_role_changed': '',
-  'subscription_created': '',
-  'subscription_updated': '',
-  'subscription_canceled': '',
-  'payment_received': '',
-  'refund_processed': '',
-  'campaign_created': '',
-  'campaign_updated': '',
-  'campaign_deleted': '',
-  'campaign_activated': '▶',
-  'settings_updated': '',
-  'login': '',
-  'logout': '',
+  'user_created': '👤',
+  'user_updated': '✏️',
+  'user_deleted': '🗑️',
+  'user_role_changed': '🔑',
+  'subscription_created': '📦',
+  'subscription_updated': '📝',
+  'subscription_canceled': '❌',
+  'payment_received': '💳',
+  'refund_processed': '↩️',
+  'campaign_created': '🎯',
+  'campaign_updated': '✏️',
+  'campaign_deleted': '🗑️',
+  'campaign_activated': '▶️',
+  'settings_updated': '⚙️',
+  'login': '🔑',
+  'logout': '🚪',
 };
 
 export const getActivityIcon = (action: string): string => {
-  return ACTIVITY_ICONS[action] || '';
+  return ACTIVITY_ICONS[action] || '📋';
 };
 
 // ============================================
@@ -37,14 +37,14 @@ export const getActivityIcon = (action: string): string => {
 // ============================================
 
 export const CAMPAIGN_TYPE_ICONS: Record<string, string> = {
-  discount: '',
-  trial: '',
-  referral: '',
-  promotional: '',
+  discount: '💰',
+  trial: '🎁',
+  referral: '👥',
+  promotional: '🎯',
 };
 
 export const getCampaignTypeIcon = (type: string): string => {
-  return CAMPAIGN_TYPE_ICONS[type] || '';
+  return CAMPAIGN_TYPE_ICONS[type] || '📢';
 };
 
 // ============================================
@@ -132,15 +132,15 @@ export const getPlanColor = (plan: string): string => {
 // ============================================
 
 export const PAYMENT_METHOD_ICONS: Record<string, string> = {
-  credit_card: '',
-  card: '',
-  paypal: '',
-  apple_pay: '',
-  google_pay: '',
+  credit_card: '💳',
+  card: '💳',
+  paypal: '🅿️',
+  apple_pay: '🍎',
+  google_pay: '🔵',
 };
 
 export const getPaymentMethodIcon = (method: string): string => {
-  return PAYMENT_METHOD_ICONS[method] || '';
+  return PAYMENT_METHOD_ICONS[method] || '💳';
 };
 
 // ============================================

@@ -133,7 +133,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
           className="w-11 h-11 justify-center items-center rounded-lg bg-white/10 border border-transparent"
           style={searchFocusStyle}
         >
-          <Text className="text-lg"></Text>
+          <Text className="text-lg">🔍</Text>
         </TouchableOpacity>
 
         {/* Upgrade Button - for non-admin, non-premium users */}
@@ -154,7 +154,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
           onFocus={() => {}}
           onBlur={() => {}}
         >
-          <Text className="text-2xl text-white"></Text>
+          <Text className="text-2xl text-white">☰</Text>
         </TouchableOpacity>
       )}
     </GlassView>

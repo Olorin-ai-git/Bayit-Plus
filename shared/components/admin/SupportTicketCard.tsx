@@ -51,9 +51,9 @@ const priorityConfig: Record<string, { color: string }> = {
 };
 
 const languageFlags: Record<string, string> = {
-  en: '',
-  he: '',
-  es: '',
+  en: '🇺🇸',
+  he: '🇮🇱',
+  es: '🇪🇸',
 };
 
 export const SupportTicketCard: React.FC<SupportTicketCardProps> = ({
@@ -136,7 +136,7 @@ export const SupportTicketCard: React.FC<SupportTicketCardProps> = ({
               }}
             />
             <Text style={{ fontSize: isTV ? 16 : 14 }}>
-              {languageFlags[ticket.language] || ''}
+              {languageFlags[ticket.language] || '🌐'}
             </Text>
           </View>
         </View>

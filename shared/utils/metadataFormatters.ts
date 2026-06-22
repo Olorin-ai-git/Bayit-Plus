@@ -18,7 +18,7 @@ interface ContentMetadata {
  * Formats content metadata into a subtitle string for carousel/hero displays
  * Example outputs:
  * - "2016 • PG-13 • Sci-Fi"
- * - "2023 • 8.5 • Drama, Thriller"
+ * - "2023 • ⭐ 8.5 • Drama, Thriller"
  * - "R • Action • 2h 30m"
  */
 export function formatContentMetadata(item: ContentMetadata): string {
@@ -39,9 +39,9 @@ export function formatContentMetadata(item: ContentMetadata): string {
 
   // Add numeric rating (IMDB, TMDB, etc.)
   if (item.imdb_rating && item.imdb_rating > 0) {
-    parts.push(`${item.imdb_rating.toFixed(1)}`);
+    parts.push(`⭐ ${item.imdb_rating.toFixed(1)}`);
   } else if (typeof item.rating === 'number' && item.rating > 0) {
-    parts.push(`${item.rating.toFixed(1)}`);
+    parts.push(`⭐ ${item.rating.toFixed(1)}`);
   }
 
   // Add genres (limit to 2 for brevity)

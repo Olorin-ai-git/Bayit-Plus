@@ -257,10 +257,10 @@ export const SubscriptionsScreen: React.FC = () => {
   const renderActions = (sub: SubscriptionWithUser) => (
     <View className="flex-row gap-1">
       <TouchableOpacity className="w-7 h-7 rounded bg-white/10 justify-center items-center" onPress={() => handleExtend(sub)}>
-        <Text className="text-xs"></Text>
+        <Text className="text-xs">📅</Text>
       </TouchableOpacity>
       <TouchableOpacity className="w-7 h-7 rounded bg-white/10 justify-center items-center" onPress={() => handleApplyDiscount(sub)}>
-        <Text className="text-xs"></Text>
+        <Text className="text-xs">🏷️</Text>
       </TouchableOpacity>
       {sub.status === 'active' ? (
         <TouchableOpacity className="w-7 h-7 rounded justify-center items-center bg-yellow-500/30" onPress={() => handlePause(sub)}>
@@ -273,7 +273,7 @@ export const SubscriptionsScreen: React.FC = () => {
       ) : null}
       {sub.status !== 'cancelled' && (
         <TouchableOpacity className="w-7 h-7 rounded justify-center items-center bg-red-500/30" onPress={() => handleCancel(sub)}>
-          <Text className="text-xs"></Text>
+          <Text className="text-xs">❌</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -282,7 +282,7 @@ export const SubscriptionsScreen: React.FC = () => {
   const headerActions = (
     <View className="flex-row gap-2">
       <TouchableOpacity className="px-3 py-2 rounded-lg bg-purple-600" onPress={() => navigation.navigate('PlanManagement')}>
-        <Text className="text-sm text-white">{t('admin.subscriptions.managePlans', 'Manage Plans')}</Text>
+        <Text className="text-sm text-white">⚙️ {t('admin.subscriptions.managePlans', 'Manage Plans')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -292,10 +292,10 @@ export const SubscriptionsScreen: React.FC = () => {
       <ScrollView className="flex-1" contentContainerClassName="p-4">
         {/* Analytics Cards */}
         <View className="flex-row flex-wrap gap-3 mb-4">
-          <StatCard title={t('admin.subscriptions.active', 'Active')} value={subscriptions.filter(s => s.status === 'active').length.toString()} icon="" color="#10b981" />
-          <StatCard title={t('admin.subscriptions.churnRate', 'Churn Rate')} value={`${churnAnalytics?.churn_rate || 0}%`} icon="" color={churnAnalytics?.churn_rate < 5 ? "#10b981" : "#ef4444"} />
+          <StatCard title={t('admin.subscriptions.active', 'Active')} value={subscriptions.filter(s => s.status === 'active').length.toString()} icon="✅" color="#10b981" />
+          <StatCard title={t('admin.subscriptions.churnRate', 'Churn Rate')} value={`${churnAnalytics?.churn_rate || 0}%`} icon="📉" color={churnAnalytics?.churn_rate < 5 ? "#10b981" : "#ef4444"} />
           <StatCard title={t('admin.subscriptions.atRisk', 'At Risk')} value={(churnAnalytics?.at_risk_users || 0).toString()} icon="alertTriangle" color="#f59e0b" />
-          <StatCard title={t('admin.subscriptions.retention', 'Retention')} value={`${churnAnalytics?.retention_rate || 0}%`} icon="" color="#a855f7" />
+          <StatCard title={t('admin.subscriptions.retention', 'Retention')} value={`${churnAnalytics?.retention_rate || 0}%`} icon="📈" color="#a855f7" />
         </View>
 
         {/* Plan Filter */}

@@ -12,8 +12,18 @@ from __future__ import annotations
 import subprocess
 import sys
 
-# Source trees to scan.
-INCLUDE_PREFIXES = ("web/src/", "backend/app/", "shared/", "packages/")
+# Source trees to scan. Scoped to non-UI code (server, libraries, config) where
+# emojis only ever appear as decoration in logs/comments and should be ASCII.
+# UI trees (web/src, shared, packages/ui) are intentionally EXEMPT: there,
+# emoji can be legitimate user-facing content (language flags, chat reactions,
+# content-type indicators). Migrating those to @olorin/icons is tracked as
+# separate, deliberate work rather than blanket glyph removal.
+INCLUDE_PREFIXES = (
+    "backend/app/",
+    "packages/python/",
+    "packages/firebase-config/",
+    "packages/olorin-shared/",
+)
 # Paths to skip. The gate targets shipped code/comments/logs (platform rule),
 # not documentation prose or test fixtures, and not data/binary assets.
 EXCLUDE_SUBSTRINGS = ("/locales/", "/node_modules/", "/__tests__/", "/__mocks__/")

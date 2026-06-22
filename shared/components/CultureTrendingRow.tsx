@@ -133,13 +133,13 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
       return currentCulture.flag_emoji;
     }
     const flags: Record<string, string> = {
-      israeli: '',
-      chinese: '',
-      japanese: '',
-      korean: '',
-      indian: '',
+      israeli: '🇮🇱',
+      chinese: '🇨🇳',
+      japanese: '🇯🇵',
+      korean: '🇰🇷',
+      indian: '🇮🇳',
     };
-    return flags[effectiveCultureId] || '';
+    return flags[effectiveCultureId] || '🌍';
   };
 
   // Fetch trending data from API

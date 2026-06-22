@@ -143,7 +143,7 @@ export const AnalogClock: React.FC<AnalogClockProps> = ({
               transform: [{ translateX: -8 }, { translateY: -8 }],
             }}
           >
-            <Text className="text-base text-[#F59E0B]"></Text>
+            <Text className="text-base text-[#F59E0B]">✡</Text>
           </View>
         )}
       </View>

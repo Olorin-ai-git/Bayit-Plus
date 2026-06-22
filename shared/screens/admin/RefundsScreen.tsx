@@ -176,10 +176,10 @@ export const RefundsScreen: React.FC = () => {
       {refund.status === 'pending' && (
         <>
           <TouchableOpacity className="w-[30px] h-[30px] rounded-sm justify-center items-center bg-green-500/30" onPress={() => handleApprove(refund)}>
-            <Text className="text-sm"></Text>
+            <Text className="text-sm">✅</Text>
           </TouchableOpacity>
           <TouchableOpacity className="w-[30px] h-[30px] rounded-sm justify-center items-center bg-red-500/30" onPress={() => handleReject(refund)}>
-            <Text className="text-sm"></Text>
+            <Text className="text-sm">❌</Text>
           </TouchableOpacity>
         </>
       )}

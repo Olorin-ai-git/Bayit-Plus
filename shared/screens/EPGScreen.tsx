@@ -198,7 +198,7 @@ export const EPGScreen: React.FC = () => {
               focusedViewButton === 'list' ? `border-[${colors.primary}]` : 'border-transparent'
             }`}
           >
-            <Text className={`${isTV ? 'text-xl' : 'text-base'} text-[${colors.textSecondary}] mr-2`}></Text>
+            <Text className={`${isTV ? 'text-xl' : 'text-base'} text-[${colors.textSecondary}] mr-2`}>☰</Text>
             <Text
               className={`${isTV ? 'text-base' : 'text-sm'} ${
                 viewMode === 'list' ? `text-[${colors.primary}] font-semibold` : `text-[${colors.textSecondary}]`

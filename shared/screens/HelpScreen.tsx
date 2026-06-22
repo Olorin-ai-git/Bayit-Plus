@@ -152,11 +152,11 @@ function LegacyHelpScreen() {
   const [focusedCategory, setFocusedCategory] = useState<string | null>(null);
 
   const categories = [
-    { id: 'all', labelKey: 'help.categories.all', icon: '' },
-    { id: 'general', labelKey: 'help.categories.general', icon: '' },
-    { id: 'billing', labelKey: 'help.categories.billing', icon: '' },
-    { id: 'technical', labelKey: 'help.categories.technical', icon: '' },
-    { id: 'features', labelKey: 'help.categories.features', icon: '' },
+    { id: 'all', labelKey: 'help.categories.all', icon: '📋' },
+    { id: 'general', labelKey: 'help.categories.general', icon: '❓' },
+    { id: 'billing', labelKey: 'help.categories.billing', icon: '💳' },
+    { id: 'technical', labelKey: 'help.categories.technical', icon: '🔧' },
+    { id: 'features', labelKey: 'help.categories.features', icon: '✨' },
   ];
 
   const filteredFAQ = faqItems.filter(
@@ -209,7 +209,7 @@ function LegacyHelpScreen() {
       {/* Header */}
       <View style={[styles.header, { flexDirection }]}>
         <View style={styles.headerIcon}>
-          <Text style={styles.headerIconText}></Text>
+          <Text style={styles.headerIconText}>❓</Text>
         </View>
         <View>
           <Text style={[styles.title, { textAlign }]}>{t('help.title', 'Help Center')}</Text>
@@ -252,7 +252,7 @@ function LegacyHelpScreen() {
             </View>
             <View style={styles.remoteRow}>
               <View style={styles.remoteKey}>
-                <Text style={styles.remoteKeyText}></Text>
+                <Text style={styles.remoteKeyText}>🎤</Text>
               </View>
               <Text style={styles.remoteLabel}>{t('help.remote.voice', 'Voice Control')}</Text>
             </View>
@@ -318,11 +318,11 @@ function LegacyHelpScreen() {
         </Text>
         <View style={styles.contactButtons}>
           <TouchableOpacity style={styles.contactButton}>
-            <Text style={styles.contactButtonIcon}></Text>
+            <Text style={styles.contactButtonIcon}>📧</Text>
             <Text style={styles.contactButtonText}>{t('help.contact.email', 'Email Support')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.contactButton}>
-            <Text style={styles.contactButtonIcon}></Text>
+            <Text style={styles.contactButtonIcon}>💬</Text>
             <Text style={styles.contactButtonText}>{t('help.contact.chat', 'Live Chat')}</Text>
           </TouchableOpacity>
         </View>

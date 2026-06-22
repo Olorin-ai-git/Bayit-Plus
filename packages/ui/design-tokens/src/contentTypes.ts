@@ -1,55 +1,55 @@
 export const CONTENT_TYPE_CONFIG = {
   movie: {
-    icon: '',
+    icon: '🎬',
     label: 'Movie',
     ttsLabel: 'movie poster',
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 2/3
   },
   series: {
-    icon: '',
+    icon: '📺',
     label: 'Series',
     ttsLabel: 'television series',
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 2/3
   },
   podcast: {
-    icon: '',
+    icon: '🎙️',
     label: 'Podcast',
     ttsLabel: 'podcast',
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 1
   },
   live: {
-    icon: '',
+    icon: '📡',
     label: 'Live TV',
     ttsLabel: 'live television',
     iconSize: { ios: 64, tvos: 128, web: 64 },
     aspectRatio: 16/9
   },
   radio: {
-    icon: '',
+    icon: '📻',
     label: 'Radio',
     ttsLabel: 'radio station',
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 1
   },
   vod: {
-    icon: '',
+    icon: '🎥',
     label: 'Video',
     ttsLabel: 'video',
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 2/3
   },
   audiobook: {
-    icon: '',
+    icon: '🎧',
     label: 'Audiobook',
     ttsLabel: 'audiobook',
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 1
   },
   culture: {
-    icon: '', // Location/culture marker icon
+    icon: '📍', // Location/culture marker icon
     label: 'Local Story',
     ttsLabel: 'local cultural story',
     iconSize: { ios: 48, tvos: 96, web: 48 },

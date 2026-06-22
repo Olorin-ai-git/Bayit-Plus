@@ -95,10 +95,10 @@ export const MarketingDashboardScreen: React.FC = () => {
         <View className="mb-8">
           <Text className="text-lg font-bold text-white mb-4">{t('admin.marketing.overview', 'Overview')}</Text>
           <View className="flex-row flex-wrap gap-4">
-            <StatCard title={t('admin.marketing.emailsSent', 'Emails Sent')} value={metrics.emailsSent.toLocaleString()} icon="" color={colors.primary} />
-            <StatCard title={t('admin.marketing.emailOpenRate', 'Email Open Rate')} value={`${metrics.emailOpenRate}%`} icon="" color={colors.success} trend={{ value: 2.3, isPositive: true }} />
-            <StatCard title={t('admin.marketing.pushSent', 'Push Sent')} value={metrics.pushSent.toLocaleString()} icon="" color={colors.secondary} />
-            <StatCard title={t('admin.marketing.pushOpenRate', 'Push Open Rate')} value={`${metrics.pushOpenRate}%`} icon="" color={colors.warning} />
+            <StatCard title={t('admin.marketing.emailsSent', 'Emails Sent')} value={metrics.emailsSent.toLocaleString()} icon="✉️" color={colors.primary} />
+            <StatCard title={t('admin.marketing.emailOpenRate', 'Email Open Rate')} value={`${metrics.emailOpenRate}%`} icon="📬" color={colors.success} trend={{ value: 2.3, isPositive: true }} />
+            <StatCard title={t('admin.marketing.pushSent', 'Push Sent')} value={metrics.pushSent.toLocaleString()} icon="🔔" color={colors.secondary} />
+            <StatCard title={t('admin.marketing.pushOpenRate', 'Push Open Rate')} value={`${metrics.pushOpenRate}%`} icon="👀" color={colors.warning} />
           </View>
         </View>
 
@@ -107,12 +107,12 @@ export const MarketingDashboardScreen: React.FC = () => {
           <Text className="text-lg font-bold text-white mb-4">{t('admin.marketing.quickActions', 'Quick Actions')}</Text>
           <View className="flex-row gap-4">
             <TouchableOpacity className="flex-1 bg-white/10 rounded-2xl border border-white/10 p-4 items-center" onPress={() => navigation.navigate('EmailCampaigns')}>
-              <Text className="text-3xl mb-2"></Text>
+              <Text className="text-3xl mb-2">✉️</Text>
               <Text className="text-sm font-semibold text-white mb-1">{t('admin.marketing.emailCampaigns', 'Email Campaigns')}</Text>
               <Text className="text-xs text-gray-400 text-center">{t('admin.marketing.emailCampaignsDesc', 'Create and manage email campaigns')}</Text>
             </TouchableOpacity>
             <TouchableOpacity className="flex-1 bg-white/10 rounded-2xl border border-white/10 p-4 items-center" onPress={() => navigation.navigate('PushNotifications')}>
-              <Text className="text-3xl mb-2"></Text>
+              <Text className="text-3xl mb-2">🔔</Text>
               <Text className="text-sm font-semibold text-white mb-1">{t('admin.marketing.pushNotifications', 'Push Notifications')}</Text>
               <Text className="text-xs text-gray-400 text-center">{t('admin.marketing.pushDesc', 'Send push notifications to users')}</Text>
             </TouchableOpacity>
@@ -131,7 +131,7 @@ export const MarketingDashboardScreen: React.FC = () => {
             {recentCampaigns.map((campaign) => (
               <View key={campaign.id} className="flex-row items-center p-4 border-b border-white/10">
                 <View className="w-10 h-10 rounded-full bg-white/5 justify-center items-center mr-3">
-                  <Text className="text-lg">{campaign.type === 'email' ? '' : ''}</Text>
+                  <Text className="text-lg">{campaign.type === 'email' ? '✉️' : '🔔'}</Text>
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm font-semibold text-white">{campaign.name}</Text>

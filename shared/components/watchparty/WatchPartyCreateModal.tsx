@@ -54,7 +54,7 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
 
               {contentTitle && (
                 <GlassView className="flex-row items-center p-4 gap-4" intensity="low">
-                  <Text className="text-2xl"></Text>
+                  <Text className="text-2xl">🎬</Text>
                   <View className="flex-1">
                     <Text className="text-xs text-white/50">{t('watchParty.title')}</Text>
                     <Text className="text-sm font-medium text-white" numberOfLines={1}>
@@ -70,7 +70,7 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
                   onPress={() => setChatEnabled(!chatEnabled)}
                 >
                   <View className="flex-row items-center gap-3">
-                    <Text className="text-xl"></Text>
+                    <Text className="text-xl">💬</Text>
                     <Text className="text-sm font-medium text-white">
                       {t('watchParty.options.chatEnabled')}
                     </Text>
@@ -86,7 +86,7 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
                   onPress={() => setSyncPlayback(!syncPlayback)}
                 >
                   <View className="flex-row items-center gap-3">
-                    <Text className="text-xl"></Text>
+                    <Text className="text-xl">🔄</Text>
                     <Text className="text-sm font-medium text-white">
                       {t('watchParty.options.syncPlayback')}
                     </Text>

@@ -113,16 +113,16 @@ export interface SubtitleLanguage {
 
 // Common subtitle languages for Bayit+
 export const SUBTITLE_LANGUAGES: SubtitleLanguage[] = [
-  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '', rtl: true },
-  { code: 'en', name: 'English', nativeName: 'English', flag: '', rtl: false },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '', rtl: false },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '', rtl: true },
-  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '', rtl: false },
-  { code: 'fr', name: 'French', nativeName: 'Français', flag: '', rtl: false },
-  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '', rtl: false },
-  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '', rtl: false },
-  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '', rtl: false },
-  { code: 'yi', name: 'Yiddish', nativeName: 'ייִדיש', flag: '', rtl: true },
+  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '🇮🇱', rtl: true },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', rtl: false },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', rtl: false },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', rtl: true },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', rtl: false },
+  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', rtl: false },
+  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪', rtl: false },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹', rtl: false },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹', rtl: false },
+  { code: 'yi', name: 'Yiddish', nativeName: 'ייִדיש', flag: '🕍', rtl: true },
 ]
 
 // Get language info by code

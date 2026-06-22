@@ -150,7 +150,7 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
               accessibilityRole="button"
             >
               <Text style={isTV ? styles.visibilityIconTV : styles.visibilityIcon}>
-                {visible ? '' : ''}
+                {visible ? '👁️' : '👁️‍🗨️'}
               </Text>
             </TouchableOpacity>
           )}
