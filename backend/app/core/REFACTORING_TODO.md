@@ -2,7 +2,7 @@
 
 ## olorin_config.py - Deferred for Future Refactoring
 
-**Status:** ⏸️ Deferred (Low Priority)  
+**Status:** ⏸ Deferred (Low Priority)
 **Current:** 1,115 lines  
 **Target:** < 200 lines per file  
 **Complexity:** High

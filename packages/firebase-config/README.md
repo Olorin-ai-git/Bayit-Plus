@@ -4,7 +4,7 @@
 
 This package provides centralized Firebase configuration management across all Bayit+ platforms (web, mobile-app, partner-portal), preventing configuration duplication and ensuring consistent security practices.
 
-## 🎯 Purpose
+## Purpose
 
 - **Single Source of Truth**: All platforms use the same configuration logic
 - **Security Enforcement**: Fail-fast validation, no hardcoded values, no fallbacks
@@ -12,7 +12,7 @@ This package provides centralized Firebase configuration management across all B
 - **Type Safety**: Full TypeScript support with validated configuration
 - **Prevent Duplication**: Eliminates copy-pasted Firebase config across platforms
 
-## 📦 Installation
+## Installation
 
 This is an internal workspace package. Add to your platform's `package.json`:
 
@@ -30,7 +30,7 @@ Then run:
 npm install
 ```
 
-## 🚀 Usage
+## Usage
 
 ### Web Platform (Vite)
 
@@ -127,31 +127,31 @@ NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789012:web:abcdef1234567890
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
-## 🔐 Security Features
+## Security Features
 
 ### Fail-Fast Validation
 
 The configuration **fails immediately** if any required field is missing:
 
 ```typescript
-// ❌ Missing VITE_FIREBASE_API_KEY
+// [FAIL] Missing VITE_FIREBASE_API_KEY
 // Result: Clear error message, app DOES NOT START
 
-// ✅ All variables set
+// [OK] All variables set
 // Result: Configuration validated, app continues
 ```
 
 ### No Hardcoded Values
 
 ```typescript
-// ❌ FORBIDDEN - Hardcoded config
+// [FAIL] FORBIDDEN - Hardcoded config
 const firebaseConfig = {
   apiKey: "AIzaSy...",
   authDomain: "bayit-plus.firebaseapp.com",
   // ...
 };
 
-// ✅ CORRECT - Environment-based config
+// [OK] CORRECT - Environment-based config
 import { getFirebaseConfig } from '@bayit/firebase-config';
 const firebaseConfig = getFirebaseConfig();
 ```
@@ -166,7 +166,7 @@ const firebaseConfig = getFirebaseConfig();
 
 If a required variable is missing, the app **refuses to start** with a clear error message. There are NO silent fallbacks to default values.
 
-## 🧪 Testing
+## Testing
 
 For testing purposes, you can override specific configuration values:
 
@@ -182,7 +182,7 @@ const testConfig = getFirebaseConfigWithOverrides({
 
 **NEVER use overrides in production code.**
 
-## 📋 Environment Variable Matrix
+## Environment Variable Matrix
 
 | Platform | Prefix | Example |
 |----------|--------|---------|
@@ -194,15 +194,15 @@ All platforms support the same Firebase configuration fields:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `API_KEY` | ✅ Yes | Firebase Web API Key |
-| `AUTH_DOMAIN` | ✅ Yes | Firebase Auth domain |
-| `PROJECT_ID` | ✅ Yes | Firebase project ID |
-| `STORAGE_BUCKET` | ✅ Yes | Cloud Storage bucket |
-| `MESSAGING_SENDER_ID` | ✅ Yes | Cloud Messaging sender ID |
-| `APP_ID` | ✅ Yes | Firebase app ID |
-| `MEASUREMENT_ID` | ❌ No | Google Analytics ID (optional) |
+| `API_KEY` | [OK] Yes | Firebase Web API Key |
+| `AUTH_DOMAIN` | [OK] Yes | Firebase Auth domain |
+| `PROJECT_ID` | [OK] Yes | Firebase project ID |
+| `STORAGE_BUCKET` | [OK] Yes | Cloud Storage bucket |
+| `MESSAGING_SENDER_ID` | [OK] Yes | Cloud Messaging sender ID |
+| `APP_ID` | [OK] Yes | Firebase app ID |
+| `MEASUREMENT_ID` | [FAIL] No | Google Analytics ID (optional) |
 
-## 🔨 Development
+## Development
 
 ### Build the Package
 
@@ -233,7 +233,7 @@ npm run dev
 npm run clean
 ```
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 packages/firebase-config/
@@ -250,18 +250,18 @@ packages/firebase-config/
     └── config.d.ts
 ```
 
-## 🚨 Error Messages
+## Error Messages
 
 When configuration is invalid, you'll see clear error messages:
 
 ### Missing Configuration
 
 ```
-🔥 FIREBASE CONFIGURATION ERROR
+ FIREBASE CONFIGURATION ERROR
 
 Missing required Firebase configuration fields:
-  ❌ apiKey
-  ❌ projectId
+  [FAIL] apiKey
+  [FAIL] projectId
 
 Set these environment variables:
 
@@ -287,13 +287,13 @@ Invalid Firebase project ID format: "BAYIT_PLUS_123".
 Expected lowercase alphanumeric string with hyphens.
 ```
 
-## 🔗 Related Documentation
+## Related Documentation
 
 - [Firebase Setup Guide](../../docs/firebase/SETUP.md)
 - [Environment Variables Guide](../../docs/deployment/ENVIRONMENT_VARIABLES.md)
 - [Security Best Practices](../../docs/security/CONFIGURATION.md)
 
-## 📝 Migration Guide
+## Migration Guide
 
 ### Before (Duplicated Config)
 
@@ -323,7 +323,7 @@ import { getFirebaseConfig } from '@bayit/firebase-config';
 const firebaseConfig = getFirebaseConfig(); // Single source of truth
 ```
 
-## ✅ Benefits
+## [OK] Benefits
 
 - **No Duplication**: Configuration logic exists in one place
 - **Consistent Security**: All platforms enforce same validation rules
@@ -332,7 +332,7 @@ const firebaseConfig = getFirebaseConfig(); // Single source of truth
 - **Clear Errors**: Fail-fast with actionable error messages
 - **Platform Agnostic**: Works with Vite, React Native, Next.js, etc.
 
-## 📞 Support
+## Support
 
 For issues or questions:
 - See [Firebase Documentation](https://firebase.google.com/docs)

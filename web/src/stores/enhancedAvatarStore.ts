@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import logger from '@/utils/logger';
 import {
   AvatarGenerationService,
   avatarStateManager,
@@ -148,7 +149,7 @@ export const useEnhancedAvatarStore = create<AvatarStoreState>()(
               await avatarPreferencesManager.setAvatarId(avatarId);
             }
           } catch (error) {
-            console.error('Failed to load avatar:', error);
+            logger.error('Failed to load avatar:', error);
           }
         },
 
@@ -161,7 +162,7 @@ export const useEnhancedAvatarStore = create<AvatarStoreState>()(
             set({ currentAvatar: null });
             await avatarPreferencesManager.setAvatarId(undefined as any);
           } catch (error) {
-            console.error('Failed to delete avatar:', error);
+            logger.error('Failed to delete avatar:', error);
             throw error;
           }
         },

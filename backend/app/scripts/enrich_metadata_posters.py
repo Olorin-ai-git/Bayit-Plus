@@ -50,10 +50,10 @@ class MetadataEnricher:
                 database=self.db,
                 document_models=[RadioStation, Podcast],
             )
-            logger.info("✓ Connected to database")
+            logger.info("[OK] Connected to database")
         except Exception as e:
             logger.warning(f"Beanie initialization warning: {e}")
-            logger.info("✓ Connected to database (using direct MongoDB access)")
+            logger.info("[OK] Connected to database (using direct MongoDB access)")
 
     # MARK: - Radio Stations
 
@@ -305,8 +305,8 @@ class MetadataEnricher:
             logger.info("")
             logger.info(f"{content_type.upper()}:")
             logger.info(f"  Total items:          {total}")
-            logger.info(f"  Complete:             {stats.get('complete', 0)} ✓")
-            logger.info(f"  Items with issues:    {stats.get('items_with_issues', 0)} ✗")
+            logger.info(f" Complete: {stats.get('complete', 0)} [OK]")
+            logger.info(f" Items with issues: {stats.get('items_with_issues', 0)} [FAIL]")
 
             # List specific issues
             issue_types = [k for k in stats.keys() if k.startswith("missing_")]

@@ -67,7 +67,7 @@ class MetadataCopier:
             database=self.db,
             document_models=[RadioStation, Podcast],
         )
-        logger.info("✓ Connected to database")
+        logger.info("[OK] Connected to database")
 
     async def enrich_radio_descriptions(self):
         """Add descriptions to radio stations based on genre."""

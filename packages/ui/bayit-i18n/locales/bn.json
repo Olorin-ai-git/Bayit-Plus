@@ -4444,6 +4444,60 @@
       "dock": "নেভিগেশন ডক",
       "dockItem": "{{name}} এ যান",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "থামান এবং আপনার লাইব্রেরির যেকোনো দৃশ্য সম্পর্কে AI-কে জিজ্ঞাসা করুন",
+      "title": "আপনার কনটেন্ট, আরও উন্নত",
+      "watchWithAI": "AI-এর সাথে দেখুন"
+    },
+    "continueWatching": {
+      "resume": "পুনরায় শুরু করুন",
+      "subtitle": "AI বৈশিষ্ট্যের সাথে যেখানে থেমেছিলেন সেখান থেকে চালিয়ে যান"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "ক্যাচ আপ",
+        "dubbing": "AI ডাবিং",
+        "subtitles": "লাইভ সাবটাইটেল",
+        "trivia": "লাইভ ট্রিভিয়া"
+      },
+      "groupLabel": "লাইভ AI"
+    },
+    "liveTV": {
+      "dubbedIn": "{{language}}-এ AI ডাব করা",
+      "subtitle": "AI দিয়ে ইসরায়েলি টিভি আপনার ভাষায় ডাব করে দেখুন",
+      "title": "এখন লাইভ",
+      "watchDubbed": "ডাব করা দেখুন"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "ইন্টারঅ্যাক্টিভ মুহূর্ত",
+        "pauseAsk": "থামান এবং জিজ্ঞাসা করুন"
+      },
+      "groupLabel": "মুভি AI"
+    },
+    "overlay": {
+      "aiDubbed": "AI ডাব করা",
+      "aiEnhanced": "AI দ্বারা উন্নত",
+      "liveSubtitles": "১০টি ভাষায় লাইভ সাবটাইটেল",
+      "pauseAskReady": "থামান এবং জিজ্ঞাসা করুন প্রস্তুত",
+      "sampleSubtitle1": "ইসরায়েলি বিনোদনের জগতে স্বাগতম",
+      "sampleSubtitle2": "ইসরায়েলের হৃদয় থেকে গল্পের অভিজ্ঞতা নিন",
+      "sampleSubtitle3": "AI দ্বারা আপনার ভাষায় লাইভ ডাব করা",
+      "sampleSubtitle4": "যেকোনো দৃশ্য সম্পর্কে প্রশ্ন করুন",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "চরিত্রদের সাথে কথা বলুন এবং যেকোনো দৃশ্য সম্পর্কে জিজ্ঞাসা করুন",
+      "title": "থামান এবং জিজ্ঞাসা করুন",
+      "tryItNow": "এখনই চেষ্টা করুন"
     }
   },
   "cities": {
@@ -8497,7 +8551,8 @@
       },
       "askAgain": "[bn] Ask Again",
       "placeholder": "[bn] Ask about this scene...",
-      "resume": "[bn] Resume"
+      "resume": "[bn] Resume",
+      "worksOnAnyContent": "আপনি যে কোনো কনটেন্ট দেখেন তাতেই এটি কাজ করে"
     },
     "multiCharacter": {
       "selectCharacter": "সম্বোধন করতে চরিত্র নির্বাচন করুন",
@@ -8657,7 +8712,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "চ্যানেল চ্যাট"
+    "channelChat": "চ্যানেল চ্যাট",
+    "walkthrough": {
+      "coachMark": "কোনো চরিত্রের সাথে কথা বলতে চালান/থামান চাপুন",
+      "liveSubtitleHint": "অনুবাদে ট্যাপ করুন, তারপর EN | HE সাবটাইটেলের জন্য স্প্লিট মোড নির্বাচন করুন",
+      "suggestion": "এই দৃশ্যটি সম্পর্কে আমাকে বলুন"
+    }
   },
   "playlist": {
     "title": "আমার তালিকা",
@@ -10149,7 +10209,11 @@
       "reduceMotionDesc": "অ্যানিমেশন এবং মোশন ইফেক্ট সীমিত করুন",
       "audioDescriptions": "অডিও বর্ণনা",
       "audioDescDesc": "অ্যাক্সেসিবিলিটির জন্য ভিজ্যুয়াল কন্টেন্টের বর্ণিত বিবরণ",
-      "title": "অ্যাক্সেসিবিলিটি"
+      "title": "অ্যাক্সেসিবিলিটি",
+      "colorBlindNone": "কোনোটিই নয়",
+      "deuteranopia": "ডিউটেরানোপিয়া (সবুজ-লাল)",
+      "protanopia": "প্রোটানোপিয়া (লাল-সবুজ)",
+      "tritanopia": "ট্রাইটানোপিয়া (নীল-হলুদ)"
     },
     "signOut": "সাইন আউট",
     "security": {
@@ -10173,7 +10237,9 @@
       "accountSecurity": "অ্যাকাউন্ট নিরাপত্তা",
       "devices": "ডিভাইস",
       "noDevices": "কোনো সক্রিয় ডিভাইস নেই",
-      "unknownDevice": "অজানা ডিভাইস"
+      "unknownDevice": "অজানা ডিভাইস",
+      "changePasswordDesc": "আপনার পাসওয়ার্ড আপডেট করুন",
+      "deviceCount": "%d টি ডিভাইস"
     },
     "aiFeatures": {
       "title": "AI বৈশিষ্ট্য",
@@ -10202,7 +10268,15 @@
         "hard": "কঠিন",
         "mixed": "মিশ্র",
         "categories": "বিভাগ",
-        "stats": "আপনার পরিসংখ্যান"
+        "stats": "আপনার পরিসংখ্যান",
+        "categoryCast": "অভিনয়শিল্পী",
+        "categoryCultural": "সাংস্কৃতিক",
+        "categoryFun": "মজার তথ্য",
+        "categoryHistorical": "ঐতিহাসিক",
+        "categoryProduction": "প্রযোজনা",
+        "frequencyFrequent": "ঘন ঘন",
+        "frequencyNormal": "স্বাভাবিক",
+        "frequencyRare": "কদাচিৎ"
       },
       "betaToggles": "বিটা বৈশিষ্ট্য টগল",
       "betaEnrolled": "বিটা প্রোগ্রামে নথিভুক্ত",
@@ -10254,7 +10328,11 @@
       "dubbing": "ডাবিং",
       "processing": "প্রসেসিং",
       "quality": "অডিও কোয়ালিটি",
-      "volumeNormDesc": "বিষয়বস্তু জুড়ে ভলিউম নরমালাইজ করুন"
+      "volumeNormDesc": "বিষয়বস্তু জুড়ে ভলিউম নরমালাইজ করুন",
+      "qualityAuto": "স্বয়ংক্রিয়",
+      "qualityHigh": "উচ্চ",
+      "qualityLow": "নিম্ন",
+      "qualityMedium": "মাঝারি"
     },
     "notificationSettings": {
       "title": "বিজ্ঞপ্তি",
@@ -10544,6 +10622,11 @@
       "appleDesc": "Apple দিয়ে সাইন ইন করুন",
       "facebookDesc": "সোশ্যাল ফিচার সংযুক্ত করুন",
       "connect": "সংযুক্ত করুন"
+    },
+    "email": "ইমেইল",
+    "enabled": "সক্ষম",
+    "trivia": {
+      "title": "ট্রিভিয়া ও মজার তথ্য"
     }
   },
   "shabbat": {
@@ -12765,7 +12848,14 @@
       "noCreditsDesc": "ম্যাজিক মিরর ব্যবহার করতে আপনার বেটা ক্রেডিট প্রয়োজন",
       "playGreeting": "অভিবাদন চালান",
       "refresh": "রিফ্রেশ",
-      "meshUnavailable": "থ্রিডি মেশ অনুপলব্ধ"
+      "meshUnavailable": "থ্রিডি মেশ অনুপলব্ধ",
+      "createGuideHint": "উভয় ডিভাইসে একই অ্যাকাউন্ট দিয়ে সাইন ইন করুন",
+      "createGuideStep1": "আপনার iPhone বা iPad-এ Bayit+ অ্যাপ খুলুন",
+      "createGuideStep2": "Zeh Ani-তে যান এবং অবতার তৈরি করুন-এ ট্যাপ করুন",
+      "createGuideStep3": "আপনার মুখের একটি ছোট ভিডিও রেকর্ড করুন",
+      "createGuideStep4": "আপনার অবতার এখানে স্বয়ংক্রিয়ভাবে প্রদর্শিত হবে",
+      "createGuideTitle": "মোবাইলে অবতার তৈরি করুন",
+      "manageAvatar": "অবতার পরিচালনা করুন"
     },
     "mesh": {
       "title": "থ্রিডি মেশ তৈরি করুন",

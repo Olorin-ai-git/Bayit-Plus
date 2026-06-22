@@ -27,7 +27,7 @@ class LiveTranslationService:
                                  If None, uses LIVE_TRANSLATION_PROVIDER from config.
         """
         logger.info(
-            f"🔧 Initializing LiveTranslationService with STT: {provider or 'default'}, "
+            f" Initializing LiveTranslationService with STT: {provider or 'default'}, "
             f"Translation: {translation_provider or 'default'}"
         )
 
@@ -40,18 +40,18 @@ class LiveTranslationService:
             self.pipeline = LiveSubtitlePipeline(self.transcription, self.translation)
 
             logger.info(
-                f"✅ LiveTranslationService initialized: "
+                f"[OK] LiveTranslationService initialized: "
                 f"STT={self.stt_manager.provider}, "
                 f"Translation={self.translation_manager.provider}"
             )
 
         except ImportError as e:
-            logger.error(f"❌ Import error - missing dependencies: {str(e)}")
+            logger.error(f"[FAIL] Import error - missing dependencies: {str(e)}")
             self._log_install_help()
             raise
 
         except Exception as e:
-            logger.error(f"❌ Failed to initialize services: {type(e).__name__}: {str(e)}")
+            logger.error(f"[FAIL] Failed to initialize services: {type(e).__name__}: {str(e)}")
             self._log_config_help(e)
             raise
 
@@ -59,25 +59,25 @@ class LiveTranslationService:
         """Log installation help based on provider configuration."""
         providers = {self.stt_manager.provider, self.translation_manager.provider}
         if "google" in providers:
-            logger.error("💡 Install: pip install google-cloud-speech google-cloud-translate")
+            logger.error(" Install: pip install google-cloud-speech google-cloud-translate")
         if {"whisper", "openai"} & providers:
-            logger.error("💡 Install: pip install openai")
+            logger.error(" Install: pip install openai")
         if "elevenlabs" in providers:
-            logger.error("💡 Install: pip install websockets")
+            logger.error(" Install: pip install websockets")
         if "claude" in providers:
-            logger.error("💡 Install: pip install anthropic")
+            logger.error(" Install: pip install anthropic")
 
     def _log_config_help(self, error: Exception) -> None:
         """Log configuration help based on error."""
         error_str = str(error).lower()
         if "credentials" in error_str or "authentication" in error_str:
-            logger.error("💡 Set GOOGLE_APPLICATION_CREDENTIALS environment variable")
+            logger.error(" Set GOOGLE_APPLICATION_CREDENTIALS environment variable")
         elif "openai_api_key" in error_str:
-            logger.error("💡 Set OPENAI_API_KEY environment variable or add to .env")
+            logger.error(" Set OPENAI_API_KEY environment variable or add to .env")
         elif "elevenlabs_api_key" in error_str:
-            logger.error("💡 Set ELEVENLABS_API_KEY environment variable or add to .env")
+            logger.error(" Set ELEVENLABS_API_KEY environment variable or add to .env")
         elif "anthropic_api_key" in error_str:
-            logger.error("💡 Set ANTHROPIC_API_KEY environment variable or add to .env")
+            logger.error(" Set ANTHROPIC_API_KEY environment variable or add to .env")
 
     # Public API - delegate to components
     async def transcribe_audio_stream(

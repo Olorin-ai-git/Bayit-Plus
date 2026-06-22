@@ -791,7 +791,7 @@ class JerusalemContentService:
                 "name": "Western Wall Live",
                 "name_he": "שידור חי מהכותל",
                 "url": "https://www.kotel.org/en/kotel-live",
-                "icon": "🕎",
+                "icon": "",
             },
             upcoming_ceremonies=[],
             last_updated=content.last_updated,
@@ -857,29 +857,29 @@ class JerusalemContentService:
                 (
                     JerusalemContentCategory.KOTEL,
                     JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.KOTEL],
-                    "🕎",
+                    "",
                 ),
                 (
                     JerusalemContentCategory.IDF_CEREMONY,
                     JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.IDF_CEREMONY],
-                    "🎖️",
+                    "",
                 ),
                 (
                     JerusalemContentCategory.DIASPORA,
                     JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.DIASPORA],
-                    "🌍",
+                    "",
                 ),
                 (
                     JerusalemContentCategory.HOLY_SITES,
                     JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.HOLY_SITES],
-                    "✡️",
+                    "",
                 ),
                 (
                     JerusalemContentCategory.JERUSALEM_EVENTS,
                     JERUSALEM_CATEGORY_LABELS[
                         JerusalemContentCategory.JERUSALEM_EVENTS
                     ],
-                    "🇮🇱",
+                    "",
                 ),
             ]
         ]

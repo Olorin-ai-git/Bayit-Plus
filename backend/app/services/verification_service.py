@@ -104,9 +104,9 @@ class VerificationService:
         )
 
         if success:
-            logger.info(f"✅ Email verification sent to {user.email}")
+            logger.info(f"[OK] Email verification sent to {user.email}")
         else:
-            logger.warning(f"⚠️  Failed to send verification email to {user.email}")
+            logger.warning(f"[WARN] Failed to send verification email to {user.email}")
 
         return success
 
@@ -137,7 +137,7 @@ class VerificationService:
         verification_token.used_at = datetime.utcnow()
         await verification_token.save()
 
-        logger.info(f"✅ Email verified for user {user.email}")
+        logger.info(f"[OK] Email verified for user {user.email}")
         return user
 
     async def initiate_phone_verification(self, user: User, phone_number: str) -> bool:
@@ -181,7 +181,7 @@ class VerificationService:
 
         await twilio_service.send_verification_code(formatted_phone, code)
 
-        logger.info(f"✅ Phone verification code sent to {formatted_phone[:8]}***")
+        logger.info(f"[OK] Phone verification code sent to {formatted_phone[:8]}***")
         return True
 
     async def verify_phone(self, user: User, code: str) -> bool:
@@ -207,7 +207,7 @@ class VerificationService:
         verification_token.used_at = datetime.utcnow()
         await verification_token.save()
 
-        logger.info(f"✅ Phone verified for user {user.email}")
+        logger.info(f"[OK] Phone verified for user {user.email}")
         return True
 
 

@@ -14,38 +14,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Detect console.* in production code
+      - name: Detect console.* calls in production code
         run: |
-          VIOLATIONS=$(grep -r "console\.\(log\|error\|warn\|info\|debug\)" \
-            --include="*.ts" \
-            --include="*.tsx" \
-            --include="*.js" \
-            --include="*.jsx" \
-            --exclude-dir="node_modules" \
-            --exclude-dir="__tests__" \
-            --exclude-dir="test" \
-            --exclude-dir="demo" \
-            --exclude-dir="cli" \
-            --exclude-dir="scripts" \
-            . | wc -l)
+          # Scope: real application source only. Excludes tests (test/tests/__tests__),
+          # demos, CLIs, build scripts, generated docs, dist/build output, and the
+          # sanctioned logger utilities. Only counts actual call sites (trailing "("),
+          # and skips comment lines and explicit "eslint-disable ... no-console" lines.
+          VIOLATIONS=$(grep -rn "console\.\(log\|error\|warn\|info\|debug\)(" \
+            --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" \
+            --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=build \
+            --exclude-dir=__tests__ --exclude-dir=test --exclude-dir=tests --exclude-dir=demo \
+            --exclude-dir=cli --exclude-dir=scripts --exclude-dir=.vitepress \
+            --exclude="logger.ts" --exclude="logger.tsx" \
+            --exclude="*.config.js" --exclude="*.config.cjs" \
+            web/src packages shared partner-portal/src 2>/dev/null \
+            | grep -v "eslint-disable" \
+            | grep -vE ":[0-9]+:[[:space:]]*(//|\*|/\*)" || true)
 
-          echo "Console violations found: $VIOLATIONS"
+          COUNT=$(printf '%s' "$VIOLATIONS" | grep -c . || true)
+          echo "Console violations found: $COUNT"
 
-          if [ "$VIOLATIONS" -gt 0 ]; then
-            echo "❌ FAILED: Console logging in production code"
-            grep -r "console\." \
-              --include="*.ts" \
-              --include="*.tsx" \
-              --include="*.js" \
-              --include="*.jsx" \
-              --exclude-dir="node_modules" \
-              --exclude-dir="__tests__" \
-              --exclude-dir="test" \
-              --exclude-dir="demo" \
-              --exclude-dir="cli" \
-              --exclude-dir="scripts" \
-              . | head -20
+          if [ "$COUNT" -gt 0 ]; then
+            echo "FAILED: console.* in production code. Use the scoped logger (@/utils/logger),"
+            echo "or annotate a deliberate exception with: // eslint-disable-line no-console"
+            echo "$VIOLATIONS"
             exit 1
           fi
 
-          echo "✅ PASSED: No console violations"
+          echo "PASSED: No console violations in production source"

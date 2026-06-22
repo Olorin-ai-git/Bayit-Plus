@@ -4444,6 +4444,60 @@
       "dock": "வழிசெலுத்தல் டாக்",
       "dockItem": "{{name}} க்கு செல்லவும்",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "இடைநிறுத்தி, உங்கள் நூலகத்தில் உள்ள எந்தக் காட்சியைப் பற்றியும் AI-யிடம் கேளுங்கள்",
+      "title": "உங்கள் உள்ளடக்கம், மேம்படுத்தப்பட்டது",
+      "watchWithAI": "AI உடன் பார்க்கவும்"
+    },
+    "continueWatching": {
+      "resume": "தொடரவும்",
+      "subtitle": "AI அம்சங்களுடன் நீங்கள் நிறுத்திய இடத்திலிருந்து தொடரவும்"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "கேட்ச் அப்",
+        "dubbing": "AI டப்பிங்",
+        "subtitles": "நேரடி வசன வரிகள்",
+        "trivia": "நேரடி ட்ரிவியா"
+      },
+      "groupLabel": "நேரடி AI"
+    },
+    "liveTV": {
+      "dubbedIn": "{{language}} மொழியில் AI டப் செய்யப்பட்டது",
+      "subtitle": "AI மூலம் இஸ்ரேலிய தொலைக்காட்சியை உங்கள் மொழியில் டப் செய்து பார்க்கவும்",
+      "title": "இப்போது நேரலை",
+      "watchDubbed": "டப் செய்ததைப் பார்க்கவும்"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "ஊடாடும் தருணங்கள்",
+        "pauseAsk": "இடைநிறுத்தி கேள்"
+      },
+      "groupLabel": "திரைப்பட AI"
+    },
+    "overlay": {
+      "aiDubbed": "AI டப் செய்யப்பட்டது",
+      "aiEnhanced": "AI மேம்படுத்தப்பட்டது",
+      "liveSubtitles": "10 மொழிகளில் நேரடி வசன வரிகள்",
+      "pauseAskReady": "இடைநிறுத்தி கேள் தயாராக உள்ளது",
+      "sampleSubtitle1": "இஸ்ரேலிய பொழுதுபோக்கு உலகிற்கு வரவேற்கிறோம்",
+      "sampleSubtitle2": "இஸ்ரேலின் இதயத்திலிருந்து கதைகளை அனுபவியுங்கள்",
+      "sampleSubtitle3": "AI மூலம் உங்கள் மொழியில் நேரடியாக டப் செய்யப்பட்டது",
+      "sampleSubtitle4": "எந்தக் காட்சியைப் பற்றியும் கேள்விகள் கேளுங்கள்",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "கதாபாத்திரங்களுடன் பேசி எந்தக் காட்சியைப் பற்றியும் கேளுங்கள்",
+      "title": "இடைநிறுத்தி கேள்",
+      "tryItNow": "இப்போதே முயற்சிக்கவும்"
     }
   },
   "cities": {
@@ -8497,7 +8551,8 @@
       },
       "askAgain": "[ta] Ask Again",
       "placeholder": "[ta] Ask about this scene...",
-      "resume": "[ta] Resume"
+      "resume": "[ta] Resume",
+      "worksOnAnyContent": "நீங்கள் பார்க்கும் எந்த உள்ளடக்கத்திலும் இது செயல்படுகிறது"
     },
     "multiCharacter": {
       "selectCharacter": "உரையாட கதாபாத்திரத்தை தேர்வுசெய்",
@@ -8657,7 +8712,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "சேனல் அரட்டை"
+    "channelChat": "சேனல் அரட்டை",
+    "walkthrough": {
+      "coachMark": "ஒரு கதாபாத்திரத்துடன் பேச இயக்கு/இடைநிறுத்து அழுத்தவும்",
+      "liveSubtitleHint": "மொழிபெயர்ப்பைத் தட்டி, பின்னர் EN | HE வசன வரிகளுக்கு பிரிப்பு பயன்முறையைத் தேர்ந்தெடுக்கவும்",
+      "suggestion": "இந்தக் காட்சியைப் பற்றி எனக்குச் சொல்லுங்கள்"
+    }
   },
   "playlist": {
     "title": "எனது பட்டியல்",
@@ -10149,7 +10209,11 @@
       "reduceMotionDesc": "அனிமேஷன்கள் மற்றும் இயக்க விளைவுகளை கட்டுப்படுத்தவும்",
       "audioDescriptions": "ஒலி விளக்கங்கள்",
       "audioDescDesc": "அணுகலுக்கான காட்சி உள்ளடக்கத்தின் விவரிக்கப்பட்ட விளக்கங்கள்",
-      "title": "அணுகல்தன்மை"
+      "title": "அணுகல்தன்மை",
+      "colorBlindNone": "எதுவுமில்லை",
+      "deuteranopia": "டியூட்டரனோபியா (பச்சை-சிவப்பு)",
+      "protanopia": "புரோட்டனோபியா (சிவப்பு-பச்சை)",
+      "tritanopia": "ட்ரைட்டனோபியா (நீலம்-மஞ்சள்)"
     },
     "signOut": "வெளியேறு",
     "security": {
@@ -10173,7 +10237,9 @@
       "accountSecurity": "கணக்கு பாதுகாப்பு",
       "devices": "சாதனங்கள்",
       "noDevices": "செயலில் உள்ள சாதனங்கள் இல்லை",
-      "unknownDevice": "தெரியாத சாதனம்"
+      "unknownDevice": "தெரியாத சாதனம்",
+      "changePasswordDesc": "உங்கள் கடவுச்சொல்லைப் புதுப்பிக்கவும்",
+      "deviceCount": "%d சாதனங்கள்"
     },
     "aiFeatures": {
       "title": "AI அம்சங்கள்",
@@ -10202,7 +10268,15 @@
         "hard": "கடினம்",
         "mixed": "கலவை",
         "categories": "வகைகள்",
-        "stats": "உங்கள் புள்ளிவிவரங்கள்"
+        "stats": "உங்கள் புள்ளிவிவரங்கள்",
+        "categoryCast": "நடிகர்கள்",
+        "categoryCultural": "கலாச்சாரம்",
+        "categoryFun": "சுவாரஸ்ய தகவல்கள்",
+        "categoryHistorical": "வரலாற்று",
+        "categoryProduction": "தயாரிப்பு",
+        "frequencyFrequent": "அடிக்கடி",
+        "frequencyNormal": "சாதாரண",
+        "frequencyRare": "அரிதாக"
       },
       "betaToggles": "பீட்டா அம்ச நிலைமாற்றிகள்",
       "betaEnrolled": "பீட்டா திட்டத்தில் சேர்ந்துள்ளீர்கள்",
@@ -10254,7 +10328,11 @@
       "dubbing": "டப்பிங்",
       "processing": "செயலாக்கம்",
       "quality": "ஒலி தரம்",
-      "volumeNormDesc": "உள்ளடக்கங்கள் முழுவதும் ஒலி அளவை சீராக்கவும்"
+      "volumeNormDesc": "உள்ளடக்கங்கள் முழுவதும் ஒலி அளவை சீராக்கவும்",
+      "qualityAuto": "தானியங்கி",
+      "qualityHigh": "உயர்",
+      "qualityLow": "குறைந்த",
+      "qualityMedium": "நடுத்தர"
     },
     "notificationSettings": {
       "title": "அறிவிப்புகள்",
@@ -10544,6 +10622,11 @@
       "appleDesc": "Apple மூலம் உள்நுழைக",
       "facebookDesc": "சமூக அம்சங்களை இணைக்கவும்",
       "connect": "இணை"
+    },
+    "email": "மின்னஞ்சல்",
+    "enabled": "இயக்கப்பட்டது",
+    "trivia": {
+      "title": "ட்ரிவியா மற்றும் சுவாரஸ்ய தகவல்கள்"
     }
   },
   "shabbat": {
@@ -12765,7 +12848,14 @@
       "noCreditsDesc": "மேஜிக் மிரர் பயன்படுத்த உங்களுக்கு Beta கிரெடிட்கள் தேவை",
       "playGreeting": "வாழ்த்தை இயக்கு",
       "refresh": "புதுப்பி",
-      "meshUnavailable": "3D மெஷ் கிடைக்கவில்லை"
+      "meshUnavailable": "3D மெஷ் கிடைக்கவில்லை",
+      "createGuideHint": "இரண்டு சாதனங்களிலும் ஒரே கணக்கில் உள்நுழையவும்",
+      "createGuideStep1": "உங்கள் iPhone அல்லது iPad-இல் Bayit+ ஆப்ஸைத் திறக்கவும்",
+      "createGuideStep2": "Zeh Ani-க்குச் சென்று அவதாரத்தை உருவாக்கு என்பதைத் தட்டவும்",
+      "createGuideStep3": "உங்கள் முகத்தின் ஒரு குறுகிய வீடியோவைப் பதிவு செய்யவும்",
+      "createGuideStep4": "உங்கள் அவதாரம் இங்கே தானாகவே தோன்றும்",
+      "createGuideTitle": "மொபைலில் அவதாரத்தை உருவாக்கவும்",
+      "manageAvatar": "அவதாரத்தை நிர்வகிக்கவும்"
     },
     "mesh": {
       "title": "3D மெஷ் உருவாக்கு",

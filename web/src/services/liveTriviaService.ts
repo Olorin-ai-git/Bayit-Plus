@@ -9,6 +9,7 @@ import logger from "@/utils/logger";
 import { buildWsUrl } from "./wsUrl";
 import type { LiveTriviaFact } from "@/components/player/hooks/useLiveTrivia";
 import i18n from "i18next";
+import api from "@/services/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -276,24 +277,7 @@ class LiveTriviaService {
         return { available: false, error: "Invalid channel ID" };
       }
 
-      const authData = JSON.parse(
-        localStorage.getItem(AUTH_STORAGE_KEY) || "{}",
-      );
-      const token = authData?.state?.token;
-      const response = await fetch(
-        `${API_BASE_URL}/live/${channelId}/trivia/status`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to check availability");
-      }
-
-      return await response.json();
+      return await api.get(`/live/${channelId}/trivia/status`);
     } catch (error) {
       logger.error("Error checking trivia availability", LOG_CONTEXT, error);
       return { available: false, error: "Check failed" };

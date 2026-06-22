@@ -4444,6 +4444,60 @@
       "dock": "导航栏",
       "dockItem": "导航到 {{name}}",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "暂停并向 AI 询问您媒体库中的任何场景",
+      "title": "您的内容，全面升级",
+      "watchWithAI": "与 AI 一起观看"
+    },
+    "continueWatching": {
+      "resume": "继续观看",
+      "subtitle": "借助 AI 功能从上次停下的地方继续"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "回看",
+        "dubbing": "AI 配音",
+        "subtitles": "实时字幕",
+        "trivia": "实时趣味问答"
+      },
+      "groupLabel": "实时 AI"
+    },
+    "liveTV": {
+      "dubbedIn": "AI 配音为{{language}}",
+      "subtitle": "通过 AI 观看配成您语言的以色列电视节目",
+      "title": "正在直播",
+      "watchDubbed": "观看配音版"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "互动时刻",
+        "pauseAsk": "暂停提问"
+      },
+      "groupLabel": "电影 AI"
+    },
+    "overlay": {
+      "aiDubbed": "AI 配音",
+      "aiEnhanced": "AI 增强",
+      "liveSubtitles": "10 种语言的实时字幕",
+      "pauseAskReady": "暂停提问已就绪",
+      "sampleSubtitle1": "欢迎来到以色列娱乐世界",
+      "sampleSubtitle2": "体验来自以色列腹地的故事",
+      "sampleSubtitle3": "由 AI 实时配音为您的语言",
+      "sampleSubtitle4": "对任何场景提问",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "与角色对话并询问任何场景",
+      "title": "暂停提问",
+      "tryItNow": "立即体验"
     }
   },
   "cities": {
@@ -8497,7 +8551,8 @@
       },
       "askAgain": "[zh] Ask Again",
       "placeholder": "[zh] Ask about this scene...",
-      "resume": "[zh] Resume"
+      "resume": "[zh] Resume",
+      "worksOnAnyContent": "此功能适用于您观看的任何内容"
     },
     "multiCharacter": {
       "selectCharacter": "选择要对话的角色",
@@ -8657,7 +8712,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "频道聊天"
+    "channelChat": "频道聊天",
+    "walkthrough": {
+      "coachMark": "按播放/暂停即可与角色对话",
+      "liveSubtitleHint": "点按翻译，然后选择分屏模式以显示 EN | HE 字幕",
+      "suggestion": "给我讲讲这个场景"
+    }
   },
   "playlist": {
     "title": "我的播放列表",
@@ -10149,7 +10209,11 @@
       "reduceMotionDesc": "限制动画和动效",
       "audioDescriptions": "音频描述",
       "audioDescDesc": "为无障碍功能提供视觉内容的语音描述",
-      "title": "辅助功能"
+      "title": "辅助功能",
+      "colorBlindNone": "无",
+      "deuteranopia": "绿色盲（绿-红）",
+      "protanopia": "红色盲（红-绿）",
+      "tritanopia": "蓝色盲（蓝-黄）"
     },
     "signOut": "退出登录",
     "security": {
@@ -10173,7 +10237,9 @@
       "accountSecurity": "账户安全",
       "devices": "设备",
       "noDevices": "没有活动设备",
-      "unknownDevice": "未知设备"
+      "unknownDevice": "未知设备",
+      "changePasswordDesc": "更新您的密码",
+      "deviceCount": "%d 台设备"
     },
     "aiFeatures": {
       "title": "AI功能",
@@ -10202,7 +10268,15 @@
         "hard": "困难",
         "mixed": "混合",
         "categories": "分类",
-        "stats": "您的统计"
+        "stats": "您的统计",
+        "categoryCast": "演员阵容",
+        "categoryCultural": "文化",
+        "categoryFun": "趣味知识",
+        "categoryHistorical": "历史",
+        "categoryProduction": "制作",
+        "frequencyFrequent": "频繁",
+        "frequencyNormal": "正常",
+        "frequencyRare": "较少"
       },
       "betaToggles": "测试版功能开关",
       "betaEnrolled": "已加入测试版计划",
@@ -10254,7 +10328,11 @@
       "dubbing": "配音",
       "processing": "处理",
       "quality": "音频质量",
-      "volumeNormDesc": "在不同内容间规范音量"
+      "volumeNormDesc": "在不同内容间规范音量",
+      "qualityAuto": "自动",
+      "qualityHigh": "高",
+      "qualityLow": "低",
+      "qualityMedium": "中"
     },
     "notificationSettings": {
       "title": "通知",
@@ -10544,6 +10622,11 @@
       "appleDesc": "使用 Apple 登录",
       "facebookDesc": "连接社交功能",
       "connect": "连接"
+    },
+    "email": "电子邮件",
+    "enabled": "已启用",
+    "trivia": {
+      "title": "趣味问答与冷知识"
     }
   },
   "shabbat": {
@@ -12765,7 +12848,14 @@
       "noCreditsDesc": "您需要Beta积分才能使用魔镜",
       "playGreeting": "播放问候语",
       "refresh": "刷新",
-      "meshUnavailable": "3D网格不可用"
+      "meshUnavailable": "3D网格不可用",
+      "createGuideHint": "在两台设备上使用同一账户登录",
+      "createGuideStep1": "在您的 iPhone 或 iPad 上打开 Bayit+ 应用",
+      "createGuideStep2": "前往 Zeh Ani 并点按创建头像",
+      "createGuideStep3": "录制一段简短的面部视频",
+      "createGuideStep4": "您的头像将自动显示在此处",
+      "createGuideTitle": "在移动设备上创建头像",
+      "manageAvatar": "管理头像"
     },
     "mesh": {
       "title": "生成3D网格",

@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
+from app.models.document import Document as _Document
 from app.services.olorin.search.client import client_manager
 from app.services.training.document_chunking import (
     chunk_markdown_sections,
@@ -20,6 +21,49 @@ from app.services.training.document_extraction import (
 )
 
 logger = get_logger(__name__)
+
+# Retain references to in-flight ingestion tasks so they are not garbage
+# collected mid-flight (asyncio only holds a weak reference to running tasks).
+_INGEST_TASKS: set[asyncio.Task] = set()
+
+# Document statuses that are not terminal — a document in one of these states
+# has unfinished ingestion work and should be re-enqueued on startup. Terminal
+# states are "ready", "failed", and "stale".
+_NON_TERMINAL_STATUSES = ("pending",)
+
+
+def enqueue_ingest(doc) -> asyncio.Task:
+    """Schedule ingestion for a Document and retain a strong task reference.
+
+    The task removes itself from the retention set on completion via a
+    done callback, so the set never grows unbounded.
+    """
+    task = asyncio.create_task(ingest_document(doc))
+    _INGEST_TASKS.add(task)
+    task.add_done_callback(_INGEST_TASKS.discard)
+    return task
+
+
+async def reap_pending_documents() -> int:
+    """Re-enqueue Documents stranded in a non-terminal state on startup.
+
+    Documents stuck in ``pending`` (e.g. due to a process restart while an
+    ingestion task was in flight) have no completion record. Re-enqueue them
+    so ingestion eventually finishes. Returns the count re-enqueued.
+    """
+    stranded = await _Document.find(
+        {"status": {"$in": list(_NON_TERMINAL_STATUSES)}},
+    ).to_list()
+
+    for doc in stranded:
+        enqueue_ingest(doc)
+
+    if stranded:
+        logger.info(
+            "Re-enqueued stranded documents on startup",
+            extra={"count": len(stranded)},
+        )
+    return len(stranded)
 
 
 async def _get_index():

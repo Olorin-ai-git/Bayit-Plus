@@ -63,7 +63,7 @@ async def create_content_indexes(db):
             name="content_text_search",
             default_language="english",
         )
-        logger.info("✓ Created text index on Content")
+        logger.info("[OK] Created text index on Content")
 
         # Create filter indexes for advanced search
         logger.info("Creating filter indexes...")
@@ -71,7 +71,7 @@ async def create_content_indexes(db):
         # Year index (for range queries)
         try:
             await collection.create_index("year", name="year_1")
-            logger.info("✓ Created year index")
+            logger.info("[OK] Created year index")
         except OperationFailure as e:
             if "already exists" not in str(e):
                 raise
@@ -80,7 +80,7 @@ async def create_content_indexes(db):
         # Genres array index
         try:
             await collection.create_index("genres", name="genres_1")
-            logger.info("✓ Created genres index")
+            logger.info("[OK] Created genres index")
         except OperationFailure as e:
             if "already exists" not in str(e):
                 raise
@@ -91,7 +91,7 @@ async def create_content_indexes(db):
             await collection.create_index(
                 "available_subtitle_languages", name="available_subtitle_languages_1"
             )
-            logger.info("✓ Created available_subtitle_languages index")
+            logger.info("[OK] Created available_subtitle_languages index")
         except OperationFailure as e:
             if "already exists" not in str(e):
                 raise
@@ -102,7 +102,7 @@ async def create_content_indexes(db):
             await collection.create_index(
                 "requires_subscription", name="requires_subscription_1"
             )
-            logger.info("✓ Created requires_subscription index")
+            logger.info("[OK] Created requires_subscription index")
         except OperationFailure as e:
             if "already exists" not in str(e):
                 raise
@@ -111,7 +111,7 @@ async def create_content_indexes(db):
         # Kids content index
         try:
             await collection.create_index("is_kids_content", name="is_kids_content_1")
-            logger.info("✓ Created is_kids_content index")
+            logger.info("[OK] Created is_kids_content index")
         except OperationFailure as e:
             if "already exists" not in str(e):
                 raise
@@ -120,13 +120,13 @@ async def create_content_indexes(db):
         # Content type index
         try:
             await collection.create_index("content_type", name="content_type_1")
-            logger.info("✓ Created content_type index")
+            logger.info("[OK] Created content_type index")
         except OperationFailure as e:
             if "already exists" not in str(e):
                 raise
             logger.info("  Content type index already exists")
 
-        logger.info("✓ All Content indexes created successfully")
+        logger.info("[OK] All Content indexes created successfully")
 
     except Exception as e:
         logger.error(f"Error creating Content indexes: {e}", exc_info=True)
@@ -155,9 +155,9 @@ async def create_subtitle_indexes(db):
             name="subtitle_text_search",
             default_language="english",
         )
-        logger.info("✓ Created text index on SubtitleTrackDoc cues")
+        logger.info("[OK] Created text index on SubtitleTrackDoc cues")
 
-        logger.info("✓ All SubtitleTrackDoc indexes created successfully")
+        logger.info("[OK] All SubtitleTrackDoc indexes created successfully")
 
     except Exception as e:
         logger.error(f"Error creating SubtitleTrackDoc indexes: {e}", exc_info=True)
@@ -205,7 +205,7 @@ async def run_migration():
     try:
         # Test connection
         await client.admin.command("ping")
-        logger.info("✓ Connected to MongoDB successfully\n")
+        logger.info("[OK] Connected to MongoDB successfully\n")
 
         # Create Content indexes
         await create_content_indexes(db)
@@ -218,14 +218,14 @@ async def run_migration():
         # Verify all indexes
         await verify_indexes(db)
 
-        logger.info("\n✅ Migration completed successfully!")
+        logger.info("\n[OK] Migration completed successfully!")
 
     except Exception as e:
-        logger.error(f"\n❌ Migration failed: {e}", exc_info=True)
+        logger.error(f"\n[FAIL] Migration failed: {e}", exc_info=True)
         raise
     finally:
         client.close()
-        logger.info("\n✓ Database connection closed")
+        logger.info("\n[OK] Database connection closed")
 
 
 if __name__ == "__main__":

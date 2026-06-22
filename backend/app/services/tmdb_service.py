@@ -24,7 +24,7 @@ class TMDBService:
         self.api_key = settings.TMDB_API_KEY
         if not self.api_key:
             logger.warning(
-                "⚠️ TMDB_API_KEY is not configured. TMDB metadata fetching will not work."
+                "[WARN] TMDB_API_KEY is not configured. TMDB metadata fetching will not work."
             )
         self.client = httpx.AsyncClient(timeout=10.0)
 
@@ -33,7 +33,7 @@ class TMDBService:
     ) -> Optional[Dict]:
         """Make a request to TMDB API"""
         if not self.api_key:
-            logger.error("❌ TMDB API key not configured - cannot make request to TMDB")
+            logger.error("[FAIL] TMDB API key not configured - cannot make request to TMDB")
             return None
 
         url = f"{self.BASE_URL}{endpoint}"
@@ -47,15 +47,15 @@ class TMDBService:
                 return response.json()
             else:
                 logger.error(
-                    f"❌ TMDB API request failed: {endpoint} - "
+                    f"[FAIL] TMDB API request failed: {endpoint} - "
                     f"Status {response.status_code}: {response.text[:200]}"
                 )
                 return None
         except httpx.TimeoutException:
-            logger.error(f"⏱️ TMDB API timeout: {endpoint}")
+            logger.error(f"⏱ TMDB API timeout: {endpoint}")
             return None
         except Exception as e:
-            logger.error(f"❌ TMDB API error: {endpoint} - {str(e)}")
+            logger.error(f"[FAIL] TMDB API error: {endpoint} - {str(e)}")
             return None
 
     async def search_movie(
@@ -156,7 +156,7 @@ class TMDBService:
         details = await self.get_collection_details(collection_id)
         if not details:
             logger.warning(
-                f"🔍 TMDB: Failed to get collection details for ID {collection_id}"
+                f" TMDB: Failed to get collection details for ID {collection_id}"
             )
             return result
 
@@ -179,7 +179,7 @@ class TMDBService:
         result["movie_ids"] = [p.get("id") for p in parts if p.get("id")]
 
         logger.info(
-            f"🎬 TMDB: Collection '{result['collection_name']}' has "
+            f" TMDB: Collection '{result['collection_name']}' has "
             f"{result['total_movies']} movies"
         )
 
@@ -260,17 +260,17 @@ class TMDBService:
         # Search for the movie
         search_result = await self.search_movie(title, year)
         if not search_result:
-            logger.warning(f"🔍 TMDB: No search results for movie '{title}' ({year})")
+            logger.warning(f" TMDB: No search results for movie '{title}' ({year})")
             return result
 
         tmdb_id = search_result.get("id")
         result["tmdb_id"] = tmdb_id
-        logger.info(f"🔍 TMDB: Found movie '{title}' with ID {tmdb_id}")
+        logger.info(f" TMDB: Found movie '{title}' with ID {tmdb_id}")
 
         # Get full details
         details = await self.get_movie_details(tmdb_id)
         if not details:
-            logger.error(f"❌ TMDB: Failed to get details for movie ID {tmdb_id}")
+            logger.error(f"[FAIL] TMDB: Failed to get details for movie ID {tmdb_id}")
             return result
 
         # Extract IMDB ID
@@ -287,7 +287,7 @@ class TMDBService:
                     belongs_to_collection["poster_path"], "w500"
                 )
             logger.info(
-                f"🎬 TMDB: Movie belongs to collection "
+                f" TMDB: Movie belongs to collection "
                 f"'{result['collection_name']}' (ID: {result['collection_id']})"
             )
 
@@ -376,17 +376,17 @@ class TMDBService:
         # Search for the series
         search_result = await self.search_tv_series(title, year)
         if not search_result:
-            logger.warning(f"🔍 TMDB: No search results for series '{title}' ({year})")
+            logger.warning(f" TMDB: No search results for series '{title}' ({year})")
             return result
 
         tmdb_id = search_result.get("id")
         result["tmdb_id"] = tmdb_id
-        logger.info(f"🔍 TMDB: Found series '{title}' with ID {tmdb_id}")
+        logger.info(f" TMDB: Found series '{title}' with ID {tmdb_id}")
 
         # Get full details
         details = await self.get_tv_series_details(tmdb_id)
         if not details:
-            logger.error(f"❌ TMDB: Failed to get details for series ID {tmdb_id}")
+            logger.error(f"[FAIL] TMDB: Failed to get details for series ID {tmdb_id}")
             return result
 
         # Extract IMDB ID

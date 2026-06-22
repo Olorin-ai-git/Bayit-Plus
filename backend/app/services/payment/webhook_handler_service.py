@@ -282,7 +282,7 @@ class WebhookHandlerService:
             <html>
                 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                     <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #6B46C1; margin: 0;">🎉 Welcome to Bayit+!</h1>
+                        <h1 style="color: #6B46C1; margin: 0;"> Welcome to Bayit+!</h1>
                         <p style="color: #718096; font-size: 18px; margin: 10px 0 0 0;">
                             Your subscription is now active
                         </p>
@@ -306,7 +306,7 @@ class WebhookHandlerService:
                     </div>
 
                     <div style="background-color: #EDF2F7; border-left: 4px solid #6B46C1; padding: 15px; margin-bottom: 20px;">
-                        <h3 style="color: #2D3748; margin-top: 0;">🚀 Getting Started</h3>
+                        <h3 style="color: #2D3748; margin-top: 0;"> Getting Started</h3>
                         <ol style="color: #4A5568; margin: 10px 0; padding-left: 20px;">
                             <li style="margin: 8px 0;">
                                 <strong>Explore Live TV:</strong> Watch 10+ Israeli channels with real-time AI dubbing
@@ -334,7 +334,7 @@ class WebhookHandlerService:
 
                     <div style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 6px; padding: 15px; margin: 20px 0;">
                         <p style="margin: 0; color: #92400E;">
-                            <strong>💡 Tip:</strong> Download our mobile app for the best viewing experience on the go!
+                            <strong> Tip:</strong> Download our mobile app for the best viewing experience on the go!
                         </p>
                     </div>
 
@@ -366,7 +366,7 @@ class WebhookHandlerService:
             # Send welcome email
             success = await send_email(
                 to_emails=[user.email],
-                subject=f"🎉 Welcome to Bayit+ {plan_name}!",
+                subject=f" Welcome to Bayit+ {plan_name}!",
                 html_content=html_content
             )
 

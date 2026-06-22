@@ -83,7 +83,7 @@ export function GlassPosterCard({
             />
           ) : (
             <View style={styles.posterPlaceholder}>
-              <Text style={styles.placeholderIcon}>{isSeries ? '📺' : '🎬'}</Text>
+              <Text style={styles.placeholderIcon}>{isSeries ? '' : ''}</Text>
             </View>
           )}
 
@@ -102,7 +102,7 @@ export function GlassPosterCard({
             <View style={[styles.metaRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               {/* Type Badge */}
               <View style={[styles.typeBadge, isSeries ? styles.seriesBadge : styles.movieBadge]}>
-                <Text style={styles.typeIcon}>{isSeries ? '📺' : '🎬'}</Text>
+                <Text style={styles.typeIcon}>{isSeries ? '' : ''}</Text>
               </View>
 
               {year && <Text style={styles.yearText}>{year}</Text>}

@@ -29,7 +29,7 @@ class AudioProcessor:
         vocals_path, background_path = await self.audio_processor.separate_vocals(
             audio_path=audio_path, output_dir=output_dir
         )
-        logger.info(f"✅ Vocals separated: vocals={vocals_path}, background={background_path}")
+        logger.info(f"[OK] Vocals separated: vocals={vocals_path}, background={background_path}")
         return vocals_path, background_path
 
     async def mix_audio(self, vocals_path: str, background_path: str, output_path: str):
@@ -50,7 +50,7 @@ class AudioProcessor:
             background_path=background_path,
             output_path=output_path,
         )
-        logger.info(f"✅ Audio mixed: {mixed_path}")
+        logger.info(f"[OK] Audio mixed: {mixed_path}")
         return mixed_path
 
     async def trim_audio(
@@ -89,7 +89,7 @@ class AudioProcessor:
             error_msg = stderr.decode() if stderr else "Unknown error"
             raise RuntimeError(f"FFmpeg trim failed: {error_msg}")
 
-        logger.info(f"✅ Audio trimmed successfully: {output_path}")
+        logger.info(f"[OK] Audio trimmed successfully: {output_path}")
 
     async def get_audio_duration(self, audio_path: str):
         """Get audio file duration in seconds."""

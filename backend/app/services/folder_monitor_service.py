@@ -51,14 +51,14 @@ class FolderMonitorService:
                 count = len(self._known_files[folder_id])
                 self._known_files[folder_id].clear()
                 logger.info(
-                    f"✅ Cleared known files cache for folder {folder_id} ({count} files)"
+                    f"[OK] Cleared known files cache for folder {folder_id} ({count} files)"
                 )
             else:
                 logger.warning(f"No known files cache found for folder {folder_id}")
         else:
             total_count = sum(len(files) for files in self._known_files.values())
             self._known_files.clear()
-            logger.info(f"✅ Cleared all known files caches ({total_count} files)")
+            logger.info(f"[OK] Cleared all known files caches ({total_count} files)")
 
     def get_known_files_count(self, folder_id: Optional[str] = None) -> int:
         """Get count of known files for a folder or all folders"""
@@ -206,14 +206,14 @@ class FolderMonitorService:
         folder_path = Path(folder.path)
 
         if not folder_path.exists():
-            logger.warning(f"⚠️  Skipping folder (not found): {folder.path}")
+            logger.warning(f"[WARN] Skipping folder (not found): {folder.path}")
             folder.last_error = "Folder not found"
             folder.error_count += 1
             await folder.save()
             return stats
 
         if not folder_path.is_dir():
-            logger.warning(f"⚠️  Skipping path (not a directory): {folder.path}")
+            logger.warning(f"[WARN] Skipping path (not a directory): {folder.path}")
             folder.last_error = "Path is not a directory"
             folder.error_count += 1
             await folder.save()
@@ -287,7 +287,7 @@ class FolderMonitorService:
 
                         if existing_content:
                             logger.debug(
-                                f"⏭️  Skipping (already in library): {filename}"
+                                f"⏭ Skipping (already in library): {filename}"
                             )
                             skipped_by_hash += 1
                             self._known_files[folder_id].add(file_path)
@@ -306,7 +306,7 @@ class FolderMonitorService:
                             ):
                                 file_hash = cached.get("hash")
                                 hash_cache_hits += 1
-                                logger.debug(f"✓ Cache hit: {filename}")
+                                logger.debug(f"[OK] Cache hit: {filename}")
 
                         # TIER 3: If cached hash exists, check for duplicates by hash
                         if file_hash:
@@ -317,7 +317,7 @@ class FolderMonitorService:
 
                             if existing_by_hash:
                                 logger.info(
-                                    f"⏭️  Skipping duplicate (cached hash match): {filename} → '{existing_by_hash.get('title', 'Unknown')}'"
+                                    f"⏭ Skipping duplicate (cached hash match): {filename} → '{existing_by_hash.get('title', 'Unknown')}'"
                                 )
                                 skipped_by_hash += 1
                                 self._known_files[folder_id].add(file_path)
@@ -338,7 +338,7 @@ class FolderMonitorService:
 
                             if existing_job:
                                 logger.debug(
-                                    f"⏭️  Skipping (already queued with cached hash): {filename}"
+                                    f"⏭ Skipping (already queued with cached hash): {filename}"
                                 )
                                 skipped_by_queue += 1
                                 self._known_files[folder_id].add(file_path)
@@ -360,7 +360,7 @@ class FolderMonitorService:
 
                         if existing_job_by_filename:
                             logger.debug(
-                                f"⏭️  Skipping (already in queue by filename): {filename}"
+                                f"⏭ Skipping (already in queue by filename): {filename}"
                             )
                             skipped_by_queue += 1
                             self._known_files[folder_id].add(file_path)
@@ -384,10 +384,10 @@ class FolderMonitorService:
                         enqueue_count += 1
 
                         if file_hash:
-                            logger.info(f"✅ Enqueued with cached hash: {filename}")
+                            logger.info(f"[OK] Enqueued with cached hash: {filename}")
                         else:
                             logger.info(
-                                f"✅ Enqueued (will calculate hash in background): {filename}"
+                                f"[OK] Enqueued (will calculate hash in background): {filename}"
                             )
                             hash_calculations += 1
 
@@ -403,7 +403,7 @@ class FolderMonitorService:
             skipped_duplicates = skipped_by_hash + skipped_by_queue
             if skipped_duplicates > 0 or hash_cache_hits > 0:
                 logger.info(
-                    f"📊 Scan stats: {hash_cache_hits} cached hashes, {hash_calculations} calculated, {skipped_duplicates} duplicates ({skipped_by_hash} in library, {skipped_by_queue} queued)"
+                    f" Scan stats: {hash_cache_hits} cached hashes, {hash_calculations} calculated, {skipped_duplicates} duplicates ({skipped_by_hash} in library, {skipped_by_queue} queued)"
                 )
 
         # Update known files list
@@ -691,7 +691,7 @@ class FolderMonitorService:
         await folder.save()
 
         logger.info(
-            f"✅ Updated monitored folder: {folder.path} (enabled={folder.enabled}, type={folder.content_type})"
+            f"[OK] Updated monitored folder: {folder.path} (enabled={folder.enabled}, type={folder.content_type})"
         )
 
         return folder

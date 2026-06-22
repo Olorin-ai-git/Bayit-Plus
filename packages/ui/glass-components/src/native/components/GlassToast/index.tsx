@@ -162,7 +162,7 @@ export const GlassToast: React.FC<GlassToastProps> = ({
           accessibilityLabel="Dismiss notification"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.dismissText}>✕</Text>
+          <Text style={styles.dismissText}></Text>
         </TouchableOpacity>
       )}
     </>

@@ -107,7 +107,7 @@ async def search_exa_news(
             headlines.append(headline)
 
             # Log with clear image status
-            img_status = "✓ IMAGE" if image else "✗ NO IMAGE"
+            img_status = "[OK] IMAGE" if image else "[FAIL] NO IMAGE"
             logger.info(
                 f"  {idx + 1}. {title[:60]}\n"
                 f"      {img_status} | Source: {source}"

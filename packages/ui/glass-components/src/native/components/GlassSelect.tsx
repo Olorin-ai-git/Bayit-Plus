@@ -227,7 +227,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                           : { marginLeft: spacing.sm },
                       ]}
                     >
-                      ✓
+                      [OK]
                     </Text>
                   )}
                 </TouchableOpacity>

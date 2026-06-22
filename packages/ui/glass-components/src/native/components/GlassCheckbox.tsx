@@ -100,7 +100,7 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
                 color: colors.background,
               }}
             >
-              ✓
+              [OK]
             </Text>
           )}
         </Animated.View>

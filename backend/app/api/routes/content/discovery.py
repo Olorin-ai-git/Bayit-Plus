@@ -206,7 +206,7 @@ async def sync_all_content():
     Sync all content: podcasts, live channels, and trending data.
     Podcast syncing is now background-only (scheduled task).
     """
-    logger.info("📻 Full content sync requested (podcasts sync in background)")
+    logger.info("Full content sync requested (podcasts sync in background)")
 
     return {
         "status": "background_only",

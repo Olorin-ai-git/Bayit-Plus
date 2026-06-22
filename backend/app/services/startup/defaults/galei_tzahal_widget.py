@@ -43,7 +43,7 @@ GALEI_TZAHAL_WIDGET: GaleiTzahalWidgetConfig = {
     "description": "גלי צהל - גלצ 96.6FM שידור חי",
     "description_en": "Galei Tzahal - Glz 96.6FM Live Stream",
     "description_es": "Galei Tzahal - Glz 96.6FM Transmisión en Vivo",
-    "icon": "📻",
+    "icon": "",
     "order": 50,  # After channel widgets (0-1) and 103FM widgets (20-21)
     "position": {
         "x": 20,

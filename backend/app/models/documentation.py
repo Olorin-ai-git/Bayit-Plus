@@ -87,7 +87,7 @@ class DocumentationCategory(Document):
     category_id: str  # Unique identifier, e.g., "getting-started"
     title_key: str  # i18n key for category title
     description_key: Optional[str] = None  # i18n key for category description
-    icon: str = "📄"  # Emoji icon
+    icon: str = "" # Emoji icon
     order: int = 0
     is_visible: bool = True
 

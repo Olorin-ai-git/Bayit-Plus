@@ -6,6 +6,7 @@ import { useAvatarMeshStore } from '@/stores/avatarMeshStore';
 import { GlassCard, GlassButton } from '@bayit/glass';
 import { Avatar3DViewer } from '@/components/zeh-ani/Avatar3DViewer';
 import { MeshGenerationProgress } from '@/components/zeh-ani/MeshGenerationProgress';
+import api from '@/services/api';
 import logger from '@bayit/shared-utils/logger';
 
 const avatarLogger = logger.scope('Avatar3DPage');
@@ -39,15 +40,12 @@ export default function Avatar3DPage() {
       }
 
       try {
-        const response = await fetch(`/api/v1/star-story/avatars/${user!.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.avatars && data.avatars.length > 0) {
-            const firstAvatar = data.avatars[0];
-            setAvatarId(firstAvatar.avatar_id);
-            await fetchMeshStatus(firstAvatar.avatar_id);
-            await fetchGlbUrl(firstAvatar.avatar_id);
-          }
+        const data = await api.get(`/star-story/avatars/${user!.id}`);
+        if (data?.avatars && data.avatars.length > 0) {
+          const firstAvatar = data.avatars[0];
+          setAvatarId(firstAvatar.avatar_id);
+          await fetchMeshStatus(firstAvatar.avatar_id);
+          await fetchGlbUrl(firstAvatar.avatar_id);
         }
       } catch (error) {
         avatarLogger.error('Failed to load avatar', error);

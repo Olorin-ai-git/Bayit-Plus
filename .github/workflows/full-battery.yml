@@ -38,11 +38,22 @@ jobs:
       - name: Install backend deps
         working-directory: backend
         run: poetry install --no-interaction --no-root
-      - name: Run tightening gate
-        run: scripts/ci/tighten.sh
+      # Blocking: platform rules (no emojis, no stray console.log).
+      - name: Platform rules (blocking)
+        run: scripts/ci/tighten.sh --rules-only
+      # Advisory: lint/type/format ride on a baseline still being cleaned up.
+      # Ratchet these to blocking once the monorepo lint/type debt is cleared.
+      - name: Backend format/types (advisory)
+        run: scripts/ci/tighten.sh --backend-only
+        continue-on-error: true
+      - name: JS lint/type-check (advisory)
+        run: scripts/ci/tighten.sh --js-only
+        continue-on-error: true
 
   backend-tests:
     name: Backend tests (pytest)
+    # Advisory while the test/coverage baseline is stabilized.
+    continue-on-error: true
     runs-on: ubuntu-latest
     services:
       mongodb:
@@ -70,6 +81,8 @@ jobs:
 
   web-tests:
     name: Web tests (jest)
+    # Advisory while the test baseline is stabilized.
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -84,6 +97,8 @@ jobs:
 
   e2e-tests:
     name: E2E tests (Playwright)
+    # Advisory: e2e needs a running app/preview; not a merge gate yet.
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

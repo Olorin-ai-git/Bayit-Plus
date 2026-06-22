@@ -341,10 +341,10 @@ def validate_olorin_config() -> None:
 def log_audible_configuration_status() -> None:
     """Log Audible OAuth integration configuration status."""
     if settings.is_audible_configured:
-        logger.info("✓ Audible OAuth integration is CONFIGURED and ENABLED")
+        logger.info("[OK] Audible OAuth integration is CONFIGURED and ENABLED")
     else:
         logger.warning(
-            "⚠ Audible OAuth integration is DISABLED - "
+            "[WARN] Audible OAuth integration is DISABLED - "
             "to enable, configure: AUDIBLE_CLIENT_ID, AUDIBLE_CLIENT_SECRET, AUDIBLE_REDIRECT_URI"
         )
 

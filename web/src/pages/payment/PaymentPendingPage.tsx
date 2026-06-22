@@ -15,6 +15,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
+import { generateCheckoutUrl } from '@/services/api/payment';
 import logger from '@/utils/logger';
 
 const paymentLogger = logger.scope('PaymentPendingPage');
@@ -47,21 +48,7 @@ export default function PaymentPendingPage({ checkoutUrl, planId }: Props) {
     try {
       paymentLogger.info('Generating checkout URL', { planId });
 
-      const response = await fetch(
-        `/api/v1/auth/payment/checkout-url?plan_id=${planId || 'basic'}`,
-        {
-          headers: {
-            Authorization: `Bearer ${useAuthStore.getState().token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await generateCheckoutUrl(planId || 'basic');
 
       paymentLogger.info('Checkout URL generated, redirecting', {
         session_id: data.session_id,

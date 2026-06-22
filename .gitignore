@@ -146,3 +146,10 @@ coverage.json
 # Credentials (never commit; covers the bare service-account.json name too)
 service-account.json
 **/service-account.json
+
+# Specific scratch files removed from tracking (keep ignored)
+android-app/tt.txt
+backend/search.txt
+backend/transcript_english_full.txt
+backend/transcript_hebrew_full.txt
+backend/wizard_endpoint_test_results.txt

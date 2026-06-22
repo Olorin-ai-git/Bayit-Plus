@@ -176,7 +176,7 @@ class VoicePipelineService:
             # Start listening for transcripts
             self._stt_task = asyncio.create_task(self._process_transcripts())
 
-            logger.info("✅ Voice pipeline started")
+            logger.info("[OK] Voice pipeline started")
 
         except Exception as e:
             logger.error(f"Failed to start voice pipeline: {e}")
@@ -235,13 +235,13 @@ class VoicePipelineService:
             await self.stt_service.websocket.send(
                 json.dumps({"message_type": "commit"})
             )
-            logger.info("📤 Sent manual commit signal to STT")
+            logger.info(" Sent manual commit signal to STT")
         except Exception as e:
             logger.error(f"Error sending commit: {e}")
 
     async def cancel(self) -> None:
         """Cancel current voice interaction."""
-        logger.info("🚫 Voice interaction cancelled")
+        logger.info(" Voice interaction cancelled")
 
         # Cancel any ongoing LLM/TTS task
         if self._llm_tts_task and not self._llm_tts_task.done():

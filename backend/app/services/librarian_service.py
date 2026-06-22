@@ -71,7 +71,7 @@ async def run_daily_audit(
     """
     start_time = datetime.utcnow()
     logger.info("=" * 80)
-    logger.info(f"🤖 Starting Librarian AI Agent - {audit_type}")
+    logger.info(f" Starting Librarian AI Agent - {audit_type}")
     logger.info(f"   Dry run: {dry_run}")
     logger.info("=" * 80)
 
@@ -102,7 +102,7 @@ async def run_daily_audit(
 
     try:
         # Step 1: Determine audit scope
-        logger.info("\n📋 Step 1: Determining audit scope...")
+        logger.info("\n Step 1: Determining audit scope...")
         logger.info(
             f"   Filters: last_24_hours={last_24_hours_only}, cyb_titles={cyb_titles_only}, tmdb_only={tmdb_posters_only}"
         )
@@ -122,7 +122,7 @@ async def run_daily_audit(
             await audit_task_manager.check_should_continue(audit_id)
 
         # Step 2: Audit all content types in parallel
-        logger.info("\n🔍 Step 2: Auditing all content types...")
+        logger.info("\n Step 2: Auditing all content types...")
 
         # Import services here to avoid circular imports
         from app.services.content_auditor import audit_content_items
@@ -145,19 +145,19 @@ async def run_daily_audit(
 
         # Handle any exceptions
         if isinstance(content_results, Exception):
-            logger.error(f"❌ Content audit failed: {content_results}")
+            logger.error(f"[FAIL] Content audit failed: {content_results}")
             content_results = {"status": "failed", "error": str(content_results)}
 
         if isinstance(stream_results, Exception):
-            logger.error(f"❌ Stream validation failed: {stream_results}")
+            logger.error(f"[FAIL] Stream validation failed: {stream_results}")
             stream_results = {"status": "failed", "error": str(stream_results)}
 
         if isinstance(db_health, Exception):
-            logger.error(f"❌ Database maintenance failed: {db_health}")
+            logger.error(f"[FAIL] Database maintenance failed: {db_health}")
             db_health = {"status": "failed", "error": str(db_health)}
 
         if isinstance(maintenance_results, Exception):
-            logger.error(f"❌ Content maintenance tasks failed: {maintenance_results}")
+            logger.error(f"[FAIL] Content maintenance tasks failed: {maintenance_results}")
             maintenance_results = {
                 "status": "failed",
                 "error": str(maintenance_results),
@@ -168,7 +168,7 @@ async def run_daily_audit(
             await audit_task_manager.check_should_continue(audit_id)
 
         # Step 2b: Series-Episode Linking
-        logger.info("\n🔗 Step 2b: Series-Episode Linking...")
+        logger.info("\n Step 2b: Series-Episode Linking...")
         try:
             from app.services.series_linker_service import \
                 get_series_linker_service
@@ -180,7 +180,7 @@ async def run_daily_audit(
             )
             logger.info(f"   Linked {linking_results.get('linked', 0)} episodes")
         except Exception as e:
-            logger.error(f"❌ Series linking failed: {e}")
+            logger.error(f"[FAIL] Series linking failed: {e}")
             linking_results = {"status": "failed", "error": str(e)}
 
         # Check for cancellation/pause
@@ -188,7 +188,7 @@ async def run_daily_audit(
             await audit_task_manager.check_should_continue(audit_id)
 
         # Step 2c: Episode Deduplication
-        logger.info("\n🔄 Step 2c: Episode Deduplication...")
+        logger.info("\n Step 2c: Episode Deduplication...")
         try:
             from app.core.config import settings
 
@@ -201,7 +201,7 @@ async def run_daily_audit(
                 f"   Resolved {dedup_results.get('groups_resolved', 0)} duplicate groups"
             )
         except Exception as e:
-            logger.error(f"❌ Episode deduplication failed: {e}")
+            logger.error(f"[FAIL] Episode deduplication failed: {e}")
             dedup_results = {"status": "failed", "error": str(e)}
 
         # Check for cancellation/pause
@@ -209,7 +209,7 @@ async def run_daily_audit(
             await audit_task_manager.check_should_continue(audit_id)
 
         # Step 2d: Integrity Cleanup
-        logger.info("\n🧹 Step 2d: Integrity Cleanup...")
+        logger.info("\n Step 2d: Integrity Cleanup...")
         try:
             from app.services.upload_service.integrity import \
                 upload_integrity_service
@@ -221,7 +221,7 @@ async def run_daily_audit(
                 f"   Integrity cleanup: {integrity_results.get('overall_success', False)}"
             )
         except Exception as e:
-            logger.error(f"❌ Integrity cleanup failed: {e}")
+            logger.error(f"[FAIL] Integrity cleanup failed: {e}")
             integrity_results = {"status": "failed", "error": str(e)}
 
         # Check for cancellation/pause
@@ -229,7 +229,7 @@ async def run_daily_audit(
             await audit_task_manager.check_should_continue(audit_id)
 
         # Step 3: Compile results
-        logger.info("\n📊 Step 3: Compiling audit results...")
+        logger.info("\n Step 3: Compiling audit results...")
         audit_report.content_results = content_results
         audit_report.database_health = db_health
         audit_report.maintenance_results = maintenance_results
@@ -287,14 +287,14 @@ async def run_daily_audit(
             await audit_task_manager.check_should_continue(audit_id)
 
         # Step 4: Generate AI insights
-        logger.info("\n🧠 Step 4: Generating AI insights...")
+        logger.info("\n Step 4: Generating AI insights...")
         try:
             from app.services.content_auditor import generate_ai_insights
 
             ai_insights = await generate_ai_insights(audit_report, language=language)
             audit_report.ai_insights = ai_insights
         except Exception as e:
-            logger.warning(f"⚠️ Failed to generate AI insights: {e}")
+            logger.warning(f"[WARN] Failed to generate AI insights: {e}")
             audit_report.ai_insights = []
 
         # Step 5: Finalize report
@@ -306,17 +306,17 @@ async def run_daily_audit(
         await audit_report.save()
 
         # Step 6: Send notifications
-        logger.info("\n📧 Step 6: Sending notifications...")
+        logger.info("\n Step 6: Sending notifications...")
         try:
             from app.services.report_generator import send_audit_report
 
             await send_audit_report(audit_report)
         except Exception as e:
-            logger.warning(f"⚠️ Failed to send notifications: {e}")
+            logger.warning(f"[WARN] Failed to send notifications: {e}")
 
         # Final summary
         logger.info("\n" + "=" * 80)
-        logger.info("✅ Librarian Audit Complete")
+        logger.info("[OK] Librarian Audit Complete")
         logger.info(f"   Total items checked: {audit_report.summary['total_items']}")
         logger.info(f"   Issues found: {audit_report.summary['issues_found']}")
         logger.info(f"   Issues fixed: {audit_report.summary['issues_fixed']}")
@@ -326,7 +326,7 @@ async def run_daily_audit(
         return audit_report
 
     except Exception as e:
-        logger.error(f"❌ Audit failed: {e}", exc_info=True)
+        logger.error(f"[FAIL] Audit failed: {e}", exc_info=True)
         audit_report.status = "failed"
         audit_report.database_health = {"error": str(e)}
         await audit_report.save()

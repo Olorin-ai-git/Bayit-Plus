@@ -48,7 +48,7 @@ class TMDBEnricher:
             settings.MONGODB_URI if hasattr(settings, "MONGODB_URI") else settings.MONGODB_URL
         )
         self.db = client[settings.MONGODB_DB_NAME]
-        logger.info("✓ Connected to database")
+        logger.info("[OK] Connected to database")
 
     async def fetch_tmdb_series(self, tmdb_id: int) -> Optional[Dict]:
         """Fetch series data from TMDB."""
@@ -127,7 +127,7 @@ class TMDBEnricher:
             tmdb_data = await self.fetch_tmdb_series(tmdb_id)
 
             if not tmdb_data:
-                logger.warning(f"  ✗ Could not fetch TMDB data")
+                logger.warning(f"[FAIL] Could not fetch TMDB data")
                 self.stats["errors"] += 1
                 continue
 
@@ -155,7 +155,7 @@ class TMDBEnricher:
                     update_doc["genre"] = tmdb_data["genres"][0]["name"]
 
             if update_doc:
-                logger.info(f"  ✓ Updating: {', '.join(update_doc.keys())}")
+                logger.info(f"[OK] Updating: {', '.join(update_doc.keys())}")
 
                 if not self.dry_run:
                     await self.db.content.update_one(

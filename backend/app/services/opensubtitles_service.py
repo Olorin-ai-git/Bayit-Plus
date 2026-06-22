@@ -55,7 +55,7 @@ class OpenSubtitlesService:
 
         if not self.api_key:
             logger.warning(
-                "⚠️ OPENSUBTITLES_API_KEY is not configured. External subtitle fetching will not work."
+                "[WARN] OPENSUBTITLES_API_KEY is not configured. External subtitle fetching will not work."
             )
 
         # Note: Username/password are optional - API key alone is sufficient for downloads
@@ -98,13 +98,13 @@ class OpenSubtitlesService:
                     hours=23, minutes=50
                 )
 
-                logger.info(f"✅ Logged into OpenSubtitles as {self.username}")
+                logger.info(f"[OK] Logged into OpenSubtitles as {self.username}")
                 return True
             else:
-                logger.error(f"❌ OpenSubtitles login failed: {response.status_code}")
+                logger.error(f"[FAIL] OpenSubtitles login failed: {response.status_code}")
                 return False
         except Exception as e:
-            logger.error(f"❌ OpenSubtitles login error: {e}")
+            logger.error(f"[FAIL] OpenSubtitles login error: {e}")
             return False
 
     async def _make_request(
@@ -126,7 +126,7 @@ class OpenSubtitlesService:
         """
         if not self.api_key:
             logger.error(
-                "❌ OpenSubtitles API key not configured - cannot make request"
+                "[FAIL] OpenSubtitles API key not configured - cannot make request"
             )
             return None
 
@@ -137,20 +137,20 @@ class OpenSubtitlesService:
                 # Wait and retry
                 wait_time = min(INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY)
                 logger.warning(
-                    f"⚠️ Rate limit reached - waiting {wait_time:.1f}s before retry {retry_count + 1}"
+                    f"[WARN] Rate limit reached - waiting {wait_time:.1f}s before retry {retry_count + 1}"
                 )
                 await asyncio.sleep(wait_time)
                 return await self._make_request(
                     endpoint, params, method, json_body, use_auth, retry_count + 1
                 )
             else:
-                logger.error("❌ Rate limit exceeded after max retries")
+                logger.error("[FAIL] Rate limit exceeded after max retries")
                 return None
 
         # Ensure logged in if auth required
         if use_auth:
             if not await self._ensure_logged_in():
-                logger.error("❌ Cannot make authenticated request - login failed")
+                logger.error("[FAIL] Cannot make authenticated request - login failed")
                 return None
 
         url = f"{self.base_url}{endpoint}"
@@ -188,27 +188,27 @@ class OpenSubtitlesService:
                         INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY
                     )
                     logger.warning(
-                        f"⚠️ Rate limit (429) - waiting {wait_time:.1f}s before retry {retry_count + 1}"
+                        f"[WARN] Rate limit (429) - waiting {wait_time:.1f}s before retry {retry_count + 1}"
                     )
                     await asyncio.sleep(wait_time)
                     return await self._make_request(
                         endpoint, params, method, json_body, use_auth, retry_count + 1
                     )
                 else:
-                    logger.error("❌ Rate limit (429) exceeded after max retries")
+                    logger.error("[FAIL] Rate limit (429) exceeded after max retries")
                     return None
 
             elif response.status_code == 401:
                 # Unauthorized - clear token and retry once
                 if use_auth and retry_count == 0:
-                    logger.warning("⚠️ Auth token expired - re-authenticating")
+                    logger.warning("[WARN] Auth token expired - re-authenticating")
                     self.jwt_token = None
                     self.jwt_expires_at = None
                     return await self._make_request(
                         endpoint, params, method, json_body, use_auth, retry_count + 1
                     )
                 else:
-                    logger.error(f"❌ Authentication failed: {response.text[:200]}")
+                    logger.error(f"[FAIL] Authentication failed: {response.text[:200]}")
                     return None
 
             elif response.status_code >= 500:
@@ -218,7 +218,7 @@ class OpenSubtitlesService:
                         INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY
                     )
                     logger.warning(
-                        f"⚠️ Server error ({response.status_code}) - waiting {wait_time:.1f}s before retry"
+                        f"[WARN] Server error ({response.status_code}) - waiting {wait_time:.1f}s before retry"
                     )
                     await asyncio.sleep(wait_time)
                     return await self._make_request(
@@ -226,7 +226,7 @@ class OpenSubtitlesService:
                     )
                 else:
                     logger.error(
-                        f"❌ Server error after max retries: {response.status_code}"
+                        f"[FAIL] Server error after max retries: {response.status_code}"
                     )
                     return None
 
@@ -234,12 +234,12 @@ class OpenSubtitlesService:
                 error_text = response.text[:500]
                 # Check for quota errors in response
                 if "quota" in error_text.lower() or "100 subtitles" in error_text:
-                    logger.error(f"❌ OpenSubtitles quota exceeded: {error_text}")
+                    logger.error(f"[FAIL] OpenSubtitles quota exceeded: {error_text}")
                     raise OpenSubtitlesQuotaError(
                         "OpenSubtitles daily quota reached (100/24h). Please try again tomorrow."
                     )
                 logger.error(
-                    f"❌ OpenSubtitles API request failed: {endpoint} - "
+                    f"[FAIL] OpenSubtitles API request failed: {endpoint} - "
                     f"Status {response.status_code}: {error_text}"
                 )
                 return None
@@ -248,7 +248,7 @@ class OpenSubtitlesService:
             if retry_count < MAX_RETRIES:
                 wait_time = min(INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY)
                 logger.warning(
-                    f"⏱️ Timeout on {endpoint} - retrying in {wait_time:.1f}s"
+                    f"⏱ Timeout on {endpoint} - retrying in {wait_time:.1f}s"
                 )
                 await asyncio.sleep(wait_time)
                 return await self._make_request(
@@ -256,7 +256,7 @@ class OpenSubtitlesService:
                 )
             else:
                 logger.error(
-                    f"⏱️ OpenSubtitles API timeout after {MAX_RETRIES} retries: {endpoint}"
+                    f"⏱ OpenSubtitles API timeout after {MAX_RETRIES} retries: {endpoint}"
                 )
                 return None
 
@@ -264,18 +264,18 @@ class OpenSubtitlesService:
             if retry_count < MAX_RETRIES:
                 wait_time = min(INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY)
                 logger.warning(
-                    f"🔌 Connection error - retrying in {wait_time:.1f}s: {e}"
+                    f" Connection error - retrying in {wait_time:.1f}s: {e}"
                 )
                 await asyncio.sleep(wait_time)
                 return await self._make_request(
                     endpoint, params, method, json_body, use_auth, retry_count + 1
                 )
             else:
-                logger.error(f"🔌 Connection failed after {MAX_RETRIES} retries: {e}")
+                logger.error(f" Connection failed after {MAX_RETRIES} retries: {e}")
                 return None
 
         except Exception as e:
-            logger.error(f"❌ OpenSubtitles API error: {endpoint} - {str(e)}")
+            logger.error(f"[FAIL] OpenSubtitles API error: {endpoint} - {str(e)}")
             return None
 
     async def check_quota_available(self) -> Dict[str, Any]:
@@ -340,7 +340,7 @@ class OpenSubtitlesService:
         await tracker.save()
 
         logger.info(
-            f"📊 OpenSubtitles quota: {tracker.downloads_used}/{self.daily_limit} downloads, "
+            f" OpenSubtitles quota: {tracker.downloads_used}/{self.daily_limit} downloads, "
             f"{tracker.searches_performed} searches today"
         )
 
@@ -370,7 +370,7 @@ class OpenSubtitlesService:
         if content_id:
             cache = await SubtitleSearchCacheDoc.get_cached_search(content_id, language)
             if cache:
-                logger.info(f"✅ Cache hit for {content_id} ({language})")
+                logger.info(f"[OK] Cache hit for {content_id} ({language})")
                 if cache.found:
                     return [
                         {
@@ -397,7 +397,7 @@ class OpenSubtitlesService:
             params["season_number"] = season_number
             params["episode_number"] = episode_number
             logger.info(
-                f"🔍 Searching OpenSubtitles for series IMDB {parent_clean} S{season_number:02d}E{episode_number:02d}"
+                f" Searching OpenSubtitles for series IMDB {parent_clean} S{season_number:02d}E{episode_number:02d}"
             )
         elif imdb_id:
             # Movie or episode-specific IMDB ID
@@ -408,10 +408,10 @@ class OpenSubtitlesService:
                 params["season_number"] = season_number
                 params["episode_number"] = episode_number
                 logger.info(
-                    f"🔍 Searching OpenSubtitles for IMDB {imdb_id_clean} S{season_number:02d}E{episode_number:02d}"
+                    f" Searching OpenSubtitles for IMDB {imdb_id_clean} S{season_number:02d}E{episode_number:02d}"
                 )
             else:
-                logger.info(f"🔍 Searching OpenSubtitles for IMDB {imdb_id_clean}")
+                logger.info(f" Searching OpenSubtitles for IMDB {imdb_id_clean}")
         elif query:
             # Fallback to title search
             params["query"] = query
@@ -419,9 +419,9 @@ class OpenSubtitlesService:
                 params["season_number"] = season_number
             if episode_number is not None:
                 params["episode_number"] = episode_number
-            logger.info(f"🔍 Searching OpenSubtitles by query: '{query}'")
+            logger.info(f" Searching OpenSubtitles by query: '{query}'")
         else:
-            logger.warning("⚠️ No valid search criteria provided for OpenSubtitles")
+            logger.warning("[WARN] No valid search criteria provided for OpenSubtitles")
             return []
 
         data = await self._make_request("/subtitles", params)
@@ -467,7 +467,7 @@ class OpenSubtitlesService:
             )
 
         logger.info(
-            f"🔍 Found {len(results)} subtitles for IMDB {imdb_id} ({language})"
+            f" Found {len(results)} subtitles for IMDB {imdb_id} ({language})"
         )
         return results
 
@@ -488,7 +488,7 @@ class OpenSubtitlesService:
         quota = await self.check_quota_available()
         if not quota["available"]:
             logger.error(
-                f"❌ OpenSubtitles quota exhausted: {quota['used']}/{quota['daily_limit']} "
+                f"[FAIL] OpenSubtitles quota exhausted: {quota['used']}/{quota['daily_limit']} "
                 f"(resets at {quota['resets_at']})"
             )
             return None
@@ -500,7 +500,7 @@ class OpenSubtitlesService:
         try:
             file_id_int = int(file_id)
         except (ValueError, TypeError):
-            logger.error(f"❌ Invalid file_id format: {file_id}")
+            logger.error(f"[FAIL] Invalid file_id format: {file_id}")
             return None
 
         # Always use authenticated requests to get full tier quota (e.g. Light = 2000/day)
@@ -514,11 +514,11 @@ class OpenSubtitlesService:
         )
 
         if not data or not data.get("link"):
-            logger.error(f"❌ Failed to get download link for file_id: {file_id}")
+            logger.error(f"[FAIL] Failed to get download link for file_id: {file_id}")
             return None
 
         download_url = data["link"]
-        logger.info(f"📥 Downloading subtitle from: {download_url[:50]}...")
+        logger.info(f" Downloading subtitle from: {download_url[:50]}...")
 
         # Download with retry
         for retry in range(MAX_RETRIES):
@@ -530,7 +530,7 @@ class OpenSubtitlesService:
 
                     # Validate content - should contain WEBVTT or SRT markers
                     if not subtitle_content or len(subtitle_content) < 10:
-                        logger.warning(f"⚠️ Downloaded subtitle is empty or too short")
+                        logger.warning(f"[WARN] Downloaded subtitle is empty or too short")
                         return None
 
                     # Check for common subtitle format markers
@@ -540,7 +540,7 @@ class OpenSubtitlesService:
                         for marker in ["webvtt", "1\n", "1\r", "-->"]
                     ):
                         logger.warning(
-                            f"⚠️ Downloaded content doesn't appear to be a subtitle file"
+                            f"[WARN] Downloaded content doesn't appear to be a subtitle file"
                         )
                         # Still return it - might be a valid format we don't recognize
 
@@ -548,7 +548,7 @@ class OpenSubtitlesService:
                     await self.increment_quota(operation="download")
 
                     logger.info(
-                        f"✅ Downloaded subtitle {file_id} for {content_id} ({language}) - {len(subtitle_content)} chars"
+                        f"[OK] Downloaded subtitle {file_id} for {content_id} ({language}) - {len(subtitle_content)} chars"
                     )
                     return subtitle_content
 
@@ -556,7 +556,7 @@ class OpenSubtitlesService:
                     # Rate limited on download
                     wait_time = min(INITIAL_RETRY_DELAY * (2**retry), MAX_RETRY_DELAY)
                     logger.warning(
-                        f"⚠️ Download rate limited - waiting {wait_time:.1f}s"
+                        f"[WARN] Download rate limited - waiting {wait_time:.1f}s"
                     )
                     await asyncio.sleep(wait_time)
                     continue
@@ -565,36 +565,36 @@ class OpenSubtitlesService:
                     # Server error - retry
                     wait_time = min(INITIAL_RETRY_DELAY * (2**retry), MAX_RETRY_DELAY)
                     logger.warning(
-                        f"⚠️ Server error ({response.status_code}) - retrying in {wait_time:.1f}s"
+                        f"[WARN] Server error ({response.status_code}) - retrying in {wait_time:.1f}s"
                     )
                     await asyncio.sleep(wait_time)
                     continue
 
                 else:
                     logger.error(
-                        f"❌ Failed to download subtitle file: {response.status_code}"
+                        f"[FAIL] Failed to download subtitle file: {response.status_code}"
                     )
                     return None
 
             except httpx.TimeoutException:
                 wait_time = min(INITIAL_RETRY_DELAY * (2**retry), MAX_RETRY_DELAY)
-                logger.warning(f"⏱️ Download timeout - retrying in {wait_time:.1f}s")
+                logger.warning(f"⏱ Download timeout - retrying in {wait_time:.1f}s")
                 await asyncio.sleep(wait_time)
                 continue
 
             except httpx.ConnectError as e:
                 wait_time = min(INITIAL_RETRY_DELAY * (2**retry), MAX_RETRY_DELAY)
                 logger.warning(
-                    f"🔌 Connection error during download: {e} - retrying in {wait_time:.1f}s"
+                    f" Connection error during download: {e} - retrying in {wait_time:.1f}s"
                 )
                 await asyncio.sleep(wait_time)
                 continue
 
             except Exception as e:
-                logger.error(f"❌ Error downloading subtitle file: {str(e)}")
+                logger.error(f"[FAIL] Error downloading subtitle file: {str(e)}")
                 return None
 
-        logger.error(f"❌ Failed to download subtitle after {MAX_RETRIES} retries")
+        logger.error(f"[FAIL] Failed to download subtitle after {MAX_RETRIES} retries")
         return None
 
     async def _cache_search_result(

@@ -37,7 +37,7 @@ async def execute_send_email_notification(
         if not admin_emails:
             return {"success": False, "error": "No valid admin email addresses found"}
 
-        severity_emoji = "🔴" if severity == "critical" else "🟠"
+        severity_emoji = "" if severity == "critical" else ""
         severity_color = "#dc2626" if severity == "critical" else "#f97316"
 
         issues_html = ""

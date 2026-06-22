@@ -1,6 +1,5 @@
 """Super-admin document ingestion — scope=global, no tier quotas, superadmin-only."""
 
-import asyncio
 from datetime import datetime
 from typing import Optional
 
@@ -16,7 +15,7 @@ from app.models.document import Document
 from app.models.training_user import TrainingUser
 from app.services.olorin.search.client import client_manager
 from app.services.training.document_embedding import delete_document_vectors
-from app.services.training.document_orchestrator import ingest_document
+from app.services.training.document_orchestrator import enqueue_ingest
 from app.services.training.document_storage import (
     build_document_gcs_path,
     delete_document_blob,
@@ -77,7 +76,7 @@ async def _create_global_document(
 
 
 async def _enqueue_ingest(doc: Document) -> None:
-    asyncio.create_task(ingest_document(doc))
+    enqueue_ingest(doc)
 
 
 async def _fetch_global_documents(

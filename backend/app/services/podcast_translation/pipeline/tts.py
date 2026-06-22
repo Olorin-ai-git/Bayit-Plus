@@ -174,7 +174,7 @@ async def _generate_tts_google(
     Path(output_path).write_bytes(audio_bytes)
 
     logger.info(
-        f"✅ Google TTS audio generated: {output_path} ({len(audio_bytes)} bytes)"
+        f"[OK] Google TTS audio generated: {output_path} ({len(audio_bytes)} bytes)"
     )
 
     return output_path

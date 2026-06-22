@@ -82,7 +82,7 @@ async def analyze_and_extract_subtitles(content_id: str, stream_url: str):
                     await subtitle_doc.insert()
                     saved_languages.append(sub["language"])
                     logger.info(
-                        f"✅ Extracted {sub['language']} subtitles for {content_id}"
+                        f"[OK] Extracted {sub['language']} subtitles for {content_id}"
                     )
 
                 except Exception as e:
@@ -95,7 +95,7 @@ async def analyze_and_extract_subtitles(content_id: str, stream_url: str):
             content.available_subtitle_languages = saved_languages
             content.subtitle_extraction_status = "completed"
             logger.info(
-                f"✅ Completed subtitle extraction for {content_id}: {saved_languages}"
+                f"[OK] Completed subtitle extraction for {content_id}: {saved_languages}"
             )
         else:
             logger.info(f"No embedded subtitles found in {content_id}")
@@ -104,7 +104,7 @@ async def analyze_and_extract_subtitles(content_id: str, stream_url: str):
         await content.save()
 
     except Exception as e:
-        logger.error(f"❌ Failed to extract subtitles for {content_id}: {str(e)}")
+        logger.error(f"[FAIL] Failed to extract subtitles for {content_id}: {str(e)}")
         try:
             content = await Content.get(content_id)
             if content:

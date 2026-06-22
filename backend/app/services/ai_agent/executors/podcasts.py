@@ -56,7 +56,7 @@ async def execute_manage_podcast_episodes(
                 "podcasts_processed": 0,
             }
 
-        logger.info(f"🎙️ Managing {len(podcasts)} podcast(s)")
+        logger.info(f" Managing {len(podcasts)} podcast(s)")
 
         # Process each podcast
         for podcast in podcasts:
@@ -71,14 +71,14 @@ async def execute_manage_podcast_episodes(
 
             try:
                 # Step 1: Sync latest episodes from RSS feed
-                logger.info(f"📡 Syncing episodes for: {podcast.title}")
+                logger.info(f" Syncing episodes for: {podcast.title}")
                 episodes_synced = await sync_podcast_episodes(podcast, max_episodes=10)
                 podcast_result["episodes_synced"] = episodes_synced
                 results["episodes_synced"] += episodes_synced
 
                 if episodes_synced > 0:
                     logger.info(
-                        f"✅ Synced {episodes_synced} new episode(s) for {podcast.title}"
+                        f"[OK] Synced {episodes_synced} new episode(s) for {podcast.title}"
                     )
 
                 # Step 2: Get all episodes for this podcast, sorted by published date (newest first)
@@ -102,7 +102,7 @@ async def execute_manage_podcast_episodes(
                     deleted_count = 0
 
                     logger.info(
-                        f"🗑️ Deleting {len(episodes_to_delete)} old episode(s) from {podcast.title} "
+                        f" Deleting {len(episodes_to_delete)} old episode(s) from {podcast.title} "
                         f"(keeping {max_episodes_to_keep} most recent)"
                     )
 
@@ -121,7 +121,7 @@ async def execute_manage_podcast_episodes(
                     podcast_result["episodes_deleted"] = deleted_count
                     results["episodes_deleted"] += deleted_count
 
-                    logger.info(f"✅ Deleted {deleted_count} old episode(s)")
+                    logger.info(f"[OK] Deleted {deleted_count} old episode(s)")
 
                 # Step 4: Update podcast metadata
                 podcast.episode_count = min(total_episodes, max_episodes_to_keep)
@@ -134,12 +134,12 @@ async def execute_manage_podcast_episodes(
                 results["podcasts"].append(podcast_result)
 
                 logger.info(
-                    f"✅ {podcast.title}: {podcast_result['current_episode_count']} episode(s) "
+                    f"[OK] {podcast.title}: {podcast_result['current_episode_count']} episode(s) "
                     f"(synced: {episodes_synced}, deleted: {podcast_result['episodes_deleted']})"
                 )
 
             except Exception as e:
-                logger.error(f"❌ Error managing {podcast.title}: {str(e)}")
+                logger.error(f"[FAIL] Error managing {podcast.title}: {str(e)}")
                 podcast_result["error"] = str(e)
                 results["podcasts"].append(podcast_result)
 
@@ -153,10 +153,10 @@ async def execute_manage_podcast_episodes(
         )
 
         results["message"] = summary
-        logger.info(f"\n✅ {summary}")
+        logger.info(f"\n[OK] {summary}")
 
         return results
 
     except Exception as e:
-        logger.error(f"❌ Failed to manage podcast episodes: {str(e)}")
+        logger.error(f"[FAIL] Failed to manage podcast episodes: {str(e)}")
         return {"success": False, "error": str(e)}

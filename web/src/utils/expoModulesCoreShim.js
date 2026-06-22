@@ -37,7 +37,7 @@ NativeModule.prototype.constructor = NativeModule;
 
 // Stub requireNativeModule
 function requireNativeModule(moduleName) {
-  console.warn(`[expo-modules-core shim] requireNativeModule('${moduleName}') called on web - returning stub`);
+  console.warn(`[expo-modules-core shim] requireNativeModule('${moduleName}') called on web - returning stub`); // eslint-disable-line no-console -- intentional shim diagnostic
   return {};
 }
 

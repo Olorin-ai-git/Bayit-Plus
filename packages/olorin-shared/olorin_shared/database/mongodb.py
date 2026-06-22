@@ -180,17 +180,17 @@ class MongoDBConnection:
             # Verify connection with ping
             await self.database.command("ping")
 
-            logger.info(f"✅ Connected to MongoDB Atlas: {self.mongodb_db_name}")
+            logger.info(f"[OK] Connected to MongoDB Atlas: {self.mongodb_db_name}")
             logger.info(f"   Max pool size: {self.max_pool_size}")
             logger.info(f"   Min pool size: {self.min_pool_size}")
 
             return self.client
 
         except ConnectionFailure as e:
-            logger.error(f"❌ MongoDB connection failed: {e}")
+            logger.error(f"[FAIL] MongoDB connection failed: {e}")
             raise
         except Exception as e:
-            logger.error(f"❌ Unexpected error connecting to MongoDB: {e}")
+            logger.error(f"[FAIL] Unexpected error connecting to MongoDB: {e}")
             raise
 
     async def close(self) -> None:

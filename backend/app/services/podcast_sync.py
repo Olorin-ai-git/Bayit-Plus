@@ -171,14 +171,14 @@ async def fetch_rss_episodes(
                     }
                 )
 
-            logger.info(f"✅ Fetched {len(episodes)} episodes from RSS: {rss_url}")
+            logger.info(f"[OK] Fetched {len(episodes)} episodes from RSS: {rss_url}")
             return episodes
 
     except asyncio.TimeoutError:
-        logger.warning(f"⏱️ Timeout fetching RSS feed: {rss_url}")
+        logger.warning(f"⏱ Timeout fetching RSS feed: {rss_url}")
         return None
     except Exception as e:
-        logger.warning(f"❌ Failed to fetch RSS feed {rss_url}: {str(e)}")
+        logger.warning(f"[FAIL] Failed to fetch RSS feed {rss_url}: {str(e)}")
         return None
 
 
@@ -196,12 +196,12 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
     if not podcast.rss_feed:
         return 0
 
-    logger.info(f"📻 Syncing podcast: {podcast.title}")
+    logger.info(f" Syncing podcast: {podcast.title}")
 
     # Fetch episodes from RSS
     episodes_data = await fetch_rss_episodes(podcast.rss_feed, max_episodes)
     if not episodes_data:
-        logger.warning(f"⚠️ Could not fetch episodes for: {podcast.title}")
+        logger.warning(f"[WARN] Could not fetch episodes for: {podcast.title}")
         return 0
 
     # Get existing episode GUIDs to avoid duplicates
@@ -236,9 +236,9 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
 
         try:
             await new_episode.insert()
-            logger.info(f"   ✓ Added: {ep_data['title']}")
+            logger.info(f"[OK] Added: {ep_data['title']}")
         except Exception as e:
-            logger.warning(f"   ⚠️ Failed to add episode {ep_data['title']}: {str(e)}")
+            logger.warning(f"[WARN] Failed to add episode {ep_data['title']}: {str(e)}")
 
     # Update podcast metadata
     if new_episodes_added > 0:
@@ -258,7 +258,7 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
 
         try:
             await podcast.save()
-            logger.info(f"✅ Updated podcast metadata: {podcast.title}")
+            logger.info(f"[OK] Updated podcast metadata: {podcast.title}")
         except Exception as e:
             logger.warning(f"Failed to update podcast metadata: {str(e)}")
 
@@ -326,7 +326,7 @@ async def sync_all_podcasts(max_episodes: int = 20, max_concurrent: int = 10) ->
         Dictionary with sync results
     """
     logger.info("\n" + "=" * 80)
-    logger.info("🎙️ Starting Podcast RSS Sync (Parallel Mode)")
+    logger.info(" Starting Podcast RSS Sync (Parallel Mode)")
     logger.info("=" * 80 + "\n")
 
     # Find all active podcasts with RSS feeds
@@ -334,8 +334,8 @@ async def sync_all_podcasts(max_episodes: int = 20, max_concurrent: int = 10) ->
         {"is_active": True, "rss_feed": {"$exists": True, "$ne": None}}
     ).to_list(length=None)
 
-    logger.info(f"📚 Found {len(podcasts)} podcasts with RSS feeds")
-    logger.info(f"⚡ Processing {max_concurrent} podcasts concurrently\n")
+    logger.info(f" Found {len(podcasts)} podcasts with RSS feeds")
+    logger.info(f" Processing {max_concurrent} podcasts concurrently\n")
 
     if not podcasts:
         logger.info("No active podcasts with RSS feeds found")
@@ -355,7 +355,7 @@ async def sync_all_podcasts(max_episodes: int = 20, max_concurrent: int = 10) ->
                 episodes_added = await sync_podcast_episodes(podcast, max_episodes)
                 return (podcast.title, episodes_added)
             except Exception as e:
-                logger.error(f"❌ Error syncing {podcast.title}: {str(e)}")
+                logger.error(f"[FAIL] Error syncing {podcast.title}: {str(e)}")
                 return (podcast.title, 0)
 
     # Sync all podcasts in parallel with concurrency limit
@@ -376,10 +376,10 @@ async def sync_all_podcasts(max_episodes: int = 20, max_concurrent: int = 10) ->
                 total_episodes_added += episodes_added
 
     logger.info("\n" + "=" * 80)
-    logger.info(f"✅ Podcast Sync Complete")
-    logger.info(f"   📚 Total podcasts: {len(podcasts)}")
-    logger.info(f"   ✔️ Podcasts with new episodes: {podcasts_synced}")
-    logger.info(f"   📝 Total episodes added: {total_episodes_added}")
+    logger.info(f"[OK] Podcast Sync Complete")
+    logger.info(f" Total podcasts: {len(podcasts)}")
+    logger.info(f" Podcasts with new episodes: {podcasts_synced}")
+    logger.info(f" Total episodes added: {total_episodes_added}")
     logger.info("=" * 80 + "\n")
 
     return {

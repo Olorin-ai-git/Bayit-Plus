@@ -8,6 +8,7 @@ import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags'
 import { adminPodcastsService } from '@/services/adminApi'
+import api from '@/services/api'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { useNotifications } from '@olorin/glass-ui/hooks'
@@ -128,21 +129,17 @@ export default function PodcastsPage() {
       const formData = new FormData()
       formData.append('file', file)
 
-      // Upload to the uploads endpoint
-      const response = await fetch('/api/admin/uploads/image?image_type=covers', {
-        method: 'POST',
-        body: formData,
+      // Upload to the uploads endpoint via the centralized API client.
+      // Note: do not set Content-Type manually for FormData; axios sets the
+      // multipart boundary automatically.
+      const data = await api.post('/admin/uploads/image', formData, {
+        params: { image_type: 'covers' },
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('auth_token') || ''}`,
+          'Content-Type': 'multipart/form-data',
         },
       })
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      if (data.url) {
+      if (data?.url) {
         setEditData({ ...editData, cover: data.url })
       }
     } catch (err) {

@@ -94,16 +94,16 @@ function MyComponent() {
 ## Language Support
 
 10 languages supported:
-- 🇬🇧 English (en)
-- 🇮🇱 Hebrew (he) - RTL
-- 🇪🇸 Spanish (es)
-- 🇨🇳 Chinese (zh)
-- 🇫🇷 French (fr)
-- 🇮🇹 Italian (it)
-- 🇮🇳 Hindi (hi)
-- 🇮🇳 Tamil (ta)
-- 🇧🇩 Bengali (bn)
-- 🇯🇵 Japanese (ja)
+- English (en)
+- Hebrew (he) - RTL
+- Spanish (es)
+- Chinese (zh)
+- French (fr)
+- Italian (it)
+- Hindi (hi)
+- Tamil (ta)
+- Bengali (bn)
+- Japanese (ja)
 
 ## API Reference
 

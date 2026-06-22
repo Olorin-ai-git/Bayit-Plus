@@ -39,11 +39,11 @@ class STTProviderManager:
                     "Install: pip install google-cloud-speech google-cloud-translate"
                 )
 
-            logger.info("📡 Initializing Google Cloud Speech client...")
+            logger.info(" Initializing Google Cloud Speech client...")
             from google.cloud import speech_v1p1beta1 as speech
 
             self.speech_client = speech.SpeechClient()
-            logger.info("✅ Google Cloud Speech-to-Text initialized")
+            logger.info("[OK] Google Cloud Speech-to-Text initialized")
 
         elif self.provider == "whisper":
             if not OPENAI_AVAILABLE:
@@ -54,13 +54,13 @@ class STTProviderManager:
             if not settings.OPENAI_API_KEY:
                 raise ValueError("OPENAI_API_KEY not configured")
 
-            logger.info("📡 Initializing OpenAI Whisper service...")
+            logger.info(" Initializing OpenAI Whisper service...")
             from app.services.whisper_transcription_service import (
                 WhisperTranscriptionService,
             )
 
             self.whisper_service = WhisperTranscriptionService()
-            logger.info("✅ OpenAI Whisper initialized")
+            logger.info("[OK] OpenAI Whisper initialized")
 
         elif self.provider == "elevenlabs":
             if not ELEVENLABS_AVAILABLE:
@@ -72,13 +72,13 @@ class STTProviderManager:
             if not settings.ELEVENLABS_API_KEY:
                 raise ValueError("ELEVENLABS_API_KEY not configured")
 
-            logger.info("📡 Initializing ElevenLabs Scribe v2 realtime service...")
+            logger.info(" Initializing ElevenLabs Scribe v2 realtime service...")
             from app.services.elevenlabs_realtime_service import (
                 ElevenLabsRealtimeService,
             )
 
             self.elevenlabs_service = ElevenLabsRealtimeService()
-            logger.info("✅ ElevenLabs Scribe v2 initialized (~150ms latency)")
+            logger.info("[OK] ElevenLabs Scribe v2 initialized (~150ms latency)")
 
         else:
             raise ValueError(

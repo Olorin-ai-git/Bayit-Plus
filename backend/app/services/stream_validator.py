@@ -50,7 +50,7 @@ async def validate_content_streams(
     Returns:
         Dictionary with validation results
     """
-    logger.info("🔗 Validating streaming URLs...")
+    logger.info(" Validating streaming URLs...")
 
     results = {
         "status": "completed",
@@ -175,7 +175,7 @@ async def validate_content_streams(
         # Process results
         for i, result in enumerate(validation_results):
             if isinstance(result, Exception):
-                logger.error(f"❌ Validation failed: {result}")
+                logger.error(f"[FAIL] Validation failed: {result}")
                 results["broken_streams"].append(
                     {
                         "url": uncached_streams[i]["url"],
@@ -202,7 +202,7 @@ async def validate_content_streams(
                     }
                 )
 
-    logger.info(f"   ✅ Stream validation complete:")
+    logger.info(f"[OK] Stream validation complete:")
     logger.info(f"      Valid: {results['valid_streams']}")
     logger.info(f"      Broken: {len(results['broken_streams'])}")
 
@@ -396,7 +396,7 @@ async def cleanup_expired_cache():
         result = await StreamValidationCache.find({"expires_at": {"$lt": now}}).delete()
 
         if result.deleted_count > 0:
-            logger.info(f"🧹 Cleaned up {result.deleted_count} expired cache entries")
+            logger.info(f" Cleaned up {result.deleted_count} expired cache entries")
 
     except Exception as e:
         logger.warning(f"Failed to cleanup cache: {e}")

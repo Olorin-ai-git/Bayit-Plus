@@ -4444,6 +4444,60 @@
       "dock": "עגינת ניווט",
       "dockItem": "נווט אל {{name}}",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "השהו ושאלו את ה-AI על כל סצנה בספרייה שלכם",
+      "title": "התוכן שלכם, משודרג",
+      "watchWithAI": "צפו עם AI"
+    },
+    "continueWatching": {
+      "resume": "המשך",
+      "subtitle": "המשיכו מהמקום שבו הפסקתם עם תכונות AI"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "צפייה חוזרת",
+        "dubbing": "דיבוב AI",
+        "subtitles": "כתוביות חיות",
+        "trivia": "טריוויה חיה"
+      },
+      "groupLabel": "AI בשידור חי"
+    },
+    "liveTV": {
+      "dubbedIn": "מדובב ב-AI ל{{language}}",
+      "subtitle": "צפו בטלוויזיה ישראלית מדובבת לשפה שלכם בעזרת AI",
+      "title": "משודר עכשיו",
+      "watchDubbed": "צפו במדובב"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "רגעים אינטראקטיביים",
+        "pauseAsk": "השהה ושאל"
+      },
+      "groupLabel": "AI לסרטים"
+    },
+    "overlay": {
+      "aiDubbed": "מדובב ב-AI",
+      "aiEnhanced": "משודרג ב-AI",
+      "liveSubtitles": "כתוביות חיות ב-10 שפות",
+      "pauseAskReady": "השהה ושאל מוכן",
+      "sampleSubtitle1": "ברוכים הבאים לעולם הבידור הישראלי",
+      "sampleSubtitle2": "חוו סיפורים מלב ישראל",
+      "sampleSubtitle3": "מדובב בשידור חי על ידי AI לשפה שלכם",
+      "sampleSubtitle4": "שאלו שאלות על כל סצנה",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "שוחחו עם דמויות ושאלו על כל סצנה",
+      "title": "השהה ושאל",
+      "tryItNow": "נסו עכשיו"
     }
   },
   "cities": {
@@ -8500,7 +8554,8 @@
       },
       "askAgain": "שאל שוב",
       "placeholder": "שאל על הסצנה הזו...",
-      "resume": "המשך"
+      "resume": "המשך",
+      "worksOnAnyContent": "זה עובד על כל תוכן שאתם צופים בו"
     },
     "multiCharacter": {
       "selectCharacter": "בחר דמות לפנות אליה",
@@ -8657,7 +8712,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "צ'אט ערוץ"
+    "channelChat": "צ'אט ערוץ",
+    "walkthrough": {
+      "coachMark": "לחצו על הפעל/השהה כדי לשוחח עם דמות",
+      "liveSubtitleHint": "הקישו על תרגום, ואז בחרו מצב מפוצל לכתוביות EN | HE",
+      "suggestion": "ספר לי על הסצנה הזו"
+    }
   },
   "playlist": {
     "title": "הרשימה שלי",
@@ -10149,7 +10209,11 @@
       "reduceMotionDesc": "הגבלת אנימציות ואפקטי תנועה",
       "audioDescriptions": "תיאורי שמע",
       "audioDescDesc": "תיאורים מוקראים של תוכן חזותי לנגישות",
-      "title": "נגישות"
+      "title": "נגישות",
+      "colorBlindNone": "ללא",
+      "deuteranopia": "דיכרומטיות ירוק (ירוק-אדום)",
+      "protanopia": "דיכרומטיות אדום (אדום-ירוק)",
+      "tritanopia": "דיכרומטיות כחול (כחול-צהוב)"
     },
     "signOut": "התנתק",
     "security": {
@@ -10173,7 +10237,9 @@
       "accountSecurity": "אבטחת חשבון",
       "devices": "מכשירים",
       "noDevices": "אין מכשירים פעילים",
-      "unknownDevice": "מכשיר לא ידוע"
+      "unknownDevice": "מכשיר לא ידוע",
+      "changePasswordDesc": "עדכנו את הסיסמה שלכם",
+      "deviceCount": "%d מכשירים"
     },
     "aiFeatures": {
       "title": "תכונות AI",
@@ -10202,7 +10268,15 @@
         "hard": "קשה",
         "mixed": "מעורב",
         "categories": "קטגוריות",
-        "stats": "הסטטיסטיקות שלך"
+        "stats": "הסטטיסטיקות שלך",
+        "categoryCast": "שחקנים",
+        "categoryCultural": "תרבותי",
+        "categoryFun": "עובדות מעניינות",
+        "categoryHistorical": "היסטורי",
+        "categoryProduction": "הפקה",
+        "frequencyFrequent": "תכוף",
+        "frequencyNormal": "רגיל",
+        "frequencyRare": "נדיר"
       },
       "betaToggles": "מתגי תכונות בטא",
       "betaEnrolled": "רשום בתוכנית בטא",
@@ -10254,7 +10328,11 @@
       "dubbing": "דיבוב",
       "processing": "עיבוד",
       "quality": "איכות שמע",
-      "volumeNormDesc": "נרמל עוצמת שמע בין תכנים"
+      "volumeNormDesc": "נרמל עוצמת שמע בין תכנים",
+      "qualityAuto": "אוטומטי",
+      "qualityHigh": "גבוהה",
+      "qualityLow": "נמוכה",
+      "qualityMedium": "בינונית"
     },
     "notificationSettings": {
       "title": "התראות",
@@ -10544,6 +10622,11 @@
       "appleDesc": "התחבר עם Apple",
       "facebookDesc": "חבר תכונות חברתיות",
       "connect": "חיבור"
+    },
+    "email": "דוא\"ל",
+    "enabled": "מופעל",
+    "trivia": {
+      "title": "טריוויה ועובדות מעניינות"
     }
   },
   "shabbat": {
@@ -12765,7 +12848,14 @@
       "noCreditsDesc": "אתה צריך קרדיטים של Beta כדי להשתמש במראה הקסומה",
       "playGreeting": "השמע ברכה",
       "refresh": "רענן",
-      "meshUnavailable": "רשת תלת-ממדית אינה זמינה"
+      "meshUnavailable": "רשת תלת-ממדית אינה זמינה",
+      "createGuideHint": "התחברו עם אותו חשבון בשני המכשירים",
+      "createGuideStep1": "פתחו את אפליקציית Bayit+ ב-iPhone או ב-iPad שלכם",
+      "createGuideStep2": "עברו ל-Zeh Ani והקישו על צור אווטאר",
+      "createGuideStep3": "הקליטו סרטון קצר של הפנים שלכם",
+      "createGuideStep4": "האווטאר שלכם יופיע כאן אוטומטית",
+      "createGuideTitle": "צרו אווטאר בנייד",
+      "manageAvatar": "נהל אווטאר"
     },
     "mesh": {
       "title": "צור רשת תלת-ממדית",

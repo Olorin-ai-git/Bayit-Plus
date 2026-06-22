@@ -83,16 +83,16 @@ I18N_TRACK_MISSING_KEYS=false
 
 | Code | Name | Native Name | RTL | Coverage |
 |------|------|-------------|-----|----------|
-| `he` | Hebrew | עברית | ✓ | 100% |
-| `en` | English | English | ✗ | 100% |
-| `es` | Spanish | Español | ✗ | 97% |
-| `zh` | Chinese | 中文 | ✗ | 55% |
-| `fr` | French | Français | ✗ | 27% |
-| `it` | Italian | Italiano | ✗ | 23% |
-| `hi` | Hindi | हिन्दी | ✗ | 19% |
-| `ta` | Tamil | தமிழ் | ✗ | 15% |
-| `bn` | Bengali | বাংলা | ✗ | 15% |
-| `ja` | Japanese | 日本語 | ✗ | 47% |
+| `he` | Hebrew | עברית | [OK] | 100% |
+| `en` | English | English | [FAIL] | 100% |
+| `es` | Spanish | Español | [FAIL] | 97% |
+| `zh` | Chinese | 中文 | [FAIL] | 55% |
+| `fr` | French | Français | [FAIL] | 27% |
+| `it` | Italian | Italiano | [FAIL] | 23% |
+| `hi` | Hindi | हिन्दी | [FAIL] | 19% |
+| `ta` | Tamil | தமிழ் | [FAIL] | 15% |
+| `bn` | Bengali | বাংলা | [FAIL] | 15% |
+| `ja` | Japanese | 日本語 | [FAIL] | 47% |
 
 ## API Reference
 
@@ -157,7 +157,7 @@ lang = i18n.get_language_info("he")
 #   "code": "he",
 #   "name": "עברית",
 #   "nativeName": "עברית",
-#   "flag": "🇮🇱",
+#   "flag": "",
 #   "rtl": True,
 #   "coverage": 100
 # }

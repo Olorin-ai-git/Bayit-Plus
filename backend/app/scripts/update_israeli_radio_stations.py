@@ -203,10 +203,10 @@ async def fetch_channel_list() -> Optional[ET.Element]:
         with urlopen(url, timeout=10) as response:
             xml_data = response.read()
         root = ET.fromstring(xml_data)
-        logger.info("✓ Channel list fetched successfully")
+        logger.info("[OK] Channel list fetched successfully")
         return root
     except Exception as e:
-        logger.error(f"✗ Failed to fetch channel list: {e}")
+        logger.error(f"[FAIL] Failed to fetch channel list: {e}")
         return None
 
 
@@ -275,11 +275,11 @@ async def update_radio_stations():
 
                 if old_url != feed_url:
                     logger.info(
-                        f"[{idx}] ✓ UPDATED: {name_en} ({name_he})"
+                        f"[{idx}] [OK] UPDATED: {name_en} ({name_he})"
                     )
                     logger.info(f"     URL changed: {old_url[:50]}... → {feed_url[:50]}...")
                 else:
-                    logger.info(f"[{idx}] ✓ VERIFIED: {name_en} ({name_he})")
+                    logger.info(f"[{idx}] [OK] VERIFIED: {name_en} ({name_he})")
                 updated += 1
             else:
                 # Create new station
@@ -296,11 +296,11 @@ async def update_radio_stations():
                     order=idx,
                 )
                 await station.insert()
-                logger.info(f"[{idx}] ✓ CREATED: {name_en} ({name_he})")
+                logger.info(f"[{idx}] [OK] CREATED: {name_en} ({name_he})")
                 created += 1
 
         except Exception as e:
-            logger.error(f"[{idx}] ✗ Error processing channel: {e}")
+            logger.error(f"[{idx}] [FAIL] Error processing channel: {e}")
             skipped += 1
 
     # Summary report

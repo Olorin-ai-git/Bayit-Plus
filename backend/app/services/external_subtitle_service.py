@@ -47,7 +47,7 @@ class ExternalSubtitleService:
         # Get content metadata
         content = await Content.get(content_id)
         if not content:
-            logger.error(f"❌ Content {content_id} not found")
+            logger.error(f"[FAIL] Content {content_id} not found")
             return None
 
         # Check if subtitle already exists
@@ -55,11 +55,11 @@ class ExternalSubtitleService:
             {"content_id": content_id, "language": language}
 )
         if existing:
-            logger.info(f"✅ Subtitle already exists for {content_id} ({language})")
+            logger.info(f"[OK] Subtitle already exists for {content_id} ({language})")
             return existing
 
         logger.info(
-            f"🔍 Fetching {language} subtitle for '{content.title}' from {sources}"
+            f" Fetching {language} subtitle for '{content.title}' from {sources}"
         )
 
         # Try copying from library content with same IMDB ID first
@@ -80,7 +80,7 @@ class ExternalSubtitleService:
                 return track
 
         logger.warning(
-            f"⚠️ No subtitles found for {content_id} ({language}) from any source"
+            f"[WARN] No subtitles found for {content_id} ({language}) from any source"
         )
         return None
 
@@ -152,7 +152,7 @@ class ExternalSubtitleService:
         quota = await self.opensubtitles.check_quota_available()
         if not quota["available"]:
             logger.warning(
-                f"⚠️ OpenSubtitles quota exhausted: {quota['used']}/{quota['daily_limit']}"
+                f"[WARN] OpenSubtitles quota exhausted: {quota['used']}/{quota['daily_limit']}"
             )
             return None
 
@@ -174,7 +174,7 @@ class ExternalSubtitleService:
         if is_tv_series and parent_imdb_id and season_number and episode_number:
             # TV series with series IMDB ID + season/episode
             logger.info(
-                f"📺 TV episode search: {content.title} S{season_number}E{episode_number}"
+                f" TV episode search: {content.title} S{season_number}E{episode_number}"
             )
             results = await self.opensubtitles.search_subtitles(
                 imdb_id=None,
@@ -195,7 +195,7 @@ class ExternalSubtitleService:
             )
         elif content.title:
             # Fallback to title search
-            logger.info(f"🔍 Fallback to title search for: {content.title}")
+            logger.info(f" Fallback to title search for: {content.title}")
             results = await self.opensubtitles.search_subtitles(
                 imdb_id=None,
                 language=language,
@@ -206,7 +206,7 @@ class ExternalSubtitleService:
             )
         else:
             logger.warning(
-                f"⚠️ No IMDB ID or title for {content.id} - cannot search OpenSubtitles"
+                f"[WARN] No IMDB ID or title for {content.id} - cannot search OpenSubtitles"
             )
             return None
 
@@ -240,7 +240,7 @@ class ExternalSubtitleService:
         """Try to fetch subtitle from TMDB"""
         # Note: TMDB may not have direct subtitle downloads
         # This is a placeholder for future implementation
-        logger.info(f"ℹ️ TMDB subtitle fetching not yet implemented")
+        logger.info(f"ℹ TMDB subtitle fetching not yet implemented")
         return None
 
     async def _save_subtitle(
@@ -300,14 +300,14 @@ class ExternalSubtitleService:
             await content.save()
 
             logger.info(
-                f"✅ Saved {len(cues)} subtitle cues for '{content.title}' "
+                f"[OK] Saved {len(cues)} subtitle cues for '{content.title}' "
                 f"({language}) from {source}"
             )
 
             return subtitle_doc
 
         except Exception as e:
-            logger.error(f"❌ Failed to save subtitle: {str(e)}")
+            logger.error(f"[FAIL] Failed to save subtitle: {str(e)}")
             return None
 
     async def batch_fetch_subtitles(
@@ -336,7 +336,7 @@ class ExternalSubtitleService:
         # Enforce 3-language limit for OpenSubtitles
         if len(languages) > 3:
             logger.warning(
-                f"⚠️ OpenSubtitles limited to 3 languages. Received {len(languages)}: {languages}. "
+                f"[WARN] OpenSubtitles limited to 3 languages. Received {len(languages)}: {languages}. "
                 f"Using first 3: {languages[:3]}"
             )
             languages = languages[:3]
@@ -348,7 +348,7 @@ class ExternalSubtitleService:
             max_downloads = min(max_downloads, quota["remaining"])
 
         logger.info(
-            f"🚀 Starting batch subtitle fetch: {len(content_ids)} items, "
+            f" Starting batch subtitle fetch: {len(content_ids)} items, "
             f"{len(languages)} languages, max {max_downloads} downloads"
         )
 
@@ -368,7 +368,7 @@ class ExternalSubtitleService:
                 current_quota = await self.opensubtitles.check_quota_available()
                 if current_quota["remaining"] <= 0:
                     logger.warning(
-                        "⚠️ Download quota exhausted - stopping batch operation"
+                        "[WARN] Download quota exhausted - stopping batch operation"
                     )
                     break
 
@@ -417,7 +417,7 @@ class ExternalSubtitleService:
         }
 
         logger.info(
-            f"✅ Batch operation complete: {success_count}/{processed} successful, "
+            f"[OK] Batch operation complete: {success_count}/{processed} successful, "
             f"{final_quota['remaining']} quota remaining"
         )
 
@@ -468,7 +468,7 @@ class ExternalSubtitleService:
                 priority_content.append(content)
 
         logger.info(
-            f"📊 Prioritized {len(priority_content)} content items needing subtitles "
+            f" Prioritized {len(priority_content)} content items needing subtitles "
             f"(from {len(content_list)} total)"
         )
 

@@ -101,7 +101,7 @@ async def register(request: Request, user_data: UserCreate):
     # Check if user exists
     existing_user = await User.find_one({"email": user_data.email})
     if existing_user:
-        # ✅ Don't reveal that email exists - log attempt for security monitoring
+        # [OK] Don't reveal that email exists - log attempt for security monitoring
         logger.warning(
             "Registration attempt for existing email",
             extra={
@@ -235,7 +235,7 @@ async def login(request: Request, credentials: UserLogin):
     # Always fetch user first
     user = await User.find_one({"email": credentials.email})
 
-    # ✅ Check if account is locked (brute force protection)
+    # [OK] Check if account is locked (brute force protection)
     if user and user.account_locked_until:
         if user.account_locked_until > datetime.now(timezone.utc):
             # Account is still locked
@@ -268,7 +268,7 @@ async def login(request: Request, credentials: UserLogin):
 
     # Check both conditions together
     if not user or not password_valid:
-        # ✅ Track failed login attempts for account lockout
+        # [OK] Track failed login attempts for account lockout
         if user:
             user.failed_login_attempts += 1
             user.last_failed_login = datetime.now(timezone.utc)
@@ -300,7 +300,7 @@ async def login(request: Request, credentials: UserLogin):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # ✅ Successful login - reset failed attempts
+    # [OK] Successful login - reset failed attempts
     if user.failed_login_attempts > 0:
         user.failed_login_attempts = 0
         user.last_failed_login = None

@@ -2,7 +2,7 @@
 
 ## Status
 
-✅ **COMPLETED:**
+[OK] **COMPLETED:**
 - English (en.json)
 - Hebrew (he.json)
 - Spanish (es.json)

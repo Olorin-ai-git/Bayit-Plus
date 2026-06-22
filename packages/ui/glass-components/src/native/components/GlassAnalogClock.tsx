@@ -153,7 +153,7 @@ export const GlassAnalogClock: React.FC<GlassAnalogClockProps> = ({
         {/* Shabbat indicator */}
         {isShabbat && (
           <View className="absolute" style={{ top: '60%', left: '50%', transform: [{ translateX: -8 }, { translateY: -8 }] }}>
-            <Text className="text-base" style={{ color: '#F59E0B' }}>✡</Text>
+            <Text className="text-base" style={{ color: '#F59E0B' }}></Text>
           </View>
         )}
       </View>

@@ -1,22 +1,5 @@
 import i18n from 'i18next';
-import { useAuthStore } from '@/stores/authStore';
-
-// API configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
-
-const getAuthHeaders = (): HeadersInit => {
-  const token = useAuthStore.getState().token;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    'Accept-Language': i18n.language || 'en',
-  };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  return headers;
-};
+import api from '@/services/api';
 
 // TypeScript Interfaces
 interface ScheduleConfig {
@@ -158,152 +141,84 @@ export interface LibrarianAction {
 
 // API Methods
 export const getLibrarianConfig = async (): Promise<LibrarianConfig> => {
-  const response = await fetch(`${API_BASE_URL}/admin/librarian/config`, {
-    method: 'GET',
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch librarian configuration' }));
-    throw new Error(errorData.detail || 'Failed to fetch librarian configuration');
+  try {
+    return await api.get('/admin/librarian/config');
+  } catch (error: any) {
+    throw new Error(error?.detail || 'Failed to fetch librarian configuration');
   }
-
-  return response.json();
 };
 
 export const getLibrarianStatus = async (): Promise<LibrarianStatus> => {
-  const response = await fetch(`${API_BASE_URL}/admin/librarian/status`, {
-    method: 'GET',
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
+  try {
+    return await api.get('/admin/librarian/status');
+  } catch (error: any) {
     throw new Error('Failed to fetch librarian status');
   }
-
-  return response.json();
 };
 
 export const triggerAudit = async (
   request: TriggerAuditRequest
 ): Promise<TriggerAuditResponse> => {
-  const response = await fetch(`${API_BASE_URL}/admin/librarian/run-audit`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
+  try {
+    return await api.post('/admin/librarian/run-audit', request);
+  } catch (error: any) {
     throw new Error('Failed to trigger audit');
   }
-
-  return response.json();
 };
 
 export const getAuditReports = async (
   limit: number = 10,
   auditType?: string
 ): Promise<AuditReport[]> => {
-  const params = new URLSearchParams({ limit: limit.toString() });
-  if (auditType) {
-    params.append('audit_type', auditType);
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/reports?${params.toString()}`,
-    {
-      method: 'GET',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
+  try {
+    return await api.get('/admin/librarian/reports', {
+      params: { limit, ...(auditType ? { audit_type: auditType } : {}) },
+    });
+  } catch (error: any) {
     throw new Error('Failed to fetch audit reports');
   }
-
-  return response.json();
 };
 
 export const getAuditReportDetails = async (
   auditId: string
 ): Promise<AuditReportDetail> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/reports/${auditId}`,
-    {
-      method: 'GET',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
+  try {
+    return await api.get(`/admin/librarian/reports/${auditId}`);
+  } catch (error: any) {
     throw new Error('Failed to fetch audit report details');
   }
-
-  return response.json();
 };
 
 export const clearAuditReports = async (): Promise<{ deleted_count: number; message: string }> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/reports`,
-    {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
+  try {
+    return await api.delete('/admin/librarian/reports');
+  } catch (error: any) {
     throw new Error('Failed to clear audit reports');
   }
-
-  return response.json();
 };
 
 export const pauseAudit = async (auditId: string): Promise<{ status: string; message: string }> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/audits/${auditId}/pause`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
+  try {
+    return await api.post(`/admin/librarian/audits/${auditId}/pause`);
+  } catch (error: any) {
     throw new Error('Failed to pause audit');
   }
-
-  return response.json();
 };
 
 export const resumeAudit = async (auditId: string): Promise<{ status: string; message: string }> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/audits/${auditId}/resume`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
+  try {
+    return await api.post(`/admin/librarian/audits/${auditId}/resume`);
+  } catch (error: any) {
     throw new Error('Failed to resume audit');
   }
-
-  return response.json();
 };
 
 export const cancelAudit = async (auditId: string): Promise<{ status: string; message: string }> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/audits/${auditId}/cancel`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
+  try {
+    return await api.post(`/admin/librarian/audits/${auditId}/cancel`);
+  } catch (error: any) {
     throw new Error('Failed to cancel audit');
   }
-
-  return response.json();
 };
 
 interface InterjectMessageResponse {
@@ -316,21 +231,14 @@ export const interjectAuditMessage = async (
   auditId: string,
   message: string
 ): Promise<InterjectMessageResponse> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/audits/${auditId}/interject`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ message, source: 'admin' }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ detail: 'Failed to send interjection' }));
-    throw new Error(errorData.detail || 'Failed to send interjection');
+  try {
+    return await api.post(`/admin/librarian/audits/${auditId}/interject`, {
+      message,
+      source: 'admin',
+    });
+  } catch (error: any) {
+    throw new Error(error?.detail || 'Failed to send interjection');
   }
-
-  return response.json();
 };
 
 // Voice Command Interface
@@ -351,23 +259,14 @@ export const executeVoiceCommand = async (
   command: string,
   language?: string
 ): Promise<VoiceCommandResponse> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/voice-command`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({
-        command,
-        language: language || i18n.language || 'en'
-      }),
-    }
-  );
-
-  if (!response.ok) {
+  try {
+    return await api.post('/admin/librarian/voice-command', {
+      command,
+      language: language || i18n.language || 'en',
+    });
+  } catch (error: any) {
     throw new Error('Failed to execute voice command');
   }
-
-  return response.json();
 };
 
 // Reapply fixes from a completed audit
@@ -388,12 +287,10 @@ export const reapplyAuditFixes = async (
   auditId: string,
   options: ReapplyFixesRequest = {}
 ): Promise<ReapplyFixesResponse> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/audits/${auditId}/reapply-fixes`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({
+  try {
+    return await api.post(
+      `/admin/librarian/audits/${auditId}/reapply-fixes`,
+      {
         dry_run: options.dry_run ?? false,
         fix_types: options.fix_types ?? [
           'titles',
@@ -403,14 +300,9 @@ export const reapplyAuditFixes = async (
           'misclassifications',
           'broken_streams',
         ],
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || 'Failed to reapply fixes');
+      },
+    );
+  } catch (error: any) {
+    throw new Error(error?.detail || 'Failed to reapply fixes');
   }
-
-  return response.json();
 };

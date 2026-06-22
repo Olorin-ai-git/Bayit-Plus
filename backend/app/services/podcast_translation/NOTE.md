@@ -3,7 +3,7 @@
 **File:** `service.py`
 **Size:** 230 lines
 **Target:** < 200 lines
-**Status:** ⚠️ Exception (single cohesive orchestration method)
+**Status:** [WARN] Exception (single cohesive orchestration method)
 
 ## Why This Exception?
 

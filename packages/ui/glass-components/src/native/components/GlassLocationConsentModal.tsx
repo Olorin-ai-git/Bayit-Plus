@@ -79,7 +79,7 @@ export const GlassLocationConsentModal: React.FC<GlassLocationConsentModalProps>
       >
         <View style={styles.iconContainer}>
           <Text style={styles.icon} accessibilityLabel="Location pin icon">
-            📍
+            
           </Text>
         </View>
 
@@ -92,7 +92,7 @@ export const GlassLocationConsentModal: React.FC<GlassLocationConsentModalProps>
         </Text>
 
         <View style={styles.privacyNote}>
-          <Text style={styles.privacyIcon}>🔒</Text>
+          <Text style={styles.privacyIcon}></Text>
           <Text style={styles.privacyText}>
             Your privacy is important. Location data is encrypted and never sold.
           </Text>

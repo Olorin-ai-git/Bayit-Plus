@@ -622,7 +622,7 @@ def get_storage_provider() -> StorageProvider:
             return GCSStorageProvider()
         except Exception as e:
             logger.warning(
-                f"⚠️  Failed to initialize GCS storage: {e}\n"
+                f"[WARN] Failed to initialize GCS storage: {e}\n"
                 f"Falling back to local storage. "
                 f"For local development, set STORAGE_TYPE=local in your .env file."
             )
@@ -632,7 +632,7 @@ def get_storage_provider() -> StorageProvider:
             return S3StorageProvider()
         except Exception as e:
             logger.warning(
-                f"⚠️  Failed to initialize S3 storage: {e}\n"
+                f"[WARN] Failed to initialize S3 storage: {e}\n"
                 f"Falling back to local storage. "
                 f"For local development, set STORAGE_TYPE=local in your .env file."
             )

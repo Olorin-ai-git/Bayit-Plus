@@ -80,12 +80,12 @@ export function getFirebaseConfig(): FirebaseConfig {
 
   if (missingFields.length > 0) {
     const errorMessage = [
-      '🔥 FIREBASE CONFIGURATION ERROR',
+      'FIREBASE CONFIGURATION ERROR',
       '',
       'Missing required Firebase configuration fields:',
       ...missingFields.map(field => {
         const envVarName = field.replace(/([A-Z])/g, '_$1').toUpperCase();
-        return `  ❌ ${field}`;
+        return `  [FAIL] ${field}`;
       }),
       '',
       'Set these environment variables:',

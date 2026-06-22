@@ -14,9 +14,16 @@ import sys
 
 # Source trees to scan.
 INCLUDE_PREFIXES = ("web/src/", "backend/app/", "shared/", "packages/")
-# Paths to skip (data files where non-ASCII glyphs are legitimate).
-EXCLUDE_SUBSTRINGS = ("/locales/", "/node_modules/")
-EXCLUDE_SUFFIXES = (".json", ".lock", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".woff", ".woff2", ".ttf")
+# Paths to skip. The gate targets shipped code/comments/logs (platform rule),
+# not documentation prose or test fixtures, and not data/binary assets.
+EXCLUDE_SUBSTRINGS = ("/locales/", "/node_modules/", "/__tests__/", "/__mocks__/")
+EXCLUDE_SUFFIXES = (
+    ".json", ".lock", ".md", ".mdx",
+    ".png", ".jpg", ".jpeg", ".gif", ".svg", ".woff", ".woff2", ".ttf",
+    ".test.ts", ".test.tsx", ".test.js", ".test.jsx",
+    ".spec.ts", ".spec.tsx", ".spec.js", ".spec.jsx",
+    ".test.py", "_test.py",
+)
 
 
 def is_emoji(cp: int) -> bool:

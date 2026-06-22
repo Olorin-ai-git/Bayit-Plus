@@ -111,7 +111,7 @@ class LiveSubtitlePipeline:
                     )
                     translation_latency_ms = (time.time() - stt_complete_time) * 1000
                     logger.info(
-                        f"🌍 Translated [{actual_source_lang}→{target_lang}] "
+                        f" Translated [{actual_source_lang}→{target_lang}] "
                         f"in {translation_latency_ms:.0f}ms: {translated[:50]}..."
                     )
 

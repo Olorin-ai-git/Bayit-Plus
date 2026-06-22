@@ -65,7 +65,7 @@ class TMDBMatcher:
             else settings.MONGODB_URL
         )
         self.db = client[settings.MONGODB_DB_NAME]
-        logger.info("✓ Connected to database")
+        logger.info("[OK] Connected to database")
 
     def clean_title(self, title: str) -> str:
         """Clean title for better matching."""
@@ -194,11 +194,11 @@ class TMDBMatcher:
         results = await self.search_tmdb(clean_series_title)
 
         if not results:
-            logger.warning(f"    ✗ No TMDB results found")
+            logger.warning(f"[FAIL] No TMDB results found")
             return None
 
         if len(results) == 0:
-            logger.warning(f"    ✗ Empty results")
+            logger.warning(f"[FAIL] Empty results")
             return None
 
         # Score all results
@@ -274,7 +274,7 @@ class TMDBMatcher:
                 if match["score"] >= self.confidence_threshold:
                     # High confidence match - assign automatically
                     logger.info(
-                        f"    ✓ Auto-assigning TMDB ID: {match['tmdb_id']} ({self.get_match_confidence_label(match['score'])} confidence)"
+                        f"[OK] Auto-assigning TMDB ID: {match['tmdb_id']} ({self.get_match_confidence_label(match['score'])} confidence)"
                     )
 
                     if not self.dry_run:
@@ -286,7 +286,7 @@ class TMDBMatcher:
                 else:
                     # Uncertain match - flag for review
                     logger.warning(
-                        f"    ⚠ Uncertain match (score: {match['score']:.3f}) - flagged for review"
+                        f"[WARN] Uncertain match (score: {match['score']:.3f}) - flagged for review"
                     )
                     self.uncertain_matches.append(
                         {
@@ -300,7 +300,7 @@ class TMDBMatcher:
                     )
                     self.stats["uncertain"] += 1
             else:
-                logger.warning(f"    ✗ No suitable match found")
+                logger.warning(f"[FAIL] No suitable match found")
                 self.stats["no_results"] += 1
 
             logger.info("")
@@ -315,9 +315,9 @@ class TMDBMatcher:
         logger.info("SUMMARY")
         logger.info("=" * 80)
         logger.info(f"Total searched:    {self.stats['searched']}")
-        logger.info(f"Auto-matched:      {self.stats['matched']} ✓")
-        logger.info(f"Uncertain matches: {self.stats['uncertain']} ⚠")
-        logger.info(f"No results:        {self.stats['no_results']} ✗")
+        logger.info(f"Auto-matched: {self.stats['matched']} [OK]")
+        logger.info(f"Uncertain matches: {self.stats['uncertain']} [WARN]")
+        logger.info(f"No results: {self.stats['no_results']} [FAIL]")
         logger.info(f"Errors:            {self.stats['errors']}")
         logger.info("")
 
