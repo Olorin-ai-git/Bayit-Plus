@@ -230,10 +230,10 @@ async def _fetch_og_image(url: str) -> Optional[str]:
                 logger.info(f"Found OG image: {img_url[:80]}")
                 # Filter out generic images from OG too
                 if not _is_generic_image(img_url):
-                    logger.info(f"✓ Using OG image (not generic)")
+                    logger.info(f"[OK] Using OG image (not generic)")
                     return img_url
                 else:
-                    logger.warning(f"✗ OG image is generic, skipping: {img_url[:80]}")
+                    logger.warning(f"[FAIL] OG image is generic, skipping: {img_url[:80]}")
             else:
                 logger.warning(f"No og:image meta tag found for {url[:80]}")
 
@@ -243,10 +243,10 @@ async def _fetch_og_image(url: str) -> Optional[str]:
                 img_url = twitter_image.get("content")
                 logger.info(f"Found Twitter image: {img_url[:80]}")
                 if not _is_generic_image(img_url):
-                    logger.info(f"✓ Using Twitter image (not generic)")
+                    logger.info(f"[OK] Using Twitter image (not generic)")
                     return img_url
                 else:
-                    logger.warning(f"✗ Twitter image is generic, skipping")
+                    logger.warning(f"[FAIL] Twitter image is generic, skipping")
             else:
                 logger.warning(f"No twitter:image meta tag found")
 
@@ -262,7 +262,7 @@ async def _fetch_og_image(url: str) -> Optional[str]:
                     try:
                         if int(width) >= 300 or int(height) >= 300:
                             if not _is_generic_image(src):
-                                logger.info(f"✓ Using large img tag: {src[:80]}")
+                                logger.info(f"[OK] Using large img tag: {src[:80]}")
                                 return src
                     except (ValueError, TypeError):
                         pass

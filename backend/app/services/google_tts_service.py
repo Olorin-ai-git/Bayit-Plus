@@ -89,7 +89,7 @@ class GoogleTTSService:
 
             audio_content = response.audio_content
             logger.info(
-                f"✅ Generated {len(audio_content)} bytes of audio (single chunk)"
+                f"[OK] Generated {len(audio_content)} bytes of audio (single chunk)"
             )
         else:
             # Multiple requests needed - chunk by sentences
@@ -145,7 +145,7 @@ class GoogleTTSService:
             # Concatenate all audio parts
             audio_content = b"".join(audio_parts)
             logger.info(
-                f"✅ Generated {len(audio_content)} bytes of audio ({len(chunks)} chunks)"
+                f"[OK] Generated {len(audio_content)} bytes of audio ({len(chunks)} chunks)"
             )
 
         # Save to file if path provided

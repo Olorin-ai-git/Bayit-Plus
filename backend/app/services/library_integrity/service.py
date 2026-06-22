@@ -71,7 +71,7 @@ class LibraryIntegrityService:
                 stats.total_issues = checkpoint.issues_count
                 stats.critical_issues = checkpoint.critical_count
                 logger.info(
-                    f"📋 Resuming from checkpoint: {checkpoint.processed_count} items processed"
+                    f" Resuming from checkpoint: {checkpoint.processed_count} items processed"
                 )
 
         try:
@@ -99,7 +99,7 @@ class LibraryIntegrityService:
                 # Update statistics
                 for result in batch_results:
                     if isinstance(result, Exception):
-                        logger.error(f"❌ Batch verification error: {result}")
+                        logger.error(f"[FAIL] Batch verification error: {result}")
                         continue
 
                     stats.total_scanned += 1
@@ -152,17 +152,17 @@ class LibraryIntegrityService:
 
             stats.end_time = datetime.now(timezone.utc)
             logger.info(
-                f"✅ Verification complete: {stats.total_verified} verified, "
+                f"[OK] Verification complete: {stats.total_verified} verified, "
                 f"{stats.critical_issues} critical, {stats.total_issues} total issues"
             )
 
         except KeyboardInterrupt:
-            logger.warning("⚠️ Verification interrupted by user")
+            logger.warning("[WARN] Verification interrupted by user")
             stats.end_time = datetime.now(timezone.utc)
             raise
 
         except Exception as e:
-            logger.error(f"❌ Verification failed: {e}", exc_info=True)
+            logger.error(f"[FAIL] Verification failed: {e}", exc_info=True)
             stats.end_time = datetime.now(timezone.utc)
             raise
 

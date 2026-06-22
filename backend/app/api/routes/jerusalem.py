@@ -168,7 +168,7 @@ async def get_kotel_events(
             "name": "Western Wall Live",
             "name_he": "שידור חי מהכותל",
             "url": "https://www.kotel.org/en/kotel-live",
-            "icon": "🕎",
+            "icon": "",
         },
     }
 

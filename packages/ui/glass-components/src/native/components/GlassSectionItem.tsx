@@ -190,7 +190,7 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
               accessibilityLabel={visibilityLabel}
               accessibilityRole="button"
             >
-              <Text className={visibilityTextSize}>{visible ? '👁️' : '👁️‍🗨️'}</Text>
+              <Text className={visibilityTextSize}>{visible ? '' : '‍'}</Text>
             </TouchableOpacity>
           )}
         </View>

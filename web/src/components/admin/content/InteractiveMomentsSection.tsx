@@ -12,6 +12,7 @@ import { MessageSquare, Plus, Edit2 } from 'lucide-react';
 import { GlassView, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import api from '@/services/api';
+import logger from '@/utils/logger';
 
 // Import web-only editor component
 const InteractiveMomentEditor = Platform.OS === 'web'
@@ -45,7 +46,7 @@ export default function InteractiveMomentsSection({ contentId, videoUrl, disable
       const content = await api.get(`/admin/content/${contentId}`);
       setMoments(content.interactive_moments || []);
     } catch (error) {
-      console.error('Failed to load interactive moments:', error);
+      logger.error('Failed to load interactive moments:', error);
     } finally {
       setIsLoading(false);
     }

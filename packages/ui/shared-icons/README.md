@@ -208,9 +208,9 @@ Sizes are contextual and platform-specific:
 const menuSections = [
   {
     items: [
-      { id: 'home', icon: '🏠', labelKey: 'nav.home', path: '/' },
-      { id: 'games', icon: '🎮', labelKey: 'nav.games', path: '/games' },
-      { id: 'friends', icon: '👥', labelKey: 'nav.friends', path: '/friends' },
+      { id: 'home', icon: '', labelKey: 'nav.home', path: '/' },
+      { id: 'games', icon: '', labelKey: 'nav.games', path: '/games' },
+      { id: 'friends', icon: '', labelKey: 'nav.friends', path: '/friends' },
     ],
   },
 ];

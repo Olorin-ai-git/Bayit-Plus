@@ -88,7 +88,7 @@ async def trigger_librarian_audit(
             return TriggerAuditResponse(
                 audit_id=audit_id,
                 status="started",
-                message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results.",
+                message=f"AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results.",
             )
         else:
             valid_types = ["daily_incremental", "weekly_full", "manual"]

@@ -29,37 +29,37 @@ KIDS_CATEGORIES = {
         "name": "סרטונים מצוירים",
         "name_en": "Cartoons",
         "name_es": "Dibujos Animados",
-        "icon": "🎬",
+        "icon": "",
     },
     "educational": {
         "name": "תוכניות לימודיות",
         "name_en": "Educational",
         "name_es": "Educativo",
-        "icon": "📚",
+        "icon": "",
     },
     "music": {
         "name": "מוזיקה לילדים",
         "name_en": "Kids Music",
         "name_es": "Musica Infantil",
-        "icon": "🎵",
+        "icon": "",
     },
     "hebrew": {
         "name": "לימוד עברית",
         "name_en": "Learn Hebrew",
         "name_es": "Aprender Hebreo",
-        "icon": "🔤",
+        "icon": "",
     },
     "stories": {
         "name": "סיפורים",
         "name_en": "Stories",
         "name_es": "Cuentos",
-        "icon": "📖",
+        "icon": "",
     },
     "jewish": {
         "name": "יהדות לילדים",
         "name_en": "Kids Judaism",
         "name_es": "Judaismo Infantil",
-        "icon": "✡️",
+        "icon": "",
     },
 }
 

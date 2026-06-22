@@ -126,16 +126,16 @@ shared/i18n/
 
 | Code | Name | Native | RTL | Notes |
 |------|------|--------|-----|-------|
-| `he` | Hebrew | עברית | ✓ | 100% coverage |
-| `en` | English | English | ✗ | 100% coverage |
-| `es` | Spanish | Español | ✗ | 97% coverage |
-| `zh` | Chinese | 中文 | ✗ | 55% coverage |
-| `fr` | French | Français | ✗ | 27% coverage |
-| `it` | Italian | Italiano | ✗ | 23% coverage |
-| `hi` | Hindi | हिन्दी | ✗ | 19% coverage |
-| `ta` | Tamil | தமிழ् | ✗ | 15% coverage |
-| `bn` | Bengali | বাংলা | ✗ | 15% coverage |
-| `ja` | Japanese | 日本語 | ✗ | 47% coverage |
+| `he` | Hebrew | עברית | [OK] | 100% coverage |
+| `en` | English | English | [FAIL] | 100% coverage |
+| `es` | Spanish | Español | [FAIL] | 97% coverage |
+| `zh` | Chinese | 中文 | [FAIL] | 55% coverage |
+| `fr` | French | Français | [FAIL] | 27% coverage |
+| `it` | Italian | Italiano | [FAIL] | 23% coverage |
+| `hi` | Hindi | हिन्दी | [FAIL] | 19% coverage |
+| `ta` | Tamil | தமிழ् | [FAIL] | 15% coverage |
+| `bn` | Bengali | বাংলা | [FAIL] | 15% coverage |
+| `ja` | Japanese | 日本語 | [FAIL] | 47% coverage |
 
 ## Type Safety
 
@@ -145,8 +145,8 @@ All language codes are type-safe using TypeScript:
 import type { LanguageCode } from '@olorin/i18n/types';
 import { SUPPORTED_LANGUAGES } from '@olorin/i18n/types';
 
-const lang: LanguageCode = 'he'; // ✓ OK
-const invalid: LanguageCode = 'xx'; // ✗ Type error
+const lang: LanguageCode = 'he'; // [OK] OK
+const invalid: LanguageCode = 'xx'; // [FAIL] Type error
 ```
 
 ## RTL Support

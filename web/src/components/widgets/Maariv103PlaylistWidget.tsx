@@ -12,10 +12,9 @@ import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Play, Pause, RefreshCw, AlertCircle, AlertTriangle, Music } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import AudioPlayer from '@/components/player/AudioPlayer';
-import { useAuthStore } from '@/stores/authStore';
+import api from '@/services/api';
 import type { PodcastEpisode, EpisodesResponse } from '@/types/podcast';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
 import { Icon } from '@olorin/shared-icons/web';
 
 interface Maariv103PlaylistWidgetProps {
@@ -24,23 +23,8 @@ interface Maariv103PlaylistWidgetProps {
   autoRefresh?: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 const DEFAULT_MAX_EPISODES = 20;
 const ITEMS_PER_PAGE = 20;
-
-const getAuthHeaders = (): HeadersInit => {
-  const token = useAuthStore.getState().token;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    'Accept-Language': i18n.language || 'en',
-  };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  return headers;
-};
 
 export function Maariv103PlaylistWidget({
   podcastId,
@@ -69,22 +53,10 @@ export function Maariv103PlaylistWidget({
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        `${API_BASE_URL}/podcasts/${podcastId}/episodes?page=${pageNum}&limit=${ITEMS_PER_PAGE}`,
-        {
-          method: 'GET',
-          headers: getAuthHeaders(),
-        }
+      const data: EpisodesResponse = await api.get(
+        `/podcasts/${podcastId}/episodes`,
+        { params: { page: pageNum, limit: ITEMS_PER_PAGE } }
       );
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Podcast not found - please check configuration');
-        }
-        throw new Error(`Failed to load episodes: ${response.statusText}`);
-      }
-
-      const data: EpisodesResponse = await response.json();
 
       if (append) {
         setEpisodes(prev => [...prev, ...data.episodes]);

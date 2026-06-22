@@ -66,7 +66,7 @@ class WhisperTranscriptionService:
             raise ValueError("OPENAI_API_KEY not configured")
 
         self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-        logger.info("✅ WhisperTranscriptionService initialized")
+        logger.info("[OK] WhisperTranscriptionService initialized")
 
     def _pcm_to_wav(
         self, pcm_data: bytes, sample_rate: int = 16000, channels: int = 1
@@ -126,7 +126,7 @@ class WhisperTranscriptionService:
             )
 
             if transcript and transcript.strip():
-                logger.info(f"📝 Whisper transcribed: {transcript}")
+                logger.info(f" Whisper transcribed: {transcript}")
                 return transcript.strip()
 
             return None
@@ -208,7 +208,7 @@ class WhisperTranscriptionService:
         try:
             import os
 
-            logger.info(f"📝 Transcribing audio file: {audio_path}")
+            logger.info(f" Transcribing audio file: {audio_path}")
 
             # Check if file exists
             if not os.path.exists(audio_path):
@@ -339,13 +339,13 @@ class WhisperTranscriptionService:
             detected_lang = transcript.language
 
             logger.info(
-                f"✅ Transcribed {len(text)} characters, detected language: {detected_lang}"
+                f"[OK] Transcribed {len(text)} characters, detected language: {detected_lang}"
             )
 
             return text, detected_lang
 
         except Exception as e:
-            logger.error(f"❌ Whisper file transcription error: {str(e)}")
+            logger.error(f"[FAIL] Whisper file transcription error: {str(e)}")
             raise
 
     async def _transcribe_large_file(
@@ -473,16 +473,16 @@ class WhisperTranscriptionService:
             # Combine all transcripts
             combined_text = " ".join(transcripts)
             logger.info(
-                f"✅ Transcribed large file: {len(combined_text)} characters total"
+                f"[OK] Transcribed large file: {len(combined_text)} characters total"
             )
 
             return combined_text, detected_lang
 
         except subprocess.CalledProcessError as e:
-            logger.error(f"❌ FFmpeg error: {e.stderr if e.stderr else str(e)}")
+            logger.error(f"[FAIL] FFmpeg error: {e.stderr if e.stderr else str(e)}")
             raise
         except Exception as e:
-            logger.error(f"❌ Large file transcription error: {str(e)}")
+            logger.error(f"[FAIL] Large file transcription error: {str(e)}")
             raise
 
     async def transcribe_with_word_timestamps(
@@ -512,7 +512,7 @@ class WhisperTranscriptionService:
             import subprocess
             import tempfile
 
-            logger.info(f"📝 Transcribing with word timestamps: {audio_path}")
+            logger.info(f" Transcribing with word timestamps: {audio_path}")
 
             # Convert to WAV for better compatibility
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav:
@@ -579,13 +579,13 @@ class WhisperTranscriptionService:
                     )
 
             logger.info(
-                f"✅ Extracted {len(words_with_timestamps)} words with timestamps"
+                f"[OK] Extracted {len(words_with_timestamps)} words with timestamps"
             )
 
             return words_with_timestamps
 
         except Exception as e:
-            logger.error(f"❌ Word timestamp transcription error: {str(e)}")
+            logger.error(f"[FAIL] Word timestamp transcription error: {str(e)}")
             raise
 
     def verify_service_availability(self) -> bool:

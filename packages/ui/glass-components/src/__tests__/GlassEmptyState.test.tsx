@@ -79,7 +79,7 @@ describe('GlassEmptyState', () => {
 
   describe('Icon System', () => {
     it('displays custom icon when provided', () => {
-      const CustomIcon = <Text testID="custom-icon">🎨</Text>;
+      const CustomIcon = <Text testID="custom-icon"></Text>;
       const { getByTestId } = render(
         <GlassEmptyState title="Custom Icon" icon={CustomIcon} />
       );
@@ -89,10 +89,10 @@ describe('GlassEmptyState', () => {
 
     it('displays icon emoji when no custom icon', () => {
       const { getByText } = render(
-        <GlassEmptyState title="Emoji" iconEmoji="⭐" />
+        <GlassEmptyState title="Emoji" iconEmoji="" />
       );
 
-      expect(getByText('⭐')).toBeTruthy();
+      expect(getByText('')).toBeTruthy();
     });
 
     it('displays content type icon', () => {
@@ -100,7 +100,7 @@ describe('GlassEmptyState', () => {
         <GlassEmptyState title="Movie" contentType="movie" />
       );
 
-      expect(getByText('🎬')).toBeTruthy();
+      expect(getByText('')).toBeTruthy();
     });
 
     it('shows loading spinner when loading', () => {

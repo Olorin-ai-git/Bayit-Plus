@@ -378,10 +378,10 @@ async def sync_podcasts():
     Manually trigger podcast RSS sync.
     This endpoint syncs all podcast RSS feeds and fetches new episodes.
     """
-    logger.info("📻 Manual podcast sync triggered")
+    logger.info("Manual podcast sync triggered")
     try:
         result = await sync_all_podcasts(max_episodes=20)
-        logger.info(f"✅ Podcast sync completed: {result}")
+        logger.info(f"[OK] Podcast sync completed: {result}")
         return {
             "status": "success",
             "message": "Podcast sync completed successfully",
@@ -390,7 +390,7 @@ async def sync_podcasts():
             "total_episodes_added": result.get("total_episodes_added", 0),
         }
     except Exception as e:
-        logger.error(f"❌ Podcast sync failed: {e}", exc_info=True)
+        logger.error(f"[FAIL] Podcast sync failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Podcast sync failed: {str(e)}")
 
 
@@ -400,7 +400,7 @@ async def sync_single_podcast(podcast_id: str):
     Sync latest 3 episodes for a specific podcast.
     This endpoint fetches the latest 3 episodes from the podcast's RSS feed.
     """
-    logger.info(f"📻 Manual sync triggered for podcast: {podcast_id}")
+    logger.info(f"Manual sync triggered for podcast: {podcast_id}")
 
     try:
         # Find the podcast
@@ -414,7 +414,7 @@ async def sync_single_podcast(podcast_id: str):
         # Sync with max 3 episodes
         episodes_added = await sync_podcast_episodes(podcast, max_episodes=3)
 
-        logger.info(f"✅ Podcast sync completed: {podcast.title} - {episodes_added} episodes added")
+        logger.info(f"[OK] Podcast sync completed: {podcast.title} - {episodes_added} episodes added")
 
         return {
             "status": "success",
@@ -426,7 +426,7 @@ async def sync_single_podcast(podcast_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"❌ Podcast sync failed for {podcast_id}: {e}", exc_info=True)
+        logger.error(f"[FAIL] Podcast sync failed for {podcast_id}: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Podcast sync failed: {str(e)}")
 
 

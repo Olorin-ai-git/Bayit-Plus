@@ -189,7 +189,7 @@ async def confirm_password_reset(request: Request, reset_confirm: PasswordResetC
     user.password_reset_token = None
     user.password_reset_expires = None
 
-    # ✅ Reset account lockout on successful password change
+    # [OK] Reset account lockout on successful password change
     user.failed_login_attempts = 0
     user.last_failed_login = None
     user.account_locked_until = None

@@ -30,7 +30,7 @@ async def perform_database_maintenance() -> Dict[str, Any]:
     Returns:
         Detailed health report with recommendations
     """
-    logger.info("🗄️ Performing database maintenance...")
+    logger.info(" Performing database maintenance...")
 
     results = {
         "status": "completed",
@@ -96,7 +96,7 @@ async def perform_database_maintenance() -> Dict[str, Any]:
                 "Consider cleaning up old audit reports (keep last 90 days)"
             )
 
-        logger.info(f"   ✅ Database maintenance complete")
+        logger.info(f"[OK] Database maintenance complete")
         logger.info(f"      Connection: {results['connection_status']}")
         logger.info(f"      Indexes: {results['index_status']}")
         logger.info(f"      Integrity: {results['referential_integrity']}")
@@ -104,7 +104,7 @@ async def perform_database_maintenance() -> Dict[str, Any]:
         return results
 
     except Exception as e:
-        logger.error(f"❌ Database maintenance failed: {e}")
+        logger.error(f"[FAIL] Database maintenance failed: {e}")
         results["status"] = "failed"
         results["error"] = str(e)
         return results

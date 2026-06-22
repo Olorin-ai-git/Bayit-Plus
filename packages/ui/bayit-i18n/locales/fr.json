@@ -4444,6 +4444,60 @@
       "dock": "Barre de navigation",
       "dockItem": "Naviguer vers {{name}}",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "Mettez en pause et interrogez l'IA sur n'importe quelle scène de votre bibliothèque",
+      "title": "Votre contenu, sublimé",
+      "watchWithAI": "Regarder avec l'IA"
+    },
+    "continueWatching": {
+      "resume": "Reprendre",
+      "subtitle": "Reprenez là où vous vous êtes arrêté avec les fonctions d'IA"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "Rattrapage",
+        "dubbing": "Doublage par IA",
+        "subtitles": "Sous-titres en direct",
+        "trivia": "Quiz en direct"
+      },
+      "groupLabel": "IA EN DIRECT"
+    },
+    "liveTV": {
+      "dubbedIn": "Doublé par IA en {{language}}",
+      "subtitle": "Regardez la télévision israélienne doublée dans votre langue grâce à l'IA",
+      "title": "En direct",
+      "watchDubbed": "Regarder en version doublée"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "Moments interactifs",
+        "pauseAsk": "Pause et question"
+      },
+      "groupLabel": "IA FILMS"
+    },
+    "overlay": {
+      "aiDubbed": "Doublé par IA",
+      "aiEnhanced": "Amélioré par IA",
+      "liveSubtitles": "Sous-titres en direct en 10 langues",
+      "pauseAskReady": "Pause et question prêt",
+      "sampleSubtitle1": "Bienvenue dans le monde du divertissement israélien",
+      "sampleSubtitle2": "Vivez des histoires venues du cœur d'Israël",
+      "sampleSubtitle3": "Doublé en direct par l'IA dans votre langue",
+      "sampleSubtitle4": "Posez des questions sur n'importe quelle scène",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "Parlez aux personnages et posez des questions sur n'importe quelle scène",
+      "title": "Pause et question",
+      "tryItNow": "Essayer maintenant"
     }
   },
   "cities": {
@@ -8498,7 +8552,8 @@
       },
       "askAgain": "Redemander",
       "placeholder": "Posez une question sur cette scene...",
-      "resume": "Reprendre"
+      "resume": "Reprendre",
+      "worksOnAnyContent": "Cela fonctionne avec tout contenu que vous regardez"
     },
     "multiCharacter": {
       "selectCharacter": "Selectionner un personnage a interpeller",
@@ -8657,7 +8712,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "Chat de la chaîne"
+    "channelChat": "Chat de la chaîne",
+    "walkthrough": {
+      "coachMark": "Appuyez sur Lecture/Pause pour parler à un personnage",
+      "liveSubtitleHint": "Appuyez sur Traduire, puis sélectionnez le mode divisé pour les sous-titres EN | HE",
+      "suggestion": "Parle-moi de cette scène"
+    }
   },
   "playlist": {
     "title": "Ma Liste",
@@ -10149,7 +10209,11 @@
       "reduceMotionDesc": "Limiter les animations et effets de mouvement",
       "audioDescriptions": "Audiodescriptions",
       "audioDescDesc": "Descriptions narratives du contenu visuel pour l'accessibilité",
-      "title": "Accessibilite"
+      "title": "Accessibilite",
+      "colorBlindNone": "Aucun",
+      "deuteranopia": "Deutéranopie (vert-rouge)",
+      "protanopia": "Protanopie (rouge-vert)",
+      "tritanopia": "Tritanopie (bleu-jaune)"
     },
     "signOut": "Se deconnecter",
     "security": {
@@ -10173,7 +10237,9 @@
       "accountSecurity": "Sécurité du compte",
       "devices": "Appareils",
       "noDevices": "Aucun appareil actif",
-      "unknownDevice": "Appareil inconnu"
+      "unknownDevice": "Appareil inconnu",
+      "changePasswordDesc": "Mettez à jour votre mot de passe",
+      "deviceCount": "%d appareils"
     },
     "aiFeatures": {
       "title": "Fonctionnalites IA",
@@ -10202,7 +10268,15 @@
         "hard": "Difficile",
         "mixed": "Mixte",
         "categories": "Catégories",
-        "stats": "Vos statistiques"
+        "stats": "Vos statistiques",
+        "categoryCast": "Distribution",
+        "categoryCultural": "Culturel",
+        "categoryFun": "Anecdotes",
+        "categoryHistorical": "Historique",
+        "categoryProduction": "Production",
+        "frequencyFrequent": "Fréquent",
+        "frequencyNormal": "Normal",
+        "frequencyRare": "Rare"
       },
       "betaToggles": "Bascules des fonctionnalites beta",
       "betaEnrolled": "Inscrit au programme beta",
@@ -10254,7 +10328,11 @@
       "dubbing": "Doublage",
       "processing": "Traitement",
       "quality": "Qualite audio",
-      "volumeNormDesc": "Normaliser le volume entre les contenus"
+      "volumeNormDesc": "Normaliser le volume entre les contenus",
+      "qualityAuto": "Automatique",
+      "qualityHigh": "Élevée",
+      "qualityLow": "Faible",
+      "qualityMedium": "Moyenne"
     },
     "notificationSettings": {
       "title": "Notifications",
@@ -10544,6 +10622,11 @@
       "appleDesc": "Se connecter avec Apple",
       "facebookDesc": "Connecter les fonctions sociales",
       "connect": "Connecter"
+    },
+    "email": "E-mail",
+    "enabled": "Activé",
+    "trivia": {
+      "title": "Quiz et anecdotes"
     }
   },
   "shabbat": {
@@ -12765,7 +12848,14 @@
       "noCreditsDesc": "Vous avez besoin de credits Beta pour utiliser le Miroir Magique",
       "playGreeting": "Jouer le message d'accueil",
       "refresh": "Actualiser",
-      "meshUnavailable": "Maillage 3D indisponible"
+      "meshUnavailable": "Maillage 3D indisponible",
+      "createGuideHint": "Connectez-vous avec le même compte sur les deux appareils",
+      "createGuideStep1": "Ouvrez l'application Bayit+ sur votre iPhone ou iPad",
+      "createGuideStep2": "Accédez à Zeh Ani et appuyez sur Créer un avatar",
+      "createGuideStep3": "Enregistrez une courte vidéo de votre visage",
+      "createGuideStep4": "Votre avatar apparaîtra ici automatiquement",
+      "createGuideTitle": "Créer un avatar sur mobile",
+      "manageAvatar": "Gérer l'avatar"
     },
     "mesh": {
       "title": "Generer le maillage 3D",

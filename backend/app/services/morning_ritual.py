@@ -247,7 +247,7 @@ async def generate_ai_brief(user: User) -> Dict[str, Any]:
     except Exception as e:
         logger.error("Error generating AI brief", extra={"error": str(e)})
         return {
-            "greeting": "בוקר טוב! ☀️",
+            "greeting": "בוקר טוב! ",
             "israel_update": israel_context["activity_message"],
             "recommendation": "בוא נתחיל את היום עם חדשות מהארץ",
             "mood": "uplifting",

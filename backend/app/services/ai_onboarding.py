@@ -213,9 +213,9 @@ Response format (JSON):
 
             # Generate greeting based on language
             if language == "he":
-                greeting = "שלום! אני בית! 🏠 מה שמך?"
+                greeting = "שלום! אני בית! מה שמך?"
             else:
-                greeting = "Shalom! I'm Bayit! 🏠 What's your name?"
+                greeting = "Shalom! I'm Bayit! What's your name?"
 
             session.messages.append(
                 {

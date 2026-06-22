@@ -37,7 +37,7 @@ class GoogleSpeechService:
             Tuple of (transcript text, detected language code)
         """
         try:
-            logger.info(f"📝 Transcribing audio file with Google Speech: {audio_path}")
+            logger.info(f" Transcribing audio file with Google Speech: {audio_path}")
 
             # Check if file exists
             if not os.path.exists(audio_path):
@@ -146,7 +146,7 @@ class GoogleSpeechService:
 
                 transcript = " ".join(transcript_parts)
 
-                logger.info(f"✅ Transcription complete: {len(transcript)} characters")
+                logger.info(f"[OK] Transcription complete: {len(transcript)} characters")
 
                 return transcript, lang_code
 
@@ -156,7 +156,7 @@ class GoogleSpeechService:
                     os.remove(flac_path)
 
         except Exception as e:
-            logger.error(f"❌ Google Speech transcription error: {str(e)}")
+            logger.error(f"[FAIL] Google Speech transcription error: {str(e)}")
             raise
 
     async def transcribe_with_speaker_diarization(
@@ -192,7 +192,7 @@ class GoogleSpeechService:
             }
         """
         try:
-            logger.info(f"📝 Transcribing with speaker diarization: {audio_path}")
+            logger.info(f" Transcribing with speaker diarization: {audio_path}")
             logger.info(f"   Detecting {min_speakers}-{max_speakers} speakers")
 
             # Convert to FLAC
@@ -247,7 +247,7 @@ class GoogleSpeechService:
                     os.remove(flac_path)
 
         except Exception as e:
-            logger.error(f"❌ Speaker diarization error: {str(e)}")
+            logger.error(f"[FAIL] Speaker diarization error: {str(e)}")
             raise
 
     async def _transcribe_long_audio_with_diarization(
@@ -384,7 +384,7 @@ class GoogleSpeechService:
 
             # Log results
             speakers = set(seg["speaker_id"] for seg in speaker_segments)
-            logger.info(f"✅ Detected {len(speakers)} speaker(s): {sorted(speakers)}")
+            logger.info(f"[OK] Detected {len(speakers)} speaker(s): {sorted(speakers)}")
             for speaker in sorted(speakers):
                 speaker_segs = [s for s in speaker_segments if s["speaker_id"] == speaker]
                 total_time = sum(s["end_time"] - s["start_time"] for s in speaker_segs)
@@ -406,7 +406,7 @@ class GoogleSpeechService:
             }
 
         except Exception as e:
-            logger.error(f"❌ Speaker diarization error: {str(e)}")
+            logger.error(f"[FAIL] Speaker diarization error: {str(e)}")
             raise
 
     async def _transcribe_long_audio(
@@ -481,7 +481,7 @@ class GoogleSpeechService:
             transcript = " ".join(transcript_parts)
 
             logger.info(
-                f"✅ Long audio transcription complete: {len(transcript)} characters"
+                f"[OK] Long audio transcription complete: {len(transcript)} characters"
             )
 
             # Clean up GCS file
@@ -494,5 +494,5 @@ class GoogleSpeechService:
             return transcript, lang_code
 
         except Exception as e:
-            logger.error(f"❌ Long audio transcription error: {str(e)}")
+            logger.error(f"[FAIL] Long audio transcription error: {str(e)}")
             raise

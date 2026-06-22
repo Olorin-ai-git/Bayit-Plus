@@ -95,7 +95,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
           />
         ) : (
           <View className="rounded-t-lg justify-center items-center" style={{ width, height: height * 0.65, backgroundColor: colors.backgroundLighter }}>
-            <Text className="text-[32px]">🎬</Text>
+            <Text className="text-[32px]"></Text>
           </View>
         ))}
 

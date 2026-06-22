@@ -4444,6 +4444,60 @@
       "dock": "ナビゲーションドック",
       "dockItem": "{{name}} に移動",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "一時停止して、ライブラリ内のどのシーンについてもAIに質問できます",
+      "title": "あなたのコンテンツを、より豊かに",
+      "watchWithAI": "AIと一緒に視聴"
+    },
+    "continueWatching": {
+      "resume": "再開",
+      "subtitle": "AI機能を使って続きから再開できます"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "見逃し視聴",
+        "dubbing": "AI吹き替え",
+        "subtitles": "ライブ字幕",
+        "trivia": "ライブトリビア"
+      },
+      "groupLabel": "ライブAI"
+    },
+    "liveTV": {
+      "dubbedIn": "{{language}}にAI吹き替え",
+      "subtitle": "イスラエルのテレビをAIであなたの言語に吹き替えて視聴できます",
+      "title": "ライブ配信中",
+      "watchDubbed": "吹き替えで視聴"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "インタラクティブな瞬間",
+        "pauseAsk": "一時停止して質問"
+      },
+      "groupLabel": "映画AI"
+    },
+    "overlay": {
+      "aiDubbed": "AI吹き替え",
+      "aiEnhanced": "AI強化",
+      "liveSubtitles": "10言語のライブ字幕",
+      "pauseAskReady": "一時停止して質問の準備完了",
+      "sampleSubtitle1": "イスラエルのエンターテインメントの世界へようこそ",
+      "sampleSubtitle2": "イスラエルの中心から届く物語を体験しましょう",
+      "sampleSubtitle3": "AIがあなたの言語にライブ吹き替え",
+      "sampleSubtitle4": "どのシーンについても質問できます",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "キャラクターと話したり、どのシーンについても質問できます",
+      "title": "一時停止して質問",
+      "tryItNow": "今すぐ試す"
     }
   },
   "cities": {
@@ -8480,7 +8534,8 @@
       },
       "askAgain": "[ja] Ask Again",
       "placeholder": "[ja] Ask about this scene...",
-      "resume": "[ja] Resume"
+      "resume": "[ja] Resume",
+      "worksOnAnyContent": "これは視聴するあらゆるコンテンツで利用できます"
     },
     "multiCharacter": {
       "selectCharacter": "話しかけるキャラクターを選択",
@@ -8639,7 +8694,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "チャンネルチャット"
+    "channelChat": "チャンネルチャット",
+    "walkthrough": {
+      "coachMark": "再生／一時停止を押すとキャラクターと話せます",
+      "liveSubtitleHint": "翻訳をタップし、分割モードを選択するとEN | HEの字幕が表示されます",
+      "suggestion": "このシーンについて教えて"
+    }
   },
   "playlist": {
     "title": "マイリスト",
@@ -10131,7 +10191,11 @@
       "reduceMotionDesc": "アニメーションとモーションエフェクトを制限",
       "audioDescriptions": "音声ガイド",
       "audioDescDesc": "アクセシビリティのための視覚コンテンツの音声解説",
-      "title": "アクセシビリティ"
+      "title": "アクセシビリティ",
+      "colorBlindNone": "なし",
+      "deuteranopia": "第二色覚異常（緑-赤）",
+      "protanopia": "第一色覚異常（赤-緑）",
+      "tritanopia": "第三色覚異常（青-黄）"
     },
     "signOut": "サインアウト",
     "security": {
@@ -10155,7 +10219,9 @@
       "accountSecurity": "アカウントセキュリティ",
       "devices": "デバイス",
       "noDevices": "アクティブなデバイスなし",
-      "unknownDevice": "不明なデバイス"
+      "unknownDevice": "不明なデバイス",
+      "changePasswordDesc": "パスワードを更新します",
+      "deviceCount": "%d台のデバイス"
     },
     "aiFeatures": {
       "title": "AI機能",
@@ -10184,7 +10250,15 @@
         "hard": "難しい",
         "mixed": "ミックス",
         "categories": "カテゴリ",
-        "stats": "あなたの統計"
+        "stats": "あなたの統計",
+        "categoryCast": "キャスト",
+        "categoryCultural": "文化",
+        "categoryFun": "豆知識",
+        "categoryHistorical": "歴史",
+        "categoryProduction": "制作",
+        "frequencyFrequent": "頻繁",
+        "frequencyNormal": "標準",
+        "frequencyRare": "まれ"
       },
       "betaToggles": "ベータ機能トグル",
       "betaEnrolled": "ベータプログラムに登録済み",
@@ -10236,7 +10310,11 @@
       "dubbing": "吹き替え",
       "processing": "オーディオ処理",
       "quality": "オーディオ品質",
-      "volumeNormDesc": "オーディオレベルを自動的にバランス調整する"
+      "volumeNormDesc": "オーディオレベルを自動的にバランス調整する",
+      "qualityAuto": "自動",
+      "qualityHigh": "高",
+      "qualityLow": "低",
+      "qualityMedium": "中"
     },
     "notificationSettings": {
       "title": "通知",
@@ -10526,6 +10604,11 @@
       "appleDesc": "Appleでサインイン",
       "facebookDesc": "ソーシャル機能を接続",
       "connect": "接続"
+    },
+    "email": "メール",
+    "enabled": "有効",
+    "trivia": {
+      "title": "トリビアと豆知識"
     }
   },
   "shabbat": {
@@ -12747,7 +12830,14 @@
       "noCreditsDesc": "マジックミラーを使用するにはBetaクレジットが必要です",
       "playGreeting": "挨拶を再生",
       "refresh": "更新",
-      "meshUnavailable": "3Dメッシュが利用できません"
+      "meshUnavailable": "3Dメッシュが利用できません",
+      "createGuideHint": "両方のデバイスで同じアカウントにサインインしてください",
+      "createGuideStep1": "iPhoneまたはiPadでBayit+アプリを開きます",
+      "createGuideStep2": "Zeh Aniに移動し、アバターを作成をタップします",
+      "createGuideStep3": "あなたの顔の短い動画を撮影します",
+      "createGuideStep4": "アバターはここに自動的に表示されます",
+      "createGuideTitle": "モバイルでアバターを作成",
+      "manageAvatar": "アバターを管理"
     },
     "mesh": {
       "title": "3Dメッシュを生成",

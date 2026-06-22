@@ -5,7 +5,7 @@
 **File:** `_reapply_full.py`  
 **Size:** 293 lines  
 **Target:** < 200 lines  
-**Status:** ⚠️ Exception (single cohesive function)
+**Status:** [WARN] Exception (single cohesive function)
 
 ### Why This Exception?
 

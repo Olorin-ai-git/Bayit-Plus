@@ -36,13 +36,13 @@ async def translate_text(
     MAX_CHUNK_BYTES = 50000  # 50KB per chunk to be very safe
     transcript_bytes = transcript.encode("utf-8")
 
-    logger.info(f"🔍 Transcript size: {len(transcript_bytes):,} bytes")
-    logger.info(f"🔍 MAX_CHUNK_BYTES: {MAX_CHUNK_BYTES:,} bytes")
-    logger.info(f"🔍 Will chunk: {len(transcript_bytes) > MAX_CHUNK_BYTES}")
+    logger.info(f" Transcript size: {len(transcript_bytes):,} bytes")
+    logger.info(f" MAX_CHUNK_BYTES: {MAX_CHUNK_BYTES:,} bytes")
+    logger.info(f" Will chunk: {len(transcript_bytes) > MAX_CHUNK_BYTES}")
 
     if len(transcript_bytes) > MAX_CHUNK_BYTES:
         logger.info(
-            f"⚠️  Transcript too large ({len(transcript_bytes):,} bytes). "
+            f"[WARN] Transcript too large ({len(transcript_bytes):,} bytes). "
             f"Chunking for translation..."
         )
 
@@ -85,7 +85,7 @@ async def translate_text(
             translated_chunks.append(chunk_translation)
 
         translated_text = " ".join(translated_chunks)
-        logger.info(f"✅ Combined {len(chunks)} translated chunks successfully")
+        logger.info(f"[OK] Combined {len(chunks)} translated chunks successfully")
 
     else:
         # Translate using Google Cloud Translate or Claude (small transcript)

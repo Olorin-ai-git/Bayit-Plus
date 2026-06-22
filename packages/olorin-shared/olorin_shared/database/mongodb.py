@@ -56,7 +56,7 @@ class MongoDBConnection:
         if not raw_mongodb_uri:
             raise ConfigurationError(
                 "MONGODB_URI environment variable is required. "
-                "Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority"
+                "Format: mongodb+srv://<credentials>@cluster.mongodb.net/database?retryWrites=true&w=majority"
             )
 
         if not self.mongodb_db_name:
@@ -70,7 +70,7 @@ class MongoDBConnection:
             raise ConfigurationError(
                 f"MONGODB_URI contains a placeholder value: {raw_mongodb_uri}\n"
                 "Please replace with actual MongoDB Atlas connection string.\n"
-                "Format: mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority"
+                "Format: mongodb+srv://<credentials>@cluster.mongodb.net/?retryWrites=true&w=majority"
             )
 
         # Log URI format for debugging (without exposing credentials)
@@ -109,7 +109,7 @@ class MongoDBConnection:
             ConfigurationError: If URI format is invalid
         """
         # Pattern to extract username and password from MongoDB URI
-        # Format: mongodb+srv://username:password@host/...
+        # Format: mongodb+srv://<credentials>@host/...
         pattern = r"^(mongodb(?:\+srv)?://)([^:]+):([^@]+)@(.+)$"
         match = re.match(pattern, uri)
 
@@ -180,17 +180,17 @@ class MongoDBConnection:
             # Verify connection with ping
             await self.database.command("ping")
 
-            logger.info(f"✅ Connected to MongoDB Atlas: {self.mongodb_db_name}")
+            logger.info(f"[OK] Connected to MongoDB Atlas: {self.mongodb_db_name}")
             logger.info(f"   Max pool size: {self.max_pool_size}")
             logger.info(f"   Min pool size: {self.min_pool_size}")
 
             return self.client
 
         except ConnectionFailure as e:
-            logger.error(f"❌ MongoDB connection failed: {e}")
+            logger.error(f"[FAIL] MongoDB connection failed: {e}")
             raise
         except Exception as e:
-            logger.error(f"❌ Unexpected error connecting to MongoDB: {e}")
+            logger.error(f"[FAIL] Unexpected error connecting to MongoDB: {e}")
             raise
 
     async def close(self) -> None:

@@ -31,7 +31,7 @@ async def run_content_maintenance_tasks(dry_run: bool = False) -> Dict[str, Any]
     Returns:
         Detailed report of all maintenance operations
     """
-    logger.info("🔧 Starting content maintenance tasks...")
+    logger.info(" Starting content maintenance tasks...")
     start_time = datetime.utcnow()
 
     results = {
@@ -44,25 +44,25 @@ async def run_content_maintenance_tasks(dry_run: bool = False) -> Dict[str, Any]
 
     try:
         # Task 1: Sync Podcast RSS Feeds
-        logger.info("\n📻 Task 1/4: Syncing podcast RSS feeds...")
+        logger.info("\n Task 1/4: Syncing podcast RSS feeds...")
         podcast_sync_results = await sync_podcast_feeds(dry_run)
         results["tasks"]["podcast_sync"] = podcast_sync_results
         results["total_updates"] += podcast_sync_results.get("episodes_added", 0)
 
         # Task 2: Attach Posters & Enrich Metadata
-        logger.info("\n🖼️  Task 2/4: Attaching posters and enriching metadata...")
+        logger.info("\n Task 2/4: Attaching posters and enriching metadata...")
         poster_results = await attach_posters_and_enrich(dry_run)
         results["tasks"]["poster_attachment"] = poster_results
         results["total_updates"] += poster_results.get("items_enriched", 0)
 
         # Task 3: Add Missing Subtitles
-        logger.info("\n📝 Task 3/4: Adding missing subtitles...")
+        logger.info("\n Task 3/4: Adding missing subtitles...")
         subtitle_results = await add_missing_subtitles(dry_run)
         results["tasks"]["subtitle_addition"] = subtitle_results
         results["total_updates"] += subtitle_results.get("subtitles_added", 0)
 
         # Task 4: Queue Podcast Translations
-        logger.info("\n🌐 Task 4/4: Queueing podcast translations...")
+        logger.info("\n Task 4/4: Queueing podcast translations...")
         translation_results = await queue_podcast_translations(dry_run)
         results["tasks"]["podcast_translation"] = translation_results
         results["total_updates"] += translation_results.get("episodes_queued", 0)
@@ -74,7 +74,7 @@ async def run_content_maintenance_tasks(dry_run: bool = False) -> Dict[str, Any]
         results["end_time"] = end_time.isoformat()
         results["duration_seconds"] = duration
 
-        logger.info(f"\n✅ Content maintenance tasks completed in {duration:.2f}s")
+        logger.info(f"\n[OK] Content maintenance tasks completed in {duration:.2f}s")
         logger.info(f"   Total updates: {results['total_updates']}")
         logger.info(
             f"   Podcast sync: {podcast_sync_results.get('episodes_added', 0)} episodes"
@@ -90,7 +90,7 @@ async def run_content_maintenance_tasks(dry_run: bool = False) -> Dict[str, Any]
         return results
 
     except Exception as e:
-        logger.error(f"❌ Content maintenance tasks failed: {e}")
+        logger.error(f"[FAIL] Content maintenance tasks failed: {e}")
         results["status"] = "failed"
         results["error"] = str(e)
         return results
@@ -185,12 +185,12 @@ async def attach_posters_and_enrich(
                 if result.get("success") and result.get("fixed"):
                     enriched_count += 1
                     logger.info(
-                        f"   ✅ Enriched: {item.title} - "
+                        f"[OK] Enriched: {item.title} - "
                         f"Fields: {', '.join(result.get('fields_updated', []))}"
                     )
 
             except Exception as e:
-                logger.warning(f"   ⚠️  Failed to enrich {item.title}: {e}")
+                logger.warning(f"[WARN] Failed to enrich {item.title}: {e}")
                 continue
 
         return {
@@ -263,13 +263,13 @@ async def add_missing_subtitles(
                 if result.get("success"):
                     subtitles_added += result.get("tracks_extracted", 0)
                     logger.info(
-                        f"   ✅ Extracted {result.get('tracks_extracted', 0)} "
+                        f"[OK] Extracted {result.get('tracks_extracted', 0)} "
                         f"subtitle tracks from: {item.title}"
                     )
 
             except Exception as e:
                 logger.warning(
-                    f"   ⚠️  Failed to extract subtitles from {item.title}: {e}"
+                    f"[WARN] Failed to extract subtitles from {item.title}: {e}"
                 )
                 continue
 
@@ -325,10 +325,10 @@ async def queue_podcast_translations(
                 # The background worker handles actual translation
                 if episode.translation_status == "pending":
                     queued_count += 1
-                    logger.info(f"   ✅ Queued for translation: {episode.title}")
+                    logger.info(f"[OK] Queued for translation: {episode.title}")
 
             except Exception as e:
-                logger.warning(f"   ⚠️  Failed to queue {episode.title}: {e}")
+                logger.warning(f"[WARN] Failed to queue {episode.title}: {e}")
                 continue
 
         return {

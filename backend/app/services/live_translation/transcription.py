@@ -53,7 +53,7 @@ class TranscriptionPipeline:
             elif self.stt_manager.provider == "elevenlabs":
                 # ElevenLabs Scribe v2 (true realtime WebSocket streaming)
                 logger.info(
-                    f"🎤 Starting ElevenLabs Scribe v2 realtime stream "
+                    f" Starting ElevenLabs Scribe v2 realtime stream "
                     f"(language: {source_lang}, ~150ms latency)"
                 )
                 async for (
@@ -67,12 +67,12 @@ class TranscriptionPipeline:
                     deduplicated = deduplicate_transcript(transcript)
                     if deduplicated != transcript:
                         logger.info(
-                            f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript} "
+                            f" ElevenLabs transcribed [{detected_lang}]: {transcript} "
                             f"→ deduplicated to: {deduplicated}"
                         )
                     else:
                         logger.info(
-                            f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript}"
+                            f" ElevenLabs transcribed [{detected_lang}]: {transcript}"
                         )
                     # Yield tuple with detected language for translation pipeline
                     yield (deduplicated, detected_lang)
@@ -98,7 +98,7 @@ class TranscriptionPipeline:
 
         streaming_config = self.stt_manager.get_recognition_config(source_lang)
         logger.info(
-            f"🎤 Starting Google Speech-to-Text stream for language: {source_lang}"
+            f" Starting Google Speech-to-Text stream for language: {source_lang}"
         )
 
         # Use thread-safe queues to bridge async audio stream with sync Google API
@@ -115,16 +115,16 @@ class TranscriptionPipeline:
                     audio_queue.put(audio_chunk)
                     chunk_count += 1
                     if chunk_count % 100 == 0:
-                        logger.debug(f"📦 Collected {chunk_count} audio chunks")
+                        logger.debug(f" Collected {chunk_count} audio chunks")
             except Exception as e:
-                logger.error(f"❌ Error collecting audio: {str(e)}")
+                logger.error(f"[FAIL] Error collecting audio: {str(e)}")
             finally:
                 done_receiving.set()
-                logger.info("✅ Audio collection finished")
+                logger.info("[OK] Audio collection finished")
 
         def sync_recognition_worker():
             """Run synchronous Google Speech API in separate thread."""
-            logger.info("🔊 Starting Google Speech recognition worker...")
+            logger.info(" Starting Google Speech recognition worker...")
 
             def request_generator():
                 """Generate requests for Google Speech API."""
@@ -150,14 +150,14 @@ class TranscriptionPipeline:
                     if response.results and response.results[0].is_final:
                         if response.results[0].alternatives:
                             transcript = response.results[0].alternatives[0].transcript
-                            logger.info(f"📝 Google transcribed: {transcript}")
+                            logger.info(f" Google transcribed: {transcript}")
                             # Put transcript into queue for async consumer
                             transcript_queue.put(transcript)
             except Exception as e:
-                logger.error(f"❌ Google Speech recognition error: {str(e)}")
+                logger.error(f"[FAIL] Google Speech recognition error: {str(e)}")
             finally:
                 done_processing.set()
-                logger.info("✅ Recognition worker finished")
+                logger.info("[OK] Recognition worker finished")
 
         # Start audio collection task
         collector_task = asyncio.create_task(audio_collector())
@@ -181,12 +181,12 @@ class TranscriptionPipeline:
                         break
                     continue
                 except Exception as e:
-                    logger.error(f"❌ Error getting transcript: {str(e)}")
+                    logger.error(f"[FAIL] Error getting transcript: {str(e)}")
                     break
         except Exception as e:
-            logger.error(f"❌ Error yielding transcripts: {str(e)}")
+            logger.error(f"[FAIL] Error yielding transcripts: {str(e)}")
 
         # Wait for both tasks to complete
         await collector_task
         await recognition_task
-        logger.info("✅ Transcription stream completed")
+        logger.info("[OK] Transcription stream completed")

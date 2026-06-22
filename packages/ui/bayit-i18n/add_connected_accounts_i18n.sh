@@ -88,9 +88,9 @@ JAPANESE[unlinkAccountConfirmTitle]="アカウントのリンクを解除しま�
 JAPANESE[unlinkConfirm]="リンク解除"
 
 echo "Adding Connected Accounts localization strings..."
-echo "✅ English (en.json) - Already added"
-echo "✅ Hebrew (he.json) - Already added"
-echo "✅ Spanish (es.json) - Already added"
+echo "[OK] English (en.json) - Already added"
+echo "[OK] Hebrew (he.json) - Already added"
+echo "[OK] Spanish (es.json) - Already added"
 echo ""
 echo "The remaining languages (fr, it, zh, hi, ta, bn, ja) need to be added manually."
 echo "Translations are ready above. Please add them to the settings section of each file."

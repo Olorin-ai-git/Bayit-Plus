@@ -1,1 +1,16 @@
 test-results/
+
+# Repo hygiene (added by code-tightening workflow)
+playwright-report/
+screenshots/
+*.report.html
+*.report.json
+localization-issues.json
+dubbingg.txt
+VOD_MIGRATION_SUMMARY.txt
+FLOW_ACTIONS_MODAL_VERIFICATION.txt
+check-uploads.js
+check-uploads.html
+check-uploads-console.js
+screenshot-controls.js
+subscribe-*.png

@@ -7,15 +7,13 @@ import logger from "@/utils/logger";
 import { buildWsUrl } from "./wsUrl";
 import i18n from "i18next";
 import { liveSubtitleConfig } from "@/config/liveSubtitleConfig";
+import api from "@/services/api";
 import {
   VideoBufferManager,
   createSyncedStream,
   type VideoBufferConfig,
   type SyncedStreamResponse,
 } from "./VideoBufferManager";
-
-// API configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || "/api/v1";
 
 export interface LiveSubtitleCue {
   text: string;
@@ -590,22 +588,7 @@ class LiveSubtitleService {
     error?: string;
   }> {
     try {
-      const authData = JSON.parse(localStorage.getItem("bayit-auth") || "{}");
-      const token = authData?.state?.token;
-      const response = await fetch(
-        `${API_BASE_URL}/live/${channelId}/subtitles/status`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to check availability");
-      }
-
-      return await response.json();
+      return await api.get(`/live/${channelId}/subtitles/status`);
     } catch (error) {
       logger.error(
         "Error checking subtitle availability",

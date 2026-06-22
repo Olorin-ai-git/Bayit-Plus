@@ -1,6 +1,5 @@
 """Document ingestion routes — upload/paste/url/list/delete/reingest. Admin-only."""
 
-import asyncio
 from datetime import datetime
 from typing import Optional
 
@@ -15,7 +14,7 @@ from app.api.routes.training.knowledge import _get_tier
 from app.core.logging_config import get_logger
 from app.models.document import Document
 from app.models.training_user import TrainingUser
-from app.services.training.document_orchestrator import ingest_document
+from app.services.training.document_orchestrator import enqueue_ingest
 from app.services.training.document_quota import (
     QuotaExceededError,
     check_per_file_size,
@@ -63,7 +62,7 @@ async def _create_document(
 
 
 async def _enqueue_ingest(doc: Document) -> None:
-    asyncio.create_task(ingest_document(doc))
+    enqueue_ingest(doc)
 
 
 def _quota_error(exc: QuotaExceededError) -> HTTPException:

@@ -26,7 +26,7 @@ class YnetWidgetConfig(TypedDict):
 YNET_WIDGET_CONFIG: YnetWidgetConfig = {
     "title": "מבזקי Ynet",
     "description": "מבזקי חדשות בזמן אמת מ-Ynet",
-    "icon": "📰",
+    "icon": "",
     "component_name": "ynet_mivzakim",
     "order": 20,
     "position": {"x": 20, "y": 300, "width": 380, "height": 450},

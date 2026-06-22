@@ -4,7 +4,7 @@ All notable changes to @olorin/glass-ui will be documented in this file.
 
 ## [2.0.0] - 2026-01-24
 
-### Added - Unified Notification System 🎉
+### Added - Unified Notification System 
 
 **Core Components**
 - GlassToast component with glassmorphic styling

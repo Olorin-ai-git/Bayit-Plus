@@ -87,16 +87,16 @@ class TwilioService:
             )
 
             logger.info(
-                f"✅ SMS sent successfully to {phone_number[:8]}*** (SID: {message.sid})"
+                f"[OK] SMS sent successfully to {phone_number[:8]}*** (SID: {message.sid})"
             )
 
             return {"sid": message.sid, "status": message.status, "to": phone_number}
 
         except TwilioRestException as e:
-            logger.error(f"❌ Twilio API error: {e.msg} (code: {e.code})")
+            logger.error(f"[FAIL] Twilio API error: {e.msg} (code: {e.code})")
             raise Exception(f"Failed to send SMS: {e.msg}")
         except Exception as e:
-            logger.error(f"❌ Failed to send SMS: {e}")
+            logger.error(f"[FAIL] Failed to send SMS: {e}")
             raise
 
 

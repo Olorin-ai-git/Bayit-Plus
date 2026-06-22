@@ -86,7 +86,7 @@ export function GlassLiveChannelCard({
   // Default favorite icon (star)
   const renderFavoriteIcon = () => {
     if (favoriteIcon) return favoriteIcon;
-    return isFavorite ? '★' : '☆';
+    return isFavorite ? '' : '';
   };
 
   return (
@@ -139,7 +139,7 @@ export function GlassLiveChannelCard({
               </View>
             ) : (
               <View className="w-[72px] h-[72px] rounded-full bg-[rgba(107,33,168,0.3)] justify-center items-center">
-                <Text className="text-[32px]">📺</Text>
+                <Text className="text-[32px]"></Text>
               </View>
             )}
           </View>

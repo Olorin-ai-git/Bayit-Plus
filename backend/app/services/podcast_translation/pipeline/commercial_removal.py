@@ -87,7 +87,7 @@ Respond ONLY with valid JSON, no other text."""
         cleaned_transcript = result.get("cleaned_transcript", transcript)
         commercials = result.get("commercials", [])
 
-        logger.info(f"✅ Detected {len(commercials)} commercial segment(s)")
+        logger.info(f"[OK] Detected {len(commercials)} commercial segment(s)")
         for i, comm in enumerate(commercials, 1):
             logger.info(
                 f"  Commercial {i}: {comm.get('type', 'unknown')} - {len(comm.get('text', ''))} chars"
@@ -97,7 +97,7 @@ Respond ONLY with valid JSON, no other text."""
 
     except Exception as e:
         logger.warning(
-            f"⚠️ Commercial detection failed: {e}. Proceeding with full transcript."
+            f"[WARN] Commercial detection failed: {e}. Proceeding with full transcript."
         )
         # If commercial detection fails, return original transcript
         return transcript, []

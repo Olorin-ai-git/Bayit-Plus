@@ -287,7 +287,7 @@ class JudaismContentSeeder:
             name_es="Judaismo",
             slug=JUDAISM_CATEGORY_ID,
             description="Torah classes, Jewish music, prayers, and documentaries",
-            icon="✡️",
+            icon="",
             is_active=True,
             sort_order=100,
         )
@@ -309,7 +309,7 @@ class JudaismContentSeeder:
             slug="language-learning",
             name_key="taxonomy.subcategories.language_learning",
             description_key="taxonomy.subcategories.language_learning_description",
-            icon="📚",
+            icon="",
             order=10,
             is_active=True,
         )

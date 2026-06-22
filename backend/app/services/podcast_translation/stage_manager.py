@@ -29,7 +29,7 @@ class StageManager:
                 }
             }
         )
-        logger.info(f"⏱️ Stage '{stage_name}' started")
+        logger.info(f"⏱ Stage '{stage_name}' started")
 
     async def complete_stage(
         self, episode_id: str, stage_name: str, stage_data: Optional[dict] = None
@@ -83,7 +83,7 @@ class StageManager:
             await TranslationStageMetrics.update_stage_average(stage_name, duration_seconds)
 
         logger.info(
-            f"✅ '{stage_name}' done in {duration_seconds:.1f}s | {progress:.1f}% | ETA: {eta_seconds}s"
+            f"[OK] '{stage_name}' done in {duration_seconds:.1f}s | {progress:.1f}% | ETA: {eta_seconds}s"
         )
         return progress
 

@@ -194,7 +194,7 @@ async def voice_pipeline_websocket(
 
     # Accept WebSocket connection
     await websocket.accept()
-    logger.info(f"🎤 Voice pipeline WebSocket connected for user {user.id}")
+    logger.info(f"Voice pipeline WebSocket connected for user {user.id}")
 
     # Initialize pipeline
     pipeline: Optional[VoicePipelineService] = None

@@ -70,16 +70,16 @@ class GeneratedChapters:
 
 # Category info for chapters
 CHAPTER_CATEGORIES = {
-    "security": {"he": "ביטחון", "en": "Security", "icon": "🔒"},
-    "politics": {"he": "פוליטיקה", "en": "Politics", "icon": "🏛️"},
-    "tech": {"he": "טכנולוגיה", "en": "Tech", "icon": "💻"},
-    "culture": {"he": "תרבות", "en": "Culture", "icon": "🎭"},
-    "sports": {"he": "ספורט", "en": "Sports", "icon": "⚽"},
-    "economy": {"he": "כלכלה", "en": "Economy", "icon": "📈"},
-    "weather": {"he": "מזג אוויר", "en": "Weather", "icon": "🌤️"},
-    "entertainment": {"he": "בידור", "en": "Entertainment", "icon": "🎬"},
-    "health": {"he": "בריאות", "en": "Health", "icon": "🏥"},
-    "general": {"he": "כללי", "en": "General", "icon": "📰"},
+    "security": {"he": "ביטחון", "en": "Security", "icon": ""},
+    "politics": {"he": "פוליטיקה", "en": "Politics", "icon": ""},
+    "tech": {"he": "טכנולוגיה", "en": "Tech", "icon": ""},
+    "culture": {"he": "תרבות", "en": "Culture", "icon": ""},
+    "sports": {"he": "ספורט", "en": "Sports", "icon": ""},
+    "economy": {"he": "כלכלה", "en": "Economy", "icon": ""},
+    "weather": {"he": "מזג אוויר", "en": "Weather", "icon": ""},
+    "entertainment": {"he": "בידור", "en": "Entertainment", "icon": ""},
+    "health": {"he": "בריאות", "en": "Health", "icon": ""},
+    "general": {"he": "כללי", "en": "General", "icon": ""},
 }
 
 

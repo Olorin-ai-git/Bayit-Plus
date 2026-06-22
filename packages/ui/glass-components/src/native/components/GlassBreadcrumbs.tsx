@@ -89,7 +89,7 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
               disabled={isLast}
             >
               {isFirst && (
-                <Text className="text-xs" style={isRTL ? { marginLeft: 6 } : { marginRight: 6 }}>🏠</Text>
+                <Text className="text-xs" style={isRTL ? { marginLeft: 6 } : { marginRight: 6 }}></Text>
               )}
               <Text
                 className={isLast ? 'font-semibold' : 'font-medium'}

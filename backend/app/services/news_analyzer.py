@@ -336,7 +336,7 @@ def _get_default_trending() -> TrendAnalysis:
 
     return TrendAnalysis(
         topics=default_topics,
-        overall_mood="🇮🇱 המצב בישראל יציב עם דיון על מדיניות כלכלית וביטחונית",
+        overall_mood=" המצב בישראל יציב עם דיון על מדיניות כלכלית וביטחונית",
         top_story="ממשלה בישראל דנה בחוקים חדשים להנמכת עלויות המחיה",
         headline_count=5,
         sources=["Default Topics", "Israel News"],

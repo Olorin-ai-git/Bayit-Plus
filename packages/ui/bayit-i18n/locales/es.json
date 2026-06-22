@@ -4444,6 +4444,60 @@
       "dock": "Barra de navegacion",
       "dockItem": "Navegar a {{name}}",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "Pausa y pregunta a la IA sobre cualquier escena de tu biblioteca",
+      "title": "Tu contenido, mejorado",
+      "watchWithAI": "Ver con IA"
+    },
+    "continueWatching": {
+      "resume": "Reanudar",
+      "subtitle": "Reanuda donde lo dejaste con funciones de IA"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "Ponte al día",
+        "dubbing": "Doblaje con IA",
+        "subtitles": "Subtítulos en vivo",
+        "trivia": "Trivia en vivo"
+      },
+      "groupLabel": "IA EN VIVO"
+    },
+    "liveTV": {
+      "dubbedIn": "Doblado con IA en {{language}}",
+      "subtitle": "Mira la TV israelí doblada a tu idioma con IA",
+      "title": "En vivo ahora",
+      "watchDubbed": "Ver doblado"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "Momentos interactivos",
+        "pauseAsk": "Pausa y pregunta"
+      },
+      "groupLabel": "IA DE PELÍCULAS"
+    },
+    "overlay": {
+      "aiDubbed": "Doblado con IA",
+      "aiEnhanced": "Mejorado con IA",
+      "liveSubtitles": "Subtítulos en vivo en 10 idiomas",
+      "pauseAskReady": "Pausa y pregunta listo",
+      "sampleSubtitle1": "Bienvenido al mundo del entretenimiento israelí",
+      "sampleSubtitle2": "Vive historias desde el corazón de Israel",
+      "sampleSubtitle3": "Doblado en vivo por IA a tu idioma",
+      "sampleSubtitle4": "Haz preguntas sobre cualquier escena",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "Habla con los personajes y pregunta sobre cualquier escena",
+      "title": "Pausa y pregunta",
+      "tryItNow": "Pruébalo ahora"
     }
   },
   "cities": {
@@ -8500,7 +8554,8 @@
       },
       "askAgain": "Preguntar de nuevo",
       "placeholder": "Pregunta sobre esta escena...",
-      "resume": "Reanudar"
+      "resume": "Reanudar",
+      "worksOnAnyContent": "Esto funciona con cualquier contenido que veas"
     },
     "multiCharacter": {
       "selectCharacter": "Seleccionar personaje para dirigirse",
@@ -8657,7 +8712,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "Chat del canal"
+    "channelChat": "Chat del canal",
+    "walkthrough": {
+      "coachMark": "Pulsa Reproducir/Pausa para hablar con un personaje",
+      "liveSubtitleHint": "Toca Traducir y luego selecciona el modo dividido para subtítulos EN | HE",
+      "suggestion": "Cuéntame sobre esta escena"
+    }
   },
   "playlist": {
     "title": "Mi Lista",
@@ -10149,7 +10209,11 @@
       "reduceMotionDesc": "Limitar animaciones y efectos de movimiento",
       "audioDescriptions": "Audiodescripciones",
       "audioDescDesc": "Descripciones narradas de contenido visual para accesibilidad",
-      "title": "Accesibilidad"
+      "title": "Accesibilidad",
+      "colorBlindNone": "Ninguno",
+      "deuteranopia": "Deuteranopía (verde-rojo)",
+      "protanopia": "Protanopía (rojo-verde)",
+      "tritanopia": "Tritanopía (azul-amarillo)"
     },
     "signOut": "Cerrar Sesion",
     "security": {
@@ -10173,7 +10237,9 @@
       "accountSecurity": "Seguridad de cuenta",
       "devices": "Dispositivos",
       "noDevices": "Sin dispositivos activos",
-      "unknownDevice": "Dispositivo desconocido"
+      "unknownDevice": "Dispositivo desconocido",
+      "changePasswordDesc": "Actualiza tu contraseña",
+      "deviceCount": "%d dispositivos"
     },
     "aiFeatures": {
       "title": "Funciones de IA",
@@ -10202,7 +10268,15 @@
         "hard": "Dificil",
         "mixed": "Mixto",
         "categories": "Categorias",
-        "stats": "Tus Estadisticas"
+        "stats": "Tus Estadisticas",
+        "categoryCast": "Reparto",
+        "categoryCultural": "Cultural",
+        "categoryFun": "Datos curiosos",
+        "categoryHistorical": "Histórico",
+        "categoryProduction": "Producción",
+        "frequencyFrequent": "Frecuente",
+        "frequencyNormal": "Normal",
+        "frequencyRare": "Raro"
       },
       "betaToggles": "Controles de Funciones Beta",
       "betaEnrolled": "Inscrito en Programa Beta",
@@ -10254,7 +10328,11 @@
       "dubbing": "Doblaje",
       "processing": "Procesamiento",
       "quality": "Calidad de audio",
-      "volumeNormDesc": "Normalizar volumen entre contenidos"
+      "volumeNormDesc": "Normalizar volumen entre contenidos",
+      "qualityAuto": "Automático",
+      "qualityHigh": "Alta",
+      "qualityLow": "Baja",
+      "qualityMedium": "Media"
     },
     "notificationSettings": {
       "title": "Notificaciones",
@@ -10544,6 +10622,11 @@
       "appleDesc": "Iniciar sesión con Apple",
       "facebookDesc": "Conectar funciones sociales",
       "connect": "Conectar"
+    },
+    "email": "Correo electrónico",
+    "enabled": "Activado",
+    "trivia": {
+      "title": "Trivia y datos curiosos"
     }
   },
   "shabbat": {
@@ -12765,7 +12848,14 @@
       "noCreditsDesc": "Necesitas creditos Beta para usar Espejo Magico",
       "playGreeting": "Reproducir saludo",
       "refresh": "Actualizar",
-      "meshUnavailable": "Malla 3D no disponible"
+      "meshUnavailable": "Malla 3D no disponible",
+      "createGuideHint": "Inicia sesión con la misma cuenta en ambos dispositivos",
+      "createGuideStep1": "Abre la app de Bayit+ en tu iPhone o iPad",
+      "createGuideStep2": "Ve a Zeh Ani y toca Crear avatar",
+      "createGuideStep3": "Graba un breve video de tu rostro",
+      "createGuideStep4": "Tu avatar aparecerá aquí automáticamente",
+      "createGuideTitle": "Crear avatar en el móvil",
+      "manageAvatar": "Gestionar avatar"
     },
     "mesh": {
       "title": "Generar malla 3D",

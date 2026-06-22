@@ -135,7 +135,7 @@ async def execute_tool(
             )
 
             if result.returncode == 0:
-                return f"✓ Commit created successfully:\n{result.stdout}\nMessage: {message}"
+                return f"[OK] Commit created successfully:\n{result.stdout}\nMessage: {message}"
             else:
                 return f"Commit failed:\n{result.stderr}"
         except Exception as e:
@@ -175,7 +175,7 @@ async def execute_tool(
             )
 
             if result.returncode == 0:
-                return f"✓ Push successful:\n{result.stdout}\n{result.stderr}"
+                return f"[OK] Push successful:\n{result.stdout}\n{result.stderr}"
             else:
                 return f"Push failed:\n{result.stderr}"
         except Exception as e:
@@ -306,9 +306,9 @@ async def execute_tool(
                 output.append(result.stderr)
 
             if result.returncode == 0:
-                return f"✓ Script executed successfully:\n\n" + "\n".join(output)
+                return f"[OK] Script executed successfully:\n\n" + "\n".join(output)
             else:
-                return f"✖ Script failed with exit code {result.returncode}:\n\n" + "\n".join(output)
+                return f" Script failed with exit code {result.returncode}:\n\n" + "\n".join(output)
 
         except subprocess.TimeoutExpired:
             return f"Script execution timed out after 5 minutes"
@@ -495,7 +495,7 @@ async def execute_bayit_tool(
             )
 
             if result.returncode == 0:
-                return f"✓ Deployment to {environment} successful:\n{result.stdout}\n{result.stderr}"
+                return f"[OK] Deployment to {environment} successful:\n{result.stdout}\n{result.stderr}"
             else:
                 return f"Deployment failed:\n{result.stderr}\nOutput:\n{result.stdout}"
         except subprocess.TimeoutExpired:
@@ -588,9 +588,9 @@ async def execute_bayit_tool(
                 output.append(result.stderr)
 
             if result.returncode == 0:
-                return f"✓ Series organization complete:\n\n" + "\n".join(output)
+                return f"[OK] Series organization complete:\n\n" + "\n".join(output)
             else:
-                return f"✖ Series organization failed with exit code {result.returncode}:\n\n" + "\n".join(output)
+                return f" Series organization failed with exit code {result.returncode}:\n\n" + "\n".join(output)
 
         except subprocess.TimeoutExpired:
             return f"Series organization timed out after 10 minutes"
@@ -620,9 +620,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Poster attachment complete:\n{result.stdout}"
+                return f"[OK] Poster attachment complete:\n{result.stdout}"
             else:
-                return f"✖ Poster attachment failed:\n{result.stderr}\n{result.stdout}"
+                return f" Poster attachment failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error attaching posters: {str(e)}"
 
@@ -646,9 +646,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Podcast/radio poster attachment complete:\n{result.stdout}"
+                return f"[OK] Podcast/radio poster attachment complete:\n{result.stdout}"
             else:
-                return f"✖ Poster attachment failed:\n{result.stderr}\n{result.stdout}"
+                return f" Poster attachment failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error attaching posters: {str(e)}"
 
@@ -676,9 +676,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Subtitles added successfully:\n{result.stdout}"
+                return f"[OK] Subtitles added successfully:\n{result.stdout}"
             else:
-                return f"✖ Subtitle addition failed:\n{result.stderr}\n{result.stdout}"
+                return f" Subtitle addition failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error adding subtitles: {str(e)}"
 
@@ -705,9 +705,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Podcasts synced successfully:\n{result.stdout}"
+                return f"[OK] Podcasts synced successfully:\n{result.stdout}"
             else:
-                return f"✖ Podcast sync failed:\n{result.stderr}\n{result.stdout}"
+                return f" Podcast sync failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error syncing podcasts: {str(e)}"
 
@@ -730,9 +730,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Podcast translated successfully:\n{result.stdout}"
+                return f"[OK] Podcast translated successfully:\n{result.stdout}"
             else:
-                return f"✖ Podcast translation failed:\n{result.stderr}\n{result.stdout}"
+                return f" Podcast translation failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error translating podcast: {str(e)}"
 
@@ -754,9 +754,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Podcast covers updated:\n{result.stdout}"
+                return f"[OK] Podcast covers updated:\n{result.stdout}"
             else:
-                return f"✖ Podcast cover update failed:\n{result.stderr}\n{result.stdout}"
+                return f" Podcast cover update failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error updating podcast covers: {str(e)}"
 
@@ -783,9 +783,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Series integrity check complete:\n{result.stdout}"
+                return f"[OK] Series integrity check complete:\n{result.stdout}"
             else:
-                return f"✖ Series integrity check failed:\n{result.stderr}\n{result.stdout}"
+                return f" Series integrity check failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error checking series integrity: {str(e)}"
 
@@ -807,9 +807,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Library integrity verified:\n{result.stdout}"
+                return f"[OK] Library integrity verified:\n{result.stdout}"
             else:
-                return f"✖ Library integrity check failed:\n{result.stderr}\n{result.stdout}"
+                return f" Library integrity check failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error verifying library integrity: {str(e)}"
 
@@ -833,9 +833,9 @@ async def execute_bayit_tool(
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
             if result.returncode == 0:
-                return f"✓ Title cleanup complete:\n{result.stdout}"
+                return f"[OK] Title cleanup complete:\n{result.stdout}"
             else:
-                return f"✖ Title cleanup failed:\n{result.stderr}\n{result.stdout}"
+                return f" Title cleanup failed:\n{result.stderr}\n{result.stdout}"
         except Exception as e:
             return f"Error cleaning up titles: {str(e)}"
 
@@ -889,9 +889,9 @@ async def execute_bayit_tool(
                 output.append(result.stderr)
 
             if result.returncode == 0:
-                return f"✓ Reapply fixes complete:\n\n" + "\n".join(output)
+                return f"[OK] Reapply fixes complete:\n\n" + "\n".join(output)
             else:
-                return f"✖ Reapply fixes failed with exit code {result.returncode}:\n\n" + "\n".join(output)
+                return f" Reapply fixes failed with exit code {result.returncode}:\n\n" + "\n".join(output)
 
         except subprocess.TimeoutExpired:
             return f"Reapply fixes timed out after 10 minutes"

@@ -582,7 +582,7 @@ class TelAvivContentService:
                 "name": "Tel Aviv Beach Live",
                 "name_he": "חוף תל אביב בשידור חי",
                 "url": "https://www.skylinewebcams.com/en/webcam/israel/tel-aviv-district/tel-aviv/tel-aviv-beach.html",
-                "icon": "🏖️",
+                "icon": "",
             },
             upcoming_events=[],
             last_updated=content.last_updated,
@@ -656,37 +656,37 @@ class TelAvivContentService:
                 (
                     TelAvivContentCategory.BEACHES,
                     TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.BEACHES],
-                    "🏖️",
+                    "",
                 ),
                 (
                     TelAvivContentCategory.NIGHTLIFE,
                     TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.NIGHTLIFE],
-                    "🌃",
+                    "",
                 ),
                 (
                     TelAvivContentCategory.CULTURE,
                     TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.CULTURE],
-                    "🎭",
+                    "",
                 ),
                 (
                     TelAvivContentCategory.MUSIC,
                     TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.MUSIC],
-                    "🎵",
+                    "",
                 ),
                 (
                     TelAvivContentCategory.FOOD,
                     TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.FOOD],
-                    "🍽️",
+                    "",
                 ),
                 (
                     TelAvivContentCategory.TECH,
                     TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.TECH],
-                    "💻",
+                    "",
                 ),
                 (
                     TelAvivContentCategory.EVENTS,
                     TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.EVENTS],
-                    "🎉",
+                    "",
                 ),
             ]
         ]

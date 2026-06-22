@@ -26,7 +26,7 @@ class CultureCityCategory(BaseModel):
     name_localized: Dict[str, str] = Field(
         default_factory=dict
     )  # {"he": "...", "en": "..."}
-    icon_emoji: str = ""  # e.g., "🏛️", "🍜", "💻"
+    icon_emoji: str = "" # e.g., "", "", ""
     keywords_native: List[str] = Field(
         default_factory=list
     )  # Keywords in native language
@@ -63,7 +63,7 @@ class Culture(Document):
     name_localized: Dict[str, str] = Field(
         default_factory=dict
     )  # {"he": "...", "en": "...", "es": "..."}
-    flag_emoji: str = ""  # "🇮🇱", "🇨🇳", "🇯🇵", "🇰🇷", "🇮🇳"
+    flag_emoji: str = "" # "", "", "", "", ""
     country_code: str = ""  # ISO 3166-1 alpha-2: IL, CN, JP, KR, IN
 
     # Timezone & Language

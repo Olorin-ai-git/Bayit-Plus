@@ -1,7 +1,7 @@
 """
 Email Service (DEPRECATED)
 
-⚠️ DEPRECATED: This module is deprecated and will be removed in a future version.
+[WARN] DEPRECATED: This module is deprecated and will be removed in a future version.
 
 Use the Olorin shared email package instead:
 - Core email infrastructure: olorin-email package

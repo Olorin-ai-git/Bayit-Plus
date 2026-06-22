@@ -73,7 +73,7 @@ async def test_all_radio_streams():
         database=client[settings.MONGODB_DB_NAME],
         document_models=[RadioStation]
     )
-    logger.info("✓ Connected to database")
+    logger.info("[OK] Connected to database")
     logger.info("")
 
     # Fetch all radio stations (both active and inactive)
@@ -101,10 +101,10 @@ async def test_all_radio_streams():
         is_accessible = await validate_stream_url(station.stream_url, timeout=15)
 
         if is_accessible:
-            logger.info(f"    ✓ WORKING")
+            logger.info(f"[OK] WORKING")
             working.append(station)
         else:
-            logger.error(f"    ✗ BROKEN - Marking as inactive")
+            logger.error(f"[FAIL] BROKEN - Marking as inactive")
             station.is_active = False
             await station.save()
             broken.append(station)
@@ -117,8 +117,8 @@ async def test_all_radio_streams():
     logger.info("=" * 80)
     logger.info(f"Total stations:    {len(all_stations)}")
     logger.info(f"Previously active: {len(active_stations)}")
-    logger.info(f"Working:           {len(working)} ✓")
-    logger.info(f"Broken:            {len(broken)} ✗")
+    logger.info(f"Working: {len(working)} [OK]")
+    logger.info(f"Broken: {len(broken)} [FAIL]")
     logger.info(f"Now active:        {len(working)}")
     logger.info("")
 

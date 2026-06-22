@@ -28,8 +28,8 @@ ALL_LANGUAGES = ["en", "es", "ar", "ru", "fr", "de", "it", "pt", "yi", "he"]
 
 async def migrate_channels():
     """Update all live channels to support 10 translation languages."""
-    print("🚀 Starting live channel language migration...")
-    print(f"📊 Target languages: {', '.join(ALL_LANGUAGES)}")
+    print("Starting live channel language migration...")
+    print(f"Target languages: {', '.join(ALL_LANGUAGES)}")
 
     # Connect to MongoDB
     client = AsyncIOMotorClient(settings.MONGODB_URL)
@@ -41,10 +41,10 @@ async def migrate_channels():
         all_channels = await channels_collection.find({}).to_list(length=None)
         total_channels = len(all_channels)
 
-        print(f"\n📺 Found {total_channels} live channels")
+        print(f"\n Found {total_channels} live channels")
 
         if total_channels == 0:
-            print("⚠️  No channels found. Nothing to migrate.")
+            print("[WARN] No channels found. Nothing to migrate.")
             return
 
         # Update each channel
@@ -58,7 +58,7 @@ async def migrate_channels():
 
             # Check if already has all 10 languages
             if set(current_langs) == set(ALL_LANGUAGES):
-                print(f"  ✓ {channel_name}: Already has all 10 languages, skipping")
+                print(f"[OK] {channel_name}: Already has all 10 languages, skipping")
                 skipped_count += 1
                 continue
 
@@ -70,19 +70,19 @@ async def migrate_channels():
 
             if result.modified_count > 0:
                 old_count = len(current_langs)
-                print(f"  ✅ {channel_name}: Updated from {old_count} to 10 languages")
+                print(f"[OK] {channel_name}: Updated from {old_count} to 10 languages")
                 updated_count += 1
             else:
-                print(f"  ⚠️  {channel_name}: Update failed")
+                print(f"[WARN] {channel_name}: Update failed")
 
         # Summary
         print(f"\n{'='*60}")
-        print(f"✅ Migration Complete!")
+        print(f"[OK] Migration Complete!")
         print(f"{'='*60}")
-        print(f"📊 Total channels: {total_channels}")
-        print(f"✅ Updated: {updated_count}")
-        print(f"⏭️  Skipped (already up-to-date): {skipped_count}")
-        print(f"\n🌍 All channels now support these 10 languages:")
+        print(f"Total channels: {total_channels}")
+        print(f"[OK] Updated: {updated_count}")
+        print(f"⏭ Skipped (already up-to-date): {skipped_count}")
+        print(f"\n All channels now support these 10 languages:")
         for lang in ALL_LANGUAGES:
             lang_names = {
                 "he": "Hebrew (עברית)",
@@ -99,7 +99,7 @@ async def migrate_channels():
             print(f"   • {lang}: {lang_names.get(lang, lang)}")
 
     except Exception as e:
-        print(f"\n❌ Migration failed: {str(e)}")
+        print(f"\n[FAIL] Migration failed: {str(e)}")
         raise
     finally:
         client.close()
@@ -107,7 +107,7 @@ async def migrate_channels():
 
 async def verify_migration():
     """Verify that all channels have been updated correctly."""
-    print("\n🔍 Verifying migration...")
+    print("\n Verifying migration...")
 
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     db = client[settings.MONGODB_DB_NAME]
@@ -126,13 +126,13 @@ async def verify_migration():
 
         total = await channels_collection.count_documents({})
 
-        print(f"✅ Channels with all 10 languages: {channels_with_10_langs}/{total}")
+        print(f"[OK] Channels with all 10 languages: {channels_with_10_langs}/{total}")
 
         if channels_with_fewer > 0:
-            print(f"⚠️  Channels with fewer languages: {channels_with_fewer}")
+            print(f"[WARN] Channels with fewer languages: {channels_with_fewer}")
             print("   Run migration again to update remaining channels.")
         else:
-            print("🎉 All channels successfully migrated!")
+            print("All channels successfully migrated!")
 
     finally:
         client.close()
@@ -151,7 +151,7 @@ async def main():
     # Verify results
     await verify_migration()
 
-    print("\n✅ Migration script completed successfully!")
+    print("\n[OK] Migration script completed successfully!")
 
 
 if __name__ == "__main__":

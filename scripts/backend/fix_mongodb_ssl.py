@@ -183,7 +183,7 @@ def suggest_fixes():
     print("   - Add your current IP address or allow from anywhere (0.0.0.0/0) for testing")
 
     print("\n4. Verify MongoDB URI format:")
-    print("   mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority")
+    print("   mongodb+srv://<credentials>@cluster.mongodb.net/?retryWrites=true&w=majority")
 
     print("\n5. Check firewall/proxy settings:")
     print("   - Ensure outbound connections to MongoDB Atlas are allowed")

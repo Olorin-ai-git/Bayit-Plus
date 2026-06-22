@@ -171,7 +171,7 @@ async def lifespan(app: FastAPI):
         """Initialize Olorin database (Phase 2 - separate database if enabled)."""
         try:
             await connect_to_olorin_mongo()
-            logger.info("✅ Olorin database connection established")
+            logger.info("[OK] Olorin database connection established")
         except Exception as e:
             logger.warning(f"Olorin database connection failed: {e}")
 
@@ -257,14 +257,14 @@ async def lifespan(app: FastAPI):
         # Initialize default widgets
         try:
             await init_default_widgets()
-            logger.info("✅ Background seeding: Default widgets initialized")
+            logger.info("[OK] Background seeding: Default widgets initialized")
         except Exception as e:
             logger.warning(f"Background seeding: Failed to initialize default widgets: {e}")
 
         # Initialize default cultures (Israeli)
         try:
             await init_default_cultures()
-            logger.info("✅ Background seeding: Default cultures initialized")
+            logger.info("[OK] Background seeding: Default cultures initialized")
         except Exception as e:
             logger.warning(f"Background seeding: Failed to initialize default cultures: {e}")
 
@@ -284,7 +284,19 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(_init_embedding_classifier())
     from app.services.vod_interaction.job_reaper import run_reaper_loop
     asyncio.create_task(run_reaper_loop(), name="pause-ask-job-reaper")
-    logger.info("Background tasks scheduled: data seeding, TTL index creation, cache warm-up, job reaper")
+
+    async def _reap_pending_documents():
+        """Re-enqueue knowledge documents stranded mid-ingestion by a restart."""
+        try:
+            from app.services.training.document_orchestrator import (
+                reap_pending_documents,
+            )
+            await reap_pending_documents()
+        except Exception as e:
+            logger.warning(f"Document ingestion reaper failed: {e}")
+
+    asyncio.create_task(_reap_pending_documents())
+    logger.info("Background tasks scheduled: data seeding, TTL index creation, cache warm-up, job reaper, document reaper")
 
     # Upload queue processor is now manual-only (triggered from UI)
     from app.services.upload_service import upload_service  # noqa: F401
@@ -412,7 +424,7 @@ except ImportError:
 # This MUST be last to catch everything that wasn't caught above
 app.add_exception_handler(Exception, global_exception_handler)
 
-logger.info("✅ Global exception handlers registered - server will remain responsive on errors")
+logger.info("[OK] Global exception handlers registered - server will remain responsive on errors")
 
 # ============================================
 # Middleware (order matters - first added = innermost, last added = outermost)

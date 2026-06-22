@@ -595,16 +595,16 @@ async def seed_youngsters_subcategories(section_map: Dict[str, str]) -> Dict[str
 
 async def seed_all_taxonomy() -> Dict[str, any]:
     """Seed all taxonomy components using i18n translation keys."""
-    logger.info("🌱 Starting taxonomy seeding...")
+    logger.info(" Starting taxonomy seeding...")
 
     section_map = await seed_sections()
-    logger.info(f"✅ Seeded {len(section_map)} sections")
+    logger.info(f"[OK] Seeded {len(section_map)} sections")
 
     kids_subcategory_map = await seed_kids_subcategories(section_map)
-    logger.info(f"✅ Seeded {len(kids_subcategory_map)} kids subcategories")
+    logger.info(f"[OK] Seeded {len(kids_subcategory_map)} kids subcategories")
 
     youngsters_subcategory_map = await seed_youngsters_subcategories(section_map)
-    logger.info(f"✅ Seeded {len(youngsters_subcategory_map)} youngsters subcategories")
+    logger.info(f"[OK] Seeded {len(youngsters_subcategory_map)} youngsters subcategories")
 
     return {
         "sections": section_map,
@@ -617,7 +617,7 @@ async def migrate_content_to_new_taxonomy(
     section_map: Dict[str, str], dry_run: bool = False
 ) -> Dict:
     """Migrate existing content from legacy category to new taxonomy."""
-    logger.info("🔄 Starting content migration to new taxonomy...")
+    logger.info(" Starting content migration to new taxonomy...")
 
     migrated_count = 0
     skipped_count = 0

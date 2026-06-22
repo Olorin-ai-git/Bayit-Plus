@@ -18,7 +18,7 @@ async def send_audit_report(audit_report: AuditReport):
     1. MongoDB storage (already done)
     2. Email notification (if configured)
     """
-    logger.info(f"📧 Generating audit report...")
+    logger.info(f" Generating audit report...")
 
     try:
         # Generate HTML report
@@ -42,19 +42,19 @@ async def send_audit_report(audit_report: AuditReport):
                     to_emails=admin_emails, subject=subject, html_content=html_report
                 )
 
-                logger.info(f"   ✅ Email sent to {len(admin_emails)} recipients")
+                logger.info(f"[OK] Email sent to {len(admin_emails)} recipients")
             else:
                 logger.info(
-                    f"   ℹ️  No admin email addresses configured, skipping email"
+                    f" ℹ No admin email addresses configured, skipping email"
                 )
 
         except ImportError:
-            logger.warning("   ⚠️ Email service not configured")
+            logger.warning("[WARN] Email service not configured")
         except Exception as e:
-            logger.warning(f"   ⚠️ Failed to send email: {e}")
+            logger.warning(f"[WARN] Failed to send email: {e}")
 
     except Exception as e:
-        logger.error(f"❌ Failed to generate report: {e}")
+        logger.error(f"[FAIL] Failed to generate report: {e}")
 
 
 def generate_html_report(audit_report: AuditReport) -> str:
@@ -79,7 +79,7 @@ def generate_html_report(audit_report: AuditReport) -> str:
 
     # Status emoji
     status_emoji = (
-        "✅" if health_percentage >= 90 else "⚠️" if health_percentage >= 70 else "❌"
+        "[OK]" if health_percentage >= 90 else "[WARN]" if health_percentage >= 70 else "[FAIL]"
     )
 
     # Format execution time
@@ -241,13 +241,13 @@ def generate_html_report(audit_report: AuditReport) -> str:
     if issues_found > 0:
         html += """
     <div class="section">
-        <div class="section-title">⚠️ Issues Found</div>
+        <div class="section-title">[WARN] Issues Found</div>
 """
 
         if audit_report.broken_streams:
             html += f"""
         <div class="issue-list">
-            <strong>🔗 Broken Streams ({len(audit_report.broken_streams)})</strong>
+            <strong> Broken Streams ({len(audit_report.broken_streams)})</strong>
             <ul>
 """
             for stream in audit_report.broken_streams[:5]:  # Show first 5
@@ -266,7 +266,7 @@ def generate_html_report(audit_report: AuditReport) -> str:
         if audit_report.missing_metadata:
             html += f"""
         <div class="issue-list">
-            <strong>📝 Missing Metadata ({len(audit_report.missing_metadata)})</strong>
+            <strong> Missing Metadata ({len(audit_report.missing_metadata)})</strong>
             <ul>
 """
             for item in audit_report.missing_metadata[:5]:
@@ -285,7 +285,7 @@ def generate_html_report(audit_report: AuditReport) -> str:
         if audit_report.misclassifications:
             html += f"""
         <div class="issue-list">
-            <strong>🏷️ Misclassifications ({len(audit_report.misclassifications)})</strong>
+            <strong> Misclassifications ({len(audit_report.misclassifications)})</strong>
             <ul>
 """
             for item in audit_report.misclassifications[:5]:
@@ -309,7 +309,7 @@ def generate_html_report(audit_report: AuditReport) -> str:
     if issues_fixed > 0:
         html += f"""
     <div class="section">
-        <div class="section-title">🔧 Actions Taken ({issues_fixed} fixes)</div>
+        <div class="section-title"> Actions Taken ({issues_fixed} fixes)</div>
 """
         for fix in audit_report.fixes_applied[:10]:  # Show first 10
             description = fix.get("description", "No description")
@@ -331,7 +331,7 @@ def generate_html_report(audit_report: AuditReport) -> str:
     if audit_report.ai_insights:
         html += """
     <div class="section">
-        <div class="section-title">🧠 AI Insights</div>
+        <div class="section-title"> AI Insights</div>
 """
         for insight in audit_report.ai_insights:
             html += f"""
@@ -356,7 +356,7 @@ def generate_html_report(audit_report: AuditReport) -> str:
 
         html += f"""
     <div class="section">
-        <div class="section-title">🗄️ Database Health</div>
+        <div class="section-title"> Database Health</div>
         <p>
             <strong>Connection:</strong>
             <span class="badge {status_badge}">{connection_status}</span>

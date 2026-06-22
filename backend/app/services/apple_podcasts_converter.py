@@ -65,7 +65,7 @@ async def get_rss_from_podcast_id(podcast_id: str) -> Optional[str]:
             rss_url = podcast.get("feedUrl")
 
             if rss_url:
-                logger.info(f"✅ Found RSS feed for podcast {podcast_id}")
+                logger.info(f"[OK] Found RSS feed for podcast {podcast_id}")
                 logger.info(f"   Podcast: {podcast.get('trackName', 'Unknown')}")
                 logger.info(f"   RSS: {rss_url}")
                 return rss_url
@@ -97,7 +97,7 @@ async def convert_apple_podcasts_to_rss(apple_url: str) -> Optional[dict]:
         logger.error(f"Could not extract podcast ID from URL: {apple_url}")
         return None
 
-    logger.info(f"📱 Apple Podcasts URL detected")
+    logger.info(f" Apple Podcasts URL detected")
     logger.info(f"   ID: {podcast_id}")
     logger.info(f"   URL: {apple_url}")
 

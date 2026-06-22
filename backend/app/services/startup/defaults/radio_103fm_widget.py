@@ -43,7 +43,7 @@ RADIO_103FM_WIDGET: Radio103FMWidgetConfig = {
     "description": "רדיו ללא הפסקה 103FM שידור חי",
     "description_en": "Non-Stop Radio 103FM Live Stream",
     "description_es": "Radio Sin Parar 103FM Transmisión en Vivo",
-    "icon": "📻",
+    "icon": "",
     "order": 51,  # After Galei Tzahal (50)
     "position": {
         "x": 490,

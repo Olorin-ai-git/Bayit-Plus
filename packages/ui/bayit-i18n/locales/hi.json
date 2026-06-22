@@ -4444,6 +4444,60 @@
       "dock": "नेविगेशन डॉक",
       "dockItem": "{{name}} पर जाएं",
       "heroCard": "{{title}}, {{type}}"
+    },
+    "byoc": {
+      "subtitle": "रोकें और अपनी लाइब्रेरी के किसी भी दृश्य के बारे में AI से पूछें",
+      "title": "आपकी सामग्री, और बेहतर",
+      "watchWithAI": "AI के साथ देखें"
+    },
+    "continueWatching": {
+      "resume": "फिर से शुरू करें",
+      "subtitle": "AI सुविधाओं के साथ वहीं से जारी रखें जहाँ आपने छोड़ा था"
+    },
+    "liveAI": {
+      "feature": {
+        "catchUp": "कैच अप",
+        "dubbing": "AI डबिंग",
+        "subtitles": "लाइव सबटाइटल",
+        "trivia": "लाइव ट्रिविया"
+      },
+      "groupLabel": "लाइव AI"
+    },
+    "liveTV": {
+      "dubbedIn": "{{language}} में AI डब किया गया",
+      "subtitle": "AI के साथ इज़राइली टीवी को अपनी भाषा में डब करके देखें",
+      "title": "अभी लाइव",
+      "watchDubbed": "डब किया हुआ देखें"
+    },
+    "movieAI": {
+      "feature": {
+        "interactive": "इंटरैक्टिव क्षण",
+        "pauseAsk": "रोकें और पूछें"
+      },
+      "groupLabel": "मूवी AI"
+    },
+    "overlay": {
+      "aiDubbed": "AI डब किया गया",
+      "aiEnhanced": "AI द्वारा उन्नत",
+      "liveSubtitles": "10 भाषाओं में लाइव सबटाइटल",
+      "pauseAskReady": "रोकें और पूछें तैयार है",
+      "sampleSubtitle1": "इज़राइली मनोरंजन की दुनिया में आपका स्वागत है",
+      "sampleSubtitle2": "इज़राइल के हृदय से कहानियों का अनुभव करें",
+      "sampleSubtitle3": "AI द्वारा आपकी भाषा में लाइव डब किया गया",
+      "sampleSubtitle4": "किसी भी दृश्य के बारे में प्रश्न पूछें",
+      "splitEn1": "Welcome back to the evening news",
+      "splitEn2": "Today we bring you a special report",
+      "splitEn3": "The weather forecast for tomorrow",
+      "splitEn4": "Stay tuned for more updates",
+      "splitHe1": "ברוכים הבאים למהדורת הערב",
+      "splitHe2": "היום אנחנו מביאים לכם כתבה מיוחדת",
+      "splitHe3": "תחזית מזג האוויר למחר",
+      "splitHe4": "הישארו איתנו לעדכונים נוספים"
+    },
+    "pauseAsk": {
+      "subtitle": "पात्रों से बात करें और किसी भी दृश्य के बारे में पूछें",
+      "title": "रोकें और पूछें",
+      "tryItNow": "अभी आज़माएँ"
     }
   },
   "cities": {
@@ -8497,7 +8551,8 @@
       },
       "askAgain": "[hi] Ask Again",
       "placeholder": "[hi] Ask about this scene...",
-      "resume": "[hi] Resume"
+      "resume": "[hi] Resume",
+      "worksOnAnyContent": "यह आपके द्वारा देखी जाने वाली किसी भी सामग्री पर काम करता है"
     },
     "multiCharacter": {
       "selectCharacter": "संबोधित करने के लिए पात्र चुनें",
@@ -8657,7 +8712,12 @@
     },
     "disconnect": "Disconnect",
     "unknownDevice": "Unknown Device",
-    "channelChat": "चैनल चैट"
+    "channelChat": "चैनल चैट",
+    "walkthrough": {
+      "coachMark": "किसी पात्र से बात करने के लिए चलाएँ/रोकें दबाएँ",
+      "liveSubtitleHint": "अनुवाद पर टैप करें, फिर EN | HE सबटाइटल के लिए स्प्लिट मोड चुनें",
+      "suggestion": "मुझे इस दृश्य के बारे में बताएँ"
+    }
   },
   "playlist": {
     "title": "मेरी सूची",
@@ -10149,7 +10209,11 @@
       "reduceMotionDesc": "एनिमेशन और मोशन इफेक्ट सीमित करें",
       "audioDescriptions": "ऑडियो विवरण",
       "audioDescDesc": "पहुंच के लिए दृश्य सामग्री का वर्णित विवरण",
-      "title": "एक्सेसिबिलिटी"
+      "title": "एक्सेसिबिलिटी",
+      "colorBlindNone": "कोई नहीं",
+      "deuteranopia": "ड्यूटेरानोपिया (हरा-लाल)",
+      "protanopia": "प्रोटानोपिया (लाल-हरा)",
+      "tritanopia": "ट्राइटेनोपिया (नीला-पीला)"
     },
     "signOut": "साइन आउट",
     "security": {
@@ -10173,7 +10237,9 @@
       "accountSecurity": "खाता सुरक्षा",
       "devices": "डिवाइस",
       "noDevices": "कोई सक्रिय डिवाइस नहीं",
-      "unknownDevice": "अज्ञात डिवाइस"
+      "unknownDevice": "अज्ञात डिवाइस",
+      "changePasswordDesc": "अपना पासवर्ड अपडेट करें",
+      "deviceCount": "%d डिवाइस"
     },
     "aiFeatures": {
       "title": "AI सुविधाएं",
@@ -10202,7 +10268,15 @@
         "hard": "कठिन",
         "mixed": "मिश्रित",
         "categories": "श्रेणियां",
-        "stats": "आपके आंकड़े"
+        "stats": "आपके आंकड़े",
+        "categoryCast": "कलाकार",
+        "categoryCultural": "सांस्कृतिक",
+        "categoryFun": "रोचक तथ्य",
+        "categoryHistorical": "ऐतिहासिक",
+        "categoryProduction": "निर्माण",
+        "frequencyFrequent": "बार-बार",
+        "frequencyNormal": "सामान्य",
+        "frequencyRare": "कभी-कभार"
       },
       "betaToggles": "बीटा सुविधा टॉगल",
       "betaEnrolled": "बीटा प्रोग्राम में नामांकित",
@@ -10254,7 +10328,11 @@
       "dubbing": "डबिंग",
       "processing": "प्रोसेसिंग",
       "quality": "ऑडियो गुणवत्ता",
-      "volumeNormDesc": "सामग्री में वॉल्यूम सामान्य करें"
+      "volumeNormDesc": "सामग्री में वॉल्यूम सामान्य करें",
+      "qualityAuto": "स्वचालित",
+      "qualityHigh": "उच्च",
+      "qualityLow": "निम्न",
+      "qualityMedium": "मध्यम"
     },
     "notificationSettings": {
       "title": "सूचनाएं",
@@ -10544,6 +10622,11 @@
       "appleDesc": "Apple से साइन इन करें",
       "facebookDesc": "सोशल सुविधाएं कनेक्ट करें",
       "connect": "कनेक्ट करें"
+    },
+    "email": "ईमेल",
+    "enabled": "सक्षम",
+    "trivia": {
+      "title": "ट्रिविया और रोचक तथ्य"
     }
   },
   "shabbat": {
@@ -12765,7 +12848,14 @@
       "noCreditsDesc": "मैजिक मिरर का उपयोग करने के लिए आपको Beta क्रेडिट चाहिए",
       "playGreeting": "अभिवादन चलाएं",
       "refresh": "रिफ्रेश",
-      "meshUnavailable": "3D मेश उपलब्ध नहीं"
+      "meshUnavailable": "3D मेश उपलब्ध नहीं",
+      "createGuideHint": "दोनों डिवाइस पर एक ही खाते से साइन इन करें",
+      "createGuideStep1": "अपने iPhone या iPad पर Bayit+ ऐप खोलें",
+      "createGuideStep2": "Zeh Ani पर जाएँ और अवतार बनाएँ पर टैप करें",
+      "createGuideStep3": "अपने चेहरे का एक छोटा वीडियो रिकॉर्ड करें",
+      "createGuideStep4": "आपका अवतार यहाँ स्वतः दिखाई देगा",
+      "createGuideTitle": "मोबाइल पर अवतार बनाएँ",
+      "manageAvatar": "अवतार प्रबंधित करें"
     },
     "mesh": {
       "title": "3D मेश बनाएं",

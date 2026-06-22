@@ -77,7 +77,7 @@ async def generate_report(
     with open(output_path, "w") as f:
         f.write(report)
 
-    logger.info(f"📄 Report saved to: {output_path}")
+    logger.info(f" Report saved to: {output_path}")
 
 
 async def update_docs_index(report_path: Path, project_root: Path) -> None:
@@ -113,7 +113,7 @@ async def update_docs_index(report_path: Path, project_root: Path) -> None:
                 with open(docs_index, "w") as f:
                     f.write(new_content)
 
-                logger.info(f"✅ Documentation index updated: {docs_index}")
+                logger.info(f"[OK] Documentation index updated: {docs_index}")
             else:
                 logger.warning("Could not parse Reviews section in docs index")
         else:

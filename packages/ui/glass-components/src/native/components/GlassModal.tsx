@@ -82,11 +82,11 @@ const getMaxWidthForSize = (size: ModalSize): number | string => {
 
 const getIconForType = (type: ModalType): string => {
   const icons: Record<ModalType, string> = {
-    error: '❌',
-    success: '✅',
-    warning: '⚠️',
-    info: 'ℹ️',
-    confirm: '❓',
+    error: '[FAIL]',
+    success: '[OK]',
+    warning: '[WARN]',
+    info: 'ℹ',
+    confirm: '',
   };
   return icons[type];
 };
@@ -212,7 +212,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <Text className="text-xl leading-6" style={{ color: colors.textSecondary }}>
-                    ✕
+                    
                   </Text>
                 </TouchableOpacity>
               )}

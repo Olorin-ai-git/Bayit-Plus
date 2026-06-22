@@ -5,12 +5,10 @@
  * - Get payment status (polling)
  * - Generate checkout URL (on-demand)
  */
-import { useAuthStore } from "@/stores/authStore";
+import { api } from "@bayit/shared-services/api";
 import logger from "@/utils/logger";
 
 const paymentLogger = logger.scope("PaymentAPI");
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "/api/v1";
 
 export interface PaymentStatusResponse {
   payment_pending: boolean;
@@ -35,37 +33,24 @@ export interface CheckoutSessionResponse {
  * @throws Error if request fails
  */
 export async function getPaymentStatus(): Promise<PaymentStatusResponse> {
-  const token = useAuthStore.getState().token;
+  try {
+    const data: PaymentStatusResponse = await api.get(
+      "/auth/payment/status",
+    );
 
-  if (!token) {
-    throw new Error("Not authenticated");
-  }
+    paymentLogger.debug("Payment status fetched", {
+      payment_pending: data.payment_pending,
+      can_access_app: data.can_access_app,
+    });
 
-  const response = await fetch(`${API_BASE_URL}/auth/payment/status`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
+    return data;
+  } catch (error: any) {
     paymentLogger.error("Failed to get payment status", {
-      status: response.status,
+      status: error?.status,
       error,
     });
-    throw new Error(error.detail || `HTTP ${response.status}`);
+    throw new Error(error?.detail || "Failed to get payment status");
   }
-
-  const data = await response.json();
-
-  paymentLogger.debug("Payment status fetched", {
-    payment_pending: data.payment_pending,
-    can_access_app: data.can_access_app,
-  });
-
-  return data;
 }
 
 /**
@@ -81,43 +66,28 @@ export async function getPaymentStatus(): Promise<PaymentStatusResponse> {
 export async function generateCheckoutUrl(
   planId: string = "plus",
 ): Promise<CheckoutSessionResponse> {
-  const token = useAuthStore.getState().token;
-
-  if (!token) {
-    throw new Error("Not authenticated");
-  }
-
   paymentLogger.info("Generating checkout URL", { planId });
 
-  const response = await fetch(
-    `${API_BASE_URL}/auth/payment/checkout-url?plan_id=${encodeURIComponent(planId)}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  );
+  try {
+    const data: CheckoutSessionResponse = await api.get(
+      "/auth/payment/checkout-url",
+      { params: { plan_id: planId } },
+    );
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
+    paymentLogger.info("Checkout URL generated", {
+      session_id: data.session_id,
+      expires_in: data.expires_in,
+    });
+
+    return data;
+  } catch (error: any) {
     paymentLogger.error("Failed to generate checkout URL", {
-      status: response.status,
+      status: error?.status,
       error,
       planId,
     });
-    throw new Error(error.detail || `HTTP ${response.status}`);
+    throw new Error(error?.detail || "Failed to generate checkout URL");
   }
-
-  const data = await response.json();
-
-  paymentLogger.info("Checkout URL generated", {
-    session_id: data.session_id,
-    expires_in: data.expires_in,
-  });
-
-  return data;
 }
 
 /**

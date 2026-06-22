@@ -621,9 +621,9 @@ class LocationContentService:
             logger.info(f"Articles with images: {with_images}/{len(headlines)} ({with_images*100//len(headlines) if len(headlines) > 0 else 0}%)")
             for idx, h in enumerate(headlines):
                 if h.image_url:
-                    logger.info(f"  ✓ Article {idx}: {h.title[:50]} -> {h.image_url[:80]}")
+                    logger.info(f"[OK] Article {idx}: {h.title[:50]} -> {h.image_url[:80]}")
                 else:
-                    logger.warning(f"  ✗ Article {idx}: {h.title[:50]} -> NO IMAGE (will use fallback)")
+                    logger.warning(f"[FAIL] Article {idx}: {h.title[:50]} -> NO IMAGE (will use fallback)")
 
             return [
                 {

@@ -6,6 +6,7 @@ import { GlassCard, GlassButton } from '@bayit/glass';
 import { MagicMirrorWidget } from '@/components/zeh-ani/MagicMirrorWidget';
 import { Avatar3DViewer } from '@/components/zeh-ani/Avatar3DViewer';
 import { useAvatarMeshStore } from '@/stores/avatarMeshStore';
+import api from '@/services/api';
 import logger from '@bayit/shared-utils/logger';
 
 const mmLogger = logger.scope('MagicMirrorPage');
@@ -28,17 +29,14 @@ export default function MagicMirrorPage() {
 
       try {
         // Fetch avatar ID from profile's StarStory avatars
-        const response = await fetch(`/api/v1/star-story/avatars/${user!.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.avatars && data.avatars.length > 0) {
-            const firstAvatar = data.avatars[0];
-            setAvatarId(firstAvatar.avatar_id);
+        const data = await api.get(`/star-story/avatars/${user!.id}`);
+        if (data?.avatars && data.avatars.length > 0) {
+          const firstAvatar = data.avatars[0];
+          setAvatarId(firstAvatar.avatar_id);
 
-            // Fetch mesh status and GLB URL
-            await fetchMeshStatus(firstAvatar.avatar_id);
-            await fetchGlbUrl(firstAvatar.avatar_id);
-          }
+          // Fetch mesh status and GLB URL
+          await fetchMeshStatus(firstAvatar.avatar_id);
+          await fetchGlbUrl(firstAvatar.avatar_id);
         }
       } catch (error) {
         mmLogger.error('Failed to load avatar data', error);

@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
+import { generateCheckoutUrl } from '@/services/api/payment';
 import logger from '@/utils/logger';
 
 const paymentLogger = logger.scope('PaymentCancelled');
@@ -27,21 +28,7 @@ export default function PaymentCancelledPage() {
     try {
       paymentLogger.info('User retrying payment after cancellation');
 
-      const response = await fetch(
-        `/api/v1/auth/payment/checkout-url?plan_id=${user?.pending_plan_id || 'basic'}`,
-        {
-          headers: {
-            Authorization: `Bearer ${useAuthStore.getState().token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await generateCheckoutUrl(user?.pending_plan_id || 'basic');
 
       paymentLogger.info('New checkout URL generated, redirecting');
 

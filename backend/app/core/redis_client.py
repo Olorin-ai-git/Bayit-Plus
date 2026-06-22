@@ -49,10 +49,10 @@ class AsyncRedisClient:
 
                 # Test connection
                 await self._client.ping()
-                logger.info(f"✅ Redis connected: {self.redis_url}")
+                logger.info(f"[OK] Redis connected: {self.redis_url}")
             except Exception as e:
                 logger.warning(
-                    f"⚠️  Redis unavailable ({e}). "
+                    f"[WARN] Redis unavailable ({e}). "
                     "Continuing without session persistence/caching. "
                     "To enable Redis features, start Redis: brew services start redis"
                 )
