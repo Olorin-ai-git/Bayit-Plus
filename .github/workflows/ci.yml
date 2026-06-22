@@ -118,6 +118,11 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -149,7 +154,12 @@ jobs:
         run: poetry run pytest --cov=app --cov-report=xml -v
         env:
           MONGODB_URI: mongodb://localhost:27017/test_db
+          MONGODB_DB_NAME: bayit_test
+          # Settings() requires a >= 32 char SECRET_KEY at import time.
+          SECRET_KEY: ci-test-secret-key-minimum-32-characters-long
           APP_ENV: test
+          ENVIRONMENT: test
+          DEBUG: 'true'
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
