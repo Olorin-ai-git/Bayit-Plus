@@ -171,6 +171,5 @@
   },
   "overrides": {
     "@types/react": "^18.2.45"
-  },
-  "packageManager": "npm@10.2.0"
+  }
 }
