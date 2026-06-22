@@ -10,7 +10,10 @@ useDefault = true
 [[rules]]
 id = "mongodb-connection-string"
 description = "MongoDB connection string with credentials"
-regex = '''mongodb(\+srv)?://[^:]+:[^@]+@'''
+# Match only a real single-token credential URI (user:pass@host). Excluding
+# whitespace keeps it from spanning across lines from a credential-less
+# localhost URI (mongodb://localhost:27017) to an unrelated later '@'.
+regex = '''mongodb(\+srv)?://[^:\s/@]+:[^@\s/]+@'''
 tags = ["mongodb", "credentials"]
 
 [[rules]]
