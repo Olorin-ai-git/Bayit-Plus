@@ -70,3 +70,10 @@ cd web && npm install && npm start    # Vite on :3000, proxies /api to :8000
 - Beta 500 program: `docs/features/BETA_500.md`
 - Troubleshooting: `docs/guides/TROUBLESHOOTING_BAYIT.md`
 - Secrets management: `docs/deployment/SECRETS_MANAGEMENT.md`
+
+<!-- harness:context:begin -->
+
+## Olorin harness
+
+This project runs in the Olorin harness. For goal-scale work — explicit goals, features, and multi-step fixes that end in a completion claim — follow `.harness/PROCESS.md`; questions, investigations, and single-edit changes are exempt. Run state lives in `.harness/runs/` (one journal per goal), with the active pointer in `.harness/STATE.md`. Self-improvement (`.harness/SELF-IMPROVE.md`) is part of every goal, not an optional extra.
+<!-- harness:context:end -->
