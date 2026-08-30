@@ -79,7 +79,6 @@ COMMON_ENV="${COMMON_ENV},WEBAUTHN_RP_NAME=Bayit Plus"
 COMMON_ENV="${COMMON_ENV},AUDIBLE_INTEGRATION_ENABLED=true"
 COMMON_ENV="${COMMON_ENV},CAST_ENABLE_AIRPLAY=true"
 COMMON_ENV="${COMMON_ENV},CAST_ENABLE_CHROMECAST=true"
-COMMON_ENV="${COMMON_ENV},TWOGATES_ROUTING_ENABLED=false"
 
 # Core: auth, database, Redis, payments
 COMMON_SECRETS="SECRET_KEY=bayit-backend-secret-key:latest"
@@ -101,6 +100,7 @@ COMMON_SECRETS="${COMMON_SECRETS},STRIPE_PRICE_FAMILY=bayit-stripe-price-family:
 # AI services, content, OAuth
 COMMON_SECRETS="${COMMON_SECRETS},ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest"
 COMMON_SECRETS="${COMMON_SECRETS},OPENAI_API_KEY=bayit-openai-api-key:latest"
+COMMON_SECRETS="${COMMON_SECRETS},TWOGATES_ROUTING_ENABLED=bayit-twogates-routing-enabled:latest"
 COMMON_SECRETS="${COMMON_SECRETS},TWOGATES_PROXY_URL=bayit-twogates-proxy-url:latest"
 COMMON_SECRETS="${COMMON_SECRETS},TWOGATES_PROXY_CREDENTIAL=bayit-twogates-proxy-credential:latest"
 COMMON_SECRETS="${COMMON_SECRETS},TWOGATES_CA_CERT_PEM=bayit-twogates-ca-cert-pem:latest"

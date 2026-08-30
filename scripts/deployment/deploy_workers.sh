@@ -109,7 +109,8 @@ gcloud builds submit \
 echo -e "${GREEN}Jobs image built and pushed${NC}"
 echo ""
 
-COST_ROLLUP_ROUTING_SECRETS="TWOGATES_PROXY_URL=bayit-twogates-proxy-url:latest"
+COST_ROLLUP_ROUTING_SECRETS="TWOGATES_ROUTING_ENABLED=bayit-twogates-routing-enabled:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_PROXY_URL=bayit-twogates-proxy-url:latest"
 COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_PROXY_CREDENTIAL=bayit-twogates-proxy-credential:latest"
 COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_CA_CERT_PEM=bayit-twogates-ca-cert-pem:latest"
 COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_TASK_CLASS=bayit-twogates-task-class:latest"
@@ -129,7 +130,6 @@ for JOB in cleanup-upload-sessions cleanup-failed-uploads cost-rollup youtube-ep
                 --region="$REGION" \
                 --project="$PROJECT_ID" \
                 --image="gcr.io/$PROJECT_ID/bayit-jobs:$BUILD_ID" \
-                --update-env-vars="TWOGATES_ROUTING_ENABLED=false" \
                 --update-secrets="${COST_ROLLUP_ROUTING_SECRETS}" \
                 --quiet
         else

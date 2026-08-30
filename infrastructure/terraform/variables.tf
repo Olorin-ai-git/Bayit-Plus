@@ -28,9 +28,10 @@ variable "backend_service_account" {
 }
 
 variable "twogates_secret_ids" {
-  description = "Secret Manager IDs for inactive TwoGates provider-routing configuration"
+  description = "Secret Manager IDs for owner-controlled TwoGates provider-routing configuration"
   type        = map(string)
   default = {
+    TWOGATES_ROUTING_ENABLED               = "bayit-twogates-routing-enabled"
     TWOGATES_PROXY_URL                     = "bayit-twogates-proxy-url"
     TWOGATES_PROXY_CREDENTIAL              = "bayit-twogates-proxy-credential"
     TWOGATES_CA_CERT_PEM                   = "bayit-twogates-ca-cert-pem"

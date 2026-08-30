@@ -106,6 +106,7 @@ PODCAST_TRANSLATION_VARIABLES = (
     REPOSITORY_ROOT / "infrastructure" / "terraform" / "variables.tf"
 )
 ROUTING_SECRET_BINDINGS = {
+    "TWOGATES_ROUTING_ENABLED": "bayit-twogates-routing-enabled:latest",
     "TWOGATES_PROXY_URL": "bayit-twogates-proxy-url:latest",
     "TWOGATES_PROXY_CREDENTIAL": "bayit-twogates-proxy-credential:latest",
     "TWOGATES_CA_CERT_PEM": "bayit-twogates-ca-cert-pem:latest",
@@ -372,7 +373,7 @@ def test_every_terraform_cloud_run_writer_is_explicitly_inventoried() -> None:
     assert terraform_cloud_run_files == {PODCAST_TRANSLATION_TERRAFORM}
 
 
-def test_direct_backend_deploy_workflows_keep_complete_routing_inactive() -> None:
+def test_direct_backend_deploy_workflows_keep_complete_owner_controlled_routing() -> None:
     violations: list[str] = []
     for path in BACKEND_DEPLOYMENT_WORKFLOWS:
         deploy_commands = _direct_deploy_commands(path.read_text())
@@ -383,8 +384,6 @@ def test_direct_backend_deploy_workflows_keep_complete_routing_inactive() -> Non
             )
             continue
         deploy_command = deploy_commands[0]
-        if "TWOGATES_ROUTING_ENABLED=false" not in deploy_command:
-            violations.append(f"{relative_path}: routing is not explicitly inactive")
         for environment_name, secret_reference in ROUTING_SECRET_BINDINGS.items():
             binding = f"{environment_name}={secret_reference}"
             if binding not in deploy_command:
@@ -397,7 +396,7 @@ def test_direct_backend_deploy_workflows_keep_complete_routing_inactive() -> Non
     )
 
 
-def test_podcast_translation_worker_has_complete_inactive_routing() -> None:
+def test_podcast_translation_worker_has_complete_owner_controlled_routing() -> None:
     workflow_text = PODCAST_TRANSLATION_WORKFLOW.read_text()
     dockerfile_text = PODCAST_TRANSLATION_DOCKERFILE.read_text()
     terraform_text = PODCAST_TRANSLATION_TERRAFORM.read_text()
@@ -417,8 +416,6 @@ def test_podcast_translation_worker_has_complete_inactive_routing() -> None:
     assert "infrastructure/terraform/**" in workflow_text
     assert "terraform apply -auto-approve tfplan" in workflow_text
     assert "COPY backend/app ./app" in dockerfile_text
-    assert 'name  = "TWOGATES_ROUTING_ENABLED"' in terraform_text
-    assert 'value = "false"' in terraform_text
     assert 'for_each = var.twogates_secret_ids' in terraform_text
     assert "name = env.key" in terraform_text
     assert "secret  = env.value" in terraform_text
@@ -429,7 +426,7 @@ def test_podcast_translation_worker_has_complete_inactive_routing() -> None:
         assert "ALL_PROXY" not in configuration_text
 
 
-def test_deployment_manifests_keep_complete_routing_configuration_inactive() -> None:
+def test_deployment_manifests_keep_complete_owner_controlled_routing() -> None:
     violations: list[str] = []
     for path in DEPLOYMENT_MANIFESTS:
         manifest = yaml.safe_load(path.read_text())
@@ -441,8 +438,6 @@ def test_deployment_manifests_keep_complete_routing_configuration_inactive() -> 
         ]
         combined_arguments = "\n".join(arguments)
         relative_path = path.relative_to(REPOSITORY_ROOT)
-        if "--set-env-vars=TWOGATES_ROUTING_ENABLED=false" not in arguments:
-            violations.append(f"{relative_path}: routing is not explicitly inactive")
         for environment_name, secret_reference in ROUTING_SECRET_BINDINGS.items():
             binding = f"{environment_name}={secret_reference}"
             if binding not in combined_arguments:
@@ -477,14 +472,7 @@ def test_cost_rollup_job_has_complete_inactive_routing_configuration() -> None:
     assert 'create_job "cost-rollup"             "jobs.cost_rollup"' in (
         deployment_text
     )
-    assert (
-        'COMMON_ENV="${COMMON_ENV},TWOGATES_ROUTING_ENABLED=false"' in deployment_text
-    )
     assert 'if [ "$JOB" = "cost-rollup" ]; then' in image_deployment_text
-    assert (
-        '--update-env-vars="TWOGATES_ROUTING_ENABLED=false"'
-        in image_deployment_text
-    )
     for environment_name, secret_reference in ROUTING_SECRET_BINDINGS.items():
         binding = f"{environment_name}={secret_reference}"
         assert binding in deployment_text

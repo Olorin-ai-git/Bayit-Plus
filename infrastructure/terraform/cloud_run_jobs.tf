@@ -25,11 +25,6 @@ resource "google_cloud_run_v2_job" "podcast_translation" {
           value = "2"
         }
 
-        env {
-          name  = "TWOGATES_ROUTING_ENABLED"
-          value = "false"
-        }
-
         dynamic "env" {
           for_each = var.twogates_secret_ids
           content {
