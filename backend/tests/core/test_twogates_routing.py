@@ -193,7 +193,7 @@ def _config(**overrides: object) -> RoutingTransportConfig:
     values: dict[str, object] = {
         "enabled": True,
         "proxy_url": "https://twogates.invalid:8443",
-        "proxy_credential": "tg_test_test-secret",
+        "proxy_credential": "tg_0123456789abcdef_0123456789abcdef0123456789abcdef0123456789abcdef",
         "ca_cert_pem": _ca_pem(),
         "task_class": "standard",
         "correlation_header": "X-Correlation-ID",
@@ -215,7 +215,9 @@ def _settings_values(**overrides: object) -> dict[str, object]:
         "MONGODB_URI": "mongodb://localhost:27017/test_bayit_plus",
         "TWOGATES_ROUTING_ENABLED": True,
         "TWOGATES_PROXY_URL": SecretStr("https://twogates.invalid:8443"),
-        "TWOGATES_PROXY_CREDENTIAL": SecretStr("tg_test_test-secret"),
+        "TWOGATES_PROXY_CREDENTIAL": SecretStr(
+            "tg_0123456789abcdef_0123456789abcdef0123456789abcdef0123456789abcdef"
+        ),
         "TWOGATES_CA_CERT_PEM": SecretStr(_ca_pem()),
         "TWOGATES_TASK_CLASS": "standard",
         "TWOGATES_CORRELATION_ID_MAX_LENGTH": 128,
@@ -530,6 +532,16 @@ async def test_google_imagen_request_preserves_operation_timeout_phases() -> Non
         ("TWOGATES_PROXY_CREDENTIAL", SecretStr("invalid credential")),
         ("TWOGATES_PROXY_CREDENTIAL", SecretStr("tg_test_bad\x00token")),
         ("TWOGATES_PROXY_CREDENTIAL", SecretStr("tg_test_bad\x7ftoken")),
+        (
+            "TWOGATES_PROXY_CREDENTIAL",
+            SecretStr("tg_0123456789abcdef_0123456789abcdef"),
+        ),
+        (
+            "TWOGATES_PROXY_CREDENTIAL",
+            SecretStr(
+                "tg_0123456789ABCDEF_0123456789abcdef0123456789abcdef0123456789abcdef"
+            ),
+        ),
         ("TWOGATES_CA_CERT_PEM", SecretStr("invalid certificate")),
         ("TWOGATES_TASK_CLASS", "unknown"),
         ("CORRELATION_ID_HEADER", "X-Correlation-ID\x00Injected"),
@@ -696,7 +708,7 @@ def test_routed_client_uses_same_ca_for_proxy_and_tunneled_tls() -> None:
     assert kwargs["verify"] is tls_context
     assert kwargs["proxy"].ssl_context is tls_context
     assert kwargs["proxy"].headers["Proxy-Authorization"] == (
-        "Bearer tg_test_test-secret"
+        "Bearer tg_0123456789abcdef_0123456789abcdef0123456789abcdef0123456789abcdef"
     )
     assert kwargs["trust_env"] is False
     assert kwargs["follow_redirects"] is False
@@ -848,7 +860,7 @@ def test_real_https_connect_probe_uses_private_ca_and_routing_headers(
         assert response.status_code == 200
         assert proxy.connect_request_line.startswith("CONNECT localhost:")
         assert proxy.connect_headers["proxy-authorization"] == (
-            "Bearer tg_test_test-secret"
+            "Bearer tg_0123456789abcdef_0123456789abcdef0123456789abcdef0123456789abcdef"
         )
         assert provider.received_headers[EREBOR_REQUEST_ID_HEADER] == str(
             uuid.UUID(int=4)

@@ -1,4 +1,5 @@
 import os
+import re
 import ssl
 from functools import lru_cache
 from pathlib import Path
@@ -71,6 +72,7 @@ PROTECTED_PROVIDER_HEADER_NAMES = frozenset(
         "x-goog-api-key",
     }
 )
+TWOGATES_AGENT_TOKEN_PATTERN = re.compile(r"tg_[0-9a-f]{16}_[0-9a-f]{48}")
 
 
 def validate_provider_correlation_header_name(header_name: str) -> str:
@@ -323,17 +325,7 @@ class Settings(
                     "TwoGates proxy URL must be a credential-free HTTPS origin"
                 )
 
-            token_parts = proxy_credential.split("_", 2)
-            if (
-                len(token_parts) != 3
-                or token_parts[0] != "tg"
-                or not token_parts[1]
-                or not token_parts[2]
-                or any(
-                    ord(character) < 33 or ord(character) > 126
-                    for character in proxy_credential
-                )
-            ):
+            if TWOGATES_AGENT_TOKEN_PATTERN.fullmatch(proxy_credential) is None:
                 raise ValueError("TwoGates proxy credential must be an agent token")
 
             if (
