@@ -3,7 +3,7 @@
 from datetime import date
 from decimal import Decimal
 
-from app.core.ai_clients import get_provider_http_client
+from app.core.ai_clients import ProviderOperationTimeouts, get_provider_http_client
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.olorin.resilience import circuit_breaker
@@ -88,10 +88,12 @@ class OpenAIBillingProvider(CostProvider):
         }
 
         client = get_provider_http_client()
+        operation_timeouts = ProviderOperationTimeouts.from_settings()
         resp = await client.get(
             url,
             params=params,
             headers={"Authorization": f"Bearer {self._api_key}"},
+            timeout=operation_timeouts.openai_billing,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -114,9 +116,11 @@ class OpenAIBillingProvider(CostProvider):
             return True
         try:
             client = get_provider_http_client()
+            operation_timeouts = ProviderOperationTimeouts.from_settings()
             resp = await client.get(
                 "https://api.openai.com/v1/models",
                 headers={"Authorization": f"Bearer {self._api_key}"},
+                timeout=operation_timeouts.openai_billing_health,
             )
             return resp.status_code == 200
         except Exception:

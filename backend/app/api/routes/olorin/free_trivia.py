@@ -13,7 +13,7 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from app.core.ai_clients import get_provider_http_client
+from app.core.ai_clients import ProviderOperationTimeouts, get_provider_http_client
 from app.core.logging_config import get_logger
 from app.models.trivia import ContentTrivia
 from app.utils.video_url_utils import extract_video_title, validate_video_url
@@ -162,6 +162,7 @@ async def _generate_quiz_questions(
     )
 
     client = get_provider_http_client()
+    operation_timeouts = ProviderOperationTimeouts.from_settings()
     resp = await client.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -174,6 +175,7 @@ async def _generate_quiz_questions(
             "max_tokens": 2048,
             "messages": [{"role": "user", "content": prompt}],
         },
+        timeout=operation_timeouts.anthropic_trivia,
     )
     resp.raise_for_status()
     data = resp.json()

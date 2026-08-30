@@ -41,6 +41,51 @@ from app.core.config_domains.zehani import ZehAniConfigMixin
 from app.core.config_domains.zehani_grandparent import ZehAniGrandparentConfigMixin
 from app.core.olorin_config import OlorinSettings
 
+HTTP_FIELD_NAME_CHARACTERS = frozenset(
+    "!#$%&'*+-.^_`|~0123456789" "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+)
+PROTECTED_PROVIDER_HEADER_NAMES = frozenset(
+    {
+        "api-key",
+        "anthropic-beta",
+        "anthropic-version",
+        "authorization",
+        "connection",
+        "content-length",
+        "content-type",
+        "cookie",
+        "host",
+        "keep-alive",
+        "openai-organization",
+        "openai-project",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "set-cookie",
+        "te",
+        "trailer",
+        "transfer-encoding",
+        "upgrade",
+        "x-api-key",
+        "x-erebor-request-id",
+        "x-erebor-task-class",
+        "x-goog-api-key",
+    }
+)
+
+
+def validate_provider_correlation_header_name(header_name: str) -> str:
+    """Reject invalid or protected outbound provider correlation headers."""
+    if not header_name or any(
+        character not in HTTP_FIELD_NAME_CHARACTERS for character in header_name
+    ):
+        raise ValueError("Correlation ID header must be a valid HTTP field name")
+    if header_name.casefold() in PROTECTED_PROVIDER_HEADER_NAMES:
+        raise ValueError(
+            "Correlation ID header conflicts with a protected provider header"
+        )
+    return header_name
+
+
 # Load environment files in proper hierarchy
 try:
     base_platform_env = Path(__file__).resolve().parents[5] / "olorin-infra" / ".env"
@@ -243,6 +288,7 @@ class Settings(
     @model_validator(mode="after")
     def validate_twogates_routing(self) -> "Settings":
         """Require a complete, safe CONNECT configuration before opt-in."""
+        validate_provider_correlation_header_name(self.CORRELATION_ID_HEADER)
         proxy_url = self.TWOGATES_PROXY_URL.get_secret_value().strip()
         proxy_credential = self.TWOGATES_PROXY_CREDENTIAL.get_secret_value().strip()
         ca_cert_pem = self.TWOGATES_CA_CERT_PEM.get_secret_value().strip()
@@ -289,19 +335,6 @@ class Settings(
                 )
             ):
                 raise ValueError("TwoGates proxy credential must be an agent token")
-
-            valid_header_characters = frozenset(
-                "!#$%&'*+-.^_`|~0123456789"
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            )
-            if (
-                not self.CORRELATION_ID_HEADER
-                or any(
-                    character not in valid_header_characters
-                    for character in self.CORRELATION_ID_HEADER
-                )
-            ):
-                raise ValueError("Correlation ID header must be a valid HTTP field name")
 
             if (
                 "-----BEGIN CERTIFICATE-----" not in ca_cert_pem

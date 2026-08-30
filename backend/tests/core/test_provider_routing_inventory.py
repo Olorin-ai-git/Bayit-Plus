@@ -35,13 +35,32 @@ PROVIDER_CONSTRUCTORS = {
     "google.generativeai.GenerativeModel",
     "vertexai.generative_models.GenerativeModel",
 }
-FACTORY_PATH = Path("backend/app/core/ai_clients.py")
+PROVIDER_FACTORY_PATHS = {
+    Path("backend/app/core/ai_clients.py"),
+    Path("packages/bayit-translation/bayit_translation/service.py"),
+}
 PROVIDER_API_HOSTS = (
     "api.anthropic.com",
     "api.openai.com",
     "aiplatform.googleapis.com",
     "generativelanguage.googleapis.com",
 )
+NATIVE_PROVIDER_TIMEOUT_FIELDS = {
+    Path("backend/app/core/health_checks.py"): {"openai_health"},
+    Path("backend/app/api/routes/olorin/free_trivia.py"): {"anthropic_trivia"},
+    Path("backend/app/services/olorin/cost/providers/openai_billing.py"): {
+        "openai_billing",
+        "openai_billing_health",
+    },
+    Path("backend/app/services/star_story/avatar_generation_service.py"): {
+        "imagen_generation"
+    },
+}
+SHARED_SDK_TIMEOUT_CONSTRUCTORS = {
+    "anthropic.Anthropic",
+    "anthropic.AsyncAnthropic",
+    "openai.AsyncOpenAI",
+}
 DEPLOYMENT_MANIFESTS = (
     REPOSITORY_ROOT / "cloudbuild.yaml",
     REPOSITORY_ROOT / "backend" / "cloudbuild.yaml",
@@ -59,6 +78,14 @@ DEPLOYMENT_MANIFESTS = (
     REPOSITORY_ROOT / "bayit-workers" / "cloudbuild-workers.yaml",
     REPOSITORY_ROOT / "bayit-ws-gateway" / "cloudbuild-ws-gateway.yaml",
     REPOSITORY_ROOT / "olorin-b2b-api" / "cloudbuild-b2b.yaml",
+)
+JOB_BUILD_MANIFEST = REPOSITORY_ROOT / "bayit-workers" / "cloudbuild-jobs.yaml"
+ALL_CLOUDBUILD_MANIFESTS = DEPLOYMENT_MANIFESTS + (JOB_BUILD_MANIFEST,)
+JOB_DOCKERFILE = REPOSITORY_ROOT / "bayit-workers" / "Dockerfile.jobs"
+JOB_ENTRYPOINT = REPOSITORY_ROOT / "bayit-workers" / "jobs" / "cost_rollup.py"
+JOB_DEPLOYMENT_SCRIPT = REPOSITORY_ROOT / "infrastructure" / "setup-cron-jobs.sh"
+JOB_IMAGE_DEPLOYMENT_SCRIPT = (
+    REPOSITORY_ROOT / "scripts" / "deployment" / "deploy_workers.sh"
 )
 ROUTING_SECRET_BINDINGS = {
     "TWOGATES_PROXY_URL": "bayit-twogates-proxy-url:latest",
@@ -151,7 +178,7 @@ def test_production_provider_constructors_are_confined_to_factory() -> None:
             qualified_name = _qualified_name(node.func, aliases)
             if (
                 qualified_name in PROVIDER_CONSTRUCTORS
-                and relative_path != FACTORY_PATH
+                and relative_path not in PROVIDER_FACTORY_PATHS
             ):
                 violations.append(
                     f"{relative_path}:{node.lineno}: {qualified_name}"
@@ -183,6 +210,52 @@ def test_native_provider_rest_calls_use_shared_transport() -> None:
     assert violations == [], "Unrouted native provider REST calls:\n" + "\n".join(
         violations
     )
+
+
+def test_native_provider_rest_calls_keep_operation_specific_timeouts() -> None:
+    actual: dict[Path, set[str]] = {}
+    for path in _production_python_files():
+        tree = ast.parse(path.read_text(), filename=str(path))
+        if not _provider_host_literals(tree):
+            continue
+        relative_path = path.relative_to(REPOSITORY_ROOT)
+        timeout_fields = {
+            keyword.value.attr
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            for keyword in node.keywords
+            if keyword.arg == "timeout" and isinstance(keyword.value, ast.Attribute)
+        }
+        if timeout_fields:
+            actual[relative_path] = timeout_fields
+
+    assert actual == NATIVE_PROVIDER_TIMEOUT_FIELDS
+
+
+def test_shared_provider_sdk_defaults_keep_typed_transport_timeout() -> None:
+    factory_path = REPOSITORY_ROOT / "backend" / "app" / "core" / "ai_clients.py"
+    tree = ast.parse(factory_path.read_text(), filename=str(factory_path))
+    aliases = _import_aliases(tree)
+    actual: dict[str, str | None] = {}
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        qualified_name = _qualified_name(node.func, aliases)
+        if qualified_name not in SHARED_SDK_TIMEOUT_CONSTRUCTORS:
+            continue
+        timeout_keyword = next(
+            (keyword for keyword in node.keywords if keyword.arg == "timeout"),
+            None,
+        )
+        actual[qualified_name] = (
+            ast.unparse(timeout_keyword.value) if timeout_keyword else None
+        )
+
+    assert actual == {
+        constructor: "_timeout(config)"
+        for constructor in SHARED_SDK_TIMEOUT_CONSTRUCTORS
+    }
 
 
 def test_deployed_services_close_shared_provider_clients() -> None:
@@ -219,14 +292,18 @@ def test_overlay_deploy_surfaces_are_in_routing_inventory() -> None:
         if main_path.exists() and main_path not in SERVICE_ENTRYPOINTS:
             violations.append(f"missing lifecycle entrypoint: {main_path}")
         for manifest in service_directory.glob("cloudbuild*.yaml"):
-            manifest_text = manifest.read_text()
-            if "'run'" in manifest_text and "'deploy'" in manifest_text:
-                if manifest not in DEPLOYMENT_MANIFESTS:
-                    violations.append(f"missing deployment manifest: {manifest}")
+            if manifest not in ALL_CLOUDBUILD_MANIFESTS:
+                violations.append(f"missing deployment manifest: {manifest}")
 
     assert violations == [], "Incomplete overlay routing inventory:\n" + "\n".join(
         violations
     )
+
+
+def test_every_cloudbuild_manifest_is_explicitly_inventoried() -> None:
+    discovered = set(REPOSITORY_ROOT.rglob("cloudbuild*.yaml"))
+
+    assert discovered == set(ALL_CLOUDBUILD_MANIFESTS)
 
 
 def test_deployment_manifests_keep_complete_routing_configuration_inactive() -> None:
@@ -253,3 +330,42 @@ def test_deployment_manifests_keep_complete_routing_configuration_inactive() -> 
     assert violations == [], "Unsafe or incomplete deployment routing:\n" + "\n".join(
         violations
     )
+
+
+def test_cost_rollup_job_has_complete_inactive_routing_configuration() -> None:
+    manifest_text = JOB_BUILD_MANIFEST.read_text()
+    dockerfile_text = JOB_DOCKERFILE.read_text()
+    entrypoint_text = JOB_ENTRYPOINT.read_text()
+    deployment_text = JOB_DEPLOYMENT_SCRIPT.read_text()
+    image_deployment_text = JOB_IMAGE_DEPLOYMENT_SCRIPT.read_text()
+
+    assert "./bayit-workers/Dockerfile.jobs" in manifest_text
+    assert "gcr.io/$PROJECT_ID/bayit-jobs" in manifest_text
+    assert "COPY --chown=bayit:bayit --from=builder /app/backend/app ./app" in (
+        dockerfile_text
+    )
+    assert "COPY --chown=bayit:bayit bayit-workers/jobs ./jobs" in dockerfile_text
+    assert (
+        "from app.services.olorin.cost.aggregation import CostAggregationService"
+        in (entrypoint_text)
+    )
+    assert "from app.core.ai_clients import close_ai_clients" in entrypoint_text
+    assert "await close_ai_clients()" in entrypoint_text
+    assert 'create_job "cost-rollup"             "jobs.cost_rollup"' in (
+        deployment_text
+    )
+    assert (
+        'COMMON_ENV="${COMMON_ENV},TWOGATES_ROUTING_ENABLED=false"' in deployment_text
+    )
+    assert 'if [ "$JOB" = "cost-rollup" ]; then' in image_deployment_text
+    assert (
+        '--update-env-vars="TWOGATES_ROUTING_ENABLED=false"'
+        in image_deployment_text
+    )
+    for environment_name, secret_reference in ROUTING_SECRET_BINDINGS.items():
+        binding = f"{environment_name}={secret_reference}"
+        assert binding in deployment_text
+        assert binding in image_deployment_text
+    for script_text in (deployment_text, image_deployment_text):
+        assert "HTTPS_PROXY=" not in script_text
+        assert "ALL_PROXY=" not in script_text

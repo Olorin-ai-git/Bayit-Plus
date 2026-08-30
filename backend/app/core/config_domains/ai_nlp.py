@@ -23,12 +23,22 @@ class AINLPConfigMixin:
     TWOGATES_PROXY_CREDENTIAL: SecretStr = SecretStr("")
     TWOGATES_CA_CERT_PEM: SecretStr = SecretStr("")
     TWOGATES_TASK_CLASS: Literal["", "cheap_bulk", "standard", "heavy"] = ""
+    TWOGATES_CORRELATION_ID_MAX_LENGTH: int = Field(default=128, ge=1, le=1024)
     TWOGATES_CONNECT_TIMEOUT_SECONDS: float = Field(default=5.0, gt=0, le=60)
     TWOGATES_REQUEST_TIMEOUT_SECONDS: float = Field(default=60.0, gt=0, le=600)
     TWOGATES_PROVIDER_MAX_ATTEMPTS: int = Field(default=3, ge=1, le=6)
     TWOGATES_MAX_CONNECTIONS: int = Field(default=100, ge=1, le=1000)
     TWOGATES_MAX_KEEPALIVE_CONNECTIONS: int = Field(default=20, ge=0, le=1000)
     TWOGATES_KEEPALIVE_EXPIRY_SECONDS: float = Field(default=5.0, gt=0, le=300)
+    PROVIDER_OPENAI_HEALTH_TIMEOUT_SECONDS: float = Field(default=5.0, gt=0, le=60)
+    PROVIDER_OPENAI_BILLING_TIMEOUT_SECONDS: float = Field(default=30.0, gt=0, le=300)
+    PROVIDER_OPENAI_BILLING_HEALTH_TIMEOUT_SECONDS: float = Field(
+        default=10.0, gt=0, le=60
+    )
+    PROVIDER_ANTHROPIC_TRIVIA_TIMEOUT_SECONDS: float = Field(default=60.0, gt=0, le=300)
+    PROVIDER_IMAGEN_GENERATION_TIMEOUT_SECONDS: float = Field(
+        default=120.0, gt=0, le=600
+    )
 
     # Subtitle AI Processing (Nikud & Shoresh)
     SUBTITLE_AI_MODEL: str = Field(

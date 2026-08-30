@@ -109,15 +109,36 @@ gcloud builds submit \
 echo -e "${GREEN}Jobs image built and pushed${NC}"
 echo ""
 
+COST_ROLLUP_ROUTING_SECRETS="TWOGATES_PROXY_URL=bayit-twogates-proxy-url:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_PROXY_CREDENTIAL=bayit-twogates-proxy-credential:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_CA_CERT_PEM=bayit-twogates-ca-cert-pem:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_TASK_CLASS=bayit-twogates-task-class:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_CONNECT_TIMEOUT_SECONDS=bayit-twogates-connect-timeout-seconds:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_REQUEST_TIMEOUT_SECONDS=bayit-twogates-request-timeout-seconds:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_PROVIDER_MAX_ATTEMPTS=bayit-twogates-provider-max-attempts:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_MAX_CONNECTIONS=bayit-twogates-max-connections:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_MAX_KEEPALIVE_CONNECTIONS=bayit-twogates-max-keepalive-connections:latest"
+COST_ROLLUP_ROUTING_SECRETS="${COST_ROLLUP_ROUTING_SECRETS},TWOGATES_KEEPALIVE_EXPIRY_SECONDS=bayit-twogates-keepalive-expiry-seconds:latest"
+
 # Update Cloud Run Jobs to use new image
 echo -e "${BLUE}Updating Cloud Run Jobs with new image...${NC}"
 for JOB in cleanup-upload-sessions cleanup-failed-uploads cost-rollup youtube-epg-sync; do
     if gcloud run jobs describe "$JOB" --region="$REGION" --project="$PROJECT_ID" &>/dev/null; then
-        gcloud run jobs update "$JOB" \
-            --region="$REGION" \
-            --project="$PROJECT_ID" \
-            --image="gcr.io/$PROJECT_ID/bayit-jobs:$BUILD_ID" \
-            --quiet
+        if [ "$JOB" = "cost-rollup" ]; then
+            gcloud run jobs update "$JOB" \
+                --region="$REGION" \
+                --project="$PROJECT_ID" \
+                --image="gcr.io/$PROJECT_ID/bayit-jobs:$BUILD_ID" \
+                --update-env-vars="TWOGATES_ROUTING_ENABLED=false" \
+                --update-secrets="${COST_ROLLUP_ROUTING_SECRETS}" \
+                --quiet
+        else
+            gcloud run jobs update "$JOB" \
+                --region="$REGION" \
+                --project="$PROJECT_ID" \
+                --image="gcr.io/$PROJECT_ID/bayit-jobs:$BUILD_ID" \
+                --quiet
+        fi
         echo -e "  ${GREEN}Updated $JOB${NC}"
     else
         echo -e "  ${YELLOW}Job $JOB not found (run setup-cron-jobs.sh first)${NC}"

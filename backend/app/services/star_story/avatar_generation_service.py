@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from PIL import Image
 
-from app.core.ai_clients import get_provider_http_client
+from app.core.ai_clients import ProviderOperationTimeouts, get_provider_http_client
 from app.core.config import settings
 from app.core.storage import StorageService
 from app.models.child_avatar import AvatarPose, AvatarStatus, AvatarStyle, ChildAvatar
@@ -149,6 +149,7 @@ class AvatarGenerationService:
         )
 
         client = get_provider_http_client()
+        operation_timeouts = ProviderOperationTimeouts.from_settings()
         response = await client.post(
             url,
             json={
@@ -161,6 +162,7 @@ class AvatarGenerationService:
                 },
             },
             headers={"Authorization": f"Bearer {credentials.token}"},
+            timeout=operation_timeouts.imagen_generation,
         )
         response.raise_for_status()
 

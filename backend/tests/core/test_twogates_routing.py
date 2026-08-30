@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import importlib
 import select
 import socket
 import socketserver
@@ -22,6 +23,7 @@ import pytest
 from app.core.ai_clients import (
     EREBOR_REQUEST_ID_HEADER,
     EREBOR_TASK_CLASS_HEADER,
+    ProviderOperationTimeouts,
     RoutingTransportConfig,
     _async_request_hook,
     _sync_request_hook,
@@ -34,7 +36,7 @@ from app.core.ai_clients import (
     get_provider_http_client,
     get_sync_anthropic_client,
 )
-from app.core.config import Settings
+from app.core.config import PROTECTED_PROVIDER_HEADER_NAMES, Settings, settings
 
 
 def _ca_pem(common_name: str = "TwoGates Test Root") -> str:
@@ -134,6 +136,27 @@ class _ProviderHandler(BaseHTTPRequestHandler):
         return
 
 
+class _RedirectSourceHandler(BaseHTTPRequestHandler):
+    def do_GET(self) -> None:
+        self.send_response(302)
+        self.send_header("Location", self.server.redirect_target)
+        self.end_headers()
+
+    def log_message(self, format: str, *args: object) -> None:
+        return
+
+
+class _RedirectSinkHandler(BaseHTTPRequestHandler):
+    def do_GET(self) -> None:
+        self.server.received_headers = dict(self.headers.items())
+        self.server.request_count += 1
+        self.send_response(200)
+        self.end_headers()
+
+    def log_message(self, format: str, *args: object) -> None:
+        return
+
+
 class _ConnectProxyHandler(socketserver.StreamRequestHandler):
     def handle(self) -> None:
         request_line = self.rfile.readline().decode("ascii").strip()
@@ -174,6 +197,7 @@ def _config(**overrides: object) -> RoutingTransportConfig:
         "ca_cert_pem": _ca_pem(),
         "task_class": "standard",
         "correlation_header": "X-Correlation-ID",
+        "correlation_id_max_length": 128,
         "connect_timeout_seconds": 5.0,
         "request_timeout_seconds": 30.0,
         "provider_max_attempts": 3,
@@ -194,6 +218,7 @@ def _settings_values(**overrides: object) -> dict[str, object]:
         "TWOGATES_PROXY_CREDENTIAL": SecretStr("tg_test_test-secret"),
         "TWOGATES_CA_CERT_PEM": SecretStr(_ca_pem()),
         "TWOGATES_TASK_CLASS": "standard",
+        "TWOGATES_CORRELATION_ID_MAX_LENGTH": 128,
         "TWOGATES_CONNECT_TIMEOUT_SECONDS": 5,
         "TWOGATES_REQUEST_TIMEOUT_SECONDS": 30,
         "TWOGATES_PROVIDER_MAX_ATTEMPTS": 3,
@@ -229,6 +254,271 @@ def test_settings_allow_complete_configuration_while_inactive() -> None:
     assert app_settings.TWOGATES_ROUTING_ENABLED is False
 
 
+def test_native_provider_operation_timeouts_preserve_distinct_contracts() -> None:
+    app_settings = Settings(
+        _env_file=None,
+        **_settings_values(TWOGATES_CONNECT_TIMEOUT_SECONDS=2.5),
+    )
+
+    timeouts = ProviderOperationTimeouts.from_settings(app_settings)
+
+    expected_operation_timeouts = {
+        "openai_health": 5.0,
+        "openai_billing": 30.0,
+        "openai_billing_health": 10.0,
+        "anthropic_trivia": 60.0,
+        "imagen_generation": 120.0,
+    }
+    for field_name, expected_seconds in expected_operation_timeouts.items():
+        timeout = getattr(timeouts, field_name)
+        assert timeout.connect == 2.5
+        assert timeout.read == expected_seconds
+        assert timeout.write == expected_seconds
+        assert timeout.pool == expected_seconds
+
+
+def test_sync_anthropic_sdk_request_preserves_transport_timeout_phases() -> None:
+    observed_timeouts: list[dict[str, float]] = []
+
+    def handle_request(request: httpx.Request) -> httpx.Response:
+        observed_timeouts.append(request.extensions["timeout"])
+        return httpx.Response(
+            200,
+            json={
+                "id": "msg_timeout_probe",
+                "type": "message",
+                "role": "assistant",
+                "model": "claude-timeout-probe",
+                "content": [{"type": "text", "text": "ok"}],
+                "stop_reason": "end_turn",
+                "stop_sequence": None,
+                "usage": {"input_tokens": 1, "output_tokens": 1},
+            },
+            request=request,
+        )
+
+    transport_client = httpx.Client(
+        transport=httpx.MockTransport(handle_request),
+        timeout=httpx.Timeout(90, connect=90),
+        trust_env=False,
+    )
+    config = _config(
+        enabled=False,
+        connect_timeout_seconds=2.5,
+        request_timeout_seconds=47,
+    )
+    get_sync_anthropic_client.cache_clear()
+    try:
+        with (
+            patch("app.core.ai_clients._sync_clients", []),
+            patch.object(
+                RoutingTransportConfig,
+                "from_settings",
+                return_value=config,
+            ),
+            patch(
+                "app.core.ai_clients.build_sync_provider_http_client",
+                return_value=transport_client,
+            ),
+        ):
+            client = get_sync_anthropic_client("sdk-timeout-test-key")
+            client.messages.create(
+                model="claude-timeout-probe",
+                max_tokens=1,
+                messages=[{"role": "user", "content": "timeout probe"}],
+            )
+            client.close()
+    finally:
+        get_sync_anthropic_client.cache_clear()
+
+    assert observed_timeouts == [
+        {"connect": 2.5, "read": 47, "write": 47, "pool": 47}
+    ]
+
+
+@pytest.mark.asyncio
+async def test_async_anthropic_sdk_request_preserves_transport_timeout_phases() -> None:
+    observed_timeouts: list[dict[str, float]] = []
+
+    async def handle_request(request: httpx.Request) -> httpx.Response:
+        observed_timeouts.append(request.extensions["timeout"])
+        return httpx.Response(
+            200,
+            json={
+                "id": "msg_timeout_probe",
+                "type": "message",
+                "role": "assistant",
+                "model": "claude-timeout-probe",
+                "content": [{"type": "text", "text": "ok"}],
+                "stop_reason": "end_turn",
+                "stop_sequence": None,
+                "usage": {"input_tokens": 1, "output_tokens": 1},
+            },
+            request=request,
+        )
+
+    transport_client = httpx.AsyncClient(
+        transport=httpx.MockTransport(handle_request),
+        timeout=httpx.Timeout(90, connect=90),
+        trust_env=False,
+    )
+    config = _config(
+        enabled=False,
+        connect_timeout_seconds=2.5,
+        request_timeout_seconds=47,
+    )
+    get_anthropic_client.cache_clear()
+    try:
+        with (
+            patch("app.core.ai_clients._async_clients", []),
+            patch.object(
+                RoutingTransportConfig,
+                "from_settings",
+                return_value=config,
+            ),
+            patch(
+                "app.core.ai_clients.build_async_provider_http_client",
+                return_value=transport_client,
+            ),
+        ):
+            client = get_anthropic_client("sdk-timeout-test-key")
+            await client.messages.create(
+                model="claude-timeout-probe",
+                max_tokens=1,
+                messages=[{"role": "user", "content": "timeout probe"}],
+            )
+            await client.close()
+    finally:
+        get_anthropic_client.cache_clear()
+
+    assert observed_timeouts == [
+        {"connect": 2.5, "read": 47, "write": 47, "pool": 47}
+    ]
+
+
+@pytest.mark.asyncio
+async def test_async_openai_sdk_request_preserves_transport_timeout_phases() -> None:
+    observed_timeouts: list[dict[str, float]] = []
+
+    async def handle_request(request: httpx.Request) -> httpx.Response:
+        observed_timeouts.append(request.extensions["timeout"])
+        return httpx.Response(
+            200,
+            json={
+                "id": "chatcmpl_timeout_probe",
+                "object": "chat.completion",
+                "created": 0,
+                "model": "openai-timeout-probe",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": "ok"},
+                        "finish_reason": "stop",
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 1,
+                    "completion_tokens": 1,
+                    "total_tokens": 2,
+                },
+            },
+            request=request,
+        )
+
+    transport_client = httpx.AsyncClient(
+        transport=httpx.MockTransport(handle_request),
+        timeout=httpx.Timeout(90, connect=90),
+        trust_env=False,
+    )
+    config = _config(
+        enabled=False,
+        connect_timeout_seconds=2.5,
+        request_timeout_seconds=47,
+    )
+    get_openai_client.cache_clear()
+    try:
+        with (
+            patch("app.core.ai_clients._async_clients", []),
+            patch.object(
+                RoutingTransportConfig,
+                "from_settings",
+                return_value=config,
+            ),
+            patch(
+                "app.core.ai_clients.build_async_provider_http_client",
+                return_value=transport_client,
+            ),
+        ):
+            client = get_openai_client("sdk-timeout-test-key")
+            await client.chat.completions.create(
+                model="openai-timeout-probe",
+                messages=[{"role": "user", "content": "timeout probe"}],
+            )
+            await client.close()
+    finally:
+        get_openai_client.cache_clear()
+
+    assert observed_timeouts == [
+        {"connect": 2.5, "read": 47, "write": 47, "pool": 47}
+    ]
+
+
+@pytest.mark.asyncio
+async def test_google_imagen_request_preserves_operation_timeout_phases() -> None:
+    from app.services.star_story.avatar_generation_service import (
+        avatar_generation_service,
+    )
+
+    observed_timeouts: list[dict[str, float]] = []
+
+    async def handle_request(request: httpx.Request) -> httpx.Response:
+        observed_timeouts.append(request.extensions["timeout"])
+        return httpx.Response(
+            200,
+            json={"predictions": [{"bytesBase64Encoded": "aW1hZ2U="}]},
+            request=request,
+        )
+
+    transport_client = httpx.AsyncClient(
+        transport=httpx.MockTransport(handle_request),
+        timeout=httpx.Timeout(90, connect=90),
+        trust_env=False,
+    )
+    operation_settings = MagicMock()
+    operation_settings.TWOGATES_CONNECT_TIMEOUT_SECONDS = 2.5
+    operation_settings.PROVIDER_OPENAI_HEALTH_TIMEOUT_SECONDS = 5
+    operation_settings.PROVIDER_OPENAI_BILLING_TIMEOUT_SECONDS = 30
+    operation_settings.PROVIDER_OPENAI_BILLING_HEALTH_TIMEOUT_SECONDS = 10
+    operation_settings.PROVIDER_ANTHROPIC_TRIVIA_TIMEOUT_SECONDS = 60
+    operation_settings.PROVIDER_IMAGEN_GENERATION_TIMEOUT_SECONDS = 120
+    operation_timeouts = ProviderOperationTimeouts.from_settings(operation_settings)
+    credentials = MagicMock(token="google-timeout-test-token")
+    try:
+        with (
+            patch("google.auth.default", return_value=(credentials, None)),
+            patch.object(settings, "GCP_REGION", "us-central1"),
+            patch.object(settings, "GCP_PROJECT_ID", "google-timeout-test-project"),
+            patch(
+                "app.services.star_story.avatar_generation_service.get_provider_http_client",
+                return_value=transport_client,
+            ),
+            patch(
+                "app.services.star_story.avatar_generation_service.ProviderOperationTimeouts.from_settings",
+                return_value=operation_timeouts,
+            ),
+        ):
+            image_bytes = await avatar_generation_service._generate_image(
+                "timeout contract probe"
+            )
+    finally:
+        await transport_client.aclose()
+
+    assert image_bytes == b"image"
+    assert observed_timeouts == [
+        {"connect": 2.5, "read": 120, "write": 120, "pool": 120}
+    ]
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [
@@ -243,6 +533,7 @@ def test_settings_allow_complete_configuration_while_inactive() -> None:
         ("TWOGATES_CA_CERT_PEM", SecretStr("invalid certificate")),
         ("TWOGATES_TASK_CLASS", "unknown"),
         ("CORRELATION_ID_HEADER", "X-Correlation-ID\x00Injected"),
+        ("TWOGATES_CORRELATION_ID_MAX_LENGTH", 0),
         ("TWOGATES_PROVIDER_MAX_ATTEMPTS", 0),
     ],
 )
@@ -252,6 +543,30 @@ def test_settings_reject_invalid_routing_configuration(
 ) -> None:
     with pytest.raises(ValidationError):
         Settings(_env_file=None, **_settings_values(**{field: value}))
+
+
+@pytest.mark.parametrize("header_name", sorted(PROTECTED_PROVIDER_HEADER_NAMES))
+def test_settings_reject_protected_correlation_headers_case_insensitively(
+    header_name: str,
+) -> None:
+    mixed_case_name = "".join(
+        character.upper() if index % 2 else character
+        for index, character in enumerate(header_name)
+    )
+
+    with pytest.raises(ValidationError, match="protected provider header"):
+        Settings(
+            _env_file=None,
+            **_settings_values(CORRELATION_ID_HEADER=mixed_case_name),
+        )
+
+
+@pytest.mark.parametrize("header_name", sorted(PROTECTED_PROVIDER_HEADER_NAMES))
+def test_direct_transport_config_rejects_protected_correlation_headers(
+    header_name: str,
+) -> None:
+    with pytest.raises(ValueError, match="protected provider header"):
+        _config(correlation_header=header_name.upper())
 
 
 def test_settings_reject_partial_configuration_even_when_inactive() -> None:
@@ -341,6 +656,31 @@ async def test_async_hook_omits_unsafe_optional_correlation(
     assert "X-Correlation-ID" not in request.headers
 
 
+@pytest.mark.asyncio
+async def test_async_hook_enforces_correlation_id_size_boundary() -> None:
+    config = _config(correlation_id_max_length=8)
+    accepted_request = httpx.Request(
+        "POST", "https://api.anthropic.com/v1/messages"
+    )
+    rejected_request = httpx.Request(
+        "POST", "https://api.anthropic.com/v1/messages"
+    )
+
+    await _async_request_hook(
+        config,
+        lambda: uuid.UUID(int=4),
+        lambda: "12345678",
+    )(accepted_request)
+    await _async_request_hook(
+        config,
+        lambda: uuid.UUID(int=5),
+        lambda: "123456789",
+    )(rejected_request)
+
+    assert accepted_request.headers["X-Correlation-ID"] == "12345678"
+    assert "X-Correlation-ID" not in rejected_request.headers
+
+
 def test_routed_client_uses_same_ca_for_proxy_and_tunneled_tls() -> None:
     tls_context = ssl.create_default_context()
     with (
@@ -359,6 +699,7 @@ def test_routed_client_uses_same_ca_for_proxy_and_tunneled_tls() -> None:
         "Bearer tg_test_test-secret"
     )
     assert kwargs["trust_env"] is False
+    assert kwargs["follow_redirects"] is False
     assert kwargs["timeout"].connect == 5.0
     assert kwargs["timeout"].read == 30.0
     assert kwargs["limits"].max_connections == 20
@@ -371,8 +712,81 @@ def test_inactive_client_has_no_proxy_or_routing_headers() -> None:
 
     kwargs = client_constructor.call_args.kwargs
     assert kwargs["trust_env"] is False
+    assert kwargs["follow_redirects"] is False
     assert "proxy" not in kwargs
     assert "event_hooks" not in kwargs
+
+
+def _redirect_servers() -> tuple[ThreadingHTTPServer, ThreadingHTTPServer]:
+    sink = ThreadingHTTPServer(("127.0.0.1", 0), _RedirectSinkHandler)
+    sink.request_count = 0
+    sink.received_headers = {}
+    source = ThreadingHTTPServer(("127.0.0.1", 0), _RedirectSourceHandler)
+    source.redirect_target = f"http://127.0.0.1:{sink.server_address[1]}/sink"
+    return source, sink
+
+
+def _start_server(server: ThreadingHTTPServer) -> threading.Thread:
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    return thread
+
+
+def test_sync_client_does_not_forward_provider_credentials_across_redirects() -> None:
+    source, sink = _redirect_servers()
+    source_thread = _start_server(source)
+    sink_thread = _start_server(sink)
+    client = build_sync_provider_http_client(_config(enabled=False))
+    try:
+        response = client.get(
+            f"http://127.0.0.1:{source.server_address[1]}/provider",
+            headers={
+                "Authorization": "Bearer audit-credential",
+                "x-api-key": "audit-credential",
+            },
+        )
+
+        assert response.status_code == 302
+        assert sink.request_count == 0
+        assert sink.received_headers == {}
+    finally:
+        client.close()
+        source.shutdown()
+        sink.shutdown()
+        source.server_close()
+        sink.server_close()
+        source_thread.join()
+        sink_thread.join()
+
+
+@pytest.mark.asyncio
+async def test_async_client_does_not_forward_provider_credentials_across_redirects() -> (
+    None
+):
+    source, sink = _redirect_servers()
+    source_thread = _start_server(source)
+    sink_thread = _start_server(sink)
+    client = build_async_provider_http_client(_config(enabled=False))
+    try:
+        response = await client.get(
+            f"http://127.0.0.1:{source.server_address[1]}/provider",
+            headers={
+                "Authorization": "Bearer audit-credential",
+                "x-api-key": "audit-credential",
+            },
+        )
+
+        assert response.status_code == 302
+        assert sink.request_count == 0
+        assert sink.received_headers == {}
+    finally:
+        await client.aclose()
+        source.shutdown()
+        sink.shutdown()
+        source.server_close()
+        sink.server_close()
+        source_thread.join()
+        sink_thread.join()
 
 
 def test_real_https_connect_probe_uses_private_ca_and_routing_headers(
@@ -453,7 +867,7 @@ def test_real_https_connect_probe_uses_private_ca_and_routing_headers(
 
 
 @pytest.mark.asyncio
-async def test_close_ai_clients_closes_registered_clients_and_clears_caches() -> None:
+async def test_close_ai_clients_closes_every_registered_client() -> None:
     sync_client = MagicMock()
     async_client = AsyncMock()
     with (
@@ -464,10 +878,6 @@ async def test_close_ai_clients_closes_registered_clients_and_clears_caches() ->
 
     sync_client.close.assert_called_once_with()
     async_client.aclose.assert_awaited_once_with()
-    assert get_sync_anthropic_client.cache_info().currsize == 0
-    assert get_anthropic_client.cache_info().currsize == 0
-    assert get_openai_client.cache_info().currsize == 0
-    assert get_provider_http_client.cache_info().currsize == 0
 
 
 @pytest.mark.asyncio
@@ -492,7 +902,125 @@ async def test_close_ai_clients_continues_after_individual_close_failures() -> N
 
     healthy_sync_client.close.assert_called_once_with()
     healthy_async_client.aclose.assert_awaited_once_with()
-    assert get_sync_anthropic_client.cache_info().currsize == 0
-    assert get_anthropic_client.cache_info().currsize == 0
-    assert get_openai_client.cache_info().currsize == 0
-    assert get_provider_http_client.cache_info().currsize == 0
+
+
+@pytest.mark.asyncio
+async def test_retained_sync_handle_reopens_after_lifespan_shutdown() -> None:
+    first_client = MagicMock()
+    first_client.messages = object()
+    second_client = MagicMock()
+    second_client.messages = object()
+    get_sync_anthropic_client.cache_clear()
+    try:
+        with (
+            patch("app.core.ai_clients._sync_clients", []),
+            patch(
+                "app.core.ai_clients.anthropic.Anthropic",
+                side_effect=[first_client, second_client],
+            ) as constructor,
+        ):
+            retained_handle = get_sync_anthropic_client("lifecycle-test-key")
+            assert retained_handle.messages is first_client.messages
+
+            await close_ai_clients()
+
+            assert first_client.close.call_count == 1
+            assert retained_handle is get_sync_anthropic_client("lifecycle-test-key")
+            assert retained_handle.messages is second_client.messages
+            assert constructor.call_count == 2
+    finally:
+        get_sync_anthropic_client.cache_clear()
+
+
+@pytest.mark.asyncio
+async def test_retained_async_handles_reopen_after_lifespan_shutdown() -> None:
+    first_anthropic = MagicMock(spec=["close", "messages"])
+    first_anthropic.close = AsyncMock()
+    first_anthropic.messages = object()
+    second_anthropic = MagicMock(spec=["close", "messages"])
+    second_anthropic.close = AsyncMock()
+    second_anthropic.messages = object()
+    first_anthropic_transport = AsyncMock()
+    second_anthropic_transport = AsyncMock()
+    first_http = AsyncMock()
+    first_http.get = object()
+    second_http = AsyncMock()
+    second_http.get = object()
+    get_anthropic_client.cache_clear()
+    get_provider_http_client.cache_clear()
+    try:
+        with (
+            patch("app.core.ai_clients._async_clients", []),
+            patch(
+                "app.core.ai_clients.anthropic.AsyncAnthropic",
+                side_effect=[first_anthropic, second_anthropic],
+            ) as anthropic_constructor,
+            patch(
+                "app.core.ai_clients.build_async_provider_http_client",
+                side_effect=[
+                    first_anthropic_transport,
+                    first_http,
+                    second_anthropic_transport,
+                    second_http,
+                ],
+            ) as http_constructor,
+        ):
+            retained_anthropic = get_anthropic_client("lifecycle-test-key")
+            retained_http = get_provider_http_client()
+            assert retained_anthropic.messages is first_anthropic.messages
+            assert retained_http.get is first_http.get
+
+            await close_ai_clients()
+
+            first_anthropic.close.assert_awaited_once_with()
+            first_http.aclose.assert_awaited_once_with()
+            assert retained_anthropic is get_anthropic_client("lifecycle-test-key")
+            assert retained_http is get_provider_http_client()
+            assert retained_anthropic.messages is second_anthropic.messages
+            assert retained_http.get is second_http.get
+            assert anthropic_constructor.call_count == 2
+            assert http_constructor.call_count == 4
+    finally:
+        get_anthropic_client.cache_clear()
+        get_provider_http_client.cache_clear()
+
+
+@pytest.mark.asyncio
+async def test_production_global_singleton_and_field_handles_survive_reentry() -> None:
+    clients = [MagicMock() for _ in range(4)]
+    for client in clients:
+        client.messages = object()
+    get_sync_anthropic_client.cache_clear()
+    with (
+        patch.object(settings, "ANTHROPIC_API_KEY", "lifecycle-test-key"),
+        patch("app.core.ai_clients._sync_clients", []),
+        patch(
+            "app.core.ai_clients.anthropic.Anthropic",
+            side_effect=clients,
+        ) as constructor,
+    ):
+        chat_helpers = importlib.import_module("app.api.routes.chat.helpers")
+        chat_helpers = importlib.reload(chat_helpers)
+        translation_module = importlib.import_module("app.services.translation_service")
+        translation_module = importlib.reload(translation_module)
+        wizard_module = importlib.import_module(
+            "app.services.voice.wizard_chat_service"
+        )
+
+        module_global_handle = chat_helpers.client
+        singleton_handle = translation_module.translation_service.client
+        instance_field_handle = wizard_module.WizardChatService().client
+        assert module_global_handle is instance_field_handle
+        first_global_messages = module_global_handle.messages
+        first_singleton_messages = singleton_handle.messages
+
+        await close_ai_clients()
+
+        assert chat_helpers.client is module_global_handle
+        assert translation_module.translation_service.client is singleton_handle
+        assert instance_field_handle is module_global_handle
+        assert module_global_handle.messages is not first_global_messages
+        assert singleton_handle.messages is not first_singleton_messages
+        assert constructor.call_count == 4
+
+    get_sync_anthropic_client.cache_clear()
