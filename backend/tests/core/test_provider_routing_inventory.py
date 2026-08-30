@@ -9,11 +9,20 @@ import yaml
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 PRODUCTION_ROOTS = (
     REPOSITORY_ROOT / "backend" / "app",
+    REPOSITORY_ROOT / "bayit-admin" / "app",
     REPOSITORY_ROOT / "bayit-ai" / "app",
+    REPOSITORY_ROOT / "bayit-auth" / "app",
+    REPOSITORY_ROOT / "bayit-community" / "app",
     REPOSITORY_ROOT / "bayit-content" / "app",
+    REPOSITORY_ROOT / "bayit-media-pipeline" / "app",
+    REPOSITORY_ROOT / "bayit-payments" / "app",
     REPOSITORY_ROOT / "bayit-search" / "app",
+    REPOSITORY_ROOT / "bayit-social" / "app",
     REPOSITORY_ROOT / "bayit-training" / "app",
+    REPOSITORY_ROOT / "bayit-user" / "app",
+    REPOSITORY_ROOT / "bayit-workers" / "app",
     REPOSITORY_ROOT / "bayit-ws-gateway" / "app",
+    REPOSITORY_ROOT / "olorin-b2b-api" / "app",
     REPOSITORY_ROOT / "packages",
 )
 IGNORED_PARTS = {"__pycache__", "demo", "demos", "test", "tests"}
@@ -36,11 +45,20 @@ PROVIDER_API_HOSTS = (
 DEPLOYMENT_MANIFESTS = (
     REPOSITORY_ROOT / "cloudbuild.yaml",
     REPOSITORY_ROOT / "backend" / "cloudbuild.yaml",
+    REPOSITORY_ROOT / "bayit-admin" / "cloudbuild-admin.yaml",
     REPOSITORY_ROOT / "bayit-ai" / "cloudbuild-ai.yaml",
+    REPOSITORY_ROOT / "bayit-auth" / "cloudbuild-auth.yaml",
+    REPOSITORY_ROOT / "bayit-community" / "cloudbuild-community.yaml",
     REPOSITORY_ROOT / "bayit-content" / "cloudbuild-content.yaml",
+    REPOSITORY_ROOT / "bayit-media-pipeline" / "cloudbuild-media.yaml",
+    REPOSITORY_ROOT / "bayit-payments" / "cloudbuild-payments.yaml",
     REPOSITORY_ROOT / "bayit-search" / "cloudbuild-search.yaml",
+    REPOSITORY_ROOT / "bayit-social" / "cloudbuild-social.yaml",
     REPOSITORY_ROOT / "bayit-training" / "cloudbuild-training.yaml",
+    REPOSITORY_ROOT / "bayit-user" / "cloudbuild-user.yaml",
+    REPOSITORY_ROOT / "bayit-workers" / "cloudbuild-workers.yaml",
     REPOSITORY_ROOT / "bayit-ws-gateway" / "cloudbuild-ws-gateway.yaml",
+    REPOSITORY_ROOT / "olorin-b2b-api" / "cloudbuild-b2b.yaml",
 )
 ROUTING_SECRET_BINDINGS = {
     "TWOGATES_PROXY_URL": "bayit-twogates-proxy-url:latest",
@@ -64,6 +82,10 @@ ROUTING_SECRET_BINDINGS = {
         "bayit-twogates-keepalive-expiry-seconds:latest"
     ),
 }
+SERVICE_ENTRYPOINTS = tuple(
+    root / "main.py" for root in PRODUCTION_ROOTS if root.name == "app" and root != PRODUCTION_ROOTS[0]
+) + (REPOSITORY_ROOT / "backend" / "app" / "main.py",)
+NON_DEPLOYED_OVERLAY_DIRECTORIES = {REPOSITORY_ROOT / "service-template"}
 
 
 def _production_python_files() -> list[Path]:
@@ -164,16 +186,8 @@ def test_native_provider_rest_calls_use_shared_transport() -> None:
 
 
 def test_deployed_services_close_shared_provider_clients() -> None:
-    service_entrypoints = (
-        REPOSITORY_ROOT / "backend" / "app" / "main.py",
-        REPOSITORY_ROOT / "bayit-ai" / "app" / "main.py",
-        REPOSITORY_ROOT / "bayit-content" / "app" / "main.py",
-        REPOSITORY_ROOT / "bayit-search" / "app" / "main.py",
-        REPOSITORY_ROOT / "bayit-training" / "app" / "main.py",
-        REPOSITORY_ROOT / "bayit-ws-gateway" / "app" / "main.py",
-    )
     violations: list[str] = []
-    for path in service_entrypoints:
+    for path in SERVICE_ENTRYPOINTS:
         tree = ast.parse(path.read_text(), filename=str(path))
         aliases = _import_aliases(tree)
         closes_clients = any(
@@ -186,6 +200,31 @@ def test_deployed_services_close_shared_provider_clients() -> None:
             violations.append(str(path.relative_to(REPOSITORY_ROOT)))
 
     assert violations == [], "Missing provider-client shutdown hooks:\n" + "\n".join(
+        violations
+    )
+
+
+def test_overlay_deploy_surfaces_are_in_routing_inventory() -> None:
+    violations: list[str] = []
+    for dockerfile in REPOSITORY_ROOT.glob("*/Dockerfile*"):
+        if "backend/app ./app" not in dockerfile.read_text():
+            continue
+        service_directory = dockerfile.parent
+        if service_directory in NON_DEPLOYED_OVERLAY_DIRECTORIES:
+            continue
+        app_root = service_directory / "app"
+        if app_root.exists() and app_root not in PRODUCTION_ROOTS:
+            violations.append(f"missing production root: {app_root.name}")
+        main_path = app_root / "main.py"
+        if main_path.exists() and main_path not in SERVICE_ENTRYPOINTS:
+            violations.append(f"missing lifecycle entrypoint: {main_path}")
+        for manifest in service_directory.glob("cloudbuild*.yaml"):
+            manifest_text = manifest.read_text()
+            if "'run'" in manifest_text and "'deploy'" in manifest_text:
+                if manifest not in DEPLOYMENT_MANIFESTS:
+                    violations.append(f"missing deployment manifest: {manifest}")
+
+    assert violations == [], "Incomplete overlay routing inventory:\n" + "\n".join(
         violations
     )
 

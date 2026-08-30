@@ -13,6 +13,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.ai_clients import close_ai_clients
 from app.core.config import settings
 from app.core.database import close_mongo_connection, connect_to_mongo_subset, get_database
 from app.core.logging_config import setup_logging
@@ -102,6 +103,7 @@ async def lifespan(workers_app: FastAPI):
     except Exception as e:
         logger.warning("Failed to close Redis: %s", e)
 
+    await close_ai_clients()
     await close_mongo_connection()
     logger.info("%s shutdown complete", SERVICE_TITLE)
 
