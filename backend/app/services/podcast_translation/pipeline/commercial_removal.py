@@ -4,7 +4,8 @@ import logging
 import re
 from typing import Tuple
 
-from anthropic import AsyncAnthropic
+
+from app.core.ai_clients import get_anthropic_client
 
 from app.core.config import settings
 
@@ -28,7 +29,7 @@ async def remove_commercials(transcript: str) -> Tuple[str, list]:
     logger.info("Analyzing transcript for commercial segments...")
 
     # Initialize Claude client
-    client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+    client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
     # Prompt Claude to identify commercial segments
     prompt = f"""You are analyzing a podcast transcript to identify and remove commercial segments.

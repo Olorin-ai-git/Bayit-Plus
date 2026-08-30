@@ -7,8 +7,9 @@ Auto-plays curated content during morning hours (configurable 7-9 AM local time)
 from datetime import datetime, time
 from typing import Any, Dict, List
 
-import anthropic
 import pytz
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -18,7 +19,7 @@ from app.models.user import User
 logger = get_logger(__name__)
 
 # Initialize Claude client
-client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
 
 def get_user_local_time(user: User) -> datetime:

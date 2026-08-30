@@ -13,6 +13,8 @@ from typing import Dict, List, Optional, Tuple
 
 from anthropic import AsyncAnthropic
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.config import settings
 from app.services.live_trivia.input_sanitizer import sanitize_input
 from app.services.live_trivia.topic_validator import TopicValidator
@@ -36,7 +38,7 @@ class TopicDetectionService:
 
     def __init__(self, anthropic_client: Optional[AsyncAnthropic] = None):
         """Initialize topic detector with optional injected Anthropic client."""
-        self._anthropic = anthropic_client or AsyncAnthropic(
+        self._anthropic = anthropic_client or get_anthropic_client(
             api_key=settings.ANTHROPIC_API_KEY
         )
         self._spacy_models: Dict = {}

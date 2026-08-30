@@ -11,6 +11,8 @@ from typing import Optional
 import anthropic
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.core.ai_clients import get_sync_anthropic_client
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
@@ -35,7 +37,7 @@ def get_anthropic_client() -> anthropic.Anthropic:
     """Get or create Anthropic client instance."""
     global _anthropic_client
     if _anthropic_client is None:
-        _anthropic_client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        _anthropic_client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
     return _anthropic_client
 
 

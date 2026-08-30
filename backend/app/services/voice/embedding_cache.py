@@ -8,6 +8,8 @@ from dataclasses import dataclass
 
 from openai import AsyncOpenAI
 
+from app.core.ai_clients import get_openai_client
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.voice.intent_canonical_phrases import CANONICAL_PHRASES
@@ -51,7 +53,7 @@ class EmbeddingIntentClassifier:
 
     async def initialize(self) -> None:
         """Load and embed all canonical phrases at startup."""
-        self._client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self._client = get_openai_client(api_key=settings.OPENAI_API_KEY)
 
         all_phrases: list[str] = []
         phrase_metadata: list[tuple[VoiceIntent, str, str]] = []

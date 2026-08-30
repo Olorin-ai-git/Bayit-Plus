@@ -7,7 +7,8 @@ Delegates to specialized modules for ticket, chat, FAQ, and analytics operations
 from datetime import datetime
 from typing import AsyncIterator, List, Optional, Tuple
 
-import anthropic
+
+from app.core.ai_clients import get_anthropic_client
 
 from app.core.config import settings
 from app.models.support import SupportTicket
@@ -27,7 +28,7 @@ class SupportService:
 
     def __init__(self) -> None:
         """Initialize SupportService with Anthropic client and configuration."""
-        self.async_client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.async_client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         self.max_tokens = settings.SUPPORT_CHAT_MAX_TOKENS
         self.voice_max_tokens = settings.SUPPORT_VOICE_MAX_TOKENS
         self.escalation_threshold = settings.SUPPORT_ESCALATION_THRESHOLD

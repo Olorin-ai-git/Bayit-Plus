@@ -10,6 +10,7 @@ from enum import Enum
 from typing import Optional
 
 
+from app.core.ai_clients import get_provider_http_client
 from app.core.config import settings
 from app.core.database import db
 
@@ -197,8 +198,6 @@ async def check_openai_health() -> ServiceHealth:
     """Check OpenAI API connectivity."""
     import time
 
-    import httpx
-
     start = time.monotonic()
     try:
         if not settings.OPENAI_API_KEY:
@@ -208,25 +207,25 @@ async def check_openai_health() -> ServiceHealth:
                 message="API key not configured",
             )
 
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            response = await client.get(
-                "https://api.openai.com/v1/models",
-                headers={"Authorization": f"Bearer {settings.OPENAI_API_KEY}"},
-            )
-            latency = (time.monotonic() - start) * 1000
+        client = get_provider_http_client()
+        response = await client.get(
+            "https://api.openai.com/v1/models",
+            headers={"Authorization": f"Bearer {settings.OPENAI_API_KEY}"},
+        )
+        latency = (time.monotonic() - start) * 1000
 
-            if response.status_code == 200:
-                return ServiceHealth(
-                    name="openai",
-                    status=HealthStatus.HEALTHY,
-                    latency_ms=latency,
-                )
+        if response.status_code == 200:
             return ServiceHealth(
                 name="openai",
-                status=HealthStatus.DEGRADED,
+                status=HealthStatus.HEALTHY,
                 latency_ms=latency,
-                message=f"API returned {response.status_code}",
             )
+        return ServiceHealth(
+            name="openai",
+            status=HealthStatus.DEGRADED,
+            latency_ms=latency,
+            message=f"API returned {response.status_code}",
+        )
     except Exception as e:
         latency = (time.monotonic() - start) * 1000
         return ServiceHealth(

@@ -52,7 +52,7 @@ class TestInitialize:
         mock_vectors = [[float(i)] * dim for i in range(TOTAL_PHRASE_COUNT)]
         mock_response = _make_embedding_response(mock_vectors)
 
-        with patch("app.services.voice.embedding_cache.AsyncOpenAI") as mock_cls, \
+        with patch("app.services.voice.embedding_cache.get_openai_client") as mock_factory, \
              patch("app.services.voice.embedding_cache.settings") as mock_settings:
             mock_settings.OPENAI_API_KEY = "test-key"
             mock_settings.INTENT_EMBEDDING_MODEL = "text-embedding-3-small"
@@ -61,7 +61,7 @@ class TestInitialize:
 
             mock_client = MagicMock()
             mock_client.embeddings.create = AsyncMock(return_value=mock_response)
-            mock_cls.return_value = mock_client
+            mock_factory.return_value = mock_client
 
             await classifier.initialize()
 

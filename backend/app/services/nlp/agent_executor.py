@@ -13,9 +13,10 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Optional
 
-from anthropic import Anthropic
 from anthropic.types import Message, TextBlock, ToolUseBlock
 from pydantic import BaseModel, Field
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.models.nlp_session import PendingAction
@@ -63,7 +64,7 @@ class AgentExecutor:
         if not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is required for agent execution")
 
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         self._ecosystem_context_provider = None
 
     async def execute(

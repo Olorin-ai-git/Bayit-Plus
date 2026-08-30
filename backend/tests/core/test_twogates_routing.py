@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+import select
+import socket
+import socketserver
 import ssl
+import threading
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.x509.oid import NameOID
+from cryptography.x509.oid import ExtendedKeyUsageOID, NameOID
 import httpx
 from pydantic import SecretStr, ValidationError
 import pytest
@@ -47,6 +53,117 @@ def _ca_pem(common_name: str = "TwoGates Test Root") -> str:
         .sign(key, hashes.SHA256())
     )
     return certificate.public_bytes(serialization.Encoding.PEM).decode()
+
+
+def _certificate_authority() -> tuple[rsa.RSAPrivateKey, x509.Certificate]:
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Erebor Probe Root")])
+    now = datetime.now(timezone.utc)
+    certificate = (
+        x509.CertificateBuilder()
+        .subject_name(name)
+        .issuer_name(name)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now - timedelta(minutes=1))
+        .not_valid_after(now + timedelta(days=1))
+        .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+        .sign(key, hashes.SHA256())
+    )
+    return key, certificate
+
+
+def _server_certificate(
+    ca_key: rsa.RSAPrivateKey,
+    ca_certificate: x509.Certificate,
+) -> tuple[rsa.RSAPrivateKey, x509.Certificate]:
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
+    now = datetime.now(timezone.utc)
+    certificate = (
+        x509.CertificateBuilder()
+        .subject_name(name)
+        .issuer_name(ca_certificate.subject)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now - timedelta(minutes=1))
+        .not_valid_after(now + timedelta(days=1))
+        .add_extension(
+            x509.SubjectAlternativeName([x509.DNSName("localhost")]),
+            critical=False,
+        )
+        .add_extension(
+            x509.ExtendedKeyUsage([ExtendedKeyUsageOID.SERVER_AUTH]),
+            critical=False,
+        )
+        .sign(ca_key, hashes.SHA256())
+    )
+    return key, certificate
+
+
+def _write_key_pair(
+    directory: Path,
+    name: str,
+    key: rsa.RSAPrivateKey,
+    certificate: x509.Certificate,
+) -> tuple[Path, Path]:
+    certificate_path = directory / f"{name}-certificate.pem"
+    key_path = directory / f"{name}-key.pem"
+    certificate_path.write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
+    key_path.write_bytes(
+        key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
+    )
+    return certificate_path, key_path
+
+
+class _ProviderHandler(BaseHTTPRequestHandler):
+    def do_GET(self) -> None:
+        self.server.received_headers = dict(self.headers.items())
+        body = b'{"data":[]}'
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, format: str, *args: object) -> None:
+        return
+
+
+class _ConnectProxyHandler(socketserver.StreamRequestHandler):
+    def handle(self) -> None:
+        request_line = self.rfile.readline().decode("ascii").strip()
+        headers: dict[str, str] = {}
+        while True:
+            line = self.rfile.readline()
+            if line in (b"\r\n", b"\n", b""):
+                break
+            name, value = line.decode("ascii").split(":", 1)
+            headers[name.lower()] = value.strip()
+
+        self.server.connect_request_line = request_line
+        self.server.connect_headers = headers
+        upstream = socket.create_connection(self.server.provider_address)
+        try:
+            self.wfile.write(b"HTTP/1.1 200 Connection Established\r\n\r\n")
+            self.wfile.flush()
+            sockets = [self.connection, upstream]
+            while True:
+                readable, _, _ = select.select(sockets, [], [], 1.0)
+                if not readable:
+                    continue
+                for source in readable:
+                    data = source.recv(65536)
+                    if not data:
+                        return
+                    destination = upstream if source is self.connection else self.connection
+                    destination.sendall(data)
+        finally:
+            upstream.close()
 
 
 def _config(**overrides: object) -> RoutingTransportConfig:
@@ -236,6 +353,83 @@ def test_inactive_client_has_no_proxy_or_routing_headers() -> None:
     assert kwargs["trust_env"] is False
     assert "proxy" not in kwargs
     assert "event_hooks" not in kwargs
+
+
+def test_real_https_connect_probe_uses_private_ca_and_routing_headers(
+    tmp_path: Path,
+) -> None:
+    ca_key, ca_certificate = _certificate_authority()
+    provider_key, provider_certificate = _server_certificate(
+        ca_key,
+        ca_certificate,
+    )
+    proxy_key, proxy_certificate = _server_certificate(ca_key, ca_certificate)
+    provider_certificate_path, provider_key_path = _write_key_pair(
+        tmp_path,
+        "provider",
+        provider_key,
+        provider_certificate,
+    )
+    proxy_certificate_path, proxy_key_path = _write_key_pair(
+        tmp_path,
+        "proxy",
+        proxy_key,
+        proxy_certificate,
+    )
+    ca_pem = ca_certificate.public_bytes(serialization.Encoding.PEM).decode()
+
+    provider = ThreadingHTTPServer(("127.0.0.1", 0), _ProviderHandler)
+    provider_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    provider_context.load_cert_chain(provider_certificate_path, provider_key_path)
+    provider.socket = provider_context.wrap_socket(provider.socket, server_side=True)
+
+    proxy = socketserver.ThreadingTCPServer(
+        ("127.0.0.1", 0),
+        _ConnectProxyHandler,
+    )
+    proxy.daemon_threads = True
+    proxy.provider_address = provider.server_address
+    proxy_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    proxy_context.load_cert_chain(proxy_certificate_path, proxy_key_path)
+    proxy.socket = proxy_context.wrap_socket(proxy.socket, server_side=True)
+
+    provider_thread = threading.Thread(target=provider.serve_forever, daemon=True)
+    proxy_thread = threading.Thread(target=proxy.serve_forever, daemon=True)
+    provider_thread.start()
+    proxy_thread.start()
+
+    config = _config(
+        proxy_url=f"https://localhost:{proxy.server_address[1]}",
+        ca_cert_pem=ca_pem,
+    )
+    client = build_sync_provider_http_client(
+        config,
+        request_id_factory=lambda: uuid.UUID(int=4),
+        correlation_id_provider=lambda: "probe-correlation",
+    )
+    try:
+        response = client.get(
+            f"https://localhost:{provider.server_address[1]}/v1/models"
+        )
+        assert response.status_code == 200
+        assert proxy.connect_request_line.startswith("CONNECT localhost:")
+        assert proxy.connect_headers["proxy-authorization"] == (
+            "Bearer tg_test_test-secret"
+        )
+        assert provider.received_headers[EREBOR_REQUEST_ID_HEADER] == str(
+            uuid.UUID(int=4)
+        )
+        assert provider.received_headers[EREBOR_TASK_CLASS_HEADER] == "standard"
+        assert provider.received_headers["X-Correlation-ID"] == "probe-correlation"
+        assert "Proxy-Authorization" not in provider.received_headers
+    finally:
+        client.close()
+        proxy.shutdown()
+        provider.shutdown()
+        proxy.server_close()
+        provider.server_close()
+        proxy_thread.join()
+        provider_thread.join()
 
 
 @pytest.mark.asyncio

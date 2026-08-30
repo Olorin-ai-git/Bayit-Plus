@@ -13,6 +13,8 @@ from typing import Callable, Dict, List, Optional
 
 from anthropic import AsyncAnthropic
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.redis_client import get_redis_client
@@ -47,7 +49,7 @@ class LiveTriviaOrchestrator:
     ):
         """Initialize orchestrator with optional dependency injection."""
         # Shared Anthropic client for all AI services
-        self.anthropic_client = anthropic_client or AsyncAnthropic(
+        self.anthropic_client = anthropic_client or get_anthropic_client(
             api_key=settings.ANTHROPIC_API_KEY
         )
 
