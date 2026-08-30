@@ -1,9 +1,11 @@
 import os
+import ssl
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from dotenv import load_dotenv
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings
 
 from app.core.config_domains.ai_nlp import AINLPConfigMixin
@@ -237,6 +239,72 @@ class Settings(
                 "MONGODB_URI must be configured. Set it to your MongoDB Atlas or server URL."
             )
         return v
+
+    @model_validator(mode="after")
+    def validate_twogates_routing(self) -> "Settings":
+        """Require a complete, safe CONNECT configuration before opt-in."""
+        proxy_url = self.TWOGATES_PROXY_URL.get_secret_value().strip()
+        proxy_credential = self.TWOGATES_PROXY_CREDENTIAL.get_secret_value().strip()
+        ca_cert_pem = self.TWOGATES_CA_CERT_PEM.get_secret_value().strip()
+        connection_values = (
+            proxy_url,
+            proxy_credential,
+            ca_cert_pem,
+            self.TWOGATES_TASK_CLASS,
+        )
+        configured = [bool(value) for value in connection_values]
+
+        if any(configured) and not all(configured):
+            raise ValueError(
+                "TwoGates routing settings must be configured as an all-or-none group"
+            )
+        if self.TWOGATES_ROUTING_ENABLED and not all(configured):
+            raise ValueError(
+                "TwoGates routing cannot be enabled without its complete connection settings"
+            )
+        if all(configured):
+            parsed = urlsplit(proxy_url)
+            if parsed.scheme != "https" or not parsed.hostname or parsed.port is None:
+                raise ValueError("TwoGates proxy URL must be an HTTPS origin with a port")
+            if (
+                parsed.username
+                or parsed.password
+                or parsed.path not in ("", "/")
+                or parsed.query
+                or parsed.fragment
+            ):
+                raise ValueError(
+                    "TwoGates proxy URL must be a credential-free HTTPS origin"
+                )
+
+            token_parts = proxy_credential.split("_", 2)
+            if (
+                len(token_parts) != 3
+                or token_parts[0] != "tg"
+                or not token_parts[1]
+                or not token_parts[2]
+                or any(character.isspace() for character in proxy_credential)
+            ):
+                raise ValueError("TwoGates proxy credential must be an agent token")
+
+            if (
+                "-----BEGIN CERTIFICATE-----" not in ca_cert_pem
+                or "-----END CERTIFICATE-----" not in ca_cert_pem
+            ):
+                raise ValueError("TwoGates CA certificate must be PEM encoded")
+            try:
+                context = ssl.create_default_context()
+                context.load_verify_locations(cadata=ca_cert_pem)
+            except ssl.SSLError as exc:
+                raise ValueError(
+                    "TwoGates CA certificate must be a valid PEM bundle"
+                ) from exc
+
+        if self.TWOGATES_MAX_KEEPALIVE_CONNECTIONS > self.TWOGATES_MAX_CONNECTIONS:
+            raise ValueError(
+                "TwoGates keepalive connection limit cannot exceed its total connection limit"
+            )
+        return self
 
     class Config:
         env_file = ".env"
