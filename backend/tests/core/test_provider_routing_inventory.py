@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
+import re
 
 import yaml
 
@@ -87,6 +88,23 @@ JOB_DEPLOYMENT_SCRIPT = REPOSITORY_ROOT / "infrastructure" / "setup-cron-jobs.sh
 JOB_IMAGE_DEPLOYMENT_SCRIPT = (
     REPOSITORY_ROOT / "scripts" / "deployment" / "deploy_workers.sh"
 )
+BACKEND_DEPLOYMENT_WORKFLOWS = (
+    REPOSITORY_ROOT / ".github" / "workflows" / "deploy-production.yml",
+    REPOSITORY_ROOT / ".github" / "workflows" / "scene-search-deploy.yml",
+    REPOSITORY_ROOT / ".github" / "workflows" / "beta-500-deploy.yml",
+)
+PODCAST_TRANSLATION_WORKFLOW = (
+    REPOSITORY_ROOT / ".github" / "workflows" / "deploy-translation-worker.yml"
+)
+PODCAST_TRANSLATION_DOCKERFILE = (
+    REPOSITORY_ROOT / "backend" / "Dockerfile.translation-worker"
+)
+PODCAST_TRANSLATION_TERRAFORM = (
+    REPOSITORY_ROOT / "infrastructure" / "terraform" / "cloud_run_jobs.tf"
+)
+PODCAST_TRANSLATION_VARIABLES = (
+    REPOSITORY_ROOT / "infrastructure" / "terraform" / "variables.tf"
+)
 ROUTING_SECRET_BINDINGS = {
     "TWOGATES_PROXY_URL": "bayit-twogates-proxy-url:latest",
     "TWOGATES_PROXY_CREDENTIAL": "bayit-twogates-proxy-credential:latest",
@@ -164,6 +182,23 @@ def _provider_host_literals(tree: ast.AST) -> set[str]:
         for value in values:
             hosts.update(host for host in PROVIDER_API_HOSTS if host in value)
     return hosts
+
+
+def _direct_deploy_commands(workflow_text: str) -> list[str]:
+    lines = workflow_text.splitlines()
+    commands: list[str] = []
+    index = 0
+    while index < len(lines):
+        if "gcloud run deploy" not in lines[index]:
+            index += 1
+            continue
+        command_lines = [lines[index].strip()]
+        while command_lines[-1].endswith("\\") and index + 1 < len(lines):
+            index += 1
+            command_lines.append(lines[index].strip())
+        commands.append("\n".join(command_lines))
+        index += 1
+    return commands
 
 
 def test_production_provider_constructors_are_confined_to_factory() -> None:
@@ -304,6 +339,94 @@ def test_every_cloudbuild_manifest_is_explicitly_inventoried() -> None:
     discovered = set(REPOSITORY_ROOT.rglob("cloudbuild*.yaml"))
 
     assert discovered == set(ALL_CLOUDBUILD_MANIFESTS)
+
+
+def test_every_direct_backend_deploy_workflow_is_explicitly_inventoried() -> None:
+    workflow_root = REPOSITORY_ROOT / ".github" / "workflows"
+    discovered = {
+        path
+        for pattern in ("*.yml", "*.yaml")
+        for path in workflow_root.glob(pattern)
+        if "gcloud run deploy" in path.read_text()
+    }
+
+    assert discovered == set(BACKEND_DEPLOYMENT_WORKFLOWS)
+
+
+def test_every_terraform_cloud_run_writer_is_explicitly_inventoried() -> None:
+    workflow_root = REPOSITORY_ROOT / ".github" / "workflows"
+    terraform_root = REPOSITORY_ROOT / "infrastructure" / "terraform"
+    terraform_workflows = {
+        path
+        for pattern in ("*.yml", "*.yaml")
+        for path in workflow_root.glob(pattern)
+        if "terraform apply" in path.read_text()
+    }
+    terraform_cloud_run_files = {
+        path
+        for path in terraform_root.glob("*.tf")
+        if "google_cloud_run_v2_" in path.read_text()
+    }
+
+    assert terraform_workflows == {PODCAST_TRANSLATION_WORKFLOW}
+    assert terraform_cloud_run_files == {PODCAST_TRANSLATION_TERRAFORM}
+
+
+def test_direct_backend_deploy_workflows_keep_complete_routing_inactive() -> None:
+    violations: list[str] = []
+    for path in BACKEND_DEPLOYMENT_WORKFLOWS:
+        deploy_commands = _direct_deploy_commands(path.read_text())
+        relative_path = path.relative_to(REPOSITORY_ROOT)
+        if len(deploy_commands) != 1:
+            violations.append(
+                f"{relative_path}: expected one direct deploy, found {len(deploy_commands)}"
+            )
+            continue
+        deploy_command = deploy_commands[0]
+        if "TWOGATES_ROUTING_ENABLED=false" not in deploy_command:
+            violations.append(f"{relative_path}: routing is not explicitly inactive")
+        for environment_name, secret_reference in ROUTING_SECRET_BINDINGS.items():
+            binding = f"{environment_name}={secret_reference}"
+            if binding not in deploy_command:
+                violations.append(f"{relative_path}: missing {binding}")
+        if "HTTPS_PROXY=" in deploy_command or "ALL_PROXY=" in deploy_command:
+            violations.append(f"{relative_path}: blanket proxy environment variable")
+
+    assert violations == [], "Unsafe direct backend deployment routing:\n" + "\n".join(
+        violations
+    )
+
+
+def test_podcast_translation_worker_has_complete_inactive_routing() -> None:
+    workflow_text = PODCAST_TRANSLATION_WORKFLOW.read_text()
+    dockerfile_text = PODCAST_TRANSLATION_DOCKERFILE.read_text()
+    terraform_text = PODCAST_TRANSLATION_TERRAFORM.read_text()
+    variables_text = PODCAST_TRANSLATION_VARIABLES.read_text()
+    expected_secret_ids = {
+        environment_name: secret_reference.removesuffix(":latest")
+        for environment_name, secret_reference in ROUTING_SECRET_BINDINGS.items()
+    }
+    actual_secret_ids = dict(
+        re.findall(
+            r'^\s*(TWOGATES_[A-Z_]+)\s*=\s*"([^"]+)"',
+            variables_text,
+            re.MULTILINE,
+        )
+    )
+
+    assert "infrastructure/terraform/**" in workflow_text
+    assert "terraform apply -auto-approve tfplan" in workflow_text
+    assert "COPY backend/app ./app" in dockerfile_text
+    assert 'name  = "TWOGATES_ROUTING_ENABLED"' in terraform_text
+    assert 'value = "false"' in terraform_text
+    assert 'for_each = var.twogates_secret_ids' in terraform_text
+    assert "name = env.key" in terraform_text
+    assert "secret  = env.value" in terraform_text
+    assert "version = var.twogates_secret_version" in terraform_text
+    assert actual_secret_ids == expected_secret_ids
+    for configuration_text in (terraform_text, variables_text):
+        assert "HTTPS_PROXY" not in configuration_text
+        assert "ALL_PROXY" not in configuration_text
 
 
 def test_deployment_manifests_keep_complete_routing_configuration_inactive() -> None:

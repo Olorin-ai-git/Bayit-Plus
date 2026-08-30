@@ -26,6 +26,24 @@ resource "google_cloud_run_v2_job" "podcast_translation" {
         }
 
         env {
+          name  = "TWOGATES_ROUTING_ENABLED"
+          value = "false"
+        }
+
+        dynamic "env" {
+          for_each = var.twogates_secret_ids
+          content {
+            name = env.key
+            value_source {
+              secret_key_ref {
+                secret  = env.value
+                version = var.twogates_secret_version
+              }
+            }
+          }
+        }
+
+        env {
           name = "MONGODB_URI"
           value_source {
             secret_key_ref {

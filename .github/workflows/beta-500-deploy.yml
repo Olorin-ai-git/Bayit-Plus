@@ -250,10 +250,20 @@ jobs:
             --platform managed \
             --region ${{ env.GCP_REGION }} \
             --no-traffic \
-            --set-env-vars APP_ENV=production \
+            --set-env-vars APP_ENV=production,TWOGATES_ROUTING_ENABLED=false \
             --set-secrets=MONGODB_URI=MONGODB_URI:latest,\
-ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,\
-OPENAI_API_KEY=OPENAI_API_KEY:latest
+              ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,\
+              OPENAI_API_KEY=OPENAI_API_KEY:latest,\
+              TWOGATES_PROXY_URL=bayit-twogates-proxy-url:latest,\
+              TWOGATES_PROXY_CREDENTIAL=bayit-twogates-proxy-credential:latest,\
+              TWOGATES_CA_CERT_PEM=bayit-twogates-ca-cert-pem:latest,\
+              TWOGATES_TASK_CLASS=bayit-twogates-task-class:latest,\
+              TWOGATES_CONNECT_TIMEOUT_SECONDS=bayit-twogates-connect-timeout-seconds:latest,\
+              TWOGATES_REQUEST_TIMEOUT_SECONDS=bayit-twogates-request-timeout-seconds:latest,\
+              TWOGATES_PROVIDER_MAX_ATTEMPTS=bayit-twogates-provider-max-attempts:latest,\
+              TWOGATES_MAX_CONNECTIONS=bayit-twogates-max-connections:latest,\
+              TWOGATES_MAX_KEEPALIVE_CONNECTIONS=bayit-twogates-max-keepalive-connections:latest,\
+              TWOGATES_KEEPALIVE_EXPIRY_SECONDS=bayit-twogates-keepalive-expiry-seconds:latest
 
       - name: Run Smoke Tests on GREEN
         run: |

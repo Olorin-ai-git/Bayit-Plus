@@ -32,7 +32,10 @@ from app.core.config_domains.live_quotas import LiveQuotasConfigMixin
 from app.core.config_domains.media import MediaConfigMixin
 from app.core.config_domains.media_pipeline import MediaPipelineConfigMixin
 from app.core.config_domains.media_ssrf import MediaSsrfConfigMixin
-from app.core.config_domains.monitoring import MonitoringConfigMixin
+from app.core.config_domains.monitoring import (
+    CORRELATION_ID_HEADER_MAX_LENGTH,
+    MonitoringConfigMixin,
+)
 from app.core.config_domains.olorin_compat import OlorinCompatConfigMixin
 from app.core.config_domains.restored_fields import RestoredFieldsMixin
 from app.core.config_domains.payments import PaymentsConfigMixin
@@ -77,6 +80,11 @@ TWOGATES_AGENT_TOKEN_PATTERN = re.compile(r"tg_[0-9a-f]{16}_[0-9a-f]{48}")
 
 def validate_provider_correlation_header_name(header_name: str) -> str:
     """Reject invalid or protected outbound provider correlation headers."""
+    if len(header_name) > CORRELATION_ID_HEADER_MAX_LENGTH:
+        raise ValueError(
+            "Correlation ID header must be at most "
+            f"{CORRELATION_ID_HEADER_MAX_LENGTH} characters"
+        )
     if not header_name or any(
         character not in HTTP_FIELD_NAME_CHARACTERS for character in header_name
     ):

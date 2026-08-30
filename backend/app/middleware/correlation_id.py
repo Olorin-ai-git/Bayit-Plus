@@ -13,7 +13,7 @@ from typing import Callable
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.core.config import settings
+from app.core.config import settings, validate_provider_correlation_header_name
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,9 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
             header_name: Custom header name for correlation ID (optional)
         """
         super().__init__(app)
-        self.header_name = header_name or settings.CORRELATION_ID_HEADER
+        self.header_name = validate_provider_correlation_header_name(
+            header_name or settings.CORRELATION_ID_HEADER
+        )
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """

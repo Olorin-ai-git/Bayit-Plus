@@ -17,6 +17,8 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import ExtendedKeyUsageOID, NameOID
 import httpx
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 from pydantic import SecretStr, ValidationError
 import pytest
 
@@ -37,6 +39,8 @@ from app.core.ai_clients import (
     get_sync_anthropic_client,
 )
 from app.core.config import PROTECTED_PROVIDER_HEADER_NAMES, Settings, settings
+from app.core.config_domains.monitoring import CORRELATION_ID_HEADER_MAX_LENGTH
+from app.middleware.correlation_id import CorrelationIdMiddleware
 
 
 def _ca_pem(common_name: str = "TwoGates Test Root") -> str:
@@ -579,6 +583,76 @@ def test_direct_transport_config_rejects_protected_correlation_headers(
 ) -> None:
     with pytest.raises(ValueError, match="protected provider header"):
         _config(correlation_header=header_name.upper())
+
+
+@pytest.mark.parametrize(
+    "header_name_length",
+    [CORRELATION_ID_HEADER_MAX_LENGTH + 1, 100_000],
+)
+def test_settings_reject_oversized_correlation_header_names(
+    header_name_length: int,
+) -> None:
+    with pytest.raises(ValidationError, match="String should have at most"):
+        Settings(
+            _env_file=None,
+            **_settings_values(CORRELATION_ID_HEADER="X" * header_name_length),
+        )
+
+
+def test_direct_header_consumers_reject_oversized_correlation_header_names() -> None:
+    oversized_header_name = "X" * (CORRELATION_ID_HEADER_MAX_LENGTH + 1)
+
+    with pytest.raises(ValueError, match="must be at most"):
+        _config(correlation_header=oversized_header_name)
+    with pytest.raises(ValueError, match="must be at most"):
+        CorrelationIdMiddleware(MagicMock(), header_name=oversized_header_name)
+
+
+def test_maximum_correlation_header_name_survives_real_http_send() -> None:
+    header_name = "X" * CORRELATION_ID_HEADER_MAX_LENGTH
+    app_settings = Settings(
+        _env_file=None,
+        **_settings_values(CORRELATION_ID_HEADER=header_name),
+    )
+    config = _config(correlation_header=app_settings.CORRELATION_ID_HEADER)
+    provider = ThreadingHTTPServer(("127.0.0.1", 0), _ProviderHandler)
+    provider_thread = _start_server(provider)
+    hook = _sync_request_hook(
+        config,
+        lambda: uuid.UUID(int=6),
+        lambda: "boundary-correlation",
+    )
+
+    try:
+        with httpx.Client(event_hooks={"request": [hook]}) as client:
+            response = client.get(
+                f"http://127.0.0.1:{provider.server_address[1]}/provider"
+            )
+
+        assert response.status_code == 200
+        assert provider.received_headers[header_name] == "boundary-correlation"
+    finally:
+        provider.shutdown()
+        provider.server_close()
+        provider_thread.join()
+
+
+def test_maximum_correlation_header_name_survives_middleware_round_trip() -> None:
+    header_name = "X" * CORRELATION_ID_HEADER_MAX_LENGTH
+    application = FastAPI()
+    application.add_middleware(CorrelationIdMiddleware, header_name=header_name)
+
+    @application.get("/probe")
+    async def probe() -> dict[str, bool]:
+        return {"ok": True}
+
+    response = TestClient(application).get(
+        "/probe",
+        headers={header_name: "inbound-correlation"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers[header_name] == "inbound-correlation"
 
 
 def test_settings_reject_partial_configuration_even_when_inactive() -> None:
