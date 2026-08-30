@@ -283,9 +283,25 @@ class Settings(
                 or token_parts[0] != "tg"
                 or not token_parts[1]
                 or not token_parts[2]
-                or any(character.isspace() for character in proxy_credential)
+                or any(
+                    ord(character) < 33 or ord(character) > 126
+                    for character in proxy_credential
+                )
             ):
                 raise ValueError("TwoGates proxy credential must be an agent token")
+
+            valid_header_characters = frozenset(
+                "!#$%&'*+-.^_`|~0123456789"
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            )
+            if (
+                not self.CORRELATION_ID_HEADER
+                or any(
+                    character not in valid_header_characters
+                    for character in self.CORRELATION_ID_HEADER
+                )
+            ):
+                raise ValueError("Correlation ID header must be a valid HTTP field name")
 
             if (
                 "-----BEGIN CERTIFICATE-----" not in ca_cert_pem

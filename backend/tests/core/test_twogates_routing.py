@@ -238,8 +238,11 @@ def test_settings_allow_complete_configuration_while_inactive() -> None:
             SecretStr("https://agent:token@twogates.invalid:8443"),
         ),
         ("TWOGATES_PROXY_CREDENTIAL", SecretStr("invalid credential")),
+        ("TWOGATES_PROXY_CREDENTIAL", SecretStr("tg_test_bad\x00token")),
+        ("TWOGATES_PROXY_CREDENTIAL", SecretStr("tg_test_bad\x7ftoken")),
         ("TWOGATES_CA_CERT_PEM", SecretStr("invalid certificate")),
         ("TWOGATES_TASK_CLASS", "unknown"),
+        ("CORRELATION_ID_HEADER", "X-Correlation-ID\x00Injected"),
         ("TWOGATES_PROVIDER_MAX_ATTEMPTS", 0),
     ],
 )
@@ -318,6 +321,23 @@ async def test_async_hook_omits_absent_optional_correlation() -> None:
 
     assert request.headers[EREBOR_REQUEST_ID_HEADER] == str(uuid.UUID(int=3))
     assert request.headers[EREBOR_TASK_CLASS_HEADER] == "heavy"
+    assert "X-Correlation-ID" not in request.headers
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("correlation_id", ["bad\x00id", "bad\x7fid", "bad-é-id"])
+async def test_async_hook_omits_unsafe_optional_correlation(
+    correlation_id: str,
+) -> None:
+    hook = _async_request_hook(
+        _config(),
+        lambda: uuid.UUID(int=3),
+        lambda: correlation_id,
+    )
+    request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+
+    await hook(request)
+
     assert "X-Correlation-ID" not in request.headers
 
 

@@ -76,6 +76,12 @@ def build_tls_context(config: RoutingTransportConfig) -> ssl.SSLContext:
     return context
 
 
+def _safe_correlation_id(correlation_id: str | None) -> str | None:
+    if correlation_id and all(32 <= ord(character) <= 126 for character in correlation_id):
+        return correlation_id
+    return None
+
+
 def _sync_request_hook(
     config: RoutingTransportConfig,
     request_id_factory: RequestIdFactory,
@@ -84,7 +90,7 @@ def _sync_request_hook(
     def add_routing_metadata(request: httpx.Request) -> None:
         request.headers[EREBOR_REQUEST_ID_HEADER] = str(request_id_factory())
         request.headers[EREBOR_TASK_CLASS_HEADER] = config.task_class
-        correlation_id = correlation_id_provider()
+        correlation_id = _safe_correlation_id(correlation_id_provider())
         if correlation_id:
             request.headers[config.correlation_header] = correlation_id
 
@@ -99,7 +105,7 @@ def _async_request_hook(
     async def add_routing_metadata(request: httpx.Request) -> None:
         request.headers[EREBOR_REQUEST_ID_HEADER] = str(request_id_factory())
         request.headers[EREBOR_TASK_CLASS_HEADER] = config.task_class
-        correlation_id = correlation_id_provider()
+        correlation_id = _safe_correlation_id(correlation_id_provider())
         if correlation_id:
             request.headers[config.correlation_header] = correlation_id
 
