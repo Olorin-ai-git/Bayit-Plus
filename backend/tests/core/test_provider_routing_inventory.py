@@ -9,6 +9,11 @@ import yaml
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 PRODUCTION_ROOTS = (
     REPOSITORY_ROOT / "backend" / "app",
+    REPOSITORY_ROOT / "bayit-ai" / "app",
+    REPOSITORY_ROOT / "bayit-content" / "app",
+    REPOSITORY_ROOT / "bayit-search" / "app",
+    REPOSITORY_ROOT / "bayit-training" / "app",
+    REPOSITORY_ROOT / "bayit-ws-gateway" / "app",
     REPOSITORY_ROOT / "packages",
 )
 IGNORED_PARTS = {"__pycache__", "demo", "demos", "test", "tests"}

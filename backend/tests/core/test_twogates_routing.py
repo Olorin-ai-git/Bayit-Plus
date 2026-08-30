@@ -448,3 +448,31 @@ async def test_close_ai_clients_closes_registered_clients_and_clears_caches() ->
     assert get_anthropic_client.cache_info().currsize == 0
     assert get_openai_client.cache_info().currsize == 0
     assert get_provider_http_client.cache_info().currsize == 0
+
+
+@pytest.mark.asyncio
+async def test_close_ai_clients_continues_after_individual_close_failures() -> None:
+    failing_sync_client = MagicMock()
+    failing_sync_client.close.side_effect = RuntimeError("sync close failed")
+    healthy_sync_client = MagicMock()
+    failing_async_client = AsyncMock()
+    failing_async_client.aclose.side_effect = RuntimeError("async close failed")
+    healthy_async_client = AsyncMock()
+    with (
+        patch(
+            "app.core.ai_clients._sync_clients",
+            [failing_sync_client, healthy_sync_client],
+        ),
+        patch(
+            "app.core.ai_clients._async_clients",
+            [failing_async_client, healthy_async_client],
+        ),
+    ):
+        await close_ai_clients()
+
+    healthy_sync_client.close.assert_called_once_with()
+    healthy_async_client.aclose.assert_awaited_once_with()
+    assert get_sync_anthropic_client.cache_info().currsize == 0
+    assert get_anthropic_client.cache_info().currsize == 0
+    assert get_openai_client.cache_info().currsize == 0
+    assert get_provider_http_client.cache_info().currsize == 0

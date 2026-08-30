@@ -47,9 +47,11 @@ class RoutingTransportConfig:
     def from_settings(cls, app_settings: Any = settings) -> "RoutingTransportConfig":
         return cls(
             enabled=app_settings.TWOGATES_ROUTING_ENABLED,
-            proxy_url=app_settings.TWOGATES_PROXY_URL.get_secret_value(),
-            proxy_credential=app_settings.TWOGATES_PROXY_CREDENTIAL.get_secret_value(),
-            ca_cert_pem=app_settings.TWOGATES_CA_CERT_PEM.get_secret_value(),
+            proxy_url=app_settings.TWOGATES_PROXY_URL.get_secret_value().strip(),
+            proxy_credential=(
+                app_settings.TWOGATES_PROXY_CREDENTIAL.get_secret_value().strip()
+            ),
+            ca_cert_pem=app_settings.TWOGATES_CA_CERT_PEM.get_secret_value().strip(),
             task_class=app_settings.TWOGATES_TASK_CLASS,
             correlation_header=app_settings.CORRELATION_ID_HEADER,
             connect_timeout_seconds=app_settings.TWOGATES_CONNECT_TIMEOUT_SECONDS,
@@ -273,18 +275,33 @@ async def close_ai_clients() -> None:
         _sync_clients.clear()
         _async_clients.clear()
 
-    for client in sync_clients:
-        client.close()
-    for client in async_clients:
-        if hasattr(client, "aclose"):
-            await client.aclose()
-            continue
-        await client.close()
-
-    get_sync_anthropic_client.cache_clear()
-    get_anthropic_client.cache_clear()
-    get_openai_client.cache_clear()
-    get_provider_http_client.cache_clear()
+    try:
+        for client in sync_clients:
+            try:
+                client.close()
+            except Exception as exc:
+                logger.warning(
+                    "ai_provider_sync_client_close_failed",
+                    client_type=type(client).__name__,
+                    error=str(exc),
+                )
+        for client in async_clients:
+            try:
+                if hasattr(client, "aclose"):
+                    await client.aclose()
+                    continue
+                await client.close()
+            except Exception as exc:
+                logger.warning(
+                    "ai_provider_async_client_close_failed",
+                    client_type=type(client).__name__,
+                    error=str(exc),
+                )
+    finally:
+        get_sync_anthropic_client.cache_clear()
+        get_anthropic_client.cache_clear()
+        get_openai_client.cache_clear()
+        get_provider_http_client.cache_clear()
 
 
 def get_subtitle_ai_config() -> dict[str, object]:
