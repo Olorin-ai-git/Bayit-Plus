@@ -7,6 +7,7 @@ import warnings
 
 from bayit_translation import TranslationService as _ExtractedService
 
+from app.core.ai_clients import get_sync_anthropic_client
 from app.core.config import settings
 
 
@@ -50,7 +51,10 @@ class TranslationService(_ExtractedService):
             DeprecationWarning,
             stacklevel=2,
         )
-        super().__init__(config=_SettingsTranslationConfigAdapter())
+        super().__init__(
+            config=_SettingsTranslationConfigAdapter(),
+            client=get_sync_anthropic_client(),
+        )
 
 
 # Singleton instance for backward compatibility with modules that import translation_service

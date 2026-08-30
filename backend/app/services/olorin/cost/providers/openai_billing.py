@@ -3,8 +3,7 @@
 from datetime import date
 from decimal import Decimal
 
-import httpx
-
+from app.core.ai_clients import ProviderOperationTimeouts, get_provider_http_client
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.olorin.resilience import circuit_breaker
@@ -88,15 +87,16 @@ class OpenAIBillingProvider(CostProvider):
             "group_by": ["line_item"],
         }
 
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                url,
-                params=params,
-                headers={"Authorization": f"Bearer {self._api_key}"},
-                timeout=30.0,
-            )
-            resp.raise_for_status()
-            data = resp.json()
+        client = get_provider_http_client()
+        operation_timeouts = ProviderOperationTimeouts.from_settings()
+        resp = await client.get(
+            url,
+            params=params,
+            headers={"Authorization": f"Bearer {self._api_key}"},
+            timeout=operation_timeouts.openai_billing,
+        )
+        resp.raise_for_status()
+        data = resp.json()
 
         total = Decimal("0")
         by_model: dict[str, Decimal] = {}
@@ -115,12 +115,13 @@ class OpenAIBillingProvider(CostProvider):
         if not self._enabled:
             return True
         try:
-            async with httpx.AsyncClient() as client:
-                resp = await client.get(
-                    "https://api.openai.com/v1/models",
-                    headers={"Authorization": f"Bearer {self._api_key}"},
-                    timeout=10.0,
-                )
-                return resp.status_code == 200
+            client = get_provider_http_client()
+            operation_timeouts = ProviderOperationTimeouts.from_settings()
+            resp = await client.get(
+                "https://api.openai.com/v1/models",
+                headers={"Authorization": f"Bearer {self._api_key}"},
+                timeout=operation_timeouts.openai_billing_health,
+            )
+            return resp.status_code == 200
         except Exception:
             return False

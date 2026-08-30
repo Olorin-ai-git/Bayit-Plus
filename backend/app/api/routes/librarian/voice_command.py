@@ -8,6 +8,8 @@ from datetime import datetime
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 
+from app.core.ai_clients import get_sync_anthropic_client
+
 from app.api.routes.admin import require_admin
 from app.api.routes.librarian.models import (VoiceCommandRequest,
                                              VoiceCommandResponse)
@@ -29,7 +31,6 @@ async def execute_voice_command(
     Execute a voice command for the Librarian AI Agent.
     """
     try:
-        import anthropic
 
         from app.services.ai_agent_service import TOOLS, execute_tool
 
@@ -57,7 +58,7 @@ async def execute_voice_command(
             }
         )
 
-        claude_client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        claude_client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
         system_prompt = f"""You are an AI Librarian assistant for Bayit+, an Israeli streaming platform.
 You are receiving voice commands from an admin who wants to manage the content library.

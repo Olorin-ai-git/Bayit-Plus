@@ -15,6 +15,8 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.core.ai_clients import get_sync_anthropic_client
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
@@ -31,7 +33,7 @@ _client: Optional[anthropic.Anthropic] = None
 def _get_client() -> anthropic.Anthropic:
     global _client
     if _client is None:
-        _client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        _client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
     return _client
 
 

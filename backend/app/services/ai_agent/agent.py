@@ -9,9 +9,10 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from anthropic import Anthropic
 from anthropic.types import Message, TextBlock, ToolUseBlock
 from beanie import PydanticObjectId
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.models.librarian import AuditReport
@@ -31,7 +32,7 @@ from app.services.audit_task_manager import audit_task_manager
 logger = logging.getLogger(__name__)
 
 # Initialize Anthropic client
-client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
 
 async def run_ai_agent_audit(

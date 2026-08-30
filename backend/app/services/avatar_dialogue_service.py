@@ -17,7 +17,8 @@ import random
 from enum import Enum
 from typing import Any
 
-from anthropic import Anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 
@@ -366,7 +367,7 @@ async def generate_ai_dialogue(
         Dialogue dict with text, gesture, and source
     """
     try:
-        client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
         # Build messages
         messages = []
