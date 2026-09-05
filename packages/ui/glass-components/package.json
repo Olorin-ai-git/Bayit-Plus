@@ -6,77 +6,77 @@
   "private": true,
   "sideEffects": false,
   "main": "./dist/native/index.js",
-  "module": "./dist/native/index.js",
+  "module": "./dist/native/index.mjs",
   "types": "./dist/native/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/native/index.d.ts",
-        "default": "./dist/native/index.js"
+        "types": "./dist/native/index.d.mts",
+        "default": "./dist/native/index.mjs"
       },
       "require": {
-        "types": "./dist/native/index.d.cts",
-        "default": "./dist/native/index.cjs"
+        "types": "./dist/native/index.d.ts",
+        "default": "./dist/native/index.js"
       }
     },
     "./native": {
       "import": {
-        "types": "./dist/native/index.d.ts",
-        "default": "./dist/native/index.js"
+        "types": "./dist/native/index.d.mts",
+        "default": "./dist/native/index.mjs"
       },
       "require": {
-        "types": "./dist/native/index.d.cts",
-        "default": "./dist/native/index.cjs"
+        "types": "./dist/native/index.d.ts",
+        "default": "./dist/native/index.js"
       }
     },
     "./web": {
       "import": {
-        "types": "./dist/web/index.d.ts",
-        "default": "./dist/web/index.js"
+        "types": "./dist/web/index.d.mts",
+        "default": "./dist/web/index.mjs"
       },
       "require": {
-        "types": "./dist/web/index.d.cts",
-        "default": "./dist/web/index.cjs"
+        "types": "./dist/web/index.d.ts",
+        "default": "./dist/web/index.js"
       }
     },
     "./hooks": {
       "import": {
-        "types": "./dist/hooks/index.d.ts",
-        "default": "./dist/hooks/index.js"
+        "types": "./dist/hooks/index.d.mts",
+        "default": "./dist/hooks/index.mjs"
       },
       "require": {
-        "types": "./dist/hooks/index.d.cts",
-        "default": "./dist/hooks/index.cjs"
+        "types": "./dist/hooks/index.d.ts",
+        "default": "./dist/hooks/index.js"
       }
     },
     "./theme": {
       "import": {
-        "types": "./dist/theme/index.d.ts",
-        "default": "./dist/theme/index.js"
+        "types": "./dist/theme/index.d.mts",
+        "default": "./dist/theme/index.mjs"
       },
       "require": {
-        "types": "./dist/theme/index.d.cts",
-        "default": "./dist/theme/index.cjs"
+        "types": "./dist/theme/index.d.ts",
+        "default": "./dist/theme/index.js"
       }
     },
     "./stores": {
       "import": {
-        "types": "./dist/stores/index.d.ts",
-        "default": "./dist/stores/index.js"
+        "types": "./dist/stores/index.d.mts",
+        "default": "./dist/stores/index.mjs"
       },
       "require": {
-        "types": "./dist/stores/index.d.cts",
-        "default": "./dist/stores/index.cjs"
+        "types": "./dist/stores/index.d.ts",
+        "default": "./dist/stores/index.js"
       }
     },
     "./contexts": {
       "import": {
-        "types": "./dist/contexts/index.d.ts",
-        "default": "./dist/contexts/index.js"
+        "types": "./dist/contexts/index.d.mts",
+        "default": "./dist/contexts/index.mjs"
       },
       "require": {
-        "types": "./dist/contexts/index.d.cts",
-        "default": "./dist/contexts/index.cjs"
+        "types": "./dist/contexts/index.d.ts",
+        "default": "./dist/contexts/index.js"
       }
     },
     "./package.json": "./package.json"
@@ -86,7 +86,7 @@
     "src"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/verify-exports.cjs",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
