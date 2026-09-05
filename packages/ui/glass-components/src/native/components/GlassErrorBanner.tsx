@@ -9,7 +9,7 @@ import React from 'react';
 import { View, Text, StyleSheet, type ViewStyle, type StyleProp } from 'react-native';
 import { AlertCircle, X } from 'lucide-react';
 import { GlassButton } from './GlassButton';
-import { colors, spacing, borderRadius } from '../../theme';
+import { spacing, borderRadius } from '../../theme';
 
 export interface GlassErrorBannerProps {
   /** Error message to display */

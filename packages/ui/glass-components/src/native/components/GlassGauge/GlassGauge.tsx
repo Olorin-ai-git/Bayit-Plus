@@ -8,10 +8,9 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle, Path, Line, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { colors } from '../../../theme';
 import { useSpringAnimation } from '../../../hooks/useSpringAnimation';
 import type { GlassGaugeProps } from './types';
-import { valueToAngle, arcPath, polarToCartesian } from './utils';
+import { valueToAngle, arcPath } from './utils';
 
 const START_ANGLE = -120;
 const END_ANGLE = 120;

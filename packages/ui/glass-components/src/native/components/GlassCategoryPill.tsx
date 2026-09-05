@@ -109,7 +109,6 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
   const [isFocused, setIsFocused] = useState(false);
 
   const currentSize = SIZE_STYLES[size];
-  const showHighlight = isActive || isHovered || isFocused;
 
   return (
     <Pressable

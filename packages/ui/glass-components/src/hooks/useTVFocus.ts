@@ -22,7 +22,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Animated, Platform } from 'react-native';
 import {
-  TV_FOCUS,
   focusSpringConfig,
   blurSpringConfig,
   cardFocusedStyle,

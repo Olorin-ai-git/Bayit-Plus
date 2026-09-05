@@ -6,12 +6,11 @@
  */
 
 import React, { useMemo } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Svg, { Circle, Line, G } from 'react-native-svg';
 import { colors } from '../../../theme';
 import { useRadarAnimation } from '../../../hooks/useRadarAnimation';
-import type { GlassRadarProps, RadarAnomaly } from './types';
-import { RADAR_CENTER } from './utils';
+import type { GlassRadarProps } from './types';
 
 /**
  * Main radar visualization component
@@ -70,7 +69,7 @@ export const GlassRadar: React.FC<GlassRadarProps> = ({
         />
 
         {/* Agent rings */}
-        {agents.map((agent, index) => (
+        {agents.map((agent) => (
           <Circle
             key={agent.id}
             cx={center}

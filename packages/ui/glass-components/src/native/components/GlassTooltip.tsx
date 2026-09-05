@@ -7,7 +7,7 @@
 
 import React, { useState, useRef } from 'react';
 import { View, Text, Platform } from 'react-native';
-import { colors, spacing } from '../../theme';
+import { colors } from '../../theme';
 import { GlassView } from './GlassView';
 
 export interface GlassTooltipProps {

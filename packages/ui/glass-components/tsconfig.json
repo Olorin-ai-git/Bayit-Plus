@@ -22,7 +22,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "paths": {
       "@olorin/design-tokens": ["../design-tokens/dist"],
       "@olorin/design-tokens/*": ["../design-tokens/dist/*"]

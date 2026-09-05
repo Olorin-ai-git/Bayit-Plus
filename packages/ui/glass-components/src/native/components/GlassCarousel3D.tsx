@@ -22,7 +22,7 @@ import {
   type ViewStyle,
   type StyleProp,
 } from 'react-native'
-import { colors, spacing, borderRadius } from '../../theme'
+import { colors, spacing } from '../../theme'
 
 export interface GlassCarousel3DProps {
   /** Carousel items to render */
@@ -306,7 +306,6 @@ export function GlassCarousel3D({
           styles.carouselTrack,
           {
             height: itemHeight + 60,
-            // @ts-ignore - Web-specific perspective
             ...(Platform.OS === 'web' && {
               perspective: `${perspective}px`,
             }),
@@ -361,7 +360,6 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     position: 'absolute',
-    // @ts-ignore - Web-specific
     ...(Platform.OS === 'web' && {
       transformStyle: 'preserve-3d',
       backfaceVisibility: 'hidden',
