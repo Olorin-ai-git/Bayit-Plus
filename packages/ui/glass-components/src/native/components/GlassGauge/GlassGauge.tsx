@@ -29,8 +29,9 @@ export const GlassGauge: React.FC<GlassGaugeProps> = ({
   testID,
 }) => {
   // Validate inputs
-  const validValue = Number.isFinite(value) ? Math.max(0, value) : 0;
   const validMax = Number.isFinite(max) && max > 0 ? max : 100;
+  const validValue = Number.isFinite(value) ? Math.min(Math.max(0, value), validMax) : 0;
+  const display = Math.round((validValue / validMax) * 100);
 
   // Spring animation for needle
   const animValue = useSpringAnimation(validValue);
@@ -68,11 +69,16 @@ export const GlassGauge: React.FC<GlassGaugeProps> = ({
     return items;
   }, [cx, cy, radius]);
 
-  const display = Math.round(validValue);
   const fillPath = arcPath(cx, cy, radius, START_ANGLE, currentAngle);
 
   return (
-    <View style={[styles.container, { width: size, height: size }]} testID={testID}>
+    <View
+      style={[styles.container, { width: size, height: size }]}
+      testID={testID}
+      accessibilityRole="progressbar"
+      accessibilityLabel={`${label}: ${display}%`}
+      accessibilityValue={{ min: 0, max: validMax, now: validValue }}
+    >
       <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         <Defs>
           <RadialGradient id="bezelGrad" cx="50%" cy="50%" r="70%">
@@ -154,7 +160,7 @@ export const GlassGauge: React.FC<GlassGaugeProps> = ({
 
       {/* Value label */}
       <View style={styles.labelContainer}>
-        <Text style={[styles.value, { color }]}>{display}</Text>
+        <Text style={[styles.value, { color }]}>{display}%</Text>
         <Text style={styles.label}>{label}</Text>
       </View>
     </View>

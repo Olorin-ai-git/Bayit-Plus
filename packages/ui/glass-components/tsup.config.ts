@@ -12,6 +12,7 @@ export default defineConfig([
     sourcemap: true,
     splitting: false,
     treeshake: true,
+    minify: true,
     external: [
       'react',
       'react-native',
@@ -20,6 +21,7 @@ export default defineConfig([
       'react-native-safe-area-context',
       'react-native-gesture-handler',
       '@olorin/design-tokens',
+      '@olorin/shared-icons',
       'zustand',
       'nanoid',
     ],

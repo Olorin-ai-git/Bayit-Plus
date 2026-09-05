@@ -96,6 +96,7 @@
   },
   "dependencies": {
     "@olorin/design-tokens": "2.0.0",
+    "@olorin/shared-icons": "2.0.0",
     "nanoid": "^5.0.0",
     "zustand": "^5.0.0"
   },

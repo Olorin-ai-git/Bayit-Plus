@@ -358,7 +358,8 @@ describe('NotificationProvider', () => {
 
       // Should log warning for invalid action
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Invalid action provided')
+        expect.stringContaining('Invalid action provided'),
+        expect.any(String)
       );
 
       consoleWarnSpy.mockRestore();
