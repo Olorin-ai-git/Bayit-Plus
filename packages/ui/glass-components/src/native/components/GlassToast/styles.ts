@@ -3,7 +3,7 @@
  * StyleSheet styles for cross-platform toast notifications
  */
 
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, type ViewStyle } from 'react-native';
 import { colors, spacing, borderRadius, fontSize } from '../../../theme';
 import type { NotificationLevel } from './types';
 
@@ -62,7 +62,7 @@ const PLATFORM_SIZES = {
   tv: { min: 500, max: 600 },
 };
 
-const SWIPE_THRESHOLD = {
+const SWIPE_THRESHOLD: Partial<Record<typeof Platform.OS, number>> & { default: number } = {
   ios: 50,
   android: 60,
   web: 80,
@@ -98,11 +98,10 @@ export const baseStyles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: spacing.sm,
   },
-  webGlass: Platform.OS === 'web' ? {
-    // @ts-ignore - Web-specific CSS properties
+  webGlass: (Platform.OS === 'web' ? {
     backdropFilter: 'blur(24px) saturate(180%)',
     WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-  } : {},
+  } : {}) as ViewStyle & Pick<React.CSSProperties, 'backdropFilter' | 'WebkitBackdropFilter'>,
   iconContainer: {
     width: 36,
     height: 36,

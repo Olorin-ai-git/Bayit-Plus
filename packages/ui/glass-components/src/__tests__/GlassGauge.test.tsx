@@ -16,9 +16,9 @@ import { GlassGauge } from '../native/components/GlassGauge';
 import type { RiskZone } from '../native/components/GlassGauge/types';
 
 const mockZones: RiskZone[] = [
-  { min: 0, max: 33, color: '#00ff00', label: 'Low' },
-  { min: 33, max: 66, color: '#ffff00', label: 'Medium' },
-  { min: 66, max: 100, color: '#ff0000', label: 'High' },
+  { start: 0, end: 33, color: '#00ff00' },
+  { start: 33, end: 66, color: '#ffff00' },
+  { start: 66, end: 100, color: '#ff0000' },
 ];
 
 describe('GlassGauge', () => {
@@ -250,7 +250,7 @@ describe('GlassGauge', () => {
       );
 
       const element = getByTestId('gauge');
-      expect(element.props.accessibilityRole).toBe('progressbar');
+      expect(element.getAttribute('role')).toBe('progressbar');
     });
 
     it('includes value in accessibility label', () => {
@@ -265,7 +265,7 @@ describe('GlassGauge', () => {
       );
 
       const element = getByTestId('gauge');
-      expect(element.props.accessibilityLabel).toContain('85');
+      expect(element.getAttribute('aria-label')).toContain('85');
     });
   });
 

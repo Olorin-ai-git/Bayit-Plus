@@ -17,7 +17,7 @@ import {
   I18nManager,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, spacing } from '../../theme';
+import { colors } from '../../theme';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface GlassTableColumn<T = Record<string, unknown>> {

@@ -120,7 +120,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
-    // @ts-ignore - Web-specific
     ...(Platform.OS === 'web' && {
       boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
       transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -142,7 +141,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
-    // @ts-ignore - Web-specific
     ...(Platform.OS === 'web' && {
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
     }),
@@ -169,7 +167,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 10,
     opacity: 0,
-    // @ts-ignore - Web-specific
     ...(Platform.OS === 'web' && {
       backdropFilter: 'blur(4px)',
       transition: 'opacity 0.2s ease, background-color 0.2s ease',
@@ -219,7 +216,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '50%',
-    // @ts-ignore - Web-specific
     ...(Platform.OS === 'web' && {
       backgroundImage: 'linear-gradient(transparent, rgba(0, 0, 0, 0.9))',
     }),
@@ -240,7 +236,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '600',
     color: colors.text,
-    // @ts-ignore - Web-specific
     ...(Platform.OS === 'web' && {
       textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
     }),

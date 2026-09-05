@@ -19,7 +19,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing } from '../../theme';
+import { colors, spacing } from '../../theme';
 import { useTVFocus } from '../../hooks/useTVFocus';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
@@ -87,7 +87,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
       ? typeof document !== 'undefined' && document.documentElement?.dir === 'rtl'
       : I18nManager.isRTL);
 
-  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+  const { isFocused, handleFocus, handleBlur, scaleTransform } = useTVFocus({
     styleType: 'input',
   });
 

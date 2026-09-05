@@ -12,7 +12,7 @@ import {
   runOnJS,
   type SharedValue,
 } from 'react-native-reanimated';
-import { I18nManager } from 'react-native';
+import { I18nManager, type ViewStyle } from 'react-native';
 
 const SPRING_CONFIG = {
   damping: 20,
@@ -24,7 +24,7 @@ const SPRING_CONFIG = {
 };
 
 interface AnimationResult {
-  animatedStyle: any;
+  animatedStyle: ViewStyle;
   slideAnim: SharedValue<number>;
   opacityAnim: SharedValue<number>;
 }

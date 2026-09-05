@@ -87,20 +87,20 @@ describe('GlassEmptyState', () => {
       expect(getByTestId('custom-icon')).toBeTruthy();
     });
 
-    it('displays icon emoji when no custom icon', () => {
+    it('displays icon text when no custom icon', () => {
       const { getByText } = render(
-        <GlassEmptyState title="Emoji" iconEmoji="" />
+        <GlassEmptyState title="Icon" iconEmoji="!" />
       );
 
-      expect(getByText('')).toBeTruthy();
+      expect(getByText('!')).toBeTruthy();
     });
 
     it('displays content type icon', () => {
-      const { getByText } = render(
+      const { container } = render(
         <GlassEmptyState title="Movie" contentType="movie" />
       );
 
-      expect(getByText('')).toBeTruthy();
+      expect(container.querySelector('svg')).toBeTruthy();
     });
 
     it('shows loading spinner when loading', () => {
@@ -225,7 +225,7 @@ describe('GlassEmptyState', () => {
 
   describe('Styling', () => {
     it('applies custom backgroundColor', () => {
-      const { getByTestID } = render(
+      const { getByTestId } = render(
         <GlassEmptyState
           title="Custom"
           backgroundColor="#ff0000"
@@ -234,7 +234,7 @@ describe('GlassEmptyState', () => {
       );
 
       // Test will verify backgroundColor is applied via style prop
-      expect(getByTestID || true).toBeTruthy();
+      expect(getByTestId('custom-bg')).toBeTruthy();
     });
 
     it('applies custom titleColor', () => {
@@ -261,7 +261,7 @@ describe('GlassEmptyState', () => {
       );
 
       const element = getByTestId('glass-empty-state');
-      expect(element.props.accessibilityRole).toBe('status');
+      expect(element.getAttribute('role')).toBe('status');
     });
 
     it('uses custom accessibility label', () => {
@@ -292,7 +292,7 @@ describe('GlassEmptyState', () => {
       );
 
       const element = getByTestId('glass-empty-state');
-      expect(element.props.accessibilityHint).toBe('This is a hint');
+      expect(element.getAttribute('aria-description')).toBe('This is a hint');
     });
   });
 

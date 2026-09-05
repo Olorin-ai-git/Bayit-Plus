@@ -5,7 +5,7 @@
  * Can be extended to support theme switching in the future.
  */
 
-import { glassTheme, colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
 
 export interface GlassThemeConfig {
   colors: typeof colors;

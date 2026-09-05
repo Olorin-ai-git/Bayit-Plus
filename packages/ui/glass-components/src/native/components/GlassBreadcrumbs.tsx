@@ -15,6 +15,7 @@ import {
   I18nManager,
   ViewStyle,
   StyleProp,
+  StyleSheet,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, fontSize } from '../../theme';
@@ -134,7 +135,7 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
   }
 
   // Native: Use gradient fallback
-  const gradientStyle = [
+  const gradientStyle: StyleProp<ViewStyle> = [
     {
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.sm,
@@ -150,7 +151,7 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
       colors={[colors.glass, colors.glassStrong]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      style={gradientStyle as any}
+      style={StyleSheet.flatten(gradientStyle)}
       {...({ testID } as object)}
     >
       {renderContent()}

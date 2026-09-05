@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies (workspace root)
         run: npm ci
 
+      - name: Build test package dependencies
+        run: npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-icons
+
       - name: Run notification system tests
         working-directory: packages/ui/glass-components
         run: npm test -- --coverage

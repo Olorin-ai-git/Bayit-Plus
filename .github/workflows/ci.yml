@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build provider package artifacts
+        run: npm run build --workspace=@bayit/i18n && npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-i18n
+
       - name: Lint packages
         run: npm run lint
 
@@ -56,6 +59,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build provider package artifacts
+        run: npm run build --workspace=@bayit/i18n && npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-i18n
+
       - name: Type check
         run: npm run type-check
 
@@ -74,6 +80,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Build provider package artifacts
+        run: npm run build --workspace=@bayit/i18n && npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-i18n
 
       - name: Build packages
         run: npm run build:packages

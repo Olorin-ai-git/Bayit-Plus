@@ -74,7 +74,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   const minHeight = isMobile ? 56 : 50; // 56px on mobile for comfortable touch
   const fontSize = isMobile ? 16 : 14; // 16px on mobile prevents iOS zoom
 
-  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+  const { isFocused, handleFocus, handleBlur, scaleTransform } = useTVFocus({
     styleType: 'input',
     onFocus: () => props.onFocus?.(null as unknown as Parameters<NonNullable<TextInputProps['onFocus']>>[0]),
     onBlur: () => props.onBlur?.(null as unknown as Parameters<NonNullable<TextInputProps['onBlur']>>[0]),
