@@ -86,12 +86,13 @@
     "src"
   ],
   "scripts": {
-    "build": "tsup && node scripts/verify-exports.cjs",
+    "build": "npm run clean && tsup && node scripts/verify-exports.cjs && npm run test:package",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "jest",
+    "test:package": "node --experimental-vm-modules --test tests/package-notification-store.test.cjs",
     "test:watch": "jest --watch"
   },
   "dependencies": {
@@ -105,7 +106,7 @@
     "react-native": "^0.76.0",
     "react-native-gesture-handler": "^2.14.0",
     "react-native-linear-gradient": "^2.8.3",
-    "react-native-reanimated": "^3.19.5",
+    "react-native-reanimated": ">=3.0.0",
     "react-native-safe-area-context": "^4.8.0",
     "react-native-svg": "^15.0.0"
   },
