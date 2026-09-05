@@ -9,8 +9,8 @@ module.exports = {
     'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-web|react-native-linear-gradient|react-native-web-linear-gradient|react-router-dom|lucide-react)/)',
   ],
   testMatch: [
-    '**/__tests__/**/*.(test|spec).(ts|tsx|js|jsx)',
-    '**/*.(test|spec).(ts|tsx|js|jsx)',
+    '**/__tests__/**/*.test.(ts|tsx|js|jsx)',
+    '**/*.test.(ts|tsx|js|jsx)',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx,js,jsx}',

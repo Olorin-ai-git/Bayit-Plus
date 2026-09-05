@@ -34,9 +34,9 @@ smoke_backend() {
   fi
 
   # Minimal env so settings/config import without real secrets.
-  export MONGODB_URL="${MONGODB_URL:-mongodb://localhost:27017}"
+  export MONGODB_URI="${MONGODB_URI:-mongodb://localhost:27017}"
   export MONGODB_DB_NAME="${MONGODB_DB_NAME:-bayit_smoke}"
-  export SECRET_KEY="${SECRET_KEY:-smoke-secret-key}"
+  export SECRET_KEY="${SECRET_KEY:-$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')}"
   export DEBUG="${DEBUG:-true}"
   export ENVIRONMENT="${ENVIRONMENT:-test}"
 
@@ -81,7 +81,7 @@ smoke_web() {
     return
   fi
   if [ "${WITH_BUILD}" = "1" ]; then
-    run_step_shell "web production build" "cd web && npm run build"
+    run_step_shell "web production build" "npm run build --workspace=@bayit/i18n && npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-i18n && cd web && npm run build"
   else
     # Lightweight default: config + entrypoints resolve without a full build.
     run_step_shell "web build config resolves" \
