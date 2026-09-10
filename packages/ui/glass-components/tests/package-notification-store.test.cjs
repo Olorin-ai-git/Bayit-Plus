@@ -1,12 +1,14 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const Module = require('node:module');
+const os = require('node:os');
 const path = require('node:path');
 const { test } = require('node:test');
 const { pathToFileURL } = require('node:url');
 const vm = require('node:vm');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
+const { buildSync } = require('esbuild');
 
 const packageDirectory = path.resolve(__dirname, '..');
 const manifest = require('../package.json');
@@ -161,5 +163,64 @@ test('emitted CJS and ESM entries share one notification store', async () => {
     reset();
   } finally {
     Module._load = originalLoad;
+  }
+});
+
+test('independently bundled Glass logging shares application monitoring state', () => {
+  const outputDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'glass-logger-'));
+  const applicationBundle = path.join(outputDirectory, 'application.cjs');
+  const glassBundle = path.join(outputDirectory, 'glass.cjs');
+  const loggerStateKey = Symbol.for('@bayit/shared-utils/logger-state');
+  const build = (entry, outfile) => buildSync({
+    entryPoints: [entry],
+    outfile,
+    bundle: true,
+    platform: 'node',
+    format: 'cjs',
+    define: {
+      'process.env.NODE_ENV': '"production"',
+      __DEV__: 'false',
+    },
+    logLevel: 'silent',
+  });
+
+  try {
+    delete globalThis[loggerStateKey];
+    build(path.resolve(packageDirectory, '../../../shared/utils/logger.ts'), applicationBundle);
+    build(path.resolve(packageDirectory, 'src/utils/logger.ts'), glassBundle);
+    const application = require(applicationBundle);
+    const glass = require(glassBundle);
+    const observations = [];
+    application.initLoggerSentry({
+      captureException(error, options) {
+        observations.push({ kind: 'exception', message: error.message, extra: options?.extra });
+      },
+      captureMessage(message, options) {
+        observations.push({ kind: 'message', message, extra: options?.extra });
+      },
+      setTag(key, value) {
+        observations.push({ kind: 'tag', key, value });
+      },
+    });
+    application.setCorrelationId('package-runtime-correlation');
+    glass.logger.error('glass-error', 'PackageRuntime', new Error('glass-failure'));
+
+    assert.notEqual(application.logger, glass.logger);
+    assert.deepEqual(observations[0], {
+      kind: 'tag',
+      key: 'correlation_id',
+      value: 'package-runtime-correlation',
+    });
+    assert.equal(observations[1]?.kind, 'exception');
+    assert.equal(observations[1]?.message, 'glass-failure');
+    assert.equal(observations[1]?.extra?.context, 'PackageRuntime');
+    assert.equal(
+      observations[1]?.extra?.correlationId,
+      'package-runtime-correlation',
+    );
+    assert.equal(observations[1]?.extra?.data?.message, 'glass-failure');
+  } finally {
+    delete globalThis[loggerStateKey];
+    fs.rmSync(outputDirectory, { recursive: true, force: true });
   }
 });

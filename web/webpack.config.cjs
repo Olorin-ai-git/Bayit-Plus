@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
+const reviewBuildSha = require('./build/review-metadata.cjs');
 
 // Paths - use absolute paths to avoid resolution issues
 const sharedPath = path.resolve(__dirname, '../shared');
@@ -174,6 +175,7 @@ module.exports = (env, argv) => {
               babelrc: false,
               configFile: false,
               cacheDirectory: true,
+              sourceType: 'unambiguous',
               presets: [
                 ['@babel/preset-env', { loose: true, modules: false }],
                 ['@babel/preset-react', { runtime: 'automatic' }],
@@ -280,6 +282,7 @@ module.exports = (env, argv) => {
       new webpack.ProvidePlugin({
         process: 'process/browser',
       }),
+      new webpack.DefinePlugin({ __BAYIT_BUILD_SHA__: JSON.stringify(reviewBuildSha()) }),
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'public/index.html'),
       }),

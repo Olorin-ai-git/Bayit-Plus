@@ -13,6 +13,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:package-bundling": "node --test tests/package-commonjs-boundary.test.cjs",
     "deploy": "npm run build && firebase deploy --only hosting",
     "deploy:preview": "npm run build && firebase hosting:channel:deploy preview",
     "build:webos": "TARGET=webos webpack --mode production --config webpack.config.cjs",

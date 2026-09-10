@@ -24,9 +24,18 @@ interface SentryLike {
   setTag: (key: string, value: string) => void;
 }
 
-// Global state for Sentry instance and correlation ID
-let sentryInstance: SentryLike | null = null;
-let currentCorrelationId: string | null = null;
+interface LoggerState {
+  sentryInstance: SentryLike | null;
+  currentCorrelationId: string | null;
+}
+
+const LOGGER_STATE_KEY = Symbol.for('@bayit/shared-utils/logger-state');
+const loggerStateRegistry = globalThis as unknown as Record<symbol, LoggerState | undefined>;
+const loggerState = loggerStateRegistry[LOGGER_STATE_KEY] ?? {
+  sentryInstance: null,
+  currentCorrelationId: null,
+};
+loggerStateRegistry[LOGGER_STATE_KEY] = loggerState;
 
 // Environment detection
 const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV !== 'production';
@@ -45,7 +54,7 @@ const LOG_LEVELS: Record<LogLevel, number> = {
  * Call this once during app initialization with your Sentry instance.
  */
 export const initLoggerSentry = (sentry: SentryLike): void => {
-  sentryInstance = sentry;
+  loggerState.sentryInstance = sentry;
 };
 
 /**
@@ -53,16 +62,16 @@ export const initLoggerSentry = (sentry: SentryLike): void => {
  * This ID will be included in all subsequent log entries.
  */
 export const setCorrelationId = (id: string | null): void => {
-  currentCorrelationId = id;
-  if (sentryInstance && id) {
-    sentryInstance.setTag('correlation_id', id);
+  loggerState.currentCorrelationId = id;
+  if (loggerState.sentryInstance && id) {
+    loggerState.sentryInstance.setTag('correlation_id', id);
   }
 };
 
 /**
  * Get the current correlation ID.
  */
-export const getCorrelationId = (): string | null => currentCorrelationId;
+export const getCorrelationId = (): string | null => loggerState.currentCorrelationId;
 
 /**
  * Generate a new correlation ID.
@@ -101,7 +110,7 @@ const formatLog = (entry: LogEntry): string => {
  * Send log entry to Sentry if configured.
  */
 const sendToSentry = (entry: LogEntry): void => {
-  if (!sentryInstance || isDev) {
+  if (!loggerState.sentryInstance || isDev) {
     return;
   }
 
@@ -115,9 +124,9 @@ const sendToSentry = (entry: LogEntry): void => {
   }
 
   if (entry.level === 'error' && entry.data instanceof Error) {
-    sentryInstance.captureException(entry.data, { extra });
+    loggerState.sentryInstance.captureException(entry.data, { extra });
   } else if (entry.level === 'error' || entry.level === 'warn') {
-    sentryInstance.captureMessage(entry.message, {
+    loggerState.sentryInstance.captureMessage(entry.message, {
       level: entry.level,
       extra,
     });
@@ -138,7 +147,7 @@ const createLogEntry = (
   context,
   data,
   timestamp: new Date().toISOString(),
-  correlationId: currentCorrelationId || undefined,
+  correlationId: loggerState.currentCorrelationId || undefined,
 });
 
 /**

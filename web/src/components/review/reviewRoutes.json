@@ -1,0 +1,21 @@
+[
+  "/", "/login", "/register", "/forgot-password", "/reset-password", "/auth/google/callback",
+  "/profiles", "/onboarding", "/tv-login", "/payment/success", "/payment/cancelled", "/privacy", "/policy", "/terms",
+  "/admin", "/admin/users", "/admin/campaigns", "/admin/campaigns/new", "/admin/subscriptions", "/admin/costs",
+  "/admin/ai-usage", "/admin/billing", "/admin/transactions", "/admin/refunds", "/admin/plans", "/admin/marketing",
+  "/admin/emails", "/admin/email-templates", "/admin/push", "/admin/logs", "/admin/librarian", "/admin/live-quotas",
+  "/admin/uploads", "/admin/settings", "/admin/content", "/admin/content/new", "/admin/avatar-movie-studio",
+  "/admin/featured", "/admin/categories", "/admin/live-channels", "/admin/radio-stations", "/admin/podcasts",
+  "/admin/audiobooks", "/admin/translations", "/admin/widgets", "/admin/recordings", "/admin/voice", "/admin/trivia",
+  "/admin/diagnostics", "/admin/live-ai-dataflow", "/live", "/epg", "/vod", "/radio", "/podcasts", "/audiobooks",
+  "/search", "/profile", "/subscribe", "/judaism", "/children", "/games", "/friends", "/favorites", "/downloads",
+  "/playlist", "/watchlist", "/recordings", "/morning-ritual", "/widgets", "/settings", "/settings/family-controls",
+  "/contact", "/help", "/support", "/glossary", "/phonetic-mirror", "/missions", "/discover", "/listen", "/byoc",
+  "/submit", "/household", "/messages", "/zeh-ani", "/zeh-ani/magic-mirror", "/zeh-ani/v2v", "/zeh-ani/highlights",
+  "/zeh-ani/contacts", "/zeh-ani/feedback", "/zeh-ani/avatar", "/zeh-ani/consent", "/zeh-ani/movie-interactions",
+  "/chess/:code", "/admin/users/:userId", "/admin/users/:userId/live-quota", "/admin/campaigns/:campaignId",
+  "/admin/content/:contentId/edit", "/admin/podcasts/:podcastId/episodes", "/live/:channelId",
+  "/vod/series/:seriesId", "/vod/movie/:movieId", "/vod/collection/:collectionId", "/vod/:contentId",
+  "/radio/:stationId", "/podcasts/:showId", "/audiobooks/:audiobookId", "/player/:userId", "/discover/:featureId",
+  "/messages/:friendId", "/zeh-ani/movie-interactions/:contentId", "/zeh-ani/movie-interactions/:contentId/:characterName"
+]

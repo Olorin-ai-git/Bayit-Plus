@@ -1,8 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import reviewBuildSha from "./build/review-metadata.cjs";
 
 export default defineConfig({
+  define: { __BAYIT_BUILD_SHA__: JSON.stringify(reviewBuildSha()) },
   plugins: [react()],
   resolve: {
     alias: {

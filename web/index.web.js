@@ -10,6 +10,7 @@ import React from 'react';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import App from './src/App';
+import ReviewGate from './src/components/review/ReviewGate';
 import '../shared/styles/globals.css';
 import './src/styles/tv.css';
 
@@ -374,6 +375,7 @@ const BayitWebApp = () => (
     <SafeAreaProvider>
       <Router>
         <App />
+        {!IS_TV_BUILD && <ReviewGate />}
       </Router>
     </SafeAreaProvider>
   </React.StrictMode>
