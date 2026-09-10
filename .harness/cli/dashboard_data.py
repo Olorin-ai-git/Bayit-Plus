@@ -4,7 +4,7 @@ import datetime
 import re
 from pathlib import Path
 
-from cli import config, fileio, units
+from cli import config, fileio, twogates, units
 from cli.commands_info import load_install, resolve_soft, state_word, unit_flags
 from cli.errors import HarnessError
 from cli.gitcmd import run_git
@@ -165,4 +165,5 @@ def collect(target, canonical_flag=None) -> dict:
         "project_entries": parse_entries(project_sec),
         "runs": _runs(root),
         "ledger": _promote_ledger(canonical),
+        "twogates": twogates.gate_summary(root),
     }

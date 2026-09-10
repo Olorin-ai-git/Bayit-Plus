@@ -119,6 +119,13 @@ PAGE = """<!doctype html>
   record, newest first{ledger_scope_note}.</p>
   <div class="ledger">{ledger_rows}</div>
 
+  <h2>TwoGates enrollment · criterion 9</h2>
+  <p class="dial-caption">The onboarding rule's second half: this repo's agent
+  sessions behind Gate 1 (credential egress) with its Gate 2 fleet registered.
+  Rendered from <span class="mono">.harness/twogates.json</span> — evidence of
+  the last live verification, aged, never assumed current.</p>
+  <div class="ledger"><div class="ledger-row">{twogates_card}</div></div>
+
   <h2>Playbook · durable ({durable_count})</h2>
   <div class="cards">{durable_cards}</div>
 

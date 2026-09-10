@@ -151,3 +151,165 @@
   hold, and count a target as done only when all of them do. Name the blocker for each missing
   half concretely enough to act on. A summary that counts the finished half is read as a finished
   rollout, and the gap is discovered by whoever depends on it.
+### HL-b015d614 — Re-measure a fleet-wide count instead of quoting an earlier one
+
+- category: verification
+- scope: durable
+- detected-by: a rollout across 26 repos lost three installs while it was running — two untracked
+  directories removed by another session's `git clean`, and one COMMIT erased by a force-update of
+  the branch it sat on; the journal's "24 of 26 tracked" was true when written and had become
+  false within the hour
+- instruction: Treat any count over a fleet of repositories, machines or services as a measurement
+  at an instant, never as a property that stays true. Re-run the count at the moment you report it,
+  say when it was taken, and expect concurrent work to undo installs — committing survives
+  `git clean`, and nothing you commit survives someone force-updating the branch.
+
+### HL-94604384 — Check a reviewer's stated blocker before accepting the deferral
+
+- category: process
+- scope: durable
+- detected-by: a review deferred regenerating a shipped artifact because "the original renderer is unknown"; the file's own producer metadata named it, and that exact version was installed locally
+- instruction: When a reviewer defers work because a fact is unknown, try to establish the fact before accepting the deferral — artifact metadata, tool versions and file headers usually answer it in one command. Deferrals justified by missing information become permanent once written down.
+
+### HL-14123680 — Commit before a git-checkout-based mutation battery, or it reverts your uncommitted work
+
+- category: tooling
+- scope: durable
+- detected-by: a mutation script whose per-mutation `restore()` ran `git checkout -- <file>` was run against an UNCOMMITTED redesign; the first restore reverted the working tree to HEAD, so every later mutation ran against the old code with the new tests (an already-red baseline) and the "pinned" results were meaningless — and the redesign itself was silently clobbered out of the tree
+- instruction: A mutation battery that restores by `git checkout -- <file>` reverts to the committed state, not to your working tree. Commit the code under test BEFORE running it, or the first restore erases your uncommitted changes and every mutation afterward tests the wrong code. Verify the tree is clean (`git status --porcelain`) both before and after the battery, and confirm the baseline is green on the SAME state the mutations run against.
+
+### HL-a4b4e398 — Replace a substring credential-key match with suffix-OR-segment, never segment-only
+
+- category: architecture
+- scope: durable
+- detected-by: fixing a credential detector that flagged any key merely CONTAINING a credential word (`tokenizer`→`token`, `secretary`→`secret`, `passwordless`→`password`, `tokens`→`token`), a word-SEGMENT-only rewrite then MISSED run-together keys (`mypassword`, `dbpassword`, `serviceapikey`) — a leak — because they have no separator/camelCase boundary to split on
+- instruction: To tell a real credential key from a word that merely contains a credential prefix, match the credential word as a SUFFIX of the separator-stripped key OR as a whole segment (split on separators AND camelCase) — not as a bare substring (which over-flags `tokenizer`/`secretary`) and not as a segment only (which under-flags run-together `mypassword`/`dbpassword` and leaks). The compound part `apikey` is covered by the suffix arm (`serviceapikey` ends with it). NFKC-fold the key first so a fullwidth homoglyph resolves; a cross-script confusable (Cyrillic `а`) still evades ASCII normalization and needs a confusables table — a separate, module-wide concern.
+
+### HL-e39c0be9 — Re-baseline a boundary diff against CURRENT origin/main, not a stale snapshot
+
+- category: verification
+- scope: durable
+- detected-by: a corpus boundary invariant (accepted-doc set unchanged) was checked against a snapshot captured from an older `origin/main`; while the branch worked, main advanced with unrelated commits that legitimately changed the projection, so the diff falsely reported "DIFFERS" and looked like a regression
+- instruction: When verifying that a change leaves a boundary (accepted set, hashes, counts) unchanged versus main, generate the baseline from the CURRENT `origin/main` at check time — a fresh worktree/checkout — not a snapshot taken when the branch was cut. Main moves; a stale baseline manufactures phantom diffs and hides real ones. Same discipline as binding evidence to HEAD (HL-18c02fd3).
+
+### HL-c000267f — Test an exemption through every layer that transforms the input before the check
+
+- category: verification
+- scope: durable
+- detected-by: a whole-string allowlist exemption in a credential detector passed every DIRECT-call probe, but the module's fragment-reconstruction layer (`reject_sensitive_fragments`, which concatenates adjacent fragments to catch split credentials) glued the exempt literal to the next fragment, so the byte-exact match failed and an honest answer was withheld — a HIGH finding my own direct probes missed and the audit's fan-out caught
+- instruction: When a detector sits behind a layer that TRANSFORMS its input before the check — fragment joining, streaming re-buffering, percent-decoding, NFKC folding, markdown stripping — exercise every exemption AND every positive case THROUGH that layer, not only by calling the leaf predicate directly. A whole-string allowlist is the classic victim: anything that abuts or mangles the literal defeats it. Prefer an exemption keyed on the stable, unsteerable part (here, the URI netloc) over the whole string, so a transformed input still matches.
+
+### HL-672d225a — Key UI restoration state by history edges, not destination URLs
+
+- category: architecture
+- scope: durable
+- detected-by: adversarial audit rounds on the dedicated Intelligence workspace found directional, direct-link, supersession, inactive-view, and routerless siblings behind destination-keyed restoration state
+- instruction: When restoring focus or scroll across a routed workspace, attach the origin only to the committed workspace history entry that owns it. A destination Overview entry can be approached from different edges and cannot identify the origin by itself. Keep explicit entry and close intents transient, cancel the losing intent on every committed route, cancel all transients when the product becomes inactive, and test both Back and Forward around a reused intermediate destination. Disable persistent history lookup entirely when the host supplies no real history-entry key.
+
+### HL-6dfb613d — Query icon-only controls by accessible name
+
+- category: verification
+- scope: durable
+- detected-by: the real Layer 2 workspace run failed because the role-rotation control exposes an accessible label but no inner text
+- instruction: In browser verification, locate icon-only controls by semantic role and accessible name or `aria-label`; never use `innerText` as their identity. An icon control with correct accessibility semantics can have intentionally empty text content.
+
+### HL-8b4b699b — Freeze the audited tree and do not touch it until the round ends
+
+- category: process
+- scope: durable
+- detected-by: audit round 1 of the EyeMix class-D branch reported "the worktree reverts the fix" as a CRITICAL finding from two independent dimensions — an artifact of my having reverted files mid-round for a browser probe, which invalidated the whole round
+- instruction: Take the working-state hash before launching an audit round and do not modify the tree — not for a probe, not for a doc edit — until every dimension has reported. If a probe needs to mutate the tree, run it BEFORE the round or AFTER it, and re-hash to prove the tree was restored. A round that read a moving target is not a round, however clean its findings look.
+
+### HL-9dec5cd6 — Enumerate a defect class mechanically before claiming it is closed
+
+- category: verification
+- scope: durable
+- detected-by: an agent sweep reported ~13 members of a prototype-lookup class and I wrote that the class was closed; a scripted enumeration afterwards found 142 sites, including siblings inside files the same branch was editing
+- instruction: When you claim a class is swept, generate the site list with a script and commit it. A sweep recalled by an agent, however thorough it reads, is a sample; the reader inherits a claim instead of an enumeration and cannot check it. Regenerate the list AFTER the fixes land, or it is stale on arrival — and say in the artifact that it is a search space, not a finding list.
+
+### HL-4e0195a0 — Check what a fix's fallback ASSERTS, not just that it stops the crash
+
+- category: verification
+- scope: durable
+- detected-by: three fallbacks added to close a lookup class each fabricated meaning — a "modelled" provenance on a money table, the most favourable of three verdicts, and a measured 0.00 on an explainability receipt
+- instruction: A guard's fallback is a value the product will state as fact. Ask what it claims when it fires: if the honest answer is "we do not know", render nothing or the raw input rather than the nearest plausible member of the map. Prefer the most conservative option over the most convenient one, and never pick the value that asserts a benefit.
+
+### HL-e301666c — Validate a redirect target the way its consumer parses it
+
+- category: architecture
+- scope: durable
+- detected-by: a redirect allow-list of three prefix rules (starts with one "/", no "//", no backslash) accepted "/<TAB>/evil.example", which urljoin then resolved to https://evil.example — a live open redirect behind a guard whose comment said it prevented exactly that
+- instruction: Prefix and character rules are not a URL policy. Reject control characters outright, then PARSE the candidate the way the consumer will and assert the parsed properties you actually need — no scheme, no authority. URL parsers strip tab, CR and LF before parsing, so a string can satisfy every textual rule and still name another origin.
+
+### HL-2a7cedf8 — Run each step of an evidence script in its own subshell
+
+- category: tooling
+- scope: durable
+- detected-by: a battery script using `{ cd dir && cmd; }` per step leaked the cd, so five of six steps failed with "No such file or directory" while the script printed "COMPLETE" and exited 0
+- instruction: In an evidence script, run every step as `( cd "$abs_dir" && cmd )` and write the exit code into each log. Then READ the logs rather than the script's own summary line — a wrapper that reports success while its steps never ran is the exact false green the evidence exists to prevent.
+
+### HL-55818e11 — Disclose sampling caps in audit reports up front
+
+- category: verification
+- scope: durable
+- detected-by: the parity audit capped promise extraction at 28 per document; the adversarial auditor read the resulting uniform per-doc tallies as a fabrication signal (quota'd counts presented as extraction)
+- instruction: When an audit bounds its evidence collection (top-N extraction, sampling, per-item caps), state the cap and the ranking rule in the report's method section before the numbers appear. Uniform counts across differently-sized inputs read as fabricated unless the cap is disclosed; the disclosure converts a credibility defect into a stated scope.
+
+### HL-25433372 — Read a component before a spec mandates reusing it
+
+- category: architecture
+- scope: durable
+- detected-by: the gap-closure plan's task A2 mandated reusing `LineSavingReceiptBody`, whose heading unconditionally renders mapping-method copy that the same spec's owner-signed exclusion forbids — and the enforcing guard regex also blocked a word the spec required rendering; both caught only by the adversarial gate
+- instruction: Before a spec or plan names a concrete component/function as the reuse target, read that artifact and the tests guarding the destination surface. Check the reused artifact's incidental output against the spec's own exclusions, and check that existing guard assertions permit what the spec newly requires; record any needed guard refinement as an explicit contract change, never as a test loosened in passing.
+### HL-fffc6fee — Drive every cross-language vocabulary mirror with a real regenerated envelope
+
+- category: verification
+- scope: durable
+- detected-by: a frontend accept-list (`LINE_METHODS`) predated two tokens the backend had begun emitting; the all-or-nothing guard behind it blanked all 303 rows of the shipped itemized surface on the real client envelope while every test stayed green, because every test drove that surface through a purpose-built fixture containing only the old tokens
+- instruction: Wherever one language keeps a closed list mirroring another's vocabulary — an accept-list, union type, exhaustive switch, or dynamic `t(\`prefix.${value}\`)` lookup — a fixture-driven test proves nothing, because the fixture is written from the same stale understanding as the list. Add one test that drives the guard over a REAL regenerated envelope and asserts the surface survives. Then find the producer and count: if the vocabulary has no single authoritative collection (ours was split across two modules, five tokens and two), that absence IS the root cause, so either unify it or pin the two lists against each other in a test.
+
+### HL-a09e9ccf — Derive a collection-wide status from its weakest member, never from any member
+
+- category: architecture
+- scope: durable
+- detected-by: `applied` is a per-scene producer decision, but the mode-wide `savingsStatus` was computed with an ANY-of test, so promoting one scene of sixty printed "Saved" over fifty-nine scenes of un-applied estimate and relabelled every eliminated day past-tense while the row beneath it still read "Approved"
+- instruction: When a per-item decision feeds a label covering the whole collection, an ANY-of test overclaims the moment the first item flips. Derive the collection's status from its WEAKEST member, and check what the label actually drives before choosing: a status that only decorates can be loose, but one the UI reads to swap a claim ("Saved" vs "estimate", past tense vs conditional) must be conservative. Sort unknown states below every known one so an unrecognised token can never promote a claim.
+
+### HL-457da655 — Re-derive a state transition's role gate the moment the transition starts moving money
+
+- category: architecture
+- scope: durable
+- detected-by: an endpoint's role set was written when its states only recorded creative judgement; a new state on the same endpoint published realised-savings figures, and the gate was inherited unchanged — letting the one role the money registry deliberately keeps moneyless author numbers its own redaction table withholds from it
+- instruction: A role gate is scoped to what the endpoint DID when the gate was written. Adding a state, field, or side effect that moves money to an existing endpoint silently re-uses a gate that never considered it. Whenever a transition begins to publish money, re-derive its roles against the money/redaction registry and the nearest sibling money-writer, and gate that transition separately from the endpoint's read-ish states. The invariant to check: a role must never be able to author a number it is not permitted to read.
+
+### HL-258abea4 — Pin every counter a non-vacuity sweep collects, including the ones that are zero
+
+- category: verification
+- scope: durable
+- detected-by: a sweep advertised four invariants and its companion "teeth" test pinned only the four counters that happened to be non-zero; measuring showed two of the invariants incremented nothing on any scenario, so they asserted zero times while reading as covered
+- instruction: A non-vacuity test that pins only the counters that happen to be non-zero certifies exactly the coverage that already exists and hides the rest. Assert EVERY counter the sweep collects: the exercised ones non-zero, the unexercised ones explicitly `== 0` with the measured reason in the message. That turns silent vacuity into a stated fact and makes the test fail the day the surface lights up, forcing whoever lit it to give that invariant its teeth.
+
+### HL-872fa82f — Re-check the refutations when verifiers are told to default to refuted
+
+- category: process
+- scope: durable
+- detected-by: an adversarial review raised 27 findings and its refuters — instructed to default to REFUTED when uncertain — passed only 3; re-reading the 24 refutations by hand found 3 more that were real, including two user-visible honesty defects and a sweep that asserted half of what it advertised
+- instruction: A "default to refuted" instruction buys precision by trading away recall, so the refuted pile is evidence, not exhaust. Read the refused findings' titles before acting on the survivors, and personally re-verify any that (a) two or more independent finders raised, or (b) touch the product's core stated invariant. Refutations that say "pre-existing on main" or "a sibling already does this" are the ones to check hardest: both can be true while the PR is still the thing that makes the defect reachable.
+
+### HL-02ded9c4 — Clear STATE.md only when it still points at your own run
+
+- category: process
+- scope: durable
+- detected-by: at close-out STATE.md pointed at a CONCURRENT session's run journal (that goal was mid-gate and its worktree was still advancing); clearing it to "No active goal." as SELF-IMPROVE step 6 says would have erased a live pointer and asserted something false — a goal WAS active, just not mine
+- instruction: SELF-IMPROVE's "clear STATE.md" step assumes one session per repo. Before clearing, read the file: if it names YOUR run journal, clear it; if it names another session's, leave it exactly as it is and record in your own journal that you did, with the pointer you found. The file is a single shared slot, so the last writer wins and a blind clear silently strands the other session. Never write "No active goal." while another goal is demonstrably running.
+### HL-1741d708 — Verify feature eligibility before treating absence as failure
+
+- category: verification
+- scope: durable
+- detected-by: adversarial review withdrew a High source-document finding after discovering every
+  probe fixture had `qa.overall=FAIL`, a contract state that deliberately forbids retention; the
+  same production route retained the document when rerun with a QA-PASS golden
+- instruction: Before declaring an optional artifact, side effect or downstream surface broken,
+  verify that the exact probe satisfied every eligibility predicate that creates it. Print the
+  gating state beside the absent output, then rerun with a known-eligible input. A 200 response and
+  an empty list prove only absence, not that the write was owed.

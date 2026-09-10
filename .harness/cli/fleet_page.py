@@ -10,6 +10,7 @@ import datetime
 import html
 from pathlib import Path
 
+from cli import config, twogates
 from cli.dashboard_page import CSS as PROJECT_CSS
 from cli.errors import HarnessError
 from cli.fleet_template import INDEX
@@ -104,6 +105,40 @@ def units_chip(row: dict) -> str:
     return f'<span class="chip current">{row["units_current"]}/{total} current</span>'
 
 
+# Criterion 9: a repo is onboarded only when the harness half (units_chip,
+# above) AND the TwoGates enrollment half are both green. The status→class
+# palette lives in twogates.status_class — the single source of truth shared
+# with the per-project dashboard card — not a second copy here.
+def gate_chip(row: dict) -> str:
+    """The criterion-9 enrollment half — same palette as the units chip.
+
+    A status outside the six gate_summary() defines still renders: `broken`
+    class, text naming it unrecognized, so it can never be mistaken for a
+    passing repo and never raises KeyError to take the rest of the page down
+    with it.
+    """
+    info = row["twogates"]
+    status = info["status"]
+    age = info["age_days"]
+    # Every chip that names an age has to survive a None one. "minted" now
+    # carries an age — 26 fleet rows sat there age-less, so a mint from five
+    # years ago read exactly like this morning's — and a minted marker's stamp
+    # is never validated (it claims no verification), so None reaches here.
+    ago = f"{age}d ago" if age is not None else "age not recorded"
+    text = {
+        "enrolled": (f'gate 1 verified {ago} · '
+                     + ("gate 2 armed" if info["fleet_armed"]
+                        else "gate 2 registered")),
+        "minted": f"gate 1 minted, egress not routed · recorded {ago}",
+        "stale": f"verification stale ({ago})",
+        "failed": "verification failed",
+        "broken": "enrollment record broken",
+        "not-enrolled": "not enrolled",
+    }.get(status, f"unrecognized gate status: {status}")
+    cls = twogates.status_class(status)
+    return f'<span class="chip {cls}">{html.escape(text)}</span>'
+
+
 def _row(row: dict, href: str | None) -> str:
     name = html.escape(row["project"])
     cell = f'<a href="{html.escape(href)}">{name}</a>' if href else name
@@ -111,6 +146,7 @@ def _row(row: dict, href: str | None) -> str:
             if row["step"] is not None else '<span class="step-pip idle">–</span>')
     state = html.escape(row["broken"] or row["state"] or "no state line")
     return (f'<tr><td class="proj">{cell}</td><td>{units_chip(row)}</td>'
+            f'<td>{gate_chip(row)}</td>'
             f'<td>{step}</td><td class="mono">{row["runs"]}</td>'
             f'<td class="stateline">{state}</td></tr>')
 
@@ -141,6 +177,13 @@ def render_index(rows: list[dict], hrefs: dict, roots: list[Path]) -> str:
         broken_class=" alert" if broken else "",
         active=sum(1 for r in rows if r["step"] is not None),
         journals=sum(r["runs"] for r in rows),
+        enrolled=sum(1 for r in rows if r["twogates"]["status"] == "enrolled"),
+        minted=sum(1 for r in rows if r["twogates"]["status"] == "minted"),
+        # The legend's stale-horizon day count names config.STALE_AFTER_DAYS,
+        # the same default gate_summary() itself falls back to (config.py) —
+        # never a literal duplicating it, which would go stale the moment the
+        # default moves (Finding 4, doc-regression review).
+        stale_default=config.STALE_AFTER_DAYS,
         rows="".join(_row(r, hrefs.get(r["dir"])) for r in rows),
         root_list=html.escape(", ".join(str(r) for r in roots)),
         canonical_commit=html.escape(

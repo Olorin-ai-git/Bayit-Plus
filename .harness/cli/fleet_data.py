@@ -13,6 +13,7 @@ in here would be wrong on every machine but one.
 import re
 from pathlib import Path
 
+from cli import twogates
 from cli.dashboard_data import collect
 from cli.errors import HarnessError
 from cli.manifest import MANIFEST_REL
@@ -127,7 +128,7 @@ def summarise(project_dir: Path) -> dict:
             "units_total": 0, "units_current": 0, "runs": 0, "durable": 0,
             "step": None, "data": None, "canonical_reachable": False,
             "canonical_commit": "", "stale": [], "broken_units": [],
-            "unverified": True,
+            "unverified": True, "twogates": twogates.gate_summary(project_dir),
         })
         return row
     units = data["units"]
@@ -157,6 +158,15 @@ def summarise(project_dir: Path) -> dict:
         "canonical_reachable": data["canonical_reachable"],
         "latest_run": data["runs"][0]["title"] if data["runs"] else "",
         "data": data,
+        # The value collect() already read, never a second read of the same
+        # marker. Two reads meant two resolutions of the project root (collect
+        # keys off find_git_root, this function off project_dir) and two
+        # snapshots in time, so the index chip and the project page could
+        # disagree about one marker — which the design doc says can never
+        # happen. The broken branch above keeps its own independent read on
+        # purpose: there is no collect() result there to reuse, and a repo
+        # whose install is unreadable must still report its enrollment half.
+        "twogates": data["twogates"],
     })
     return row
 

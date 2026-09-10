@@ -8,6 +8,11 @@ from cli.errors import HarnessError
 
 CONFIG_REL = ".harness/harness.json"
 SCHEMA_VERSION = 1
+# Default staleness horizon for a TwoGates marker's last live verification;
+# overridden per install by the optional "twogates_verify_stale_days" key
+# validated below. It lives here, with its key's validator and its only reader
+# (stale_after_days), rather than in twogates.py, which no longer names it.
+STALE_AFTER_DAYS = 14
 
 
 def _fail(path: Path, reason: str) -> None:
@@ -31,6 +36,13 @@ def _validate(path: Path, data: dict) -> None:
     installed_at = data.get("installed_at")
     if not isinstance(installed_at, str) or not installed_at.strip():
         _fail(path, '"installed_at" must be a non-empty string')
+    stale_days = data.get("twogates_verify_stale_days")
+    if stale_days is not None and (
+        not isinstance(stale_days, int) or isinstance(stale_days, bool)
+        or stale_days < 1
+    ):
+        _fail(path, '"twogates_verify_stale_days" must be a positive integer '
+                    "when present")
 
 
 def load(root: Path) -> dict:
@@ -52,6 +64,22 @@ def load(root: Path) -> dict:
         )
     _validate(path, data)
     return data
+
+
+def stale_after_days(root: Path) -> int:
+    """The install's TwoGates staleness threshold; the default when unset or
+    unreadable.
+
+    A broken harness.json is doctor's finding, not the gate summary's — the
+    summary must still render, so config failures degrade to the default.
+    """
+    try:
+        value = load(root).get("twogates_verify_stale_days")
+    except HarnessError:
+        return STALE_AFTER_DAYS
+    if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+        return value
+    return STALE_AFTER_DAYS
 
 
 def save(root: Path, data: dict) -> None:
