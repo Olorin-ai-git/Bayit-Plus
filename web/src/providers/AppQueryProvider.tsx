@@ -5,5 +5,5 @@ export default function AppQueryProvider({ identity, children }: PropsWithChildr
   // Account transitions receive a new cache before their children render.
   const client = useMemo(() => new QueryClient(), [identity]);
   useEffect(() => () => client.clear(), [client]);
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return <QueryClientProvider key={JSON.stringify(identity)} client={client}>{children}</QueryClientProvider>;
 }

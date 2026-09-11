@@ -36,3 +36,19 @@ test('the same account retains its cache while account changes dispose private d
   expect(screen.getByText('Empty history')).toBeInTheDocument();
   expect(second.getQueryData(['private-history'])).toBeUndefined();
 });
+
+
+test('existing query observers reset before a different account renders', async () => {
+  function Consumer({ account }: { account: string }) {
+    const result = useQuery({ queryKey: ['private-account'], queryFn: async () => account, staleTime: Infinity });
+    return <p>{result.data ?? 'Loading account'}</p>;
+  }
+  const view = render(<AppQueryProvider identity="account-a"><Consumer account="A private data" /></AppQueryProvider>);
+  expect(await screen.findByText('A private data')).toBeInTheDocument();
+  view.rerender(<AppQueryProvider identity="account-b"><Consumer account="B private data" /></AppQueryProvider>);
+  expect(screen.queryByText('A private data')).not.toBeInTheDocument();
+  expect(await screen.findByText('B private data')).toBeInTheDocument();
+  view.rerender(<AppQueryProvider identity={null}><Consumer account="Anonymous data" /></AppQueryProvider>);
+  expect(screen.queryByText('B private data')).not.toBeInTheDocument();
+  expect(await screen.findByText('Anonymous data')).toBeInTheDocument();
+});
