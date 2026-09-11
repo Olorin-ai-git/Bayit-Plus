@@ -38,9 +38,8 @@ jobs:
       - name: Check notification coverage baseline
         working-directory: packages/ui/glass-components
         run: |
-          echo "Notification system coverage baseline established"
-          echo "Note: 90% threshold is aspirational for full package"
-          npm test -- --coverage --silent 2>&1 | grep -A 20 "Coverage summary"
+          echo "Verify configured notification coverage thresholds"
+          npm test -- --coverage --coverageReporters=text-summary --silent
 
   file-size-check:
     name: File size validation

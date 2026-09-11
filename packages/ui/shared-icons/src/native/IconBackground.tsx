@@ -76,7 +76,7 @@ export const IconBackground = React.forwardRef<React.ElementRef<typeof View>, Ic
       } as any,
     });
 
-    let containerStyle: any = [baseStyles.container, style];
+    const containerStyle: any = [baseStyles.container, style];
 
     if (isTV) {
       if (focused) {

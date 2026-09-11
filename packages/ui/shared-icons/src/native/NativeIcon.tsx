@@ -83,7 +83,7 @@ export const NativeIcon: React.FC<NativeIconProps> = ({
   const glassEffect = effectLevel ? GLASS_EFFECTS[effectLevel] : null;
 
   // Build container styles
-  let containerStyle: any = [styles.container, style];
+  const containerStyle: any = [styles.container, style];
 
   if (withBackground && glassEffect) {
     const containerStyles = StyleSheet.create({
