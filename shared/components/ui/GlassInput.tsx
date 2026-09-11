@@ -56,8 +56,6 @@ export const GlassInput: React.FC<GlassInputProps> = ({
 
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: disableFocusBorder ? 'none' : 'input',
-    onFocus: () => props.onFocus?.(null as any),
-    onBlur: () => props.onBlur?.(null as any),
   });
 
   return (

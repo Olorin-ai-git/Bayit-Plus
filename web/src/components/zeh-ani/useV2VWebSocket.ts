@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import i18n from "i18next";
 import { buildWsUrl } from "@/services/wsUrl";
 import logger from "@bayit/shared-utils/logger";
 import { useAuthStore } from "@bayit/shared-stores/authStore";
@@ -38,7 +39,6 @@ export function useV2VWebSocket(
 
     ws.onopen = () => {
       if (wsRef.current !== ws) { ws.close(); return; }
-      reconnectCountRef.current = 0;
       ws.send(JSON.stringify({ type: "authenticate", token }));
       wsLogger.info("V2V WebSocket connected", { avatarId });
     };
@@ -48,6 +48,7 @@ export function useV2VWebSocket(
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'authenticated') {
+          reconnectCountRef.current = 0;
           useV2VStore.setState({ wsConnected: true });
           return;
         }
@@ -65,14 +66,16 @@ export function useV2VWebSocket(
           scoreDelta: String(data.score_delta),
         });
       } catch (parseError) {
+        useV2VStore.setState({ error: i18n.t('zehAni.v2v.errors.transformFailed') });
         wsLogger.error("Failed to parse WebSocket message", parseError);
       }
     };
 
-    ws.onclose = () => {
+    ws.onclose = (event) => {
       if (wsRef.current !== ws) return;
       wsRef.current = null;
-      useV2VStore.setState({ wsConnected: false });
+      useV2VStore.setState(state => ({ wsConnected: false, error: state.error || i18n.t('zehAni.v2v.errors.transformFailed') }));
+      if (event.code >= 4000 && event.code < 5000) return;
       if (reconnectCountRef.current < MAX_RECONNECT_ATTEMPTS) {
         reconnectCountRef.current += 1;
         reconnectTimerRef.current = setTimeout(connectWebSocket, WS_RECONNECT_DELAY_MS);

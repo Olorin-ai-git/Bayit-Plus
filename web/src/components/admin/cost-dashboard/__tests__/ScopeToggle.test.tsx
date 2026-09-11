@@ -98,3 +98,23 @@ describe('ScopeToggle', () => {
     expect(mockOnScopeChange).not.toHaveBeenCalled();
   });
 });
+
+it('keeps the selected user visible and searches the supported users endpoint', async () => {
+  const { usersService } = await import('@/services/adminApi');
+  (usersService.getUsers as jest.Mock).mockResolvedValue({ items: [{ id: 'user-1', name: 'Selected User', email: 'one@example.com' }] });
+  const onScopeChange = jest.fn();
+  const { rerender } = render(<ScopeToggle scope="per_user" selectedUserId="user-1" onScopeChange={onScopeChange} />);
+  expect(await screen.findByRole('option', { name: 'Selected User' })).toBeInTheDocument();
+  expect(screen.getByTestId('glass-select')).toHaveValue('user-1');
+  const user = userEvent.setup();
+  await user.type(screen.getByRole('textbox', { name: 'Search' }), 'target@example.com');
+  (usersService.getUsers as jest.Mock).mockResolvedValue({ items: [{ id: 'user-2', name: 'Found User', email: 'target@example.com' }] });
+  await user.click(screen.getByRole('button', { name: 'Search' }));
+  expect(await screen.findByRole('option', { name: 'Found User' })).toBeInTheDocument();
+  expect(usersService.getUsers).toHaveBeenLastCalledWith({ search: 'target@example.com' });
+  expect(screen.getByTestId('glass-select')).toHaveValue('user-1');
+  await user.selectOptions(screen.getByTestId('glass-select'), 'user-2');
+  expect(onScopeChange).toHaveBeenCalledWith('per_user', 'user-2');
+  rerender(<ScopeToggle scope="per_user" selectedUserId="user-2" onScopeChange={onScopeChange} />);
+  expect(screen.getByTestId('glass-select')).toHaveValue('user-2');
+});

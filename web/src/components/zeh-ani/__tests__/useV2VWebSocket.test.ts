@@ -1,3 +1,4 @@
+import '@/__tests__/support/costDashboardI18n';
 import { renderHook, act } from '@testing-library/react';
 import { useV2VWebSocket } from '../useV2VWebSocket';
 import { useV2VStore } from '@/stores/v2vStore';
@@ -9,10 +10,10 @@ class Socket {
   static instances: Socket[] = [];
   readyState = 1;
   onopen: (() => void) | null = null;
-  onclose: (() => void) | null = null;
+  onclose: ((event: { code: number }) => void) | null = null;
   onmessage: ((event: { data: string }) => void) | null = null;
   send = jest.fn();
-  close = jest.fn(() => { this.readyState = 3; this.onclose?.(); });
+  close = jest.fn(() => { this.readyState = 3; this.onclose?.({ code: 1006 }); });
   constructor(readonly url: string) { Socket.instances.push(this); }
   message(data: object) { this.onmessage?.({ data: JSON.stringify(data) }); }
 }
@@ -60,4 +61,18 @@ it('ignores callbacks from the previous avatar after identity changes', () => {
   expect(useV2VStore.getState().wsConnected).toBe(false);
   act(() => jest.runOnlyPendingTimers());
   expect(Socket.instances).toHaveLength(2);
+});
+
+it('does not reconnect after a terminal authentication or consent rejection', () => {
+  renderHook(() => useV2VWebSocket('avatar', jest.fn()));
+  act(() => { Socket.instances[0].message({ type: 'error', message: 'Consent required' }); Socket.instances[0].onclose?.({ code: 4003 }); });
+  act(() => jest.runOnlyPendingTimers());
+  expect(Socket.instances).toHaveLength(1);
+  expect(useV2VStore.getState().error).toBe('Consent required');
+});
+it('surfaces malformed result frames instead of leaving processing without an outcome', () => {
+  const onResult = jest.fn(); renderHook(() => useV2VWebSocket('avatar', onResult));
+  act(() => Socket.instances[0].message({ type: 'v2v_result', score_before: null }));
+  expect(onResult).not.toHaveBeenCalled();
+  expect(useV2VStore.getState().error).toBe('Voice transformation failed');
 });

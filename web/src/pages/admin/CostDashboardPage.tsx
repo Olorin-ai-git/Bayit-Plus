@@ -34,6 +34,7 @@ export default function CostDashboardPage() {
       <div className="mb-6 space-y-4">
         <ScopeToggle
           scope={dashboard.scope}
+          selectedUserId={dashboard.selectedUserId}
           onScopeChange={(scope, userId) => dashboard.setScope(scope, userId)}
         />
       </div>
