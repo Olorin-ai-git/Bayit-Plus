@@ -30,3 +30,6 @@ UI end state: existing Bayit Glass application plus local review panel whose pla
 - Root explicitly authorized the authenticated journey repair. Current user session remains in isolated visible Chromium on http://localhost:3200; registered OAuth callback uses localhost, not127.0.0.1. API relay targets actual https://api.bayit.tv and JSON responses are verified. No auth/token bypass.
 - Implementation and own six-dimensional re-audit: gpt-6-astra/high. Independent cold finder: gpt-5.6-sol/high. Final judge after dry audit.
 - New focused checks:22review cases,2real QueryClient cases,8emitted dependency contracts. Negative control removes the native dependency declaration only in test memory and fails as expected. Full source frozen and browser review repeated after commit.
+
+- BAYIT-5: root authorized bounded workflow repair. Official actionlint1.7.12 found malformed multiline if at scene-search-deploy.yml:283. Fold condition as YAML, repair expression-quote siblings and declare directly referenced summary dependencies; validator now exits0 without disabling gates.
+- BAYIT-6: authenticated settings crashes on actual subscription envelope. Parse existing backend shape, preserve paid plan/renewal fields, distinguish unknown data from no subscription, and load credit balance independently. Eight schema cases pass; actual settings re-review follows new build.
