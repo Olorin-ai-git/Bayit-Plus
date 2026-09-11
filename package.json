@@ -80,7 +80,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.27.0",
-    "@playwright/test": "^1.57.0",
+    "@playwright/test": "^1.58.1",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^18.2.45",
@@ -133,6 +133,80 @@
   },
   "syncpack": {
     "versionGroups": [
+      {
+        "label": "Web and extension preserve their supported Zustand 4 runtime",
+        "packages": [
+          "bayit-plus-web",
+          "@bayit/translator-extension"
+        ],
+        "dependencies": [
+          "zustand"
+        ],
+        "pinVersion": "^4.5.7"
+      },
+      {
+        "label": "Legacy package lint contracts retain TypeScript ESLint 6",
+        "packages": [
+          "@bayit/translator-extension",
+          "@bayit/shared-avatar-services",
+          "@bayit/shared-voice-services"
+        ],
+        "dependencies": [
+          "@typescript-eslint/eslint-plugin",
+          "@typescript-eslint/parser"
+        ],
+        "pinVersion": "^6.15.0"
+      },
+      {
+        "label": "Root lint contract retains TypeScript ESLint 7",
+        "packages": [
+          "olorin-ecosystem"
+        ],
+        "dependencies": [
+          "@typescript-eslint/eslint-plugin",
+          "@typescript-eslint/parser"
+        ],
+        "pinVersion": "^7.0.0"
+      },
+      {
+        "label": "Partner lint contract retains TypeScript ESLint 8",
+        "packages": [
+          "bayit-plus-partner-portal"
+        ],
+        "dependencies": [
+          "@typescript-eslint/eslint-plugin",
+          "@typescript-eslint/parser"
+        ],
+        "pinVersion": "^8.53.1"
+      },
+      {
+        "label": "Extension retains its supported Vite 5 toolchain",
+        "packages": [
+          "@bayit/translator-extension"
+        ],
+        "dependencies": [
+          "vite"
+        ],
+        "pinVersion": "^5.0.8"
+      },
+      {
+        "label": "Web and partner retain their supported Vite 7 toolchain",
+        "packages": [
+          "bayit-plus-web",
+          "bayit-plus-partner-portal"
+        ],
+        "dependencies": [
+          "vite"
+        ],
+        "pinVersion": "^7.3.1"
+      },
+      {
+        "label": "React Native build and peer ranges must overlap",
+        "dependencies": [
+          "react-native"
+        ],
+        "policy": "sameRange"
+      },
       {
         "label": "Glass native safe-area peer and test support stays on major 4",
         "packages": [
