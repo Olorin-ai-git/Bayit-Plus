@@ -2930,7 +2930,61 @@
         "topSpenders": "Top Spenders"
       },
       "title": "Cost Dashboard",
-      "view": "View"
+      "view": "View",
+      "aiCosts": "AI Costs",
+      "infrastructure": "Infrastructure",
+      "thirdParty": "Third-party",
+      "thirdPartyApis": "Third-party APIs",
+      "translation": "Translation",
+      "search": "Search",
+      "costBreakdown": "Cost Breakdown",
+      "loadingBreakdown": "Loading breakdown...",
+      "percentOfTotal": "% of total",
+      "components": "Components",
+      "systemWide": "System-wide",
+      "perUser": "Per User",
+      "metrics": {
+        "costPerMinute": "Cost/Min",
+        "monthlyRate": "Monthly Rate",
+        "costsYtd": "Costs YTD",
+        "revenueYtd": "Revenue YTD"
+      },
+      "plSummary": {
+        "netProfitLoss": "Net Profit/Loss",
+        "margin": "margin",
+        "revenue": "Revenue",
+        "totalCosts": "Total Costs"
+      },
+      "timeline": {
+        "title": "Cost Timeline",
+        "loading": "Loading timeline...",
+        "amountLabel": "Amount (USD)",
+        "revenue": "Revenue",
+        "totalCost": "Total Cost",
+        "netProfit": "Net Profit",
+        "showingData": "Showing data from {{start}} to {{end}}"
+      },
+      "categories": {
+        "permanent": "Permanent",
+        "transient": "Transient",
+        "permanentDesc": "Fixed operating costs",
+        "transientDesc": "Usage-based operating costs",
+        "permanentVsTransient": "Permanent vs Transient",
+        "permanentFixed": "Permanent (Fixed)",
+        "transientVariable": "Transient (Variable)",
+        "detailedBreakdown": "Detailed Breakdown",
+        "costItem": "Cost Item",
+        "category": "Category",
+        "amount": "Amount"
+      },
+      "topSpenders": {
+        "title": "Top Spenders",
+        "loading": "Loading top spenders...",
+        "rank": "Rank",
+        "userId": "User ID",
+        "costRange": "Cost Range",
+        "privacyNote": "User identifiers are hashed and costs are reported as ranges."
+      }
     },
     "importWizard": {
       "loadingCategories": "Loading categories...",

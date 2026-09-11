@@ -27,14 +27,14 @@ export const costDashboardService = {
 
   async getTimeline(params: {
     scope: "system_wide" | "per_user";
-    granularity: "hourly" | "daily" | "monthly";
+    granularity?: "hourly" | "daily" | "monthly";
     startDate: string;
     endDate: string;
     userId?: string;
   }) {
     const query = new URLSearchParams({
       scope: params.scope,
-      granularity: params.granularity,
+      ...(params.granularity && { granularity: params.granularity }),
       start_date: params.startDate,
       end_date: params.endDate,
       ...(params.userId && { user_id: params.userId }),
@@ -44,12 +44,16 @@ export const costDashboardService = {
   },
 
   async getBreakdown(params: {
-    period: "month" | "year";
+    period?: "month" | "year";
+    startDate?: string;
+    endDate?: string;
     scope: "system_wide" | "per_user";
     userId?: string;
   }) {
     const query = new URLSearchParams({
-      period: params.period,
+      ...(params.period && { period: params.period }),
+      ...(params.startDate && { start_date: params.startDate }),
+      ...(params.endDate && { end_date: params.endDate }),
       scope: params.scope,
       ...(params.userId && { user_id: params.userId }),
     });
@@ -58,12 +62,16 @@ export const costDashboardService = {
   },
 
   async getBalanceSheet(params: {
-    period: "month" | "year";
+    period?: "month" | "year";
+    startDate?: string;
+    endDate?: string;
     scope: "system_wide" | "per_user";
     userId?: string;
   }) {
     const query = new URLSearchParams({
-      period: params.period,
+      ...(params.period && { period: params.period }),
+      ...(params.startDate && { start_date: params.startDate }),
+      ...(params.endDate && { end_date: params.endDate }),
       scope: params.scope,
       ...(params.userId && { user_id: params.userId }),
     });
@@ -73,11 +81,15 @@ export const costDashboardService = {
 
   async getPerMinute(params: {
     period: "today" | "month";
+    startDate?: string;
+    endDate?: string;
     scope: "system_wide" | "per_user";
     userId?: string;
   }) {
     const query = new URLSearchParams({
-      period: params.period,
+      ...(params.period && { period: params.period }),
+      ...(params.startDate && { start_date: params.startDate }),
+      ...(params.endDate && { end_date: params.endDate }),
       scope: params.scope,
       ...(params.userId && { user_id: params.userId }),
     });
@@ -85,9 +97,9 @@ export const costDashboardService = {
     return api.get(`/admin/costs/per-minute?${query.toString()}`);
   },
 
-  async getTopSpenders(params: { period: string; limit?: number }) {
+  async getTopSpenders(params: { period?: string; limit?: number }) {
     const query = new URLSearchParams({
-      period: params.period,
+      ...(params.period && { period: params.period }),
       ...(params.limit && { limit: params.limit.toString() }),
     });
 
@@ -96,11 +108,15 @@ export const costDashboardService = {
 
   async getComparison(params: {
     period: string;
+    startDate?: string;
+    endDate?: string;
     scope: "system_wide" | "per_user";
     userId?: string;
   }) {
     const query = new URLSearchParams({
-      period: params.period,
+      ...(params.period && { period: params.period }),
+      ...(params.startDate && { start_date: params.startDate }),
+      ...(params.endDate && { end_date: params.endDate }),
       scope: params.scope,
       ...(params.userId && { user_id: params.userId }),
     });
@@ -108,7 +124,7 @@ export const costDashboardService = {
     return api.get(`/admin/costs/comparison?${query.toString()}`);
   },
 
-  async getUserBreakdown(userId: string) {
-    return api.get(`/admin/costs/users/${userId}/breakdown`);
+  async getUserBreakdown(userId: string, dates?: { startDate: string; endDate: string }) {
+    return api.get(`/admin/costs/users/${encodeURIComponent(userId)}/breakdown`, dates ? { params: { start_date: dates.startDate, end_date: dates.endDate } } : undefined);
   },
 };

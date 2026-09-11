@@ -1,6 +1,7 @@
 // Categories tab - displays permanent vs transient cost breakdown
 
 import React from "react";
+import { costShare } from "@/services/adminApi/costData";
 import { useTranslation } from "react-i18next";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { GlassCard } from "@olorin/glass-ui";
@@ -12,31 +13,21 @@ interface CategoriesTabProps {
 export default function CategoriesTab({ dashboard }: CategoriesTabProps) {
   const { t } = useTranslation();
 
+  const breakdown = dashboard?.data?.breakdown;
+  const permanent = breakdown?.total_permanent;
+  const transient = breakdown?.total_transient;
+  const permanentShare = costShare(permanent, breakdown?.total_platform);
+  const transientShare = costShare(transient, breakdown?.total_platform);
+  const money = (value: number | null | undefined) => value == null ? t('common.unknown') : `$${value.toLocaleString()}`;
   const comparisonData = [
-    {
-      category: t('admin.costDashboard.categories.permanent'),
-      fixed: 8120,
-      color: "#60a5fa",
-      description: t('admin.costDashboard.categories.permanentDesc'),
-    },
-    {
-      category: t('admin.costDashboard.categories.transient'),
-      variable: 6620,
-      color: "#fb923c",
-      description: t('admin.costDashboard.categories.transientDesc'),
-    },
+    { category: t('admin.costDashboard.categories.permanent'), fixed: permanent, color: '#60a5fa', description: t('admin.costDashboard.categories.permanentDesc') },
+    { category: t('admin.costDashboard.categories.transient'), variable: transient, color: '#fb923c', description: t('admin.costDashboard.categories.transientDesc') },
   ];
-
   const detailedBreakdown = [
-    { label: "GCP Infrastructure", type: t('admin.costDashboard.categories.permanent'), amount: 2000 },
-    { label: "MongoDB Atlas", type: t('admin.costDashboard.categories.permanent'), amount: 500 },
-    { label: "Firebase", type: t('admin.costDashboard.categories.permanent'), amount: 300 },
-    { label: "Sentry", type: t('admin.costDashboard.categories.permanent'), amount: 100 },
-    { label: "CDN", type: t('admin.costDashboard.categories.permanent'), amount: 200 },
-    { label: t('admin.costDashboard.aiCosts') + " (STT/TTS)", type: t('admin.costDashboard.categories.transient'), amount: 3200 },
-    { label: t('admin.costDashboard.search') + " & LLM", type: t('admin.costDashboard.categories.transient'), amount: 1850 },
-    { label: t('admin.costDashboard.thirdPartyApis'), type: t('admin.costDashboard.categories.transient'), amount: 1570 },
-  ];
+    ['ai_costs', t('admin.costDashboard.aiCosts')],
+    ['infrastructure_costs', t('admin.costDashboard.infrastructure')],
+    ['thirdparty_costs', t('admin.costDashboard.thirdParty')],
+  ].flatMap(([key, type]) => Object.entries(breakdown?.[key] ?? {}).map(([label, amount]) => ({ label, type, amount: amount as number | null })));
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -46,7 +37,7 @@ export default function CategoriesTab({ dashboard }: CategoriesTabProps) {
           <p className="text-white font-medium">{data.category}</p>
           <p className="text-sm text-gray-400">{data.description}</p>
           <p className="text-orange-400 font-semibold mt-1">
-            ${(data.fixed || data.variable).toLocaleString()}
+            {money(data.fixed ?? data.variable)}
           </p>
         </div>
       );
@@ -54,6 +45,8 @@ export default function CategoriesTab({ dashboard }: CategoriesTabProps) {
     return null;
   };
 
+  if (dashboard?.loading?.breakdown) return <GlassCard>{t('common.loading')}</GlassCard>;
+  if (dashboard?.errors?.breakdown) return <GlassCard><p role="alert">{t('common.error')}: {dashboard.errors.breakdown}</p></GlassCard>;
   return (
     <div className="space-y-6">
       <GlassCard className="p-6 backdrop-blur-xl rounded-lg bg-black/30 border border-purple-500/20">
@@ -61,23 +54,23 @@ export default function CategoriesTab({ dashboard }: CategoriesTabProps) {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="p-4 bg-black/50 rounded-lg border border-blue-500/20">
             <p className="text-sm text-gray-400 mb-2">{t('admin.costDashboard.categories.permanentFixed')}</p>
-            <p className="text-3xl font-bold text-blue-400">$8,120</p>
-            <p className="text-xs text-gray-500 mt-2">55%{t('admin.costDashboard.percentOfTotal')}</p>
+            <p className="text-3xl font-bold text-blue-400">{money(permanent)}</p>
+            <p className="text-xs text-gray-500 mt-2">{permanentShare === null ? t('common.unknown') : `${permanentShare.toFixed(2)}${t('admin.costDashboard.percentOfTotal')}`} </p>
             <p className="text-xs text-gray-600 mt-3">
               {t('admin.costDashboard.categories.permanentDesc')}
             </p>
           </div>
           <div className="p-4 bg-black/50 rounded-lg border border-orange-500/20">
             <p className="text-sm text-gray-400 mb-2">{t('admin.costDashboard.categories.transientVariable')}</p>
-            <p className="text-3xl font-bold text-orange-400">$6,620</p>
-            <p className="text-xs text-gray-500 mt-2">45%{t('admin.costDashboard.percentOfTotal')}</p>
+            <p className="text-3xl font-bold text-orange-400">{money(transient)}</p>
+            <p className="text-xs text-gray-500 mt-2">{transientShare === null ? t('common.unknown') : `${transientShare.toFixed(2)}${t('admin.costDashboard.percentOfTotal')}`} </p>
             <p className="text-xs text-gray-600 mt-3">
               {t('admin.costDashboard.categories.transientDesc')}
             </p>
           </div>
         </div>
 
-        <div className="flex justify-center py-4">
+        {permanent != null && transient != null && <div className="flex justify-center py-4">
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={comparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(168, 85, 247, 0.1)" />
@@ -96,7 +89,7 @@ export default function CategoriesTab({ dashboard }: CategoriesTabProps) {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </div>}
       </GlassCard>
 
       <GlassCard className="p-6 backdrop-blur-xl rounded-lg bg-black/30 border border-purple-500/20">
@@ -126,7 +119,7 @@ export default function CategoriesTab({ dashboard }: CategoriesTabProps) {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right font-semibold text-orange-400">
-                    ${item.amount.toLocaleString()}
+                    {money(item.amount)}
                   </td>
                 </tr>
               ))}

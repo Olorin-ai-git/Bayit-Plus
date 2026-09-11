@@ -1,3 +1,4 @@
+import '@/__tests__/support/costDashboardI18n';
 import React from 'react';
 import { render } from '@testing-library/react';
 import MetricsGrid from '../MetricsGrid';

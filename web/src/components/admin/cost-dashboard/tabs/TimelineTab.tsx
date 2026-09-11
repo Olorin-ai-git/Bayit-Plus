@@ -12,19 +12,10 @@ interface TimelineTabProps {
 export default function TimelineTab({ dashboard }: TimelineTabProps) {
   const { t, i18n } = useTranslation();
 
-  // Generate sample timeline data for last 30 days
-  const timelineData = Array.from({ length: 30 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (30 - i));
-    const revenue = 15000 + Math.random() * 5000;
-    const cost = 8000 + Math.random() * 3000;
-    return {
-      date: date.toLocaleDateString(i18n.language === 'he' ? 'he-IL' : 'en-US', { month: "short", day: "numeric" }),
-      revenue: Math.round(revenue),
-      cost: Math.round(cost),
-      profit: Math.round(revenue - cost),
-    };
-  });
+  const timelineData = dashboard?.data?.timeline?.map((point: { date: string; revenue: number | null; total_cost: number | null; profit_loss: number | null }) => ({
+    date: new Date(point.date).toLocaleDateString(i18n.language),
+    revenue: point.revenue, cost: point.total_cost, profit: point.profit_loss,
+  }));
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -50,7 +41,7 @@ export default function TimelineTab({ dashboard }: TimelineTabProps) {
           <p className="text-gray-400">{t('admin.costDashboard.timeline.loading')}</p>
         ) : dashboard?.errors?.timeline ? (
           <p className="text-red-400">{t('common.error')}: {dashboard.errors.timeline}</p>
-        ) : (
+        ) : !timelineData ? (<p>{t("common.unknown")}</p>) : timelineData.length === 0 ? (<p>{t("common.noData")}</p>) : (
           <div className="flex justify-center py-4">
             <ResponsiveContainer width="100%" height={350}>
               <LineChart
@@ -110,8 +101,8 @@ export default function TimelineTab({ dashboard }: TimelineTabProps) {
       <div className="mt-4 pt-4 border-t border-purple-500/20">
         <p className="text-xs text-gray-500">
           {t('admin.costDashboard.timeline.showingData', {
-            start: dashboard?.dateRange?.start?.toLocaleDateString?.() || "N/A",
-            end: dashboard?.dateRange?.end?.toLocaleDateString?.() || "N/A"
+            start: dashboard?.dateRange?.start?.toLocaleDateString?.() || t("common.unknown"),
+            end: dashboard?.dateRange?.end?.toLocaleDateString?.() || t("common.unknown")
           })}
         </p>
       </div>

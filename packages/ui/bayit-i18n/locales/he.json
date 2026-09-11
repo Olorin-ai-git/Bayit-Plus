@@ -2930,7 +2930,61 @@
         "topSpenders": "בעלי ההוצאה הגבוהים"
       },
       "title": "לוח בקרה עלויות",
-      "view": "צפה"
+      "view": "צפה",
+      "aiCosts": "עלויות בינה מלאכותית",
+      "infrastructure": "תשתיות",
+      "thirdParty": "צד שלישי",
+      "thirdPartyApis": "ממשקי צד שלישי",
+      "translation": "תרגום",
+      "search": "חיפוש",
+      "costBreakdown": "פירוט עלויות",
+      "loadingBreakdown": "טוען פירוט עלויות...",
+      "percentOfTotal": "% מהסך הכולל",
+      "components": "רכיבים",
+      "systemWide": "כל המערכת",
+      "perUser": "לפי משתמש",
+      "metrics": {
+        "costPerMinute": "עלות לדקה",
+        "monthlyRate": "קצב חודשי",
+        "costsYtd": "עלויות מתחילת השנה",
+        "revenueYtd": "הכנסות מתחילת השנה"
+      },
+      "plSummary": {
+        "netProfitLoss": "רווח או הפסד נקי",
+        "margin": "שיעור רווח",
+        "revenue": "הכנסות",
+        "totalCosts": "סך העלויות"
+      },
+      "timeline": {
+        "title": "עלויות לאורך זמן",
+        "loading": "טוען נתונים...",
+        "amountLabel": "סכום בדולר אמריקאי",
+        "revenue": "הכנסות",
+        "totalCost": "סך העלויות",
+        "netProfit": "רווח נקי",
+        "showingData": "נתונים מ־{{start}} עד {{end}}"
+      },
+      "categories": {
+        "permanent": "קבועות",
+        "transient": "משתנות",
+        "permanentDesc": "עלויות תפעול קבועות",
+        "transientDesc": "עלויות תפעול לפי שימוש",
+        "permanentVsTransient": "עלויות קבועות ומשתנות",
+        "permanentFixed": "עלויות קבועות",
+        "transientVariable": "עלויות משתנות",
+        "detailedBreakdown": "פירוט מלא",
+        "costItem": "פריט עלות",
+        "category": "קטגוריה",
+        "amount": "סכום"
+      },
+      "topSpenders": {
+        "title": "משתמשים בעלי העלות הגבוהה ביותר",
+        "loading": "טוען דירוג...",
+        "rank": "דירוג",
+        "userId": "מזהה משתמש",
+        "costRange": "טווח עלויות",
+        "privacyNote": "מזהי המשתמשים מוסתרים באמצעות גיבוב והעלויות מוצגות כטווחים."
+      }
     },
     "importWizard": {
       "loadingCategories": "טוען קטגוריות...",

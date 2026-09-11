@@ -5,22 +5,19 @@ import { useTranslation } from "react-i18next";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { GlassCard } from "@olorin/glass-ui";
 
-interface PLSummaryProps {
-  data: {
-    profit_loss: number;
-    revenue: number;
-    total_costs: number;
-    profit_margin: number;
-  };
-}
+import type { CostOverview } from '@/services/adminApi/costData';
+
+interface PLSummaryProps { data: Pick<CostOverview, 'profit_loss' | 'revenue' | 'total_costs' | 'profit_margin'> | null; }
 
 export default function PLSummary({ data }: PLSummaryProps) {
-  const { t } = useTranslation();
-  const isProfit = data.profit_loss >= 0;
+  const { t, i18n } = useTranslation();
+  const money = (value: number | null | undefined) => value == null ? t("common.unknown") : `$${value.toLocaleString(i18n.language)}`;
+  const knownProfit = data?.profit_loss != null;
+  const isProfit = data?.profit_loss != null && data.profit_loss >= 0;
   const Icon = isProfit ? TrendingUp : TrendingDown;
-  const bgColor = isProfit ? "from-green-500/20 to-transparent" : "from-red-500/20 to-transparent";
-  const textColor = isProfit ? "text-green-400" : "text-red-400";
-  const borderColor = isProfit ? "border-green-500/50" : "border-red-500/50";
+  const bgColor = !knownProfit ? "from-gray-500/20 to-transparent" : isProfit ? "from-green-500/20 to-transparent" : "from-red-500/20 to-transparent";
+  const textColor = !knownProfit ? "text-gray-400" : isProfit ? "text-green-400" : "text-red-400";
+  const borderColor = !knownProfit ? "border-gray-500/50" : isProfit ? "border-green-500/50" : "border-red-500/50";
 
   return (
     <GlassCard
@@ -30,18 +27,15 @@ export default function PLSummary({ data }: PLSummaryProps) {
         {/* Hero Metric - Profit/Loss */}
         <div className="md:col-span-2 flex items-center gap-4">
           <div className={`p-4 rounded-xl bg-${isProfit ? "green" : "red"}-500/20`}>
-            <Icon size={32} className={textColor} />
+            {knownProfit && <Icon size={32} className={textColor} />}
           </div>
           <div>
             <p className="text-gray-400 text-sm font-medium">{t('admin.costDashboard.plSummary.netProfitLoss')}</p>
             <p className={`text-4xl font-bold ${textColor}`}>
-              ${Math.abs(data.profit_loss).toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              {money(data?.profit_loss)}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              {data.profit_margin.toFixed(2)}% {t('admin.costDashboard.plSummary.margin')}
+              {data?.profit_margin == null ? t("common.unknown") : `${data.profit_margin.toFixed(2)}%`} {t('admin.costDashboard.plSummary.margin')}
             </p>
           </div>
         </div>
@@ -50,20 +44,14 @@ export default function PLSummary({ data }: PLSummaryProps) {
         <div>
           <p className="text-gray-500 text-xs font-medium mb-1">{t('admin.costDashboard.plSummary.revenue')}</p>
           <p className="text-xl font-bold text-green-400">
-            ${data.revenue.toLocaleString("en-US", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })}
+            {money(data?.revenue)}
           </p>
         </div>
 
         <div>
           <p className="text-gray-500 text-xs font-medium mb-1">{t('admin.costDashboard.plSummary.totalCosts')}</p>
           <p className="text-xl font-bold text-red-400">
-            ${data.total_costs.toLocaleString("en-US", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })}
+            {money(data?.total_costs)}
           </p>
         </div>
       </div>

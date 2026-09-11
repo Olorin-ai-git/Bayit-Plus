@@ -1,3 +1,4 @@
+import '@/__tests__/support/costDashboardI18n';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import TimelineTab from '../TimelineTab';

@@ -2930,7 +2930,61 @@
         "topSpenders": "Mayores consumidores"
       },
       "title": "Título",
-      "view": "Ver"
+      "view": "Ver",
+      "aiCosts": "Costes de IA",
+      "infrastructure": "Infraestructura",
+      "thirdParty": "Terceros",
+      "thirdPartyApis": "API de terceros",
+      "translation": "Traducción",
+      "search": "Búsqueda",
+      "costBreakdown": "Desglose de costes",
+      "loadingBreakdown": "Cargando desglose...",
+      "percentOfTotal": "% del total",
+      "components": "Componentes",
+      "systemWide": "Todo el sistema",
+      "perUser": "Por usuario",
+      "metrics": {
+        "costPerMinute": "Coste por minuto",
+        "monthlyRate": "Ritmo mensual",
+        "costsYtd": "Costes del año",
+        "revenueYtd": "Ingresos del año"
+      },
+      "plSummary": {
+        "netProfitLoss": "Beneficio o pérdida neta",
+        "margin": "margen",
+        "revenue": "Ingresos",
+        "totalCosts": "Costes totales"
+      },
+      "timeline": {
+        "title": "Evolución de costes",
+        "loading": "Cargando evolución...",
+        "amountLabel": "Importe (USD)",
+        "revenue": "Ingresos",
+        "totalCost": "Coste total",
+        "netProfit": "Beneficio neto",
+        "showingData": "Datos del {{start}} al {{end}}"
+      },
+      "categories": {
+        "permanent": "Fijos",
+        "transient": "Variables",
+        "permanentDesc": "Costes operativos fijos",
+        "transientDesc": "Costes operativos según el uso",
+        "permanentVsTransient": "Costes fijos y variables",
+        "permanentFixed": "Permanentes (fijos)",
+        "transientVariable": "Transitorios (variables)",
+        "detailedBreakdown": "Desglose detallado",
+        "costItem": "Concepto",
+        "category": "Categoría",
+        "amount": "Importe"
+      },
+      "topSpenders": {
+        "title": "Usuarios con mayor gasto",
+        "loading": "Cargando clasificación...",
+        "rank": "Posición",
+        "userId": "ID de usuario",
+        "costRange": "Rango de costes",
+        "privacyNote": "Los identificadores de usuario están cifrados mediante hash y los costes se muestran como rangos."
+      }
     },
     "importWizard": {
       "loadingCategories": "Cargando categorías",

@@ -26,7 +26,7 @@ export default function CostDashboardPage() {
             <h1 className="text-3xl font-bold text-white">{t('admin.costDashboard.title')}</h1>
             <p className="text-gray-400">{t('admin.costDashboard.subtitle')}</p>
           </div>
-          <RealTimeStatusBadge />
+          <RealTimeStatusBadge lastUpdated={dashboard.data.overview?.last_updated} />
         </div>
       </div>
 
@@ -39,10 +39,10 @@ export default function CostDashboardPage() {
       </div>
 
       {/* P&L Summary */}
-      {dashboard.data.overview && <PLSummary data={dashboard.data.overview} />}
+      <PLSummary data={dashboard.data.overview} />
 
       {/* Key Metrics */}
-      {dashboard.data.overview && <MetricsGrid data={dashboard.data.overview} />}
+      <MetricsGrid data={dashboard.data.overview} />
 
       {/* Tabs */}
       <div className="mt-8">
