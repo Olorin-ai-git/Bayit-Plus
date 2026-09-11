@@ -93,3 +93,5 @@ export const llmSearchService = {
   ): Promise<LLMSearchResponse> =>
     api.post("/search/llm", { query, ...filters }),
 };
+
+export { companionService } from "../api.js";

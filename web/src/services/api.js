@@ -945,8 +945,10 @@ const apiBYOCService = {
 
 // AI Companion Service (API)
 const apiCompanionService = {
+  /** @returns {Promise<unknown>} */
   getContext: (contentId, language) =>
     api.post("/companion/context", { contentId, language }),
+  /** @returns {Promise<unknown>} */
   getQuiz: (contentId, language) =>
     api.post("/companion/quiz", { contentId, language }),
 };
