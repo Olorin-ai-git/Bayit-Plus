@@ -25,11 +25,13 @@ export default function ReviewOverlay({ pathname, buildSha, runtime: provided }:
   const identities = useRef(new Map<string, Element>()).current;
   const selectButton = useRef<HTMLButtonElement>(null);
   const latestPath = useRef(pathname);
+  const latestBuild = useRef(buildSha);
+  latestBuild.current = buildSha;
   latestPath.current = pathname;
-  const targets = useReviewTargets(pins, pathname, identities, runtime);
+  const targets = useReviewTargets(pins, pathname, buildSha, identities, runtime);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
-  useEffect(() => { setSelecting(false); setDraft(null); setReattach(null); }, [pathname]);
+  useEffect(() => { setSelecting(false); setDraft(null); setReattach(null); }, [pathname, buildSha]);
   useEffect(() => {
     if (returnFocus && !busy && !draft && !selecting && !collapsed) {
       selectButton.current?.focus(); setReturnFocus(false);
@@ -52,12 +54,12 @@ export default function ReviewOverlay({ pathname, buildSha, runtime: provided }:
     const selectedPath = pathname;
     try {
       const [anchor, context] = await Promise.all([captureAnchor(element, runtime), captureContext(runtime, window, buildSha, selectedPath)]);
-      if (!mounted.current || latestPath.current !== selectedPath || !element.isConnected) return;
+      if (!mounted.current || latestPath.current !== selectedPath || latestBuild.current !== buildSha || !element.isConnected) return;
       if (reattach) {
         const existing = pins.find(pin => pin.id === reattach);
         if (existing) {
           identities.set(existing.id, element);
-          store(pins.map(pin => pin.id === existing.id ? { ...pin, anchor, context, updatedAt: runtime.now() } : pin), copy.reattached);
+          store(pins.map(pin => pin.id === existing.id ? { ...pin, anchor, context, finding: pin.context.buildSha === buildSha ? pin.finding : { ...pin.finding, state: 'open' as const }, updatedAt: runtime.now() } : pin), copy.reattached);
         }
         setReattach(null); setReturnFocus(true);
       } else {
@@ -81,13 +83,13 @@ export default function ReviewOverlay({ pathname, buildSha, runtime: provided }:
   const exportPins = () => {
     try {
       const evidence = { ...JSON.parse(serializeEvidence(pins)), exportedAt: runtime.now(), buildSha,
-        anchors: pins.map(pin => ({ id: pin.id, status: targets[pin.id]?.status || 'orphan' })) };
+        anchors: pins.map(pin => ({ id: pin.id, status: pin.context.buildSha !== buildSha ? 'staleBuild' : targets[pin.id]?.status || 'orphan' })) };
       runtime.download(JSON.stringify(evidence, null, 2), `${reviewConfig.downloadName}-${buildSha}.json`);
       setNotice(copy.exported);
     } catch { runtime.log('review_export_failed'); setNotice(copy.exportFailure); }
   };
   return createPortal(<div data-bayit-review-overlay="" className="bayit-review" lang={reviewConfig.locale} dir="ltr">
-    {!collapsed && !selecting && Object.entries(targets).map(([id, target]) => target.rect && <button key={id}
+    {!collapsed && !selecting && Object.entries(targets).map(([id, target]) => pins.find(pin => pin.id === id)?.context.buildSha === buildSha && target.rect && <button key={id}
       className="bayit-review-pin" style={{ left: `min(${target.rect.left}px, calc(100vw - var(--review-touch)))`, top: `min(${target.rect.top}px, calc(100dvh - var(--review-touch)))` }}
       aria-label={`${copy.edit} ${pins.findIndex(pin => pin.id === id) + 1}`}
       onClick={() => setDraft(pins.find(pin => pin.id === id) || null)}>{pins.findIndex(pin => pin.id === id) + 1}</button>)}
@@ -106,13 +108,14 @@ export default function ReviewOverlay({ pathname, buildSha, runtime: provided }:
           <button type="button" onClick={exportPins} disabled={!buildSha || !pins.length || busy}>{copy.export}</button></div>
         <p className="bayit-review-help">{copy.privacy}</p>
         <div className="bayit-review-body">
-          {draft ? <><p>{copy.target}: <code>{draft.anchor.tag}</code></p><ReviewEditor key={draft.id} initial={draft.finding} onSave={save} onCancel={cancel} /></> :
+          {draft ? <>{draft.context.buildSha !== buildSha && <><p>{copy.staleBuild}</p><p className="bayit-review-build">{copy.recordedBuild}: <code>{draft.context.buildSha}</code></p></>}<p>{copy.target}: <code>{draft.anchor.tag}</code></p><ReviewEditor key={draft.id} initial={draft.finding} onSave={save} onCancel={cancel} /></> :
             <ol aria-label={copy.findings} className="bayit-review-list">
               {!pins.length && <li>{copy.empty}</li>}
               {pins.map((pin, index) => <li key={pin.id}>
                 <strong>{copy.pin} {index + 1}: {copy[pin.finding.severity]}</strong>
                 <p>{pin.finding.observed}</p><p>{copy[pin.finding.state]}</p>
-                <p className="bayit-review-help">{copy[targets[pin.id]?.status || 'orphan']}</p>
+                {pin.context.buildSha !== buildSha && <p className="bayit-review-build">{copy.recordedBuild}: <code>{pin.context.buildSha}</code></p>}
+                <p className="bayit-review-help">{copy[pin.context.buildSha !== buildSha ? 'staleBuild' : targets[pin.id]?.status || 'orphan']}</p>
                 <div className="bayit-review-actions">
                   <button type="button" onClick={() => setDraft(pin)}>{copy.edit} {index + 1}</button>
                   <button type="button" disabled={!buildSha || busy} onClick={() => { setReattach(pin.id); setSelecting(true); }}>{copy.reattach} {index + 1}</button>

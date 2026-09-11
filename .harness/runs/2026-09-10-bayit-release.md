@@ -21,3 +21,12 @@ Registered session worktree: /Users/olorin/.codex/worktrees/erebor-ship-20260910
 Success criteria: recovered file manifests are auditable and secret-free; native gates identify real failures without exclusions; review mode remains opt-in and local; mobile editor remains usable at320px; pins under top-right panel become pointer accessible through actual UI; exact source SHA accompanies evidence; no release-complete claim before root's full gates.
 
 UI end state: existing Bayit Glass application plus local review panel whose placement can expose otherwise occluded numbered pins. Banked screenshots at /private/tmp/erebor-bayit-tw88-visual-08367fd10 supply the existing design reference; final real browser screenshots replace speculation.
+
+## Confirmed audit and authenticated-journey corrections
+
+- BAYIT-2: preserve prior-build evidence with explicit stale status, suppress its spatial pins, and reopen it on current-build reattachment; guard async capture across build changes.
+- BAYIT-3: declare native icon runtime dependency on its owning package and verify emitted external imports across every exported entry.
+- BAYIT-4: actual user sign-in exposed absent QueryClientProvider; mount installed TanStack Query above app routes and isolate caches by existing auth identity.
+- Root explicitly authorized the authenticated journey repair. Current user session remains in isolated visible Chromium on http://localhost:3200; registered OAuth callback uses localhost, not127.0.0.1. API relay targets actual https://api.bayit.tv and JSON responses are verified. No auth/token bypass.
+- Implementation and own six-dimensional re-audit: gpt-6-astra/high. Independent cold finder: gpt-5.6-sol/high. Final judge after dry audit.
+- New focused checks:22review cases,2real QueryClient cases,8emitted dependency contracts. Negative control removes the native dependency declaration only in test memory and fails as expected. Full source frozen and browser review repeated after commit.

@@ -214,3 +214,54 @@ test('panel placement can expose either screen edge without losing saved finding
   expect(panel).toHaveAttribute('data-review-panel-side', 'right');
   expect(runtime.read()).toBe(evidence);
 });
+
+test.each(['verified', 'resolved'] as const)('prior-build %s evidence stays historical until explicitly reattached and reviewed', async state => {
+  const button = target();
+  button.getBoundingClientRect = () => ({ x: 10, y: 10, top: 10, left: 10, bottom: 50, right: 110, width: 100, height: 40, toJSON: () => ({}) });
+  const view = render(<ReviewOverlay pathname="/settings" buildSha={buildSha} runtime={runtime} />);
+  await selectTarget(button); await fillFinding();
+  await userEvent.selectOptions(screen.getByLabelText('Disposition'), state === 'verified' ? 'no-code' : 'fix');
+  await userEvent.selectOptions(screen.getByLabelText('Finding state'), state);
+  await userEvent.click(screen.getByRole('button', { name: 'Save pin' }));
+  await waitFor(() => expect(document.querySelector('.bayit-review-pin')).not.toBeNull());
+  const historical = runtime.read();
+  view.unmount();
+  const currentBuild = 'b'.repeat(40);
+  render(<ReviewOverlay pathname="/settings" buildSha={currentBuild} runtime={runtime} />);
+  expect(await screen.findByText(/Earlier build:/)).toBeInTheDocument();
+  expect(screen.getByText(buildSha)).toBeInTheDocument();
+  expect(document.querySelector('.bayit-review-pin')).toBeNull();
+  expect(runtime.read()).toBe(historical);
+  await userEvent.click(screen.getByRole('button', { name: 'Export evidence' }));
+  const exported = JSON.parse(downloads[0].value);
+  expect(exported.buildSha).toBe(currentBuild);
+  expect(exported.pins[0].context.buildSha).toBe(buildSha);
+  expect(exported.anchors[0].status).toBe('staleBuild');
+  await userEvent.click(screen.getByRole('button', { name: 'Edit pin 1' }));
+  expect(screen.getByText(/Earlier build:/)).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Reattach pin 1' }));
+  fireEvent.click(button);
+  await screen.findByText('Pin reattached to the selected element.');
+  const current = JSON.parse(runtime.read()!).pins[0];
+  expect(current.context.buildSha).toBe(currentBuild);
+  expect(current.finding.observed).toBe('Supporting text loses contrast.');
+  expect(current.finding.state).toBe('open');
+  await waitFor(() => expect(screen.queryByText(/Earlier build:/)).not.toBeInTheDocument());
+});
+
+test('a build transition discards a pending element capture', async () => {
+  const button = target();
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const digest = runtime.digest;
+  runtime.digest = async value => { await gate; return digest(value); };
+  const view = render(<ReviewOverlay pathname="/settings" buildSha={buildSha} runtime={runtime} />);
+  await userEvent.click(screen.getByRole('button', { name: 'Select element' }));
+  fireEvent.click(button);
+  view.rerender(<ReviewOverlay pathname="/settings" buildSha={'b'.repeat(40)} runtime={runtime} />);
+  await act(async () => { release(); await gate; });
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Select element' })).toBeEnabled());
+  expect(screen.queryByLabelText('Severity')).not.toBeInTheDocument();
+  expect(runtime.read()).toBeNull();
+});

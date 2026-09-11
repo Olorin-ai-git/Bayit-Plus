@@ -4,9 +4,9 @@ import { resolveAnchor, retainsAnchorIdentity, targetRect } from './reviewAnchor
 import type { Pin } from './reviewModel';
 import type { ReviewRuntime } from './reviewRuntime';
 
-export type PinTarget = { element: Element | null; rect: ReturnType<typeof targetRect>; status: 'attached' | 'orphan' | 'offscreen' | 'otherRoute' };
+export type PinTarget = { element: Element | null; rect: ReturnType<typeof targetRect>; status: 'attached' | 'orphan' | 'offscreen' | 'otherRoute' | 'staleBuild' };
 
-export function useReviewTargets(pins: Pin[], pathname: string, identities: Map<string, Element>, runtime: ReviewRuntime) {
+export function useReviewTargets(pins: Pin[], pathname: string, buildSha: string | null, identities: Map<string, Element>, runtime: ReviewRuntime) {
   const [targets, setTargets] = useState<Record<string, PinTarget>>({});
   useEffect(() => {
     if (!pins.length) { setTargets({}); return; }
@@ -18,6 +18,7 @@ export function useReviewTargets(pins: Pin[], pathname: string, identities: Map<
       try {
         const routeKey = await runtime.digest(pathname);
         const values = await Promise.all(pins.map(async pin => {
+          if (pin.context.buildSha !== buildSha) return [pin.id, { element: null, rect: null, status: 'staleBuild' }] as const;
           if (pin.context.routeKey !== routeKey) return [pin.id, { element: null, rect: null, status: 'otherRoute' }] as const;
           const known = identities.get(pin.id);
           // A removed live target stays orphaned, even if an identical sibling takes its place.
@@ -50,6 +51,6 @@ export function useReviewTargets(pins: Pin[], pathname: string, identities: Map<
       window.removeEventListener('resize', schedule); window.removeEventListener('scroll', schedule, true);
       window.visualViewport?.removeEventListener('resize', schedule); window.visualViewport?.removeEventListener('scroll', schedule);
     };
-  }, [pins, pathname, identities, runtime]);
+  }, [pins, pathname, buildSha, identities, runtime]);
   return targets;
 }

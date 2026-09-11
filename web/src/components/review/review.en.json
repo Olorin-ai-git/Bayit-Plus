@@ -9,6 +9,8 @@
   "disposition": "Disposition", "action": "Remediation or no-code verification", "state": "Finding state",
   "target": "Target element", "empty": "Select an element to record a finding or explicit verification.",
   "privacy": "No page text, form values, query strings, or raw element identifiers are captured. Keep secrets out of your comments.",
+  "staleBuild": "Earlier build: reattach and verify again before treating this finding as current.",
+  "recordedBuild": "Recorded build",
   "orphan": "Orphaned: target unavailable. Reattach to confirm its identity.",
   "offscreen": "Target is outside the visible viewport.", "attached": "Attached", "otherRoute": "Another route",
   "saved": "Pin saved on this device.", "deleted": "Pin deleted.", "reattached": "Pin reattached to the selected element.",
