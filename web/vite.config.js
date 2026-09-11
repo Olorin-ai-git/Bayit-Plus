@@ -1,11 +1,20 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import reviewBuildSha from "./build/review-metadata.cjs";
+import { createRequire } from "node:module";
+
+const reviewBuildSha = createRequire(import.meta.url)(path.resolve(__dirname, "build/review-metadata.cjs"));
 
 export default defineConfig({
-  define: { __BAYIT_BUILD_SHA__: JSON.stringify(reviewBuildSha()) },
-  plugins: [react()],
+  define: { __BAYIT_BUILD_SHA__: 'null' },
+  plugins: [react(), {
+    name: 'bayit-review-build-provenance',
+    configResolved(config) {
+      config.define.__BAYIT_BUILD_SHA__ = JSON.stringify(reviewBuildSha({
+        mutable: config.command === 'serve' || Boolean(config.build.watch),
+      }));
+    },
+  }],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -67,7 +76,7 @@ export default defineConfig({
       ),
       "@olorin/glass-ui/stores": path.resolve(
         __dirname,
-        "../packages/ui/glass-components/src/stores",
+        "../packages/ui/glass-components/dist/stores/index.mjs",
       ),
       "@bayit/glass": path.resolve(
         __dirname,

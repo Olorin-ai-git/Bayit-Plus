@@ -15,6 +15,10 @@ describe('useSceneDetection', () => {
     // Create mock video element
     videoElement = document.createElement('video');
     videoElement.currentTime = 0;
+    Object.defineProperty(videoElement, 'paused', { value: false, writable: true });
+    videoElement.pause = jest.fn(() => {
+      Object.defineProperty(videoElement, 'paused', { value: true, writable: true });
+    });
     videoRef = { current: videoElement };
 
     // Mock setInterval
@@ -27,10 +31,10 @@ describe('useSceneDetection', () => {
   });
 
   const subtitlesWithGap: SubtitleCue[] = [
-    { id: '1', index: 0, start_time: 0, end_time: 10, text: 'Line 1' },
-    { id: '2', index: 1, start_time: 10.5, end_time: 20, text: 'Line 2' },
-    // 5-second gap here (20 → 25)
-    { id: '3', index: 2, start_time: 25, end_time: 35, text: 'Line 3' },
+    { id: '1', index: 0, start_time: 0, end_time: 20, text: 'Line 1' },
+    { id: '2', index: 1, start_time: 21, end_time: 40, text: 'Line 2' },
+    // 5-second gap follows a scene satisfying the 30-second minimum.
+    { id: '3', index: 2, start_time: 45, end_time: 55, text: 'Line 3' },
   ];
 
   const continuousSubtitles: SubtitleCue[] = [
@@ -68,7 +72,7 @@ describe('useSceneDetection', () => {
 
     // Fast-forward to just before gap
     act(() => {
-      videoElement.currentTime = 20.5;
+      videoElement.currentTime = 40.5;
     });
 
     act(() => {
@@ -78,7 +82,7 @@ describe('useSceneDetection', () => {
     await waitFor(() => {
       expect(result.current.sceneEndDetected).toBe(true);
       expect(result.current.currentScene).not.toBeNull();
-      expect(result.current.currentScene?.end_time).toBe(20);
+      expect(result.current.currentScene?.end_time).toBe(40);
     });
   });
 
@@ -115,7 +119,7 @@ describe('useSceneDetection', () => {
     );
 
     act(() => {
-      videoElement.currentTime = 20.5;
+      videoElement.currentTime = 40.5;
       jest.advanceTimersByTime(500);
     });
 
@@ -158,7 +162,7 @@ describe('useSceneDetection', () => {
 
     // Trigger scene detection
     act(() => {
-      videoElement.currentTime = 20.5;
+      videoElement.currentTime = 40.5;
       jest.advanceTimersByTime(500);
     });
 
@@ -183,7 +187,7 @@ describe('useSceneDetection', () => {
     );
 
     act(() => {
-      videoElement.currentTime = 20.5;
+      videoElement.currentTime = 40.5;
       jest.advanceTimersByTime(500);
     });
 
@@ -218,9 +222,9 @@ describe('useSceneDetection', () => {
       })
     );
 
-    // First detection at 20.5s
+    // First detection at 40.5s
     act(() => {
-      videoElement.currentTime = 20.5;
+      videoElement.currentTime = 40.5;
       jest.advanceTimersByTime(500);
     });
 
@@ -230,10 +234,11 @@ describe('useSceneDetection', () => {
 
     const firstScene = result.current.currentScene;
 
-    // Reset and try to detect again at 21s (same scene)
+    // Reset and try to detect again at 41s (same scene)
     act(() => {
       result.current.resetSceneDetection();
-      videoElement.currentTime = 21;
+      videoElement.currentTime = 41;
+      Object.defineProperty(videoElement, 'paused', { value: false, writable: true });
       jest.advanceTimersByTime(500);
     });
 
@@ -252,7 +257,7 @@ describe('useSceneDetection', () => {
     );
 
     act(() => {
-      videoElement.currentTime = 20.5;
+      videoElement.currentTime = 40.5;
       jest.advanceTimersByTime(500);
     });
 

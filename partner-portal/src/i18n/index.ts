@@ -46,8 +46,8 @@ export async function initializeI18n(): Promise<typeof i18n> {
  * Change the current language.
  * @param lang Language code
  */
-export async function changeLanguage(lang: string): Promise<void> {
-  await saveLanguageWeb(lang as any);
+export async function changeLanguage(lang: Parameters<typeof saveLanguageWeb>[0]): Promise<void> {
+  await saveLanguageWeb(lang);
 }
 
 /**

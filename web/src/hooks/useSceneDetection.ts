@@ -55,6 +55,12 @@ export const useSceneDetection = (
   const lastSceneEndTimeRef = useRef<number>(0);
   const checkIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    lastSceneEndTimeRef.current = 0;
+    setCurrentScene(null);
+    setSceneEndDetected(false);
+  }, [contentId]);
+
   const detectSceneEnd = useCallback(
     (currentTime: number): SceneMarker | null => {
       if (subtitles.length < 2) return null;
@@ -67,10 +73,12 @@ export const useSceneDetection = (
         return null;
       }
 
-      // Find current subtitle cue index
+      // Detect only after dialogue has ended and before the next cue starts.
       const currentCueIndex = subtitles.findIndex(
-        (cue) =>
-          cue.start_time <= currentTime && cue.end_time >= currentTime
+        (cue, index) =>
+          cue.end_time <= currentTime &&
+          index < subtitles.length - 1 &&
+          currentTime < subtitles[index + 1].start_time
       );
 
       if (
@@ -82,6 +90,7 @@ export const useSceneDetection = (
 
       const currentCue = subtitles[currentCueIndex];
       const nextCue = subtitles[currentCueIndex + 1];
+      if (currentCue.end_time <= lastSceneEndTimeRef.current) return null;
 
       // Calculate gap between current end and next start
       const gap = nextCue.start_time - currentCue.end_time;
@@ -146,7 +155,7 @@ export const useSceneDetection = (
         video.pause();
         setSceneEndDetected(true);
         setCurrentScene(scene);
-        lastSceneEndTimeRef.current = currentTime;
+        lastSceneEndTimeRef.current = scene.end_time;
       }
     }, fullConfig.checkIntervalMs);
 
@@ -155,7 +164,7 @@ export const useSceneDetection = (
         clearInterval(checkIntervalRef.current);
       }
     };
-  }, [videoRef, subtitles, fullConfig, detectSceneEnd]);
+  }, [videoRef, contentId, subtitles, fullConfig.enabled, fullConfig.checkIntervalMs, detectSceneEnd]);
 
   const resetSceneDetection = useCallback(() => {
     setSceneEndDetected(false);

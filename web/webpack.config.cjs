@@ -282,7 +282,9 @@ module.exports = (env, argv) => {
       new webpack.ProvidePlugin({
         process: 'process/browser',
       }),
-      new webpack.DefinePlugin({ __BAYIT_BUILD_SHA__: JSON.stringify(reviewBuildSha()) }),
+      new webpack.DefinePlugin({ __BAYIT_BUILD_SHA__: JSON.stringify(reviewBuildSha({
+        mutable: !isProduction || Boolean(argv.watch) || Boolean(env?.WEBPACK_SERVE),
+      })) }),
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'public/index.html'),
       }),
