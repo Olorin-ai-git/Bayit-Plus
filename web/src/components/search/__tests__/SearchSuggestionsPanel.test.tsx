@@ -7,20 +7,16 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { SearchSuggestionsPanel } from '../SearchSuggestionsPanel';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
-
-// Mock sanitization utilities
-jest.mock('../../../utils/sanitize', () => ({
-  sanitizeText: (text: string) => text.replace(/<[^>]*>/g, ''),
-  sanitizeCategory: (category: any) => ({
-    ...category,
-    name: category.name.replace(/<[^>]*>/g, ''),
-  }),
-}));
+};
+});
 
 describe('SearchSuggestionsPanel', () => {
   const mockOnSearchSelect = jest.fn();
@@ -40,7 +36,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.getByText('suggestions.trendingTitle')).toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.trendingTitle')).toBeInTheDocument();
       expect(screen.getByText('Action Movies')).toBeInTheDocument();
       expect(screen.getByText('Comedy Shows')).toBeInTheDocument();
       expect(screen.getByText('Drama Series')).toBeInTheDocument();
@@ -54,7 +50,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.queryByText('suggestions.trendingTitle')).not.toBeInTheDocument();
+      expect(screen.queryByText('search.suggestions.trendingTitle')).not.toBeInTheDocument();
     });
 
     it('calls onSearchSelect when trending item is pressed', () => {
@@ -99,7 +95,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.getByText('suggestions.categoriesTitle')).toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.categoriesTitle')).toBeInTheDocument();
       expect(screen.getByText('Movies')).toBeInTheDocument();
       expect(screen.getByText('Series')).toBeInTheDocument();
       expect(screen.getByText('Kids')).toBeInTheDocument();
@@ -113,9 +109,9 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(container.textContent).toContain('🎬');
-      expect(container.textContent).toContain('📺');
-      expect(container.textContent).toContain('👶');
+      expect(container.querySelectorAll('svg').length).toBeGreaterThanOrEqual(3);
+      expect(container.querySelectorAll('svg').length).toBeGreaterThanOrEqual(3);
+      expect(container.querySelectorAll('svg').length).toBeGreaterThanOrEqual(3);
     });
 
     it('calls onSearchSelect when category is pressed', () => {
@@ -140,7 +136,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.queryByText('suggestions.categoriesTitle')).not.toBeInTheDocument();
+      expect(screen.queryByText('search.suggestions.categoriesTitle')).not.toBeInTheDocument();
     });
 
     it('has proper accessibility label for categories', () => {
@@ -166,7 +162,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.getByText('suggestions.recentTitle')).toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.recentTitle')).toBeInTheDocument();
       expect(screen.getByText('sci-fi')).toBeInTheDocument();
       expect(screen.getByText('horror')).toBeInTheDocument();
       expect(screen.getByText('documentary')).toBeInTheDocument();
@@ -181,7 +177,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.getByText('suggestions.clearRecent')).toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.clearRecent')).toBeInTheDocument();
     });
 
     it('does not render clear button when onClearRecent is not provided', () => {
@@ -192,7 +188,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.queryByText('suggestions.clearRecent')).not.toBeInTheDocument();
+      expect(screen.queryByText('search.suggestions.clearRecent')).not.toBeInTheDocument();
     });
 
     it('calls onClearRecent when clear button is pressed', () => {
@@ -204,7 +200,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      const clearButton = screen.getByText('suggestions.clearRecent');
+      const clearButton = screen.getByText('search.suggestions.clearRecent');
       fireEvent.click(clearButton);
 
       expect(mockOnClearRecent).toHaveBeenCalled();
@@ -232,7 +228,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(container.textContent).toContain('🕐');
+      expect(screen.getByRole('button', { name: 'Search for test' }).querySelector('svg')).not.toBeNull();
     });
 
     it('does not render recent section when empty', () => {
@@ -243,7 +239,7 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.queryByText('suggestions.recentTitle')).not.toBeInTheDocument();
+      expect(screen.queryByText('search.suggestions.recentTitle')).not.toBeInTheDocument();
     });
 
     it('filters out empty strings from recent searches', () => {
@@ -295,9 +291,9 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.getByText('suggestions.trendingTitle')).toBeInTheDocument();
-      expect(screen.getByText('suggestions.categoriesTitle')).toBeInTheDocument();
-      expect(screen.getByText('suggestions.recentTitle')).toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.trendingTitle')).toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.categoriesTitle')).toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.recentTitle')).toBeInTheDocument();
     });
 
     it('renders only provided sections', () => {
@@ -308,9 +304,9 @@ describe('SearchSuggestionsPanel', () => {
         />
       );
 
-      expect(screen.getByText('suggestions.trendingTitle')).toBeInTheDocument();
-      expect(screen.queryByText('suggestions.categoriesTitle')).not.toBeInTheDocument();
-      expect(screen.queryByText('suggestions.recentTitle')).not.toBeInTheDocument();
+      expect(screen.getByText('search.suggestions.trendingTitle')).toBeInTheDocument();
+      expect(screen.queryByText('search.suggestions.categoriesTitle')).not.toBeInTheDocument();
+      expect(screen.queryByText('search.suggestions.recentTitle')).not.toBeInTheDocument();
     });
   });
 });

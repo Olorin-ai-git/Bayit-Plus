@@ -5,13 +5,19 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SearchSemanticToggle } from '../SearchSemanticToggle';
+import { colors } from '@olorin/design-tokens';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
 
 describe('SearchSemanticToggle', () => {
   const mockOnToggle = jest.fn();
@@ -28,8 +34,8 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    expect(screen.getByText('semantic.keyword')).toBeInTheDocument();
-    expect(screen.getByText('semantic.semantic')).toBeInTheDocument();
+    expect(screen.getByText('search.semantic.keyword')).toBeInTheDocument();
+    expect(screen.getByText('search.semantic.semantic')).toBeInTheDocument();
   });
 
   it('highlights keyword label when semantic is disabled', () => {
@@ -40,8 +46,8 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    const keywordLabel = screen.getByText('semantic.keyword');
-    expect(keywordLabel.className).toContain('labelActive');
+    const keywordLabel = screen.getByText('search.semantic.keyword');
+    expect(keywordLabel).toHaveStyle({ color: colors.text });
   });
 
   it('highlights semantic label when semantic is enabled', () => {
@@ -52,8 +58,8 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    const semanticLabel = screen.getByText('semantic.semantic');
-    expect(semanticLabel.className).toContain('labelActive');
+    const semanticLabel = screen.getByText('search.semantic.semantic');
+    expect(semanticLabel).toHaveStyle({ color: colors.text });
   });
 
   it('calls onToggle with true when disabled switch is pressed', () => {
@@ -117,7 +123,7 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    const infoButton = screen.getByLabelText('semantic.infoTitle');
+    const infoButton = screen.getByLabelText('search.semantic.infoTitle');
     expect(infoButton).toBeInTheDocument();
   });
 
@@ -130,7 +136,7 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    const infoButton = screen.queryByLabelText('semantic.infoTitle');
+    const infoButton = screen.queryByLabelText('search.semantic.infoTitle');
     expect(infoButton).not.toBeInTheDocument();
   });
 
@@ -143,11 +149,11 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    const infoButton = screen.getByLabelText('semantic.infoTitle');
+    const infoButton = screen.getByLabelText('search.semantic.infoTitle');
     fireEvent.click(infoButton);
 
-    expect(screen.getByText('semantic.infoTitle')).toBeInTheDocument();
-    expect(screen.getByText('semantic.info')).toBeInTheDocument();
+    expect(screen.getByText('search.semantic.infoTitle')).toBeInTheDocument();
+    expect(screen.getByText('search.semantic.info')).toBeInTheDocument();
   });
 
   it('hides tooltip when info button is pressed again', () => {
@@ -159,15 +165,15 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    const infoButton = screen.getByLabelText('semantic.infoTitle');
+    const infoButton = screen.getByLabelText('search.semantic.infoTitle');
     fireEvent.click(infoButton);
-    expect(screen.getByText('semantic.info')).toBeInTheDocument();
+    expect(screen.getByText('search.semantic.info')).toBeInTheDocument();
 
     fireEvent.click(infoButton);
-    expect(screen.queryByText('semantic.info')).not.toBeInTheDocument();
+    expect(screen.queryByText('search.semantic.info')).not.toBeInTheDocument();
   });
 
-  it('renders info icon emoji', () => {
+  it('renders the shared info icon', () => {
     const { container } = render(
       <SearchSemanticToggle
         enabled={false}
@@ -176,7 +182,7 @@ describe('SearchSemanticToggle', () => {
       />
     );
 
-    expect(container.textContent).toContain('ℹ️');
+    expect(screen.getByLabelText('search.semantic.infoTitle').querySelector('svg')).not.toBeNull();
   });
 
   it('has combined accessibility label for switch', () => {
@@ -188,7 +194,7 @@ describe('SearchSemanticToggle', () => {
     );
 
     const switchButton = screen.getByRole('switch');
-    expect(switchButton).toHaveAttribute('aria-label', 'semantic.keyword / semantic.semantic');
+    expect(switchButton).toHaveAttribute('aria-label', 'search.semantic.keyword / search.semantic.semantic');
   });
 
   it('applies focus styles on tvOS', () => {

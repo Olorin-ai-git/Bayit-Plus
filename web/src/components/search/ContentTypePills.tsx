@@ -41,7 +41,8 @@ const CONTENT_TYPES: { type: ContentType; label: string; icon: string }[] = [
 /**
  * Horizontal scrollable pills for content type filtering
  */
-export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) {
+export function ContentTypePills({ selected: selectedType, value, onChange }: ContentTypePillsProps) {
+  const selected = selectedType ?? value ?? 'all';
   const { t } = useTranslation();
   const [focusedType, setFocusedType] = React.useState<ContentType | null>(null);
 
