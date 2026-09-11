@@ -33,3 +33,5 @@ UI end state: existing Bayit Glass application plus local review panel whose pla
 
 - BAYIT-5: root authorized bounded workflow repair. Official actionlint1.7.12 found malformed multiline if at scene-search-deploy.yml:283. Fold condition as YAML, repair expression-quote siblings and declare directly referenced summary dependencies; validator now exits0 without disabling gates.
 - BAYIT-6: authenticated settings crashes on actual subscription envelope. Parse existing backend shape, preserve paid plan/renewal fields, distinguish unknown data from no subscription, and load credit balance independently. Eight schema cases pass; actual settings re-review follows new build.
+
+- BAYIT-5 current PR CI file-size gate identified27oversized Glass files against26baseline. Mechanically split the inherited878-line public contract test into7bounded files and174-line shared support; all32test ASTs identical, all240Glass tests still pass across17suites, and the exact200-line ratchet returns26. Baseline/exclusions unchanged.
