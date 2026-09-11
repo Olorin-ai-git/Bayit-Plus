@@ -56,10 +56,10 @@ export async function getFeatureFlags(): Promise<FeatureFlags> {
 
   try {
     // Public endpoint (no auth required)
-    const response = await api.get<FeatureFlags>('/api/v1/admin/settings/feature-flags/public');
-    featureFlagsCache = response.data;
+    const response = await api.get('/admin/settings/feature-flags/public') as unknown as FeatureFlags;
+    featureFlagsCache = response;
     cacheTimestamp = now;
-    return response.data;
+    return response;
   } catch (error) {
     log.warn('Failed to fetch feature flags, using cache or defaults', error);
 

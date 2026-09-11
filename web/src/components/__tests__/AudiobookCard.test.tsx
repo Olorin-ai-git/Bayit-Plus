@@ -7,11 +7,16 @@ import { BrowserRouter } from 'react-router-dom'
 import AudiobookCard from '../AudiobookCard'
 import type { Audiobook } from '@/types/audiobook'
 
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}))
+};
+})
 
 describe('AudiobookCard', () => {
   const mockAudiobook: Audiobook = {
@@ -49,18 +54,18 @@ describe('AudiobookCard', () => {
       </BrowserRouter>
     )
 
-    expect(screen.getByText(/⭐ 4.5/)).toBeInTheDocument()
+    expect(screen.getByText('4.5')).toBeInTheDocument()
   })
 
   it('should format large view counts', () => {
-    const bookWith1kViews = { ...mockAudiobook, view_count: 1000 }
+    const bookWith1kViews = { ...mockAudiobook, view_count: 1500 }
     render(
       <BrowserRouter>
         <AudiobookCard audiobook={bookWith1kViews} />
       </BrowserRouter>
     )
 
-    expect(screen.getByText(/1K/)).toBeInTheDocument()
+    expect(screen.getByText('1.5K')).toBeInTheDocument()
   })
 
   it('should link to detail page on click', () => {
@@ -82,7 +87,7 @@ describe('AudiobookCard', () => {
       </BrowserRouter>
     )
 
-    expect(screen.getByText('🎧')).toBeInTheDocument()
+    expect(document.querySelector('svg.lucide-book')).toBeInTheDocument()
   })
 
   it('should not display rating when zero', () => {

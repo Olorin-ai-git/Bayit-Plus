@@ -23,7 +23,7 @@ export const useV2VStore = create<V2VStore>((set) => ({
     audioBase64: string,
     targetPhraseHe: string,
   ) => {
-    set({ loading: true, error: null });
+    set({ loading: true, error: null, lastResult: null });
     try {
       const data = await api.post('/zeh-ani/v2v/transform', {
         avatar_id: avatarId,
@@ -50,12 +50,12 @@ export const useV2VStore = create<V2VStore>((set) => ({
     set({ loading: true, error: null });
     try {
       const data = await api.get(
-        `/zeh-ani/v2v/sessions/${profileId}`,
-      ) as V2VSessionSummary[];
-      set({ sessions: data || [], loading: false });
+        `/zeh-ani/v2v/sessions/${encodeURIComponent(profileId)}`,
+      ) as { sessions: V2VSessionSummary[]; total: number };
+      set({ sessions: data.sessions, loading: false });
       v2vLogger.info('Fetched V2V sessions', {
         profileId,
-        count: String(data?.length || 0),
+        count: String(data.sessions.length),
       });
     } catch (error: any) {
       set({

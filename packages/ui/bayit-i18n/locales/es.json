@@ -12942,7 +12942,22 @@
         "microphoneFailed": "Error de acceso al microfono"
       }
     },
+    "viewer": {
+      "loading": "Cargando avatar…",
+      "errors": {
+        "loadFailed": "No se pudo cargar el avatar"
+      }
+    },
     "v2v": {
+      "targetLabel": "Frase de práctica",
+      "defaultPhrase": "שלום, נעים מאוד.",
+      "tapToRecord": "Pulsa para grabar",
+      "recording": "Grabando…",
+      "errors": {
+        "micDenied": "Se denegó el acceso al micrófono",
+        "transformFailed": "Falló la transformación de voz",
+        "fetchSessionsFailed": "No se pudo cargar el historial de práctica"
+      },
       "transforming": "Transformando voz...",
       "latency": "Latencia",
       "retry": "Reintentar",

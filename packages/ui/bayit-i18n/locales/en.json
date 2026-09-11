@@ -12938,7 +12938,22 @@
         "microphoneFailed": "Microphone access failed"
       }
     },
+    "viewer": {
+      "loading": "Loading avatar…",
+      "errors": {
+        "loadFailed": "Unable to load avatar"
+      }
+    },
     "v2v": {
+      "targetLabel": "Practice phrase",
+      "defaultPhrase": "שלום, נעים מאוד.",
+      "tapToRecord": "Tap to record",
+      "recording": "Recording…",
+      "errors": {
+        "micDenied": "Microphone access was denied",
+        "transformFailed": "Voice transformation failed",
+        "fetchSessionsFailed": "Unable to load practice history"
+      },
       "transforming": "Transforming voice...",
       "latency": "Latency",
       "retry": "Retry",

@@ -135,6 +135,7 @@ export default function VoiceConfigurationPanel() {
             />
             <GlassButton
               title=""
+              accessibilityLabel={t('admin.actions.test')}
               icon={<Play size={16} color={colors.primary.DEFAULT} />}
               variant="secondary"
               onPress={() => handleTestVoice(config.default_voice_id)}
@@ -155,6 +156,7 @@ export default function VoiceConfigurationPanel() {
             />
             <GlassButton
               title=""
+              accessibilityLabel={t('admin.actions.test')}
               icon={<Play size={16} color={colors.primary.DEFAULT} />}
               variant="secondary"
               onPress={() => handleTestVoice(config.assistant_voice_id)}
@@ -175,6 +177,7 @@ export default function VoiceConfigurationPanel() {
             />
             <GlassButton
               title=""
+              accessibilityLabel={t('admin.actions.test')}
               icon={<Play size={16} color={colors.primary.DEFAULT} />}
               variant="secondary"
               onPress={() => handleTestVoice(config.support_voice_id)}

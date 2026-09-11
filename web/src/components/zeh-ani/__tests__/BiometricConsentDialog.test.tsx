@@ -4,21 +4,26 @@ import { BiometricConsentDialog } from "../BiometricConsentDialog";
 import api from "@/services/api";
 
 jest.mock("@/services/api");
-jest.mock("react-i18next", () => ({
+jest.mock("react-i18next", () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
 
 jest.mock("@/stores/avatarMeshStore", () => ({
-  useAvatarMeshStore: () => ({
+  useAvatarMeshStore: jest.fn(() => ({
     consentStatus: null,
     loading: false,
     error: null,
     grantConsent: jest.fn().mockResolvedValue(true),
     checkConsent: jest.fn(),
     clearError: jest.fn(),
-  }),
+  })),
 }));
 
 describe("BiometricConsentDialog", () => {

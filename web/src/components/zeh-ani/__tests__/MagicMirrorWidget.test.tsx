@@ -3,11 +3,16 @@ import { MagicMirrorWidget } from '../MagicMirrorWidget';
 import api from '@/services/api';
 
 jest.mock('@/services/api');
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
 
 describe('MagicMirrorWidget', () => {
   const mockProfileId = 'profile_123';
@@ -21,7 +26,7 @@ describe('MagicMirrorWidget', () => {
 
     render(<MagicMirrorWidget profileId={mockProfileId} />);
 
-    expect(screen.getByText(/common.retry/i)).toBeInTheDocument();
+    expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
   });
 
   it('renders greeting when API call succeeds', async () => {

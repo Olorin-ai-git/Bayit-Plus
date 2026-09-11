@@ -12888,7 +12888,22 @@
         "microphoneFailed": "মাইক্রোফোন অ্যাক্সেস ব্যর্থ"
       }
     },
+    "viewer": {
+      "loading": "অবতার লোড হচ্ছে…",
+      "errors": {
+        "loadFailed": "অবতার লোড করা যায়নি"
+      }
+    },
     "v2v": {
+      "targetLabel": "অনুশীলনের বাক্য",
+      "defaultPhrase": "שלום, נעים מאוד.",
+      "tapToRecord": "রেকর্ড করতে ট্যাপ করুন",
+      "recording": "রেকর্ড হচ্ছে…",
+      "errors": {
+        "micDenied": "মাইক্রোফোন ব্যবহারের অনুমতি মেলেনি",
+        "transformFailed": "কণ্ঠস্বর রূপান্তর ব্যর্থ হয়েছে",
+        "fetchSessionsFailed": "অনুশীলনের ইতিহাস লোড করা যায়নি"
+      },
       "transforming": "ভয়েস রূপান্তর হচ্ছে...",
       "latency": "বিলম্ব",
       "retry": "পুনরায় চেষ্টা করুন",

@@ -8,6 +8,7 @@ import { useComprehensionQuiz } from '../useComprehensionQuiz';
 import api from '@/services/api';
 
 jest.mock('@/services/api');
+jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 
 const mockApi = api as jest.Mocked<typeof api>;
 
@@ -52,14 +53,14 @@ describe('useComprehensionQuiz', () => {
     });
 
     expect(mockApi.get).toHaveBeenCalledWith(
-      '/api/v1/comprehension/test-content/question',
+      '/comprehension/test-content/question',
       { params: { scene_start: 100, scene_end: 200, language: 'he' } }
     );
   });
 
   test('handles fetch question error (403 insufficient credits)', async () => {
     mockApi.get.mockRejectedValue({
-      response: { status: 403 },
+      detail: 'Insufficient credits for comprehension question',
     });
 
     const { result } = renderHook(() => useComprehensionQuiz('test-content'));
@@ -71,7 +72,7 @@ describe('useComprehensionQuiz', () => {
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
       expect(result.current.question).toBeNull();
-      expect(result.current.error).toBe('Insufficient credits');
+      expect(result.current.error).toBe('Insufficient credits for comprehension question');
     });
   });
 
@@ -85,7 +86,7 @@ describe('useComprehensionQuiz', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Failed to load question');
+      expect(result.current.error).toBe('comprehension.error');
     });
   });
 
@@ -101,7 +102,7 @@ describe('useComprehensionQuiz', () => {
 
     expect(submitResult).toEqual(mockSubmitResult);
     expect(mockApi.post).toHaveBeenCalledWith(
-      '/api/v1/comprehension/questions/q-123/submit',
+      '/comprehension/questions/q-123/submit',
       { selected_option: 0, time_taken_ms: 5000 }
     );
   });
@@ -174,7 +175,7 @@ describe('useComprehensionQuiz', () => {
     });
 
     expect(mockApi.get).toHaveBeenCalledWith(
-      '/api/v1/comprehension/test-content/question',
+      '/comprehension/test-content/question',
       { params: { scene_start: 100, scene_end: 200, language: 'he' } }
     );
   });
@@ -192,7 +193,7 @@ describe('useComprehensionQuiz', () => {
     });
 
     expect(mockApi.get).toHaveBeenCalledWith(
-      '/api/v1/comprehension/test-content/question',
+      '/comprehension/test-content/question',
       { params: { scene_start: 100, scene_end: 200, language: 'en' } }
     );
   });
@@ -242,7 +243,7 @@ describe('useComprehensionQuiz', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Failed to load question');
+      expect(result.current.error).toBe('comprehension.error');
     });
 
     // Second fetch - success

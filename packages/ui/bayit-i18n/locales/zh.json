@@ -12888,7 +12888,22 @@
         "microphoneFailed": "麦克风访问失败"
       }
     },
+    "viewer": {
+      "loading": "正在加载虚拟形象…",
+      "errors": {
+        "loadFailed": "无法加载虚拟形象"
+      }
+    },
     "v2v": {
+      "targetLabel": "练习短语",
+      "defaultPhrase": "שלום, נעים מאוד.",
+      "tapToRecord": "点击录音",
+      "recording": "正在录音…",
+      "errors": {
+        "micDenied": "麦克风访问被拒绝",
+        "transformFailed": "语音转换失败",
+        "fetchSessionsFailed": "无法加载练习记录"
+      },
       "transforming": "正在变换语音...",
       "latency": "延迟",
       "retry": "重试",

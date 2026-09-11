@@ -5,15 +5,30 @@
  * VideoPlayer → usePlaybackSession → Backend API → StreamLimitExceededModal
  */
 
+import '@/__tests__/support/costDashboardI18n';
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render as renderUI, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import axios from 'axios';
+import api from '@/services/api';
 import VideoPlayer from '../VideoPlayer';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { deviceService } from '@/services/deviceService';
 
+const render = (ui: React.ReactElement) => {
+  const result = renderUI(<SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 1280, height: 720 }, insets: { top: 0, right: 0, bottom: 0, left: 0 } }}>{ui}</SafeAreaProvider>);
+  const media = result.container.querySelector('video, audio');
+  if (media) fireEvent.play(media);
+  return result;
+};
+
+jest.mock('@bayit/shared-services/api/triviaServices', () => ({ triviaApi: {
+  getPreferences: jest.fn().mockResolvedValue({ enabled: false }),
+  getTrivia: jest.fn().mockResolvedValue({ facts: [] }),
+  getEnrichedTrivia: jest.fn().mockResolvedValue({ facts: [] }),
+} }));
+
 // Mock dependencies
-jest.mock('axios');
+jest.mock('@/services/api', () => ({ __esModule: true, default: { post: jest.fn().mockResolvedValue({}), get: jest.fn().mockResolvedValue({}) } }));
 jest.mock('@/hooks/usePlaybackHeartbeat');
 jest.mock('@/services/deviceService', () => ({
   deviceService: {
@@ -25,23 +40,17 @@ jest.mock('@/services/deviceService', () => ({
     getPlatform: jest.fn(),
   },
 }));
-jest.mock('@/stores/authStore', () => ({
-  useAuthStore: (selector: any) =>
-    selector({
-      user: {
-        id: 'test-user-123',
-        token: 'test-token',
-        subscription: { tier: 'premium', max_concurrent_streams: 2 },
-      },
-    }),
-}));
+jest.mock('@bayit/shared-stores/authStore', () => {
+  const state = { user: { id: 'test-user-123', subscription: { tier: 'premium', max_concurrent_streams: 2 } }, token: null, isAdmin: () => false };
+  return { useAuthStore: Object.assign((selector: any) => selector ? selector(state) : state, { getState: () => state }) };
+});
 jest.mock('@/hooks/useLiveFeatureQuota', () => ({
   useLiveFeatureQuota: () => ({
     usageStats: { liveDubbingMinutes: 0, liveSubtitlesMinutes: 0 },
   }),
 }));
 
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedApi = api as jest.Mocked<typeof api>;
 
 const mockVideoPlayerProps = {
   src: 'https://example.com/video.m3u8',
@@ -82,7 +91,7 @@ describe('VideoPlayer Playback Session Integration', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       render(
         <BrowserRouter>
@@ -93,8 +102,8 @@ describe('VideoPlayer Playback Session Integration', () => {
       // Wait for session creation
       await waitFor(
         () => {
-          expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/api/v1/playback/session/start',
+          expect(mockedApi.post).toHaveBeenCalledWith(
+            '/playback/session/start',
             expect.objectContaining({
               device_id: 'test-device-id',
               content_id: 'test-content-123',
@@ -117,8 +126,8 @@ describe('VideoPlayer Playback Session Integration', () => {
       // Wait to ensure no session is created
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      expect(mockedAxios.post).not.toHaveBeenCalledWith(
-        '/api/v1/playback/session/start',
+      expect(mockedApi.post).not.toHaveBeenCalledWith(
+        '/playback/session/start',
         expect.anything()
       );
     });
@@ -133,7 +142,7 @@ describe('VideoPlayer Playback Session Integration', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       const { unmount } = render(
         <BrowserRouter>
@@ -142,8 +151,8 @@ describe('VideoPlayer Playback Session Integration', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/v1/playback/session/start',
+        expect(mockedApi.post).toHaveBeenCalledWith(
+          '/playback/session/start',
           expect.anything()
         );
       });
@@ -151,7 +160,7 @@ describe('VideoPlayer Playback Session Integration', () => {
       unmount();
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/playback/session/end', {
+        expect(mockedApi.post).toHaveBeenCalledWith('/playback/session/end', {
           session_id: 'session-123',
         });
       });
@@ -171,11 +180,8 @@ describe('VideoPlayer Playback Session Integration', () => {
         ],
       };
 
-      mockedAxios.post.mockRejectedValueOnce({
-        response: {
-          status: 403,
-          data: { detail: limitError },
-        },
+      mockedApi.post.mockRejectedValueOnce({
+        detail: limitError,
       });
 
       render(
@@ -192,7 +198,7 @@ describe('VideoPlayer Playback Session Integration', () => {
         { timeout: 3000 }
       );
 
-      expect(screen.getByText(/Maximum concurrent streams \(2\)/)).toBeInTheDocument();
+      expect(screen.getByText(/maximum number of concurrent streams \(2\)/)).toBeInTheDocument();
       expect(screen.getByText('iPhone 15')).toBeInTheDocument();
       expect(screen.getByText('iPad Air')).toBeInTheDocument();
     });
@@ -209,11 +215,8 @@ describe('VideoPlayer Playback Session Integration', () => {
         ],
       };
 
-      mockedAxios.post.mockRejectedValueOnce({
-        response: {
-          status: 403,
-          data: { detail: limitError },
-        },
+      mockedApi.post.mockRejectedValueOnce({
+        detail: limitError,
       });
 
       const { container } = render(
@@ -242,11 +245,8 @@ describe('VideoPlayer Playback Session Integration', () => {
         ],
       };
 
-      mockedAxios.post.mockRejectedValueOnce({
-        response: {
-          status: 403,
-          data: { detail: limitError },
-        },
+      mockedApi.post.mockRejectedValueOnce({
+        detail: limitError,
       });
 
       render(
@@ -261,6 +261,12 @@ describe('VideoPlayer Playback Session Integration', () => {
 
       const cancelButton = screen.getByText('Cancel');
       fireEvent.click(cancelButton);
+      // JSDOM does not run CSS animations; complete the real modal fade-out.
+      const fade = Array.from(document.querySelectorAll('div')).find(
+        (element) => getComputedStyle(element).animationTimingFunction === 'ease-out'
+      );
+      expect(fade).toHaveStyle({ opacity: 0 });
+      fireEvent.animationEnd(fade!);
 
       await waitFor(() => {
         expect(screen.queryByText('Stream Limit Reached')).not.toBeInTheDocument();
@@ -279,7 +285,7 @@ describe('VideoPlayer Playback Session Integration', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       render(
         <BrowserRouter>
@@ -293,8 +299,8 @@ describe('VideoPlayer Playback Session Integration', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/v1/playback/session/start',
+        expect(mockedApi.post).toHaveBeenCalledWith(
+          '/playback/session/start',
           expect.objectContaining({
             content_id: 'live-channel-1',
             content_type: 'live',
@@ -315,7 +321,7 @@ describe('VideoPlayer Playback Session Integration', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       render(
         <BrowserRouter>
@@ -328,8 +334,8 @@ describe('VideoPlayer Playback Session Integration', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/v1/playback/session/start',
+        expect(mockedApi.post).toHaveBeenCalledWith(
+          '/playback/session/start',
           expect.objectContaining({
             content_id: 'podcast-episode-1',
             content_type: 'podcast',
@@ -348,7 +354,7 @@ describe('VideoPlayer Playback Session Integration', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       render(
         <BrowserRouter>
@@ -361,8 +367,8 @@ describe('VideoPlayer Playback Session Integration', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/v1/playback/session/start',
+        expect(mockedApi.post).toHaveBeenCalledWith(
+          '/playback/session/start',
           expect.objectContaining({
             content_id: 'radio-station-1',
             content_type: 'radio',
@@ -374,7 +380,7 @@ describe('VideoPlayer Playback Session Integration', () => {
 
   describe('Error Recovery', () => {
     it('should handle network errors gracefully', async () => {
-      mockedAxios.post.mockRejectedValueOnce({
+      mockedApi.post.mockRejectedValueOnce({
         response: {
           status: 500,
           data: { message: 'Internal server error' },
@@ -407,8 +413,8 @@ describe('VideoPlayer Playback Session Integration', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post
-        .mockResolvedValueOnce({ data: mockSession })
+      mockedApi.post
+        .mockResolvedValueOnce(mockSession)
         .mockRejectedValueOnce(new Error('Network error'));
 
       const { unmount } = render(
@@ -418,8 +424,8 @@ describe('VideoPlayer Playback Session Integration', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/v1/playback/session/start',
+        expect(mockedApi.post).toHaveBeenCalledWith(
+          '/playback/session/start',
           expect.anything()
         );
       });
@@ -439,11 +445,8 @@ describe('VideoPlayer Playback Session Integration', () => {
         active_devices: [{ device_id: 'device-1', device_name: 'iPhone', content_id: 'c1' }],
       };
 
-      mockedAxios.post.mockRejectedValueOnce({
-        response: {
-          status: 403,
-          data: { detail: limitError },
-        },
+      mockedApi.post.mockRejectedValueOnce({
+        detail: limitError,
       });
 
       render(
@@ -453,7 +456,7 @@ describe('VideoPlayer Playback Session Integration', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Maximum concurrent streams \(1\)/)).toBeInTheDocument();
+        expect(screen.getByText(/maximum number of concurrent streams \(1\)/)).toBeInTheDocument();
       });
 
       expect(screen.getByText('iPhone')).toBeInTheDocument();
@@ -473,11 +476,8 @@ describe('VideoPlayer Playback Session Integration', () => {
         ],
       };
 
-      mockedAxios.post.mockRejectedValueOnce({
-        response: {
-          status: 403,
-          data: { detail: limitError },
-        },
+      mockedApi.post.mockRejectedValueOnce({
+        detail: limitError,
       });
 
       render(
@@ -487,7 +487,7 @@ describe('VideoPlayer Playback Session Integration', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Maximum concurrent streams \(4\)/)).toBeInTheDocument();
+        expect(screen.getByText(/maximum number of concurrent streams \(4\)/)).toBeInTheDocument();
       });
 
       expect(screen.getByText('iPhone 15')).toBeInTheDocument();
@@ -497,3 +497,5 @@ describe('VideoPlayer Playback Session Integration', () => {
     });
   });
 });
+
+jest.mock('@bayit/shared-services/ttsService', () => ({ ttsService: { on: jest.fn(), off: jest.fn(), isCurrentlyPlaying: jest.fn(() => false) } }));

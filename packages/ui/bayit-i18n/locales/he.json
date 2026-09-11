@@ -12942,7 +12942,22 @@
         "microphoneFailed": "הגישה למיקרופון נכשלה"
       }
     },
+    "viewer": {
+      "loading": "טוען דמות…",
+      "errors": {
+        "loadFailed": "לא ניתן לטעון את הדמות"
+      }
+    },
     "v2v": {
+      "targetLabel": "משפט לתרגול",
+      "defaultPhrase": "שלום, נעים מאוד.",
+      "tapToRecord": "הקש להקלטה",
+      "recording": "מקליט…",
+      "errors": {
+        "micDenied": "הגישה למיקרופון נדחתה",
+        "transformFailed": "המרת הקול נכשלה",
+        "fetchSessionsFailed": "לא ניתן לטעון את היסטוריית התרגול"
+      },
       "transforming": "ממיר קול...",
       "latency": "השהיה",
       "retry": "נסה שוב",

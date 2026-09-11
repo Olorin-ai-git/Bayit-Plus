@@ -28,6 +28,7 @@ export function useV2VWebSocket(
   const [wsResult, setWsResult] = useState<V2VTransformResult | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectCountRef = useRef(0);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const connectWebSocket = useCallback(() => {
     if (!token || wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -36,15 +37,28 @@ export function useV2VWebSocket(
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
+      if (wsRef.current !== ws) { ws.close(); return; }
       reconnectCountRef.current = 0;
       ws.send(JSON.stringify({ type: "authenticate", token }));
-      useV2VStore.setState({ wsConnected: true });
       wsLogger.info("V2V WebSocket connected", { avatarId });
     };
 
     ws.onmessage = (event) => {
+      if (wsRef.current !== ws) return;
       try {
-        const data = JSON.parse(event.data) as V2VTransformResult;
+        const data = JSON.parse(event.data);
+        if (data.type === 'authenticated') {
+          useV2VStore.setState({ wsConnected: true });
+          return;
+        }
+        if (data.type === 'error') {
+          useV2VStore.setState({ error: typeof data.message === 'string' ? data.message : null });
+          return;
+        }
+        if (data.type !== 'v2v_result') return;
+        if (![data.score_before, data.score_after, data.score_delta, data.latency_ms].every(Number.isFinite)) {
+          throw new Error('invalid_v2v_result');
+        }
         setWsResult(data);
         onResult(data);
         wsLogger.info("V2V result received via WebSocket", {
@@ -56,10 +70,12 @@ export function useV2VWebSocket(
     };
 
     ws.onclose = () => {
+      if (wsRef.current !== ws) return;
+      wsRef.current = null;
       useV2VStore.setState({ wsConnected: false });
       if (reconnectCountRef.current < MAX_RECONNECT_ATTEMPTS) {
         reconnectCountRef.current += 1;
-        setTimeout(connectWebSocket, WS_RECONNECT_DELAY_MS);
+        reconnectTimerRef.current = setTimeout(connectWebSocket, WS_RECONNECT_DELAY_MS);
       }
     };
 
@@ -73,8 +89,11 @@ export function useV2VWebSocket(
   useEffect(() => {
     connectWebSocket();
     return () => {
-      wsRef.current?.close();
+      const ws = wsRef.current;
       wsRef.current = null;
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+      ws?.close();
+      useV2VStore.setState({ wsConnected: false });
     };
   }, [connectWebSocket]);
 

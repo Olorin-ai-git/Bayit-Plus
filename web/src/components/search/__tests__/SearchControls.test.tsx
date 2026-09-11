@@ -28,15 +28,19 @@ jest.mock('@olorin/design-tokens', () => ({
 }));
 
 // Mock i18n
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: mockTranslate,
     i18n: { language: 'en' },
   }),
-}));
+};
+});
 
 // Mock logger
-jest.mock('../../../../shared/utils/logger', () => ({
+jest.mock('@bayit/shared-utils/logger', () => ({
   __esModule: true,
   default: {
     info: jest.fn(),
@@ -47,7 +51,7 @@ jest.mock('../../../../shared/utils/logger', () => ({
 }));
 
 // Mock voice search hook
-jest.mock('../../hooks/useVoiceSearch', () => ({
+jest.mock('@/hooks/useVoiceSearch', () => ({
   useVoiceSearch: () => ({
     transcribe: jest.fn(),
     isListening: false,

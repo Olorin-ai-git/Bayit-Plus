@@ -3,7 +3,7 @@
  */
 
 import audiobookService from "../audiobookService";
-import { api } from "../api";
+import api from "../api";
 import type {
   Audiobook,
   AudiobookListResponse,
@@ -15,6 +15,7 @@ jest.mock("../api");
 describe("audiobookService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    audiobookService.clearCache();
   });
 
   describe("getAudiobooks", () => {
@@ -144,9 +145,9 @@ describe("audiobookService", () => {
     });
 
     it("should handle 403 Forbidden for non-admin", async () => {
-      (api.get as jest.Mock).mockRejectedValue({
+      (api.get as jest.Mock).mockRejectedValue(Object.assign(new Error("Forbidden"), {
         response: { status: 403, data: { detail: "Forbidden" } },
-      });
+      }));
 
       await expect(audiobookService.getAudiobookStream("1")).rejects.toThrow();
     });

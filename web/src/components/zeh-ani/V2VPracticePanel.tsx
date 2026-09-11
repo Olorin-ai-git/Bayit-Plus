@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import logger from '@bayit/shared-utils/logger';
 import { useV2VStore } from '@/stores/v2vStore';
@@ -14,7 +14,11 @@ interface V2VPracticePanelProps {
   profileId: string;
 }
 
-export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps) {
+export function V2VPracticePanel(props: V2VPracticePanelProps) {
+  return <PracticeSession key={`${props.profileId}:${props.avatarId}`} {...props} />;
+}
+
+function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
   const { t } = useTranslation();
   const { lastResult, error, transformVoice, clearError } = useV2VStore();
 
@@ -23,11 +27,33 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const mountedRef = useRef(true);
+  const streamRef = useRef<MediaStream | null>(null);
+  const readerRef = useRef<FileReader | null>(null);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      const recorder = mediaRecorderRef.current;
+      if (recorder) {
+        recorder.onstop = null;
+        recorder.ondataavailable = null;
+        if (recorder.state !== 'inactive') recorder.stop();
+      }
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      if (readerRef.current?.readyState === FileReader.LOADING) readerRef.current.abort();
+    };
+  }, []);
 
   const onWsResult = useCallback(() => setPanelState('result'), []);
   const { wsRef, wsResult, setWsResult } = useV2VWebSocket(avatarId, onWsResult);
 
   const displayResult = wsResult || lastResult;
+  useEffect(() => {
+    if (error && panelState === 'processing') setPanelState('idle');
+  }, [error, panelState]);
 
   const startRecording = useCallback(async () => {
     clearError();
@@ -36,7 +62,12 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      if (!mountedRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+      streamRef.current = stream;
+      const recorder = new MediaRecorder(stream);
 
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
@@ -44,22 +75,27 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
 
       recorder.onstop = async () => {
         stream.getTracks().forEach((track) => track.stop());
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        streamRef.current = null;
+        if (!mountedRef.current) return;
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType });
         const reader = new FileReader();
+        readerRef.current = reader;
 
         reader.onloadend = async () => {
+          if (!mountedRef.current || typeof reader.result !== 'string') return;
           const base64 = (reader.result as string).split(',')[1];
           setPanelState('processing');
 
-          if (wsRef.current?.readyState === WebSocket.OPEN) {
+          if (useV2VStore.getState().wsConnected && wsRef.current?.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify({
-              audio_base64: base64,
+              type: 'audio_chunk',
+              audio: base64,
               target_phrase_he: targetPhrase,
               profile_id: profileId,
             }));
           } else {
             await transformVoice(avatarId, profileId, base64, targetPhrase);
-            setPanelState(useV2VStore.getState().lastResult ? 'result' : 'idle');
+            if (mountedRef.current) setPanelState(useV2VStore.getState().lastResult ? 'result' : 'idle');
           }
         };
         reader.readAsDataURL(blob);
@@ -70,6 +106,9 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
       setPanelState('recording');
       panelLogger.info('Recording started for V2V practice');
     } catch (micError: any) {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      if (!mountedRef.current) return;
       panelLogger.error('Microphone access denied', micError);
       useV2VStore.setState({
         error: micError?.message || t('zehAni.v2v.errors.micDenied'),
@@ -103,13 +142,13 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
 
       <div className="flex justify-center my-6">
         {panelState === 'idle' && (
-          <button type="button" onClick={startRecording}
+          <button type="button" onClick={startRecording} aria-label={t('zehAni.v2v.record')}
             className="w-16 h-16 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center transition-colors">
             <div className="w-6 h-6 rounded-full bg-white" />
           </button>
         )}
         {panelState === 'recording' && (
-          <button type="button" onClick={stopRecording}
+          <button type="button" onClick={stopRecording} aria-label={t('zehAni.v2v.stop')}
             className="w-16 h-16 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center animate-pulse transition-colors">
             <div className="w-5 h-5 rounded-sm bg-white" />
           </button>
@@ -124,8 +163,8 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
       <p className="text-sm text-white/50 text-center mb-4">
         {panelState === 'idle' && t('zehAni.v2v.tapToRecord')}
         {panelState === 'recording' && t('zehAni.v2v.recording')}
-        {panelState === 'processing' && t('zehAni.v2v.processing')}
-        {panelState === 'result' && t('zehAni.v2v.complete')}
+        {panelState === 'processing' && t('zehAni.v2v.transforming')}
+        {panelState === 'result' && t('zehAni.v2v.pronunciationFeedback')}
       </p>
 
       {panelState === 'result' && displayResult && (
@@ -137,7 +176,7 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
           />
           <button type="button" onClick={handleReset}
             className="mt-4 w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 text-sm font-medium transition-colors">
-            {t('zehAni.v2v.tryAgain')}
+            {t('zehAni.v2v.continuePracticing')}
           </button>
         </div>
       )}

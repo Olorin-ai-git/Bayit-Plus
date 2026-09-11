@@ -13,12 +13,21 @@ import logger from '@/utils/logger'
 // Mock dependencies
 jest.mock('@olorin/glass-ui/hooks')
 jest.mock('@/services/recordingApi')
-jest.mock('@/utils/logger')
-jest.mock('react-i18next', () => ({
+jest.mock('@/utils/logger', () => {
+  const logger = { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn(), scope: jest.fn() }
+  logger.scope.mockReturnValue(logger)
+  return { __esModule: true, default: logger }
+})
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr', on: jest.fn(), off: jest.fn() },
+    t: mockTranslate,
   }),
-}))
+};
+})
 jest.mock('@/stores/authStore', () => ({
   useAuthStore: () => ({ user: { id: 'test-user' } }),
 }))

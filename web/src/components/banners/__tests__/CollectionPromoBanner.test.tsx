@@ -12,12 +12,16 @@ import { BrowserRouter } from 'react-router-dom';
 import { CollectionPromoBanner } from '../CollectionPromoBanner';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: mockTranslate,
     i18n: { language: 'en' },
   }),
-}));
+};
+});
 
 // Mock react-router-dom navigate
 const mockNavigate = jest.fn();
@@ -134,3 +138,5 @@ describe('CollectionPromoBanner', () => {
     expect(true).toBe(true);
   });
 });
+
+jest.mock('@bayit/shared-services/ttsService', () => ({ ttsService: { on: jest.fn(), off: jest.fn(), isCurrentlyPlaying: jest.fn(() => false) } }));

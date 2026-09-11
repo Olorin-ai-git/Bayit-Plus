@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { logger } from '../utils/logger';
 
@@ -49,6 +50,7 @@ export interface UseComprehensionQuizReturn {
 export const useComprehensionQuiz = (
   contentId: string
 ): UseComprehensionQuizReturn => {
+  const { t } = useTranslation();
   const [question, setQuestion] = useState<ComprehensionQuestion | null>(
     null
   );
@@ -66,7 +68,7 @@ export const useComprehensionQuiz = (
 
       try {
         const response = await api.get(
-          `/api/v1/comprehension/${contentId}/question`,
+          `/comprehension/${encodeURIComponent(contentId)}/question`,
           {
             params: {
               scene_start: sceneStart,
@@ -77,19 +79,13 @@ export const useComprehensionQuiz = (
         );
         setQuestion(response as any);
       } catch (err: any) {
-        if (err.response?.status === 403) {
-          setError('Insufficient credits for comprehension question');
-        } else if (err.response?.status === 404) {
-          setError('Question not found for this scene');
-        } else {
-          setError('Failed to load question');
-        }
+        setError(typeof err?.detail === 'string' ? err.detail : t('comprehension.error'));
         logger.error('Failed to fetch comprehension question', 'useComprehensionQuiz', err);
       } finally {
         setIsLoading(false);
       }
     },
-    [contentId]
+    [contentId, t]
   );
 
   const submitAnswer = useCallback(
@@ -100,7 +96,7 @@ export const useComprehensionQuiz = (
     ): Promise<SubmitResult> => {
       try {
         const response = await api.post(
-          `/api/v1/comprehension/questions/${questionId}/submit`,
+          `/comprehension/questions/${encodeURIComponent(questionId)}/submit`,
           {
             selected_option: optionIndex,
             time_taken_ms: timeTaken,
