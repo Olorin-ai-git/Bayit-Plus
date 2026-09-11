@@ -11,6 +11,10 @@ on:
     paths:
       - 'chrome-extension/**'
 
+env:
+  NODE_VERSION: '20'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 defaults:
   run:
     working-directory: chrome-extension
@@ -25,12 +29,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci --workspace=chrome-extension
+        run: npm ci
         working-directory: .
 
       - name: Run ESLint
@@ -49,12 +53,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci --workspace=chrome-extension
+        run: npm ci
         working-directory: .
 
       - name: Run tests with coverage
@@ -78,12 +82,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci --workspace=chrome-extension
+        run: npm ci
         working-directory: .
 
       - name: Production build
