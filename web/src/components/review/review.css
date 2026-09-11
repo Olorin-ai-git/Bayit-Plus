@@ -45,6 +45,7 @@
   padding: calc(var(--review-space) / 2) var(--review-space);
 }
 .bayit-review button { cursor: pointer; }
+.bayit-review-position { display: none; }
 .bayit-review button:disabled { opacity: 0.5; cursor: default; }
 .bayit-review button:focus-visible, .bayit-review textarea:focus-visible, .bayit-review select:focus-visible {
   outline: 2px solid var(--text);
@@ -61,6 +62,8 @@
 [data-bayit-review-selected] { outline: 2px solid var(--text) !important; outline-offset: 2px; }
 @media (min-width: 48rem) {
   .bayit-review-panel { left: auto; top: var(--review-space); bottom: auto; width: var(--review-panel-width); max-height: calc(100dvh - 2 * var(--review-space)); }
+  .bayit-review-panel[data-review-panel-side="left"] { left: var(--review-space); right: auto; }
+  .bayit-review-position { display: inline-flex; align-items: center; }
   .bayit-review-body { flex-shrink: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
 }
 @media (forced-colors: active) {

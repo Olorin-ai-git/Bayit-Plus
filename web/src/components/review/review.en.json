@@ -3,6 +3,7 @@
   "selecting": "Select a page element. Use Tab then Enter, or click. Escape cancels.",
   "keyboard": "Arrow keys also move between page elements while selecting.",
   "collapse": "Minimize review panel", "expand": "Open review panel", "cancel": "Cancel", "save": "Save pin",
+  "moveLeft": "Move panel left", "moveRight": "Move panel right",
   "export": "Export evidence", "remove": "Delete pin", "edit": "Edit pin", "reattach": "Reattach pin",
   "severity": "Severity", "observed": "Observed behavior", "expected": "Expected behavior",
   "disposition": "Disposition", "action": "Remediation or no-code verification", "state": "Finding state",

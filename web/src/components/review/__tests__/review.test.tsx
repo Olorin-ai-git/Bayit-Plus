@@ -198,3 +198,19 @@ test('missing exact build SHA disables evidence creation and export', () => {
   expect(screen.getByRole('button', { name: 'Select element' })).toBeDisabled();
   expect(screen.getByRole('button', { name: 'Export evidence' })).toBeDisabled();
 });
+
+test('panel placement can expose either screen edge without losing saved findings', async () => {
+  const button = target();
+  render(<ReviewOverlay pathname="/settings" buildSha={buildSha} runtime={runtime} />);
+  await selectTarget(button); await fillFinding();
+  await userEvent.click(screen.getByRole('button', { name: 'Save pin' }));
+  const evidence = runtime.read();
+  const panel = screen.getByRole('complementary', { name: 'Bayit+ review' });
+  await userEvent.click(screen.getByRole('button', { name: 'Move panel left' }));
+  expect(panel).toHaveAttribute('data-review-panel-side', 'left');
+  expect(screen.getByRole('button', { name: 'Move panel right' })).toHaveFocus();
+  expect(runtime.read()).toBe(evidence);
+  await userEvent.click(screen.getByRole('button', { name: 'Move panel right' }));
+  expect(panel).toHaveAttribute('data-review-panel-side', 'right');
+  expect(runtime.read()).toBe(evidence);
+});

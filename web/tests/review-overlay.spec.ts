@@ -43,6 +43,20 @@ test.describe('Bayit local review evidence', () => {
     await panel.getByLabel('Finding state').selectOption('verified');
     await panel.getByRole('button', { name: 'Save pin' }).click();
     await expect(panel.getByRole('button', { name: 'Edit pin 1' })).toBeVisible();
+    if (page.viewportSize()!.width >= 768) {
+      await panel.getByRole('button', { name: 'Move panel left' }).click();
+      await expect(panel).toHaveAttribute('data-review-panel-side', 'left');
+      const movedBox = await panel.boundingBox();
+      expect(movedBox!.x).toBeLessThan(box!.x);
+      // Use the actual numbered pin so panel overlap cannot be hidden by list editing.
+      await page.locator('.bayit-review-pin').click();
+      await expect(panel.getByLabel('Observed behavior')).toHaveValue('The real page element is keyboard reachable.');
+      await panel.getByRole('button', { name: 'Cancel' }).click();
+      await panel.getByRole('button', { name: 'Move panel right' }).click();
+      await expect(panel).toHaveAttribute('data-review-panel-side', 'right');
+    } else {
+      await expect(panel.getByRole('button', { name: 'Move panel left' })).toHaveCount(0);
+    }
     const downloadEvent = page.waitForEvent('download');
     await panel.getByRole('button', { name: 'Export evidence' }).click();
     const download = await downloadEvent;

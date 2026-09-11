@@ -16,6 +16,7 @@ export default function ReviewOverlay({ pathname, buildSha, runtime: provided }:
   const [pins, setPins] = useState(loaded.pins);
   const [notice, setNotice] = useState(loaded.error);
   const [collapsed, setCollapsed] = useState(false);
+  const [panelSide, setPanelSide] = useState<'left' | 'right'>('right');
   const [selecting, setSelecting] = useState(false);
   const [busy, setBusy] = useState(false);
   const [returnFocus, setReturnFocus] = useState(false);
@@ -90,9 +91,12 @@ export default function ReviewOverlay({ pathname, buildSha, runtime: provided }:
       className="bayit-review-pin" style={{ left: `min(${target.rect.left}px, calc(100vw - var(--review-touch)))`, top: `min(${target.rect.top}px, calc(100dvh - var(--review-touch)))` }}
       aria-label={`${copy.edit} ${pins.findIndex(pin => pin.id === id) + 1}`}
       onClick={() => setDraft(pins.find(pin => pin.id === id) || null)}>{pins.findIndex(pin => pin.id === id) + 1}</button>)}
-    <aside aria-label={copy.title} className={`bayit-review-panel${collapsed || selecting ? ' bayit-review-compact' : ''}`}>
-      <header><strong>{copy.title}</strong><button type="button" aria-label={collapsed ? copy.expand : copy.collapse}
-        aria-expanded={!collapsed} onClick={() => { setCollapsed(!collapsed); setSelecting(false); }}>{collapsed ? '+' : '-'}</button></header>
+    <aside aria-label={copy.title} data-review-panel-side={panelSide} className={`bayit-review-panel${collapsed || selecting ? ' bayit-review-compact' : ''}`}>
+      <header><strong>{copy.title}</strong><div className="bayit-review-actions">
+        <button type="button" className="bayit-review-position" onClick={() => setPanelSide(panelSide === 'right' ? 'left' : 'right')}>
+          {panelSide === 'right' ? copy.moveLeft : copy.moveRight}</button>
+        <button type="button" aria-label={collapsed ? copy.expand : copy.collapse}
+          aria-expanded={!collapsed} onClick={() => { setCollapsed(!collapsed); setSelecting(false); }}>{collapsed ? '+' : '-'}</button></div></header>
       <p className="bayit-review-status" role="status" aria-live="polite">{selecting ? copy.selecting : notice || copy.local}</p>
       {selecting && <><p>{copy.keyboard}</p><button type="button" onClick={cancel}>{copy.cancel}</button></>}
       {!collapsed && !selecting && <>
