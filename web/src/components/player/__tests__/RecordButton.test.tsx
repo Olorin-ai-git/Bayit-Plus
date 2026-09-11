@@ -76,9 +76,11 @@ describe('RecordButton', () => {
       // Start recording
       fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
+      await waitFor(() => expect(mockOnRecordingStateChange).toHaveBeenCalledWith(true, 0))
 
       // Stop recording
       fireEvent.click(getByText('0:00'))
+      expect(recordingApi.stopRecording).toHaveBeenCalledWith('session-123')
       await waitFor(() => {
         expect(mockShowSuccess).toHaveBeenCalledWith(
           expect.stringContaining('recordings.savedSuccess'),
@@ -108,8 +110,10 @@ describe('RecordButton', () => {
       // Start and stop recording
       fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
+      await waitFor(() => expect(mockOnRecordingStateChange).toHaveBeenCalledWith(true, 0))
 
       fireEvent.click(getByText('0:00'))
+      expect(recordingApi.stopRecording).toHaveBeenCalledWith('session-123')
 
       await waitFor(() => {
         expect(logger.debug).toHaveBeenCalledWith(
@@ -159,9 +163,11 @@ describe('RecordButton', () => {
       // Start recording
       fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
+      await waitFor(() => expect(mockOnRecordingStateChange).toHaveBeenCalledWith(true, 0))
 
       // Try to stop (fails)
       fireEvent.click(getByText('0:00'))
+      expect(recordingApi.stopRecording).toHaveBeenCalledWith('session-123')
 
       await waitFor(() => {
         expect(logger.error).toHaveBeenCalledWith(

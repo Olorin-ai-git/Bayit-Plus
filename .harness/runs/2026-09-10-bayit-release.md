@@ -89,3 +89,6 @@ BAYIT5 full web TypeScript gate now0, not only package type-check. Reexport actu
 Plan /Users/olorin/.codex/worktrees/erebor-ship-20260910/bayit-release-evidence-1f9b3b450/own-final-siblings-plan.json. Existing authorized scope; reproduce and correct duplicate permission ownership, invalid/stale V2V transport state and nonfinite derived percentages. Routing implementation/audit gpt-6-astra/high, finder gpt-5.6-sol/high after own six dimensions dry. Existing customer flow retained; record control disables during permission, existing translated errors. No extension source edits.
 
 BAYIT-16 sibling lifecycle audit extends generation cancellation to modified comprehension API hook: switching content or dismissing must invalidate outstanding question responses. Existing user flow and endpoint reused; native deferred response tests.
+
+### Native recording test synchronization
+077a57756 full types exit0, full web863 pass/1 failure. Isolated7 tests reproduced2stop-notification failures. Fixture now retains all assertions, waits for actual recording-state callback before stop and asserts exact stop session ID; native7/7 exit0. No production behavior or timeout/threshold changed. Raw /Users/olorin/.codex/worktrees/erebor-ship-20260910/bayit-release-evidence-1f9b3b450/recording-native-state.json. Full suite must pass frozen source before claiming native green.
