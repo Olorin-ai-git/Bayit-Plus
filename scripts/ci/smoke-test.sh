@@ -81,7 +81,7 @@ smoke_web() {
     return
   fi
   if [ "${WITH_BUILD}" = "1" ]; then
-    run_step_shell "web production build" "npm run build --workspace=@bayit/i18n && npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-i18n && cd web && npm run build"
+    run_step_shell "web production build" "npm run build --workspace=@bayit/i18n && npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-i18n && npm run build --workspace=@olorin/shared-icons && npm run build --workspace=@olorin/glass-ui && cd web && npm run build"
   else
     # Lightweight default: config + entrypoints resolve without a full build.
     run_step_shell "web build config resolves" \

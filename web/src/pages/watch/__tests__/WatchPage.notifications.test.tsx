@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { render, waitFor } from '@testing-library/react-native'
+import { render, waitFor } from '@testing-library/react'
 import { WatchPage } from '../WatchPage'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { logger } from '@/utils/logger'

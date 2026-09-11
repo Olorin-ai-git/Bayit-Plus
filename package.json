@@ -134,6 +134,26 @@
   "syncpack": {
     "versionGroups": [
       {
+        "label": "Glass native safe-area peer and test support stays on major 4",
+        "packages": [
+          "@olorin/glass-ui"
+        ],
+        "dependencies": [
+          "react-native-safe-area-context"
+        ],
+        "pinVersion": "^4.8.0"
+      },
+      {
+        "label": "Glass reanimated test range must overlap supported peer range",
+        "packages": [
+          "@olorin/glass-ui"
+        ],
+        "dependencies": [
+          "react-native-reanimated"
+        ],
+        "policy": "sameRange"
+      },
+      {
         "label": "React versions must be consistent across web apps",
         "packages": [
           "bayit-plus-web",

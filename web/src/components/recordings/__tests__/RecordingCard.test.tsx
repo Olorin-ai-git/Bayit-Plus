@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react-native'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { RecordingCard } from '../RecordingCard'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'

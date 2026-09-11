@@ -1,12 +1,13 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+  modulePaths: ['<rootDir>/node_modules'],
+  moduleFileExtensions: ['web.tsx', 'web.ts', 'web.jsx', 'web.js', 'tsx', 'ts', 'jsx', 'js', 'json'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.cjs' }],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-web|react-native-linear-gradient|react-native-web-linear-gradient|react-router-dom|lucide-react)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-web|react-native-linear-gradient|react-native-web-linear-gradient|react-router-dom|lucide-react|lucide-react-native)/)',
   ],
   testMatch: [
     '<rootDir>/src/**/*.(test|spec).(ts|tsx|js|jsx)',
@@ -30,7 +31,14 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^react-native$': 'react-native-web',
+    '^react-native-svg$': '<rootDir>/../node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.web.js',
+    '^@olorin/design-tokens$': '<rootDir>/../packages/ui/design-tokens/src/index.ts',
+    '^@olorin/shared-icons/(.*)$': '<rootDir>/../packages/ui/shared-icons/src/$1',
+    '^@bayit/shared-utils/(.*)$': '<rootDir>/../shared/utils/$1',
+    '^@bayit/shared$': '<rootDir>/../shared/components',
     '^@bayit/shared-services$': '<rootDir>/../shared/services/index.ts',
+    '^@bayit/shared-services/(.*)$': '<rootDir>/../shared/services/$1',
     '^@bayit/shared-stores/(.*)$': '<rootDir>/../shared/stores/$1',
     '^@bayit/shared-hooks/(.*)$': '<rootDir>/../shared/hooks/$1',
     '^@bayit/shared-types/(.*)$': '<rootDir>/../shared/types/$1',
