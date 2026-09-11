@@ -33,7 +33,7 @@ it('authenticates, ignores acknowledgments, and emits only valid result frames',
   act(() => { ws.message({ type: 'authenticated' }); ws.message({ type: 'heartbeat_ack' }); });
   expect(useV2VStore.getState().wsConnected).toBe(true);
   expect(onResult).not.toHaveBeenCalled();
-  const frame = { type: 'v2v_result', score_before: 60, score_after: 80, score_delta: 20, latency_ms: 12 };
+  const frame = { type: 'v2v_result', input_transcript: 'hello', corrected_transcript: 'hello', v2v_audio_url: '/audio/result.webm', score_before: 60, score_after: 80, score_delta: 20, latency_ms: 12 };
   act(() => ws.message(frame));
   expect(onResult).toHaveBeenCalledWith(frame);
   expect(result.current.wsResult).toEqual(frame);
@@ -74,5 +74,10 @@ it('surfaces malformed result frames instead of leaving processing without an ou
   const onResult = jest.fn(); renderHook(() => useV2VWebSocket('avatar', onResult));
   act(() => Socket.instances[0].message({ type: 'v2v_result', score_before: null }));
   expect(onResult).not.toHaveBeenCalled();
+  expect(useV2VStore.getState().error).toBe('Voice transformation failed');
+});
+it.each([undefined, '', { detail: 'invalid' }])('gives message-less error frames a displayable outcome (%p)', message => {
+  renderHook(() => useV2VWebSocket('avatar', jest.fn()));
+  act(() => Socket.instances[0].message({ type: 'error', message }));
   expect(useV2VStore.getState().error).toBe('Voice transformation failed');
 });

@@ -33,6 +33,19 @@ describe('useComprehensionQuiz', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+  test.each(['content change', 'dismissal'])('does not restore a question after %s', async reason => {
+    let finish!: (value: typeof mockQuestion) => void;
+    mockApi.get.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+    const { result, rerender } = renderHook(({ id }) => useComprehensionQuiz(id), { initialProps: { id: 'first' } });
+    let request!: Promise<void>;
+    act(() => { request = result.current.fetchQuestion(100, 200); });
+    if (reason === 'content change') rerender({ id: 'second' });
+    else act(() => result.current.clearQuestion());
+    await act(async () => { finish(mockQuestion); await request; });
+    expect(result.current.question).toBeNull();
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
 
   test('fetches question successfully', async () => {
     mockApi.get.mockResolvedValue(mockQuestion);

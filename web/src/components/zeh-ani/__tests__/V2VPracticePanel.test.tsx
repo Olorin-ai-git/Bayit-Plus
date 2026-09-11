@@ -1,10 +1,11 @@
+import '@/__tests__/support/costDashboardI18n';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { V2VPracticePanel } from '../V2VPracticePanel';
 import { useV2VStore } from '@/stores/v2vStore';
 import api from '@/services/api';
 
 jest.mock('@/services/api');
-jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+jest.mock('react-i18next', () => ({ ...jest.requireActual('react-i18next'), useTranslation: () => ({ t: (key: string) => key }) }));
 let mockToken: string | null = null;
 jest.mock('@bayit/shared-stores/authStore', () => ({ useAuthStore: (selector: any) => selector({ token: mockToken }) }));
 
@@ -17,6 +18,7 @@ class Recorder {
   mimeType = 'audio/webm';
   ondataavailable: ((event: { data: Blob }) => void) | null = null;
   onstop: (() => void) | null = null;
+  onerror: (() => void) | null = null;
   constructor() { Recorder.instances.push(this); }
   start() { this.state = 'recording'; }
   stop() {
@@ -89,6 +91,42 @@ it('disposes a permission response that arrives after unmount', async () => {
   expect(trackStop).toHaveBeenCalledTimes(1);
   expect(Recorder.instances).toHaveLength(0);
   expect(api.post).not.toHaveBeenCalled();
+});
+it('owns only one microphone permission request while permission is unresolved', async () => {
+  let allow!: (value: typeof stream) => void;
+  getUserMedia.mockReturnValue(new Promise(resolve => { allow = resolve; }));
+  panel(); start(); start();
+  expect(getUserMedia).toHaveBeenCalledTimes(1);
+  await act(async () => allow(stream));
+  expect(Recorder.instances).toHaveLength(1);
+});
+it('rejects invalid HTTP scores without exposing them as a completed result', async () => {
+  (api.post as jest.Mock).mockResolvedValue({ ...result, score_after: null });
+  await useV2VStore.getState().transformVoice('avatar', 'profile', 'audio', 'phrase');
+  expect(useV2VStore.getState().lastResult).toBeNull();
+  expect(typeof useV2VStore.getState().error).toBe('string');
+});
+it('normalizes structured validation failures into displayable error text', async () => {
+  (api.post as jest.Mock).mockRejectedValue({ detail: [{ msg: 'invalid audio' }] });
+  await useV2VStore.getState().transformVoice('avatar', 'profile', 'audio', 'phrase');
+  expect(typeof useV2VStore.getState().error).toBe('string');
+});
+it('ends a failed recorder and releases microphone tracks', async () => {
+  panel(); start();
+  await screen.findByText('zehAni.v2v.recording');
+  act(() => Recorder.instances[0].onerror?.());
+  expect(trackStop).toHaveBeenCalledTimes(1);
+  expect(Recorder.instances[0].state).toBe('inactive');
+  expect(screen.getByRole('button', { name: 'zehAni.v2v.record' })).toBeInTheDocument();
+  expect(api.post).not.toHaveBeenCalled();
+});
+it('keeps a newer transform result when an earlier request finishes last', async () => {
+  let finish!: (value: typeof result) => void;
+  (api.post as jest.Mock).mockImplementationOnce(() => new Promise(resolve => { finish = resolve; })).mockResolvedValueOnce({ ...result, score_after: 90 });
+  const earlier = useV2VStore.getState().transformVoice('old-avatar', 'old-profile', 'audio', 'phrase');
+  await useV2VStore.getState().transformVoice('new-avatar', 'new-profile', 'audio', 'phrase');
+  finish(result); await earlier;
+  expect(useV2VStore.getState().lastResult?.score_after).toBe(90);
 });
 it('clears a previous score when the next transform fails', async () => {
   useV2VStore.setState({ lastResult: result });

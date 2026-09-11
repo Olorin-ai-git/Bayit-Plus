@@ -26,6 +26,7 @@ test('cost parsing preserves zero and treats invalid/missing values as unknown',
   expect(sumCosts({ measured: 0 })).toBe(0);
   expect(costShare(0, 10)).toBe(0);
   expect(costShare(0, 0)).toBeNull();
+  expect(costShare(Number.MAX_VALUE, Number.MIN_VALUE)).toBeNull();
 });
 
 test('overview renders measured zeros without substitute spend', () => {

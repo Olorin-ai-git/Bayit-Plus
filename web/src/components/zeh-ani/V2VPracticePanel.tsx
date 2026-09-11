@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import logger from '@bayit/shared-utils/logger';
 import { useV2VStore } from '@/stores/v2vStore';
+import { v2vErrorText } from '@/stores/v2vData';
 import { V2VWaveformCompare } from './V2VWaveformCompare';
 import { useV2VWebSocket } from './useV2VWebSocket';
 
@@ -23,6 +24,8 @@ function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
   const { lastResult, error, transformVoice, clearError } = useV2VStore();
 
   const [panelState, setPanelState] = useState<PanelState>('idle');
+  const [requestingPermission, setRequestingPermission] = useState(false);
+  const captureOwnedRef = useRef(false);
   const [targetPhrase] = useState(() => t('zehAni.v2v.defaultPhrase'));
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -39,6 +42,7 @@ function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
       if (recorder) {
         recorder.onstop = null;
         recorder.ondataavailable = null;
+        recorder.onerror = null;
         if (recorder.state !== 'inactive') recorder.stop();
       }
       streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -56,6 +60,9 @@ function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
   }, [error, panelState]);
 
   const startRecording = useCallback(async () => {
+    if (captureOwnedRef.current) return;
+    captureOwnedRef.current = true;
+    setRequestingPermission(true);
     clearError();
     setWsResult(null);
     chunksRef.current = [];
@@ -68,6 +75,22 @@ function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
       }
       streamRef.current = stream;
       const recorder = new MediaRecorder(stream);
+      const failCapture = (captureError: unknown) => {
+        recorder.onstop = null;
+        recorder.ondataavailable = null;
+        recorder.onerror = null;
+        if (recorder.state !== 'inactive') recorder.stop();
+        stream.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+        mediaRecorderRef.current = null;
+        captureOwnedRef.current = false;
+        if (mountedRef.current) {
+          setRequestingPermission(false);
+          setPanelState('idle');
+          useV2VStore.setState({ error: v2vErrorText(captureError, t('zehAni.v2v.errors.transformFailed')) });
+        }
+      };
+      recorder.onerror = failCapture;
 
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
@@ -77,12 +100,16 @@ function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
         stream.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
         if (!mountedRef.current) return;
+        setPanelState('processing');
+        try {
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType });
         const reader = new FileReader();
         readerRef.current = reader;
 
         reader.onloadend = async () => {
-          if (!mountedRef.current || typeof reader.result !== 'string') return;
+          if (!mountedRef.current) return;
+          try {
+          if (typeof reader.result !== 'string') throw new Error(t('zehAni.v2v.errors.transformFailed'));
           const base64 = (reader.result as string).split(',')[1];
           setPanelState('processing');
 
@@ -97,26 +124,37 @@ function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
             await transformVoice(avatarId, profileId, base64, targetPhrase);
             if (mountedRef.current) setPanelState(useV2VStore.getState().lastResult ? 'result' : 'idle');
           }
+          } catch (captureError) {
+            if (mountedRef.current) {
+              useV2VStore.setState({ error: v2vErrorText(captureError, t('zehAni.v2v.errors.transformFailed')) });
+              setPanelState('idle');
+            }
+          } finally { captureOwnedRef.current = false; }
         };
         reader.readAsDataURL(blob);
+        } catch (captureError) { failCapture(captureError); }
       };
 
       mediaRecorderRef.current = recorder;
       recorder.start();
+      setRequestingPermission(false);
       setPanelState('recording');
       panelLogger.info('Recording started for V2V practice');
-    } catch (micError: any) {
+    } catch (micError: unknown) {
+      captureOwnedRef.current = false;
       streamRef.current?.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
       if (!mountedRef.current) return;
+      setRequestingPermission(false);
       panelLogger.error('Microphone access denied', micError);
       useV2VStore.setState({
-        error: micError?.message || t('zehAni.v2v.errors.micDenied'),
+        error: v2vErrorText(micError, t('zehAni.v2v.errors.micDenied')),
       });
     }
   }, [avatarId, profileId, targetPhrase, clearError, transformVoice, t, wsRef, setWsResult]);
 
   const stopRecording = useCallback(() => {
+    setPanelState('processing');
     mediaRecorderRef.current?.stop();
     mediaRecorderRef.current = null;
   }, []);
@@ -143,6 +181,7 @@ function PracticeSession({ avatarId, profileId }: V2VPracticePanelProps) {
       <div className="flex justify-center my-6">
         {panelState === 'idle' && (
           <button type="button" onClick={startRecording} aria-label={t('zehAni.v2v.record')}
+            disabled={requestingPermission} aria-busy={requestingPermission}
             className="w-16 h-16 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center transition-colors">
             <div className="w-6 h-6 rounded-full bg-white" />
           </button>

@@ -31,5 +31,6 @@ export function sumCosts(values: Record<string, number | null> | null | undefine
 }
 
 export function costShare(value: number | null | undefined, total: number | null | undefined): number | null {
-  return value != null && total != null && total > 0 ? value / total * 100 : null;
+  const share = value != null && total != null && total > 0 ? value / total * 100 : null;
+  return share !== null && Number.isFinite(share) ? share : null;
 }

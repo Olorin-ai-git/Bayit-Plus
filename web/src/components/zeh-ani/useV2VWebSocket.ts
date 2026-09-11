@@ -4,6 +4,7 @@ import { buildWsUrl } from "@/services/wsUrl";
 import logger from "@bayit/shared-utils/logger";
 import { useAuthStore } from "@bayit/shared-stores/authStore";
 import { useV2VStore } from "@/stores/v2vStore";
+import { v2vResultSchema, v2vErrorText } from "@/stores/v2vData";
 import type { V2VTransformResult } from "@/stores/v2vStore.types";
 
 const wsLogger = logger.scope("V2VWebSocket");
@@ -12,7 +13,7 @@ const WS_RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
 function getWebSocketUrl(avatarId: string): string {
-  return buildWsUrl(`/api/v1/ws/v2v/${avatarId}`);
+  return buildWsUrl(`/api/v1/ws/v2v/${encodeURIComponent(avatarId)}`);
 }
 
 export interface V2VWebSocketHook {
@@ -53,13 +54,11 @@ export function useV2VWebSocket(
           return;
         }
         if (data.type === 'error') {
-          useV2VStore.setState({ error: typeof data.message === 'string' ? data.message : null });
+          useV2VStore.setState({ error: v2vErrorText(data, i18n.t('zehAni.v2v.errors.transformFailed')) });
           return;
         }
         if (data.type !== 'v2v_result') return;
-        if (![data.score_before, data.score_after, data.score_delta, data.latency_ms].every(Number.isFinite)) {
-          throw new Error('invalid_v2v_result');
-        }
+        v2vResultSchema.parse(data);
         setWsResult(data);
         onResult(data);
         wsLogger.info("V2V result received via WebSocket", {
