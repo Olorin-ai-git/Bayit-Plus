@@ -1,0 +1,36 @@
+name: Claudette App Store credential check
+
+on:
+  push:
+    branches: [ops/claudette-asc-check-20260912-74075]
+    paths:
+      - '.github/workflows/claudette-asc-check.yml'
+      - 'scripts/deployment/check-claudette-asc.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/deployment/check-claudette-asc.mjs
+          sparse-checkout-cone-mode: false
+      - name: Check Claudette app access without exporting credentials
+        env:
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_API_ISSUER }}
+          ASC_KEY_ID: ${{ secrets.APP_STORE_API_KEY_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_API_KEY }}
+          ASC_BUNDLE_ID: com.olorin.claudette
+          ASC_APP_ID: '6759467788'
+          ASC_APPS_ENDPOINT: https://api.appstoreconnect.apple.com/v1/apps
+          ASC_EXPECTED_ORIGIN: https://api.appstoreconnect.apple.com
+          ASC_TOKEN_AUDIENCE: appstoreconnect-v1
+          ASC_TOKEN_TTL_SECONDS: '300'
+          ASC_REQUEST_TIMEOUT_MS: '30000'
+          ASC_RESULT_LIMIT: '2'
+        run: node scripts/deployment/check-claudette-asc.mjs
