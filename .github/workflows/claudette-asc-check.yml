@@ -43,14 +43,21 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           try {
-            const account = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
-            if (account.type !== 'service_account' ||
-                !/^[a-z0-9-]+@[a-z0-9-]+\.iam\.gserviceaccount\.com$/.test(account.client_email) ||
-                !/^[a-z][a-z0-9-]+$/.test(account.project_id)) throw new Error();
+            let account;
+            try { account = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT); }
+            catch { throw new Error('google_identity_invalid_json'); }
+            if (account?.type !== 'service_account') throw new Error('google_identity_invalid_type');
+            if (!/^[a-z0-9-]+@[a-z0-9.-]+\.gserviceaccount\.com$/.test(account.client_email)) {
+              throw new Error('google_identity_invalid_email');
+            }
+            if (!/^[a-z][a-z0-9-]+$/.test(account.project_id)) throw new Error('google_identity_invalid_project');
             process.stdout.write(JSON.stringify({ result: 'google_identity_identified',
               clientEmail: account.client_email, projectId: account.project_id }) + '\n');
-          } catch {
-            process.stdout.write('{"result":"google_identity_not_verified"}\n');
+          } catch (error) {
+            const codes = new Set(['google_identity_invalid_json', 'google_identity_invalid_type',
+              'google_identity_invalid_email', 'google_identity_invalid_project']);
+            process.stdout.write(JSON.stringify({ result: codes.has(error?.message)
+              ? error.message : 'google_identity_not_verified' }) + '\n');
             process.exitCode = 1;
           }
           NODE
