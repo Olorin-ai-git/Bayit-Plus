@@ -13,7 +13,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,6 +36,21 @@ jobs:
           STORE_HISTORY_ENDPOINT: https://api.storekit.apple.com/inApps/v1/notifications/history
           STORE_EXPECTED_ORIGIN: https://api.storekit.apple.com
           STORE_HISTORY_WINDOW_MS: '60000'
+          ASC_PROVISION_SECRET_VERSIONS: ${{ contains(github.event.head_commit.message, '[provision-claudette-iap]') }}
+          GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GCP_SA_KEY }}
+          GOOGLE_EXPECTED_SERVICE_ACCOUNT: bayit-plus@appspot.gserviceaccount.com
+          GOOGLE_EXPECTED_PROJECT: bayit-plus
+          GOOGLE_TARGET_PROJECT_NUMBER: '879990819695'
+          GOOGLE_OAUTH_ENDPOINT: https://oauth2.googleapis.com/token
+          GOOGLE_OAUTH_ORIGIN: https://oauth2.googleapis.com
+          GOOGLE_SECRET_MANAGER_ENDPOINT: https://secretmanager.googleapis.com/v1/
+          GOOGLE_SECRET_MANAGER_ORIGIN: https://secretmanager.googleapis.com
+          GOOGLE_OAUTH_SCOPE: https://www.googleapis.com/auth/cloud-platform
+          GOOGLE_OAUTH_GRANT_TYPE: urn:ietf:params:oauth:grant-type:jwt-bearer
+          GOOGLE_TOKEN_TTL_SECONDS: '300'
+          ASC_ISSUER_SECRET: claudette-relay-apple-iap-issuer-id
+          ASC_KEY_ID_SECRET: claudette-relay-apple-iap-key-id
+          ASC_PRIVATE_KEY_SECRET: claudette-relay-apple-iap-private-key
         run: node scripts/deployment/check-claudette-asc.mjs
       - name: Identify the existing Google service account
         env:

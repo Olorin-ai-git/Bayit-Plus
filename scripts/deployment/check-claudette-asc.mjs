@@ -7,6 +7,84 @@ const required = (name) => {
   return value;
 };
 
+async function provisionSecretVersions(issuer, keyId, encodedKey, timeoutMs) {
+  let stage = 'configuration';
+  try {
+    const account = JSON.parse(required('GOOGLE_SERVICE_ACCOUNT'));
+    if (account.type !== 'service_account' ||
+        account.client_email !== required('GOOGLE_EXPECTED_SERVICE_ACCOUNT') ||
+        account.project_id !== required('GOOGLE_EXPECTED_PROJECT')) throw new Error();
+    const oauth = new URL(required('GOOGLE_OAUTH_ENDPOINT'));
+    const manager = new URL(required('GOOGLE_SECRET_MANAGER_ENDPOINT'));
+    if (oauth.protocol !== 'https:' || oauth.origin !== required('GOOGLE_OAUTH_ORIGIN') ||
+        oauth.username || oauth.password || oauth.search || oauth.hash ||
+        manager.protocol !== 'https:' || manager.origin !== required('GOOGLE_SECRET_MANAGER_ORIGIN') ||
+        manager.username || manager.password || manager.search || manager.hash) throw new Error();
+    const project = required('GOOGLE_TARGET_PROJECT_NUMBER');
+    if (!/^\d+$/.test(project)) throw new Error();
+    const values = [
+      [required('ASC_ISSUER_SECRET'), Buffer.from(issuer)],
+      [required('ASC_KEY_ID_SECRET'), Buffer.from(keyId)],
+      [required('ASC_PRIVATE_KEY_SECRET'), Buffer.from(encodedKey.replace(/\s/g, ''), 'base64')],
+    ];
+    if (new Set(values.map(([name]) => name)).size !== values.length ||
+        values.some(([name, value]) => !/^[a-z][a-z0-9-]+$/.test(name) || !value.length)) throw new Error();
+    const ttl = Number(required('GOOGLE_TOKEN_TTL_SECONDS'));
+    if (!Number.isSafeInteger(ttl) || ttl <= 0) throw new Error();
+    const key = createPrivateKey(account.private_key);
+    if (key.asymmetricKeyType !== 'rsa') throw new Error();
+    const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
+    const issuedAt = Math.floor(Date.now() / 1000);
+    const input = `${encode({ alg: 'RS256', typ: 'JWT' })}.${encode({
+      iss: account.client_email, scope: required('GOOGLE_OAUTH_SCOPE'),
+      aud: oauth.href, iat: issuedAt, exp: issuedAt + ttl,
+    })}`;
+    const signature = sign('sha256', Buffer.from(input), key);
+    if (!verify('sha256', Buffer.from(input), createPublicKey(key), signature)) throw new Error();
+    stage = 'oauth';
+    const tokenResponse = await fetch(oauth, {
+      method: 'POST', redirect: 'error', signal: AbortSignal.timeout(timeoutMs),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ grant_type: required('GOOGLE_OAUTH_GRANT_TYPE'),
+        assertion: `${input}.${signature.toString('base64url')}` }),
+    });
+    if (!tokenResponse.ok) {
+      report({ result: 'google_authorization_rejected', httpStatus: tokenResponse.status });
+      process.exitCode = 1;
+      return;
+    }
+    const token = await tokenResponse.json();
+    if (typeof token.access_token !== 'string' || !token.access_token ||
+        token.token_type?.toLowerCase() !== 'bearer') throw new Error();
+    stage = 'add_version';
+    const versions = [];
+    for (const [name, value] of values) {
+      const resource = `projects/${project}/secrets/${name}`;
+      const response = await fetch(new URL(`${resource}:addVersion`, manager), {
+        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(timeoutMs),
+        headers: { Authorization: `Bearer ${token.access_token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payload: { data: value.toString('base64') } }),
+      });
+      value.fill(0);
+      if (!response.ok) {
+        report({ result: 'secret_version_rejected', secret: name, httpStatus: response.status });
+        process.exitCode = 1;
+        return;
+      }
+      const version = await response.json();
+      const prefix = `${resource}/versions/`;
+      if (typeof version.name !== 'string' || !version.name.startsWith(prefix) ||
+          !/^[1-9]\d*$/.test(version.name.slice(prefix.length)) || version.state !== 'ENABLED') throw new Error();
+      versions.push(version.name);
+      report({ result: 'secret_version_created', name: version.name });
+    }
+    report({ result: 'complete_apple_secret_triplet_created', versions });
+  } catch {
+    report({ result: 'secret_provisioning_failed', stage });
+    process.exitCode = 1;
+  }
+}
+
 try {
   const issuer = required('ASC_ISSUER_ID');
   const keyId = required('ASC_KEY_ID');
@@ -94,6 +172,9 @@ try {
         report({ result: valid ? 'store_history_authorization_verified' : 'store_history_invalid_response',
           httpStatus: historyResponse.status, readOnly: true });
         if (!valid) process.exitCode = 1;
+        if (valid && process.env.ASC_PROVISION_SECRET_VERSIONS === 'true') {
+          await provisionSecretVersions(issuer, keyId, encodedKey, timeoutMs);
+        }
       }
     }
   }
