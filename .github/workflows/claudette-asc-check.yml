@@ -33,4 +33,7 @@ jobs:
           ASC_TOKEN_TTL_SECONDS: '300'
           ASC_REQUEST_TIMEOUT_MS: '30000'
           ASC_RESULT_LIMIT: '2'
+          STORE_HISTORY_ENDPOINT: https://api.storekit.apple.com/inApps/v1/notifications/history
+          STORE_EXPECTED_ORIGIN: https://api.storekit.apple.com
+          STORE_HISTORY_WINDOW_MS: '60000'
         run: node scripts/deployment/check-claudette-asc.mjs

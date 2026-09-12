@@ -17,13 +17,19 @@ try {
   const expectedOrigin = required('ASC_EXPECTED_ORIGIN');
   const ttl = Number(required('ASC_TOKEN_TTL_SECONDS'));
   const timeoutMs = Number(required('ASC_REQUEST_TIMEOUT_MS'));
+  const historyEndpoint = new URL(required('STORE_HISTORY_ENDPOINT'));
+  const historyOrigin = required('STORE_EXPECTED_ORIGIN');
+  const historyWindowMs = Number(required('STORE_HISTORY_WINDOW_MS'));
   if (!/^[0-9a-f-]{36}$/i.test(issuer) || !/^[A-Z0-9]{10}$/.test(keyId)) {
     throw new Error('invalid_credential_identifiers');
   }
   if (!Number.isSafeInteger(ttl) || ttl <= 0 ||
       !Number.isSafeInteger(timeoutMs) || timeoutMs <= 0 ||
       endpoint.origin !== expectedOrigin || endpoint.protocol !== 'https:' ||
-      endpoint.username || endpoint.password) throw new Error('invalid_configuration');
+      endpoint.username || endpoint.password ||
+      !Number.isSafeInteger(historyWindowMs) || historyWindowMs <= 0 ||
+      historyEndpoint.origin !== historyOrigin || historyEndpoint.protocol !== 'https:' ||
+      historyEndpoint.username || historyEndpoint.password) throw new Error('invalid_configuration');
   const compactKey = encodedKey.replace(/\s/g, '');
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(compactKey)) throw new Error('invalid_key_encoding');
   const privateKey = createPrivateKey(Buffer.from(compactKey, 'base64'));
@@ -59,6 +65,37 @@ try {
     report({ result: matching ? 'claudette_app_access_verified' : 'claudette_app_not_verified',
       httpStatus: response.status, readOnly: true });
     if (!matching) process.exitCode = 1;
+    if (matching) {
+      const historyInput = `${encode({ alg: 'ES256', kid: keyId, typ: 'JWT' })}.${encode({
+        iss: issuer, iat: issuedAt, exp: issuedAt + ttl,
+        aud: required('ASC_TOKEN_AUDIENCE'), bid: bundleId,
+      })}`;
+      const historySignature = sign('sha256', Buffer.from(historyInput), {
+        key: privateKey, dsaEncoding: 'ieee-p1363',
+      });
+      const endDate = Date.now();
+      const historyResponse = await fetch(historyEndpoint, {
+        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(timeoutMs),
+        headers: {
+          Authorization: `Bearer ${historyInput}.${historySignature.toString('base64url')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ startDate: endDate - historyWindowMs, endDate }),
+      });
+      if (historyResponse.status !== 200) {
+        report({ result: 'store_history_authorization_not_verified',
+          httpStatus: historyResponse.status, readOnly: true });
+        process.exitCode = 1;
+      } else {
+        const history = await historyResponse.json();
+        const valid = history !== null && typeof history === 'object' && !Array.isArray(history) &&
+          (history.notificationHistory === undefined || Array.isArray(history.notificationHistory)) &&
+          (history.hasMore === undefined || typeof history.hasMore === 'boolean');
+        report({ result: valid ? 'store_history_authorization_verified' : 'store_history_invalid_response',
+          httpStatus: historyResponse.status, readOnly: true });
+        if (!valid) process.exitCode = 1;
+      }
+    }
   }
 } catch (error) {
   const safeCodes = new Set(['missing_configuration', 'invalid_credential_identifiers',
