@@ -87,6 +87,7 @@ jobs:
           node --input-type=module <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { X509Certificate } from 'node:crypto';
+          let stage = 'configuration';
           try {
             const data = process.env.IOS_CERTIFICATE_BASE64?.replace(/\s/g, '');
             const team = process.env.IOS_EXPECTED_TEAM;
@@ -96,6 +97,7 @@ jobs:
                 !/^[A-Z0-9]{10}$/.test(team) || !process.env.IOS_CERTIFICATE_PASSWORD ||
                 !Number.isSafeInteger(timeout) || timeout <= 0 ||
                 !Number.isSafeInteger(maxBuffer) || maxBuffer <= 0) throw new Error();
+            stage = 'pkcs12_decode';
             const args = ['pkcs12', '-clcerts', '-nokeys', '-passin', 'env:IOS_CERTIFICATE_PASSWORD'];
             const options = { input: Buffer.from(data, 'base64'), timeout, maxBuffer,
               stdio: ['pipe', 'pipe', 'pipe'], env: { PATH: process.env.PATH,
@@ -103,8 +105,10 @@ jobs:
             let output;
             try { output = execFileSync('openssl', args, options).toString(); }
             catch { output = execFileSync('openssl', [...args, '-legacy'], options).toString(); }
+            stage = 'certificate_count';
             const certificates = output.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g);
             if (certificates?.length !== 1) throw new Error();
+            stage = 'certificate_parse';
             const certificate = new X509Certificate(certificates[0]);
             const now = Date.now();
             const teamMatches = certificate.subject.split('\n').includes(`OU=${team}`);
@@ -115,7 +119,7 @@ jobs:
               fingerprint256: certificate.fingerprint256 }) + '\n');
             if (!teamMatches || !validNow || !distribution) process.exitCode = 1;
           } catch {
-            process.stdout.write(JSON.stringify({ result: 'distribution_certificate_not_verified' }) + '\n');
+            process.stdout.write(JSON.stringify({ result: 'distribution_certificate_not_verified', stage }) + '\n');
             process.exitCode = 1;
           }
           NODE
