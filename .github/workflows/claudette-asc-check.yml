@@ -37,3 +37,20 @@ jobs:
           STORE_EXPECTED_ORIGIN: https://api.storekit.apple.com
           STORE_HISTORY_WINDOW_MS: '60000'
         run: node scripts/deployment/check-claudette-asc.mjs
+      - name: Identify the existing Google service account
+        env:
+          GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          node --input-type=module <<'NODE'
+          try {
+            const account = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+            if (account.type !== 'service_account' ||
+                !/^[a-z0-9-]+@[a-z0-9-]+\.iam\.gserviceaccount\.com$/.test(account.client_email) ||
+                !/^[a-z][a-z0-9-]+$/.test(account.project_id)) throw new Error();
+            process.stdout.write(JSON.stringify({ result: 'google_identity_identified',
+              clientEmail: account.client_email, projectId: account.project_id }) + '\n');
+          } catch {
+            process.stdout.write('{"result":"google_identity_not_verified"}\n');
+            process.exitCode = 1;
+          }
+          NODE
