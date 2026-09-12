@@ -76,3 +76,46 @@ jobs:
             process.exitCode = 1;
           }
           NODE
+      - name: Check public distribution certificate metadata
+        env:
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERT_P12 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERT_PASSWORD }}
+          IOS_EXPECTED_TEAM: 963B7732N5
+          IOS_CERTIFICATE_TIMEOUT_MS: '30000'
+          IOS_CERTIFICATE_MAX_OUTPUT_BYTES: '1048576'
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { X509Certificate } from 'node:crypto';
+          try {
+            const data = process.env.IOS_CERTIFICATE_BASE64?.replace(/\s/g, '');
+            const team = process.env.IOS_EXPECTED_TEAM;
+            const timeout = Number(process.env.IOS_CERTIFICATE_TIMEOUT_MS);
+            const maxBuffer = Number(process.env.IOS_CERTIFICATE_MAX_OUTPUT_BYTES);
+            if (!data || !/^[A-Za-z0-9+/]+={0,2}$/.test(data) ||
+                !/^[A-Z0-9]{10}$/.test(team) || !process.env.IOS_CERTIFICATE_PASSWORD ||
+                !Number.isSafeInteger(timeout) || timeout <= 0 ||
+                !Number.isSafeInteger(maxBuffer) || maxBuffer <= 0) throw new Error();
+            const args = ['pkcs12', '-clcerts', '-nokeys', '-passin', 'env:IOS_CERTIFICATE_PASSWORD'];
+            const options = { input: Buffer.from(data, 'base64'), timeout, maxBuffer,
+              stdio: ['pipe', 'pipe', 'pipe'], env: { PATH: process.env.PATH,
+                IOS_CERTIFICATE_PASSWORD: process.env.IOS_CERTIFICATE_PASSWORD } };
+            let output;
+            try { output = execFileSync('openssl', args, options).toString(); }
+            catch { output = execFileSync('openssl', [...args, '-legacy'], options).toString(); }
+            const certificates = output.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g);
+            if (certificates?.length !== 1) throw new Error();
+            const certificate = new X509Certificate(certificates[0]);
+            const now = Date.now();
+            const teamMatches = certificate.subject.split('\n').includes(`OU=${team}`);
+            const validNow = Date.parse(certificate.validFrom) <= now && now < Date.parse(certificate.validTo);
+            const distribution = /CN=(Apple Distribution|iPhone Distribution):/.test(certificate.subject);
+            process.stdout.write(JSON.stringify({ result: 'distribution_certificate_metadata_checked',
+              teamMatches, validNow, distribution, expires: certificate.validTo,
+              fingerprint256: certificate.fingerprint256 }) + '\n');
+            if (!teamMatches || !validNow || !distribution) process.exitCode = 1;
+          } catch {
+            process.stdout.write(JSON.stringify({ result: 'distribution_certificate_not_verified' }) + '\n');
+            process.exitCode = 1;
+          }
+          NODE
