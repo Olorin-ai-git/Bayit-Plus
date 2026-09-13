@@ -65,7 +65,7 @@ jobs:
           # This is a ratchet: it blocks NEW oversized files. Decomposing the
           # existing components below 200 lines is tracked as separate follow-up
           # work; lower this number as they are refactored.
-          BASELINE=27
+          BASELINE=26
           if [ "$VIOLATIONS" -gt "$BASELINE" ]; then
             echo "FAILED: New oversized files detected (baseline: $BASELINE, found: $VIOLATIONS)"
             exit 1
