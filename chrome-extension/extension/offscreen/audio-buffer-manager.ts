@@ -49,6 +49,10 @@ export class AudioBufferManager {
     this.audioQueue.push(audioBuffer);
     this.totalBufferedDuration += audioBuffer.duration;
 
+    if (this.audioQueue.length >= this.config.minBufferThreshold) {
+      this.isBuffering = true;
+    }
+
     // Track buffer start time
     if (!this.bufferStartTime) {
       this.bufferStartTime = Date.now();

@@ -131,7 +131,7 @@ export class PerformanceMonitor {
     }
 
     const sorted = [...this.latencyHistory].sort((a, b) => a.endToEnd - b.endToEnd);
-    const p95Index = Math.floor(sorted.length * 0.95);
+    const p95Index = Math.max(0, Math.ceil(sorted.length * 0.95) - 1);
 
     return sorted[p95Index];
   }
@@ -209,7 +209,7 @@ export class PerformanceMonitor {
    */
   measureCPU(): CPUMetrics {
     const now = Date.now();
-    const elapsed = this.lastCpuMeasureTime ? now - this.lastCpuMeasureTime : 1000;
+    const elapsed = this.lastCpuMeasureTime ? Math.max(now - this.lastCpuMeasureTime, 1) : 1000;
 
     // Estimate CPU usage based on call counts per second
     const audioWorkletCps = (this.audioWorkletCallCount / elapsed) * 1000;
@@ -295,7 +295,7 @@ export class PerformanceMonitor {
       },
       memory: {
         average: this.getAverageMemory(),
-        current: this.measureMemory(),
+        current: this.memoryHistory[this.memoryHistory.length - 1] ?? null,
         samples: this.memoryHistory.length,
       },
       cpu: {

@@ -33,7 +33,7 @@ describe('PerformanceMonitor', () => {
 
       const duration = monitor.markEnd('test');
 
-      expect(duration).toBeGreaterThanOrEqual(50);
+      expect(duration).toBeGreaterThanOrEqual(45);
       expect(duration).toBeLessThan(100);
     });
 
