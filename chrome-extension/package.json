@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && node scripts/build-vite.js",
     "build:dev": "cross-env VITE_ENV=development npm run build",
     "build:staging": "cross-env VITE_ENV=staging npm run build",
     "build:production": "cross-env VITE_ENV=production npm run build",
