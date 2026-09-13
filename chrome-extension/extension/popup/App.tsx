@@ -80,7 +80,9 @@ export function App() {
     return () => {
       usageStore.stopPolling();
     };
-  }, []); // Only run once on mount
+  // Store actions are intentionally captured for this one-time mount initialization.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * Navigate to a different page

@@ -124,7 +124,7 @@ export interface WebSocketControlMessage {
  * API Error Response
  */
 export interface APIError {
-  detail: string | { code: string; message: string; [key: string]: any };
+  detail: string | { code: string; message: string; [key: string]: unknown };
 }
 
 /**

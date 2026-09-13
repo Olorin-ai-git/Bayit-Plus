@@ -58,7 +58,7 @@ function setupDirectionListener(i18n: typeof import('i18next').default): void {
     logger.debug('Language changed', { language: lng, direction: dir });
 
     // Save to storage
-    chrome.storage.sync.set({ language: lng }).catch((error: any) => {
+    chrome.storage.sync.set({ language: lng }).catch((error: unknown) => {
       logger.error('Failed to save language preference', { error: String(error) });
     });
   });
