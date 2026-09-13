@@ -9,4 +9,4 @@ try {
   throw error;
 }
 
-execFileSync('patch-package', { stdio: 'inherit' });
+execFileSync(process.execPath, [require.resolve('patch-package')], { stdio: 'inherit' });
