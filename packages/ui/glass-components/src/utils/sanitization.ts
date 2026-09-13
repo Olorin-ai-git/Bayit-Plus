@@ -58,21 +58,21 @@ export const sanitizeForTTS = (text: string): string => {
 /**
  * Validate notification action
  */
-export const validateAction = (action: any): boolean => {
+export const validateAction = (action: unknown): boolean => {
   if (!action || typeof action !== 'object') {
     return false;
   }
 
   const allowedTypes = ['navigate', 'retry', 'dismiss'];
-  if (!allowedTypes.includes(action.type)) {
+  if (!('type' in action) || typeof action.type !== 'string' || !allowedTypes.includes(action.type)) {
     return false;
   }
 
-  if (typeof action.label !== 'string' || action.label.length > 50) {
+  if (!('label' in action) || typeof action.label !== 'string' || action.label.length > 50) {
     return false;
   }
 
-  if (typeof action.onPress !== 'function') {
+  if (!('onPress' in action) || typeof action.onPress !== 'function') {
     return false;
   }
 

@@ -16,7 +16,7 @@ import { CONFIG } from '@/config/constants';
 import { AudioWorkletManager } from './audio-worklet-node';
 import { WebSocketManager } from './websocket-manager';
 import { AudioPlayer } from './audio-player';
-import { VolumeMixer } from './volume-mixer';
+import { VOLUME_PRESETS, VolumeMixer } from './volume-mixer';
 
 const logger = createLogger('Offscreen');
 
@@ -425,7 +425,6 @@ class OffscreenManager {
       return;
     }
 
-    const { VOLUME_PRESETS } = require('./volume-mixer');
     const preset = VOLUME_PRESETS[message.presetName];
 
     if (!preset) {

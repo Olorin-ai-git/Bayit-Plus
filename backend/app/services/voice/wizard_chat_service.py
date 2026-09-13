@@ -5,7 +5,9 @@ Provides conversational AI responses with tool execution loop
 
 import asyncio
 from typing import Any, Dict, Optional
-from anthropic import Anthropic, AuthenticationError, RateLimitError, APIError
+from anthropic import AuthenticationError, RateLimitError, APIError
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -25,7 +27,7 @@ class WizardChatService:
         if not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is required for wizard chat")
 
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         self.model = settings.CLAUDE_MODEL
 
     async def process_chat(

@@ -7,6 +7,8 @@ Manages Pinecone and OpenAI client connections.
 import logging
 from typing import Optional
 
+from app.core.ai_clients import get_openai_client
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -71,7 +73,7 @@ class SearchClientManager:
         # Initialize OpenAI first (independent of Pinecone)
         try:
             if OPENAI_AVAILABLE and settings.OPENAI_API_KEY:
-                self._openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+                self._openai_client = get_openai_client(api_key=settings.OPENAI_API_KEY)
                 logger.info("OpenAI client initialized for embeddings")
         except Exception as e:
             logger.error(f"Failed to initialize OpenAI client: {e}")

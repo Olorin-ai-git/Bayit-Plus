@@ -10,7 +10,8 @@ import logging
 from dataclasses import dataclass
 from typing import List, Optional
 
-import anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.services.news_analyzer import TrendingTopic
@@ -306,7 +307,7 @@ Return ONLY a JSON array of topic numbers (1-indexed) that are appropriate:
 Consider the age group ({age_description}) when making decisions. Be protective but not overly restrictive."""
 
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",

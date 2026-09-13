@@ -4,6 +4,8 @@ import anthropic
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.api.routes.training.dependencies import (
     deduct_training_credits,
     get_current_training_user,
@@ -97,7 +99,7 @@ def _build_blend_prompt(question: str, unified: UnifiedResults) -> str:
     )
 
 async def _call_claude(prompt: str) -> str:
-    client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+    client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
     resp = await client.messages.create(
         model=settings.CLAUDE_MODEL, max_tokens=1024,
         messages=[{"role": "user", "content": prompt}],

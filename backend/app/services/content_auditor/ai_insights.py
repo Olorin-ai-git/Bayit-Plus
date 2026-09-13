@@ -6,7 +6,8 @@ import json
 import logging
 from typing import Any, Dict, List
 
-import anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.services.content_auditor.constants import (
     SUPPORTED_INSIGHT_LANGUAGES, get_ai_insights_config, get_anthropic_api_key,
@@ -161,7 +162,7 @@ async def generate_ai_insights(audit_report: Any, language: str = "en") -> List[
             language = "en"
 
         prompt = get_prompt_for_language(language, summary_data, sample_issues)
-        client = anthropic.Anthropic(api_key=get_anthropic_api_key())
+        client = get_sync_anthropic_client(api_key=get_anthropic_api_key())
         response = client.messages.create(
             model=get_claude_model(),
             max_tokens=config.max_tokens,

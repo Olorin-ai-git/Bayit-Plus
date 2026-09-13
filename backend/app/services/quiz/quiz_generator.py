@@ -11,6 +11,8 @@ from typing import List, Optional
 
 from anthropic import AsyncAnthropic
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content
@@ -39,7 +41,7 @@ class QuizGenerationService:
         if self._anthropic_client is None:
             if not settings.ANTHROPIC_API_KEY:
                 raise ValueError("ANTHROPIC_API_KEY not configured")
-            self._anthropic_client = AsyncAnthropic(
+            self._anthropic_client = get_anthropic_client(
                 api_key=settings.ANTHROPIC_API_KEY
             )
         return self._anthropic_client

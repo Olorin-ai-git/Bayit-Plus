@@ -16,7 +16,7 @@ import {
   StyleProp,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing } from '../../theme';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface LiveChannelData {

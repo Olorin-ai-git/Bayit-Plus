@@ -11,6 +11,8 @@ from typing import Optional
 
 from anthropic import AsyncAnthropic
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content
@@ -44,7 +46,7 @@ class TriviaGenerationService:
         if self._anthropic_client is None:
             if not settings.ANTHROPIC_API_KEY:
                 raise ValueError("ANTHROPIC_API_KEY not configured")
-            self._anthropic_client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+            self._anthropic_client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         return self._anthropic_client
 
     async def generate_trivia(

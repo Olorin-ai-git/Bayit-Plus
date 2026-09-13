@@ -11,6 +11,8 @@ from typing import Dict, List, Optional
 
 from anthropic import AsyncAnthropic
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.config import settings
 from app.models.trivia import TriviaFactModel
 from app.services.live_trivia.input_sanitizer import sanitize_input
@@ -23,7 +25,7 @@ class FactExtractionService:
 
     def __init__(self, anthropic_client: Optional[AsyncAnthropic] = None):
         """Initialize fact extractor with optional injected Anthropic client."""
-        self.anthropic_client = anthropic_client or AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.anthropic_client = anthropic_client or get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         self.claude_model = settings.olorin.live_trivia.claude_model
         self.claude_max_tokens_long = settings.olorin.live_trivia.claude_max_tokens_long
         self.claude_temperature = settings.olorin.live_trivia.claude_temperature_facts

@@ -14,6 +14,8 @@ from typing import List, Optional, Tuple
 
 import anthropic
 
+from app.core.ai_clients import get_sync_anthropic_client
+
 from app.core.config import settings
 
 
@@ -144,7 +146,7 @@ Response format (JSON):
 
     def __init__(self):
         self._sessions: dict[str, OnboardingSession] = {}
-        self._client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self._client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         self._lock = asyncio.Lock()
 
     def _generate_conversation_id(self) -> str:

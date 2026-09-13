@@ -59,9 +59,9 @@ phase_backend() {
     skip_step "backend pytest" "poetry not installed"
     return
   fi
-  export MONGODB_URL="${MONGODB_URL:-mongodb://localhost:27017}"
+  export MONGODB_URI="${MONGODB_URI:-mongodb://localhost:27017}"
   export MONGODB_DB_NAME="${MONGODB_DB_NAME:-bayit_test}"
-  export SECRET_KEY="${SECRET_KEY:-test-secret-key}"
+  export SECRET_KEY="${SECRET_KEY:-$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')}"
   export DEBUG="${DEBUG:-true}"
   export ENVIRONMENT="${ENVIRONMENT:-test}"
   ( cd backend

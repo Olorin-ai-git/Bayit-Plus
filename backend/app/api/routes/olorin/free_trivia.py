@@ -13,6 +13,7 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
+from app.core.ai_clients import ProviderOperationTimeouts, get_provider_http_client
 from app.core.logging_config import get_logger
 from app.models.trivia import ContentTrivia
 from app.utils.video_url_utils import extract_video_title, validate_video_url
@@ -151,8 +152,6 @@ async def _generate_quiz_questions(
     """Generate 5 quiz questions from video content via Claude."""
     from app.core.config import settings
 
-    import httpx
-
     prompt = (
         f"Generate exactly 5 multiple-choice trivia questions about "
         f"the video titled \"{title}\" (URL: {video_url}). "
@@ -162,22 +161,24 @@ async def _generate_quiz_questions(
         f"No explanation, no markdown, just the JSON array."
     )
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        resp = await client.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": settings.ANTHROPIC_API_KEY,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
-            },
-            json={
-                "model": "claude-haiku-4-5-20251001",
-                "max_tokens": 2048,
-                "messages": [{"role": "user", "content": prompt}],
-            },
-        )
-        resp.raise_for_status()
-        data = resp.json()
+    client = get_provider_http_client()
+    operation_timeouts = ProviderOperationTimeouts.from_settings()
+    resp = await client.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": settings.ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json={
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 2048,
+            "messages": [{"role": "user", "content": prompt}],
+        },
+        timeout=operation_timeouts.anthropic_trivia,
+    )
+    resp.raise_for_status()
+    data = resp.json()
 
     import json
     text = data["content"][0]["text"]

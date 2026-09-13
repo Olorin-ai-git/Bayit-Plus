@@ -1,5 +1,10 @@
 """Domain config: Monitoring, logging, and WebAuthn (passkey) configuration."""
 
+from pydantic import Field
+
+
+CORRELATION_ID_HEADER_MAX_LENGTH = 1024
+
 
 class MonitoringConfigMixin:
     """Sentry error tracking, structured logging, and WebAuthn passkey settings."""
@@ -11,7 +16,11 @@ class MonitoringConfigMixin:
     SENTRY_TRACES_SAMPLE_RATE: float = 0.2
 
     # Logging Configuration (LOG_LEVEL in main Settings - core field)
-    CORRELATION_ID_HEADER: str = "X-Correlation-ID"
+    CORRELATION_ID_HEADER: str = Field(
+        default="X-Correlation-ID",
+        min_length=1,
+        max_length=CORRELATION_ID_HEADER_MAX_LENGTH,
+    )
     REQUEST_TIMEOUT_WARNING_MS: int = 5000
 
     # WebAuthn (Passkey) Configuration

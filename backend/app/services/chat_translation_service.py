@@ -6,6 +6,8 @@ from typing import Dict, List, Tuple
 
 import anthropic
 
+from app.core.ai_clients import get_sync_anthropic_client
+
 from app.core.config import settings
 from app.models.chat_translation import (LanguageDetectionResult,
                                          TranslationResult)
@@ -40,7 +42,7 @@ class ChatTranslationService:
     @staticmethod
     def _get_client() -> anthropic.Anthropic:
         """Get Anthropic client instance."""
-        return anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        return get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
     @classmethod
     async def detect_language(cls, text: str) -> LanguageDetectionResult:

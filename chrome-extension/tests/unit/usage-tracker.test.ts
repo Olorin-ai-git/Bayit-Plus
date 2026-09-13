@@ -48,6 +48,7 @@ describe('UsageTracker', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-28T12:00:00Z'));
   });
 
   afterEach(() => {

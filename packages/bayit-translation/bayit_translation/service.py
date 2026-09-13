@@ -18,13 +18,22 @@ logger = logging.getLogger(__name__)
 class TranslationService:
     """Service for translating content using Claude API with configurable settings."""
 
-    def __init__(self, config: TranslationConfig):
+    def __init__(
+        self,
+        config: TranslationConfig,
+        *,
+        client: Optional[Anthropic] = None,
+    ):
         """Initialize with translation configuration via dependency injection."""
         if not config.anthropic_api_key:
             raise ValueError("Anthropic API key not configured")
 
         self.config = config
-        self.client = Anthropic(api_key=config.anthropic_api_key)
+        self.client = (
+            client
+            if client is not None
+            else Anthropic(api_key=config.anthropic_api_key)
+        )
         self.supported_languages = {
             "en": "English",
             "es": "Spanish"

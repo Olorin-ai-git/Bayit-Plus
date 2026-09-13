@@ -8,7 +8,8 @@ import logging
 import wave
 from typing import AsyncIterator, Optional
 
-from openai import AsyncOpenAI
+
+from app.core.ai_clients import get_openai_client
 
 from app.core.config import settings
 
@@ -65,7 +66,7 @@ class WhisperTranscriptionService:
         if not settings.OPENAI_API_KEY:
             raise ValueError("OPENAI_API_KEY not configured")
 
-        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self.client = get_openai_client(api_key=settings.OPENAI_API_KEY)
         logger.info("[OK] WhisperTranscriptionService initialized")
 
     def _pcm_to_wav(

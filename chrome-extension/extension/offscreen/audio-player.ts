@@ -215,7 +215,7 @@ export class AudioPlayer {
     if (this.currentSource) {
       try {
         this.currentSource.stop();
-      } catch (error) {
+      } catch {
         // Ignore errors (source may have already stopped)
       }
       this.currentSource = null;

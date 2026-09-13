@@ -8,7 +8,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-import anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
@@ -149,7 +150,7 @@ async def verify_classification_batch(
     prompt = build_verification_prompt(items_data, category)
 
     try:
-        client = anthropic.Anthropic(api_key=get_anthropic_api_key())
+        client = get_sync_anthropic_client(api_key=get_anthropic_api_key())
         response = client.messages.create(
             model=get_claude_model(),
             max_tokens=2000,

@@ -9,6 +9,8 @@ import logging
 import re
 from typing import List, Optional, Tuple
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.config import settings
 from app.models.cultural_reference import CulturalReference, DetectedReference
 from app.services.olorin.context.cache import AliasCache
@@ -28,7 +30,7 @@ except ImportError:
 async def get_claude_client() -> Optional[AsyncAnthropic]:
     """Get Claude client if available."""
     if CLAUDE_AVAILABLE and settings.ANTHROPIC_API_KEY:
-        return AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+        return get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
     return None
 
 

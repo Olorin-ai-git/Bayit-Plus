@@ -104,7 +104,7 @@ describe('AvatarAnimationController', () => {
       expect(listener).toHaveBeenCalled();
 
       jest.advanceTimersByTime(1500);
-      let state = controller.getState();
+      const state = controller.getState();
       expect(state.current).toBe('idle');
     });
 

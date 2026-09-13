@@ -11,7 +11,8 @@ import json
 from datetime import datetime
 from typing import Optional
 
-import anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -24,7 +25,7 @@ from .helpers import extract_content_name_from_query, fuzzy_match_score
 from .models import ResolvedContentItem
 
 # Initialize Anthropic client
-client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
 # In-memory store for pending transcriptions (use Redis in production)
 pending_transcriptions: dict[str, dict] = {}

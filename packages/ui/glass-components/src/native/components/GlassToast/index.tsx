@@ -10,7 +10,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useToastAnimation } from './animations';
 import {
   announceToScreenReader,
-  getLiveRegionPriority,
   getActionHint,
 } from './accessibility';
 import { baseStyles, tvStyles, LEVEL_COLORS } from './styles';
@@ -19,7 +18,6 @@ import type { GlassToastProps } from './types';
 
 export const GlassToast: React.FC<GlassToastProps> = ({
   notification,
-  position = 'bottom',
   onDismiss,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -65,7 +63,7 @@ export const GlassToast: React.FC<GlassToastProps> = ({
     handleDismiss();
   };
 
-  const renderGlassContainer = (children: React.ReactNode) => {
+  const renderGlassContainer = (children: React.JSX.Element) => {
     if (Platform.OS === 'web') {
       return (
         <Animated.View
