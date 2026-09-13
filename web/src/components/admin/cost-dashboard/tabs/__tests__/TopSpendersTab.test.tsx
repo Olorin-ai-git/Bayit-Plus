@@ -1,3 +1,4 @@
+import '@/__tests__/support/costDashboardI18n';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import TopSpendersTab from '../TopSpendersTab';
@@ -5,12 +6,13 @@ import TopSpendersTab from '../TopSpendersTab';
 describe('TopSpendersTab', () => {
   const mockDashboard = {
     loading: { topSpenders: false },
+    data: { topSpenders: { spenders: [{ rank: 1, user_id_hash: 'a3f2b1...', total_cost_range: '100-500 USD', spend_percentage: 5.2 }, { rank: 2, user_id_hash: 'c7d4e2...', total_cost_range: '50-100 USD', spend_percentage: 4.1 }] } },
     errors: { topSpenders: null },
   };
 
   it('renders top spenders tab', () => {
     render(<TopSpendersTab dashboard={mockDashboard} />);
-    expect(screen.getByText('Top 20 Spenders (Monthly)')).toBeInTheDocument();
+    expect(screen.getByText('Top Spenders')).toBeInTheDocument();
   });
 
   it('displays table with columns', () => {
@@ -23,13 +25,13 @@ describe('TopSpendersTab', () => {
   it('shows loading state', () => {
     const loadingDashboard = { ...mockDashboard, loading: { topSpenders: true } };
     render(<TopSpendersTab dashboard={loadingDashboard} />);
-    expect(screen.getByText('Top 20 Spenders (Monthly)')).toBeInTheDocument();
+    expect(screen.getByText('Top Spenders')).toBeInTheDocument();
   });
 
   it('shows error state', () => {
     const errorDashboard = { ...mockDashboard, errors: { topSpenders: 'API error' } };
     render(<TopSpendersTab dashboard={errorDashboard} />);
-    expect(screen.getByText('Top 20 Spenders (Monthly)')).toBeInTheDocument();
+    expect(screen.getByText('Top Spenders')).toBeInTheDocument();
   });
 
   it('displays user hashes', () => {
@@ -49,7 +51,7 @@ describe('TopSpendersTab', () => {
 
   it('shows privacy notice', () => {
     render(<TopSpendersTab dashboard={mockDashboard} />);
-    expect(screen.getByText(/hashed.*privacy/i)).toBeInTheDocument();
+    expect(screen.getByText(/identifiers are hashed/i)).toBeInTheDocument();
   });
 
   it('renders with GlassCard styling', () => {

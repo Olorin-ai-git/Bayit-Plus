@@ -10,9 +10,9 @@ import logging
 from datetime import datetime, timezone
 from uuid import uuid4
 
-import httpx
 from PIL import Image
 
+from app.core.ai_clients import ProviderOperationTimeouts, get_provider_http_client
 from app.core.config import settings
 from app.core.storage import StorageService
 from app.models.child_avatar import AvatarPose, AvatarStatus, AvatarStyle, ChildAvatar
@@ -148,27 +148,29 @@ class AvatarGenerationService:
             f"publishers/google/models/imagen-3.0-generate-002:predict"
         )
 
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(
-                url,
-                json={
-                    "instances": [{"prompt": prompt}],
-                    "parameters": {
-                        "sampleCount": 1,
-                        "aspectRatio": "1:1",
-                        "safetyFilterLevel": "block_most",
-                        "personGeneration": "dont_allow",
-                    },
+        client = get_provider_http_client()
+        operation_timeouts = ProviderOperationTimeouts.from_settings()
+        response = await client.post(
+            url,
+            json={
+                "instances": [{"prompt": prompt}],
+                "parameters": {
+                    "sampleCount": 1,
+                    "aspectRatio": "1:1",
+                    "safetyFilterLevel": "block_most",
+                    "personGeneration": "dont_allow",
                 },
-                headers={"Authorization": f"Bearer {credentials.token}"},
-            )
-            response.raise_for_status()
+            },
+            headers={"Authorization": f"Bearer {credentials.token}"},
+            timeout=operation_timeouts.imagen_generation,
+        )
+        response.raise_for_status()
 
-            predictions = response.json().get("predictions", [])
-            if not predictions:
-                raise ValueError("No image generated from Imagen API")
+        predictions = response.json().get("predictions", [])
+        if not predictions:
+            raise ValueError("No image generated from Imagen API")
 
-            return base64.b64decode(predictions[0]["bytesBase64Encoded"])
+        return base64.b64decode(predictions[0]["bytesBase64Encoded"])
 
     async def _upload_avatar_image(
         self, image_bytes: bytes, gcs_path: str

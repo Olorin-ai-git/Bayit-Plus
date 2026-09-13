@@ -39,14 +39,14 @@ export function V2VWaveformCompare({
   return (
     <div className="rounded-xl bg-white/5 border border-white/10 p-4">
       <h4 className="text-sm font-medium text-white/70 mb-4">
-        {t('zehAni.v2v.comparison.title')}
+        {t('zehAni.v2v.beforeAfter')}
       </h4>
 
       <div className="space-y-4">
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs text-white/50">
-              {t('zehAni.v2v.comparison.before')}
+              {t('zehAni.v2v.before')}
             </span>
             <span className="text-xs font-medium text-amber-400">
               {scoreBefore.toFixed(1)}
@@ -63,7 +63,7 @@ export function V2VWaveformCompare({
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs text-white/50">
-              {t('zehAni.v2v.comparison.after')}
+              {t('zehAni.v2v.after')}
             </span>
             <span className="text-xs font-medium text-green-400">
               {scoreAfter.toFixed(1)}
@@ -83,7 +83,7 @@ export function V2VWaveformCompare({
 
       <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-center gap-2">
         <span className="text-xs text-white/50">
-          {t('zehAni.v2v.comparison.delta')}
+          {t('zehAni.v2v.improvement')}
         </span>
         <span
           className={`text-lg font-bold transition-opacity duration-500 ${

@@ -11,7 +11,8 @@ import re
 import time
 from typing import Optional
 
-import anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -20,7 +21,7 @@ from app.models.content import (Content, LiveChannel, Podcast)
 logger = get_logger(__name__)
 
 # Initialize Anthropic client
-client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
 # Media context cache
 _media_context_cache: Optional[dict] = None

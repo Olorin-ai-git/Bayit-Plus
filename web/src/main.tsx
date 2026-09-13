@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
+import ReviewGate from './components/review/ReviewGate'
 import '../../shared/styles/globals.css'
 import './config/i18n'
 
@@ -49,6 +50,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     >
       <BrowserRouter>
         <App />
+        <ReviewGate />
       </BrowserRouter>
     </SentryErrorBoundary>
   </React.StrictMode>,

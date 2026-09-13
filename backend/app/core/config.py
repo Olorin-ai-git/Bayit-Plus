@@ -1,9 +1,12 @@
 import os
+import re
+import ssl
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from dotenv import load_dotenv
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings
 
 from app.core.config_domains.ai_nlp import AINLPConfigMixin
@@ -29,7 +32,10 @@ from app.core.config_domains.live_quotas import LiveQuotasConfigMixin
 from app.core.config_domains.media import MediaConfigMixin
 from app.core.config_domains.media_pipeline import MediaPipelineConfigMixin
 from app.core.config_domains.media_ssrf import MediaSsrfConfigMixin
-from app.core.config_domains.monitoring import MonitoringConfigMixin
+from app.core.config_domains.monitoring import (
+    CORRELATION_ID_HEADER_MAX_LENGTH,
+    MonitoringConfigMixin,
+)
 from app.core.config_domains.olorin_compat import OlorinCompatConfigMixin
 from app.core.config_domains.restored_fields import RestoredFieldsMixin
 from app.core.config_domains.payments import PaymentsConfigMixin
@@ -38,6 +44,57 @@ from app.core.config_domains.voice import VoiceConfigMixin
 from app.core.config_domains.zehani import ZehAniConfigMixin
 from app.core.config_domains.zehani_grandparent import ZehAniGrandparentConfigMixin
 from app.core.olorin_config import OlorinSettings
+
+HTTP_FIELD_NAME_CHARACTERS = frozenset(
+    "!#$%&'*+-.^_`|~0123456789" "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+)
+PROTECTED_PROVIDER_HEADER_NAMES = frozenset(
+    {
+        "api-key",
+        "anthropic-beta",
+        "anthropic-version",
+        "authorization",
+        "connection",
+        "content-length",
+        "content-type",
+        "cookie",
+        "host",
+        "keep-alive",
+        "openai-organization",
+        "openai-project",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "set-cookie",
+        "te",
+        "trailer",
+        "transfer-encoding",
+        "upgrade",
+        "x-api-key",
+        "x-erebor-request-id",
+        "x-erebor-task-class",
+        "x-goog-api-key",
+    }
+)
+TWOGATES_AGENT_TOKEN_PATTERN = re.compile(r"tg_[0-9a-f]{16}_[0-9a-f]{48}")
+
+
+def validate_provider_correlation_header_name(header_name: str) -> str:
+    """Reject invalid or protected outbound provider correlation headers."""
+    if len(header_name) > CORRELATION_ID_HEADER_MAX_LENGTH:
+        raise ValueError(
+            "Correlation ID header must be at most "
+            f"{CORRELATION_ID_HEADER_MAX_LENGTH} characters"
+        )
+    if not header_name or any(
+        character not in HTTP_FIELD_NAME_CHARACTERS for character in header_name
+    ):
+        raise ValueError("Correlation ID header must be a valid HTTP field name")
+    if header_name.casefold() in PROTECTED_PROVIDER_HEADER_NAMES:
+        raise ValueError(
+            "Correlation ID header conflicts with a protected provider header"
+        )
+    return header_name
+
 
 # Load environment files in proper hierarchy
 try:
@@ -237,6 +294,66 @@ class Settings(
                 "MONGODB_URI must be configured. Set it to your MongoDB Atlas or server URL."
             )
         return v
+
+    @model_validator(mode="after")
+    def validate_twogates_routing(self) -> "Settings":
+        """Require a complete, safe CONNECT configuration before opt-in."""
+        validate_provider_correlation_header_name(self.CORRELATION_ID_HEADER)
+        proxy_url = self.TWOGATES_PROXY_URL.get_secret_value().strip()
+        proxy_credential = self.TWOGATES_PROXY_CREDENTIAL.get_secret_value().strip()
+        ca_cert_pem = self.TWOGATES_CA_CERT_PEM.get_secret_value().strip()
+        connection_values = (
+            proxy_url,
+            proxy_credential,
+            ca_cert_pem,
+            self.TWOGATES_TASK_CLASS,
+        )
+        configured = [bool(value) for value in connection_values]
+
+        if any(configured) and not all(configured):
+            raise ValueError(
+                "TwoGates routing settings must be configured as an all-or-none group"
+            )
+        if self.TWOGATES_ROUTING_ENABLED and not all(configured):
+            raise ValueError(
+                "TwoGates routing cannot be enabled without its complete connection settings"
+            )
+        if all(configured):
+            parsed = urlsplit(proxy_url)
+            if parsed.scheme != "https" or not parsed.hostname or parsed.port is None:
+                raise ValueError("TwoGates proxy URL must be an HTTPS origin with a port")
+            if (
+                parsed.username
+                or parsed.password
+                or parsed.path not in ("", "/")
+                or parsed.query
+                or parsed.fragment
+            ):
+                raise ValueError(
+                    "TwoGates proxy URL must be a credential-free HTTPS origin"
+                )
+
+            if TWOGATES_AGENT_TOKEN_PATTERN.fullmatch(proxy_credential) is None:
+                raise ValueError("TwoGates proxy credential must be an agent token")
+
+            if (
+                "-----BEGIN CERTIFICATE-----" not in ca_cert_pem
+                or "-----END CERTIFICATE-----" not in ca_cert_pem
+            ):
+                raise ValueError("TwoGates CA certificate must be PEM encoded")
+            try:
+                context = ssl.create_default_context()
+                context.load_verify_locations(cadata=ca_cert_pem)
+            except ssl.SSLError as exc:
+                raise ValueError(
+                    "TwoGates CA certificate must be a valid PEM bundle"
+                ) from exc
+
+        if self.TWOGATES_MAX_KEEPALIVE_CONNECTIONS > self.TWOGATES_MAX_CONNECTIONS:
+            raise ValueError(
+                "TwoGates keepalive connection limit cannot exceed its total connection limit"
+            )
+        return self
 
     class Config:
         env_file = ".env"

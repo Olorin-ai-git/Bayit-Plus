@@ -8,8 +8,9 @@ import json
 import logging
 from typing import Any, Dict, Optional
 
-from anthropic import Anthropic
 from pydantic import BaseModel, Field
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 
@@ -87,7 +88,7 @@ class IntentParser:
         if not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is required for NLP features")
 
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         self.confidence_threshold = settings.NLP_CONFIDENCE_THRESHOLD
 
     async def parse_command(

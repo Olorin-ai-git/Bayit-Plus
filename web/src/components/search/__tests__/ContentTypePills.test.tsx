@@ -4,15 +4,38 @@
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import TestRenderer, { act as rendererAct } from 'react-test-renderer';
+import { Platform, TouchableOpacity } from 'react-native';
 import { ContentTypePills } from '../ContentTypePills';
 import type { ContentType } from '../../../../../shared/hooks/useSearch';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
+
+
+function inspectTvPills(value: 'all' | 'vod', inspect: (buttons: TestRenderer.ReactTestInstance[]) => void) {
+  const descriptor = Object.getOwnPropertyDescriptor(Platform, 'isTV');
+  Object.defineProperty(Platform, 'isTV', { configurable: true, value: true });
+  let tree: TestRenderer.ReactTestRenderer | undefined;
+  try {
+    rendererAct(() => { tree = TestRenderer.create(<ContentTypePills value={value} onChange={jest.fn()} />); });
+    inspect(tree!.root.findAllByType(TouchableOpacity));
+  } finally {
+    rendererAct(() => tree?.unmount());
+    if (descriptor) Object.defineProperty(Platform, 'isTV', descriptor);
+    else Reflect.deleteProperty(Platform, 'isTV');
+  }
+}
 
 describe('ContentTypePills', () => {
   const mockOnChange = jest.fn();
@@ -36,7 +59,7 @@ describe('ContentTypePills', () => {
     expect(screen.getByText('search.controls.contentTypes.podcast')).toBeInTheDocument();
   });
 
-  it('renders content type emojis', () => {
+  it('renders content type icons', () => {
     const { container } = render(
       <ContentTypePills
         value="all"
@@ -44,10 +67,10 @@ describe('ContentTypePills', () => {
       />
     );
 
-    expect(container.textContent).toContain('🎬'); // VOD
-    expect(container.textContent).toContain('📺'); // Live
-    expect(container.textContent).toContain('📻'); // Radio
-    expect(container.textContent).toContain('🎙️'); // Podcast
+    expect(screen.getByRole('button', { name: 'search.controls.contentTypes.vod' }).querySelector('svg')).not.toBeNull(); // VOD
+    expect(screen.getByRole('button', { name: 'search.controls.contentTypes.live' }).querySelector('svg')).not.toBeNull(); // Live
+    expect(screen.getByRole('button', { name: 'search.controls.contentTypes.radio' }).querySelector('svg')).not.toBeNull(); // Radio
+    expect(screen.getByRole('button', { name: 'search.controls.contentTypes.podcast' }).querySelector('svg')).not.toBeNull(); // Podcast
   });
 
   it('highlights "all" pill when all is selected', () => {
@@ -59,7 +82,7 @@ describe('ContentTypePills', () => {
     );
 
     const allPill = screen.getByText('search.controls.contentTypes.all').closest('button');
-    expect(allPill).toHaveAttribute('data-variant', 'primary');
+    expect(allPill).toHaveAttribute('aria-selected', 'true');
   });
 
   it('highlights "vod" pill when vod is selected', () => {
@@ -71,7 +94,7 @@ describe('ContentTypePills', () => {
     );
 
     const vodPill = screen.getByText('search.controls.contentTypes.vod').closest('button');
-    expect(vodPill).toHaveAttribute('data-variant', 'primary');
+    expect(vodPill).toHaveAttribute('aria-selected', 'true');
   });
 
   it('uses ghost variant for non-selected pills', () => {
@@ -85,8 +108,8 @@ describe('ContentTypePills', () => {
     const allPill = screen.getByText('search.controls.contentTypes.all').closest('button');
     const livePill = screen.getByText('search.controls.contentTypes.live').closest('button');
 
-    expect(allPill).toHaveAttribute('data-variant', 'ghost');
-    expect(livePill).toHaveAttribute('data-variant', 'ghost');
+    expect(allPill).toHaveAttribute('aria-selected', 'false');
+    expect(livePill).toHaveAttribute('aria-selected', 'false');
   });
 
   it('calls onChange with "vod" when VOD pill is pressed', () => {
@@ -182,7 +205,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const scrollView = container.querySelector('[data-testid="scroll-view"]');
+    const scrollView = container.firstElementChild;
     expect(scrollView).toHaveStyle({ flexDirection: 'row' });
   });
 
@@ -196,34 +219,22 @@ describe('ContentTypePills', () => {
 
     const pills = container.querySelectorAll('button');
     pills.forEach(pill => {
-      const styles = window.getComputedStyle(pill);
-      const minHeight = parseInt(styles.minHeight) || 0;
+      const minHeight = Math.max(...Array.from(pill.querySelectorAll('*')).map(node => parseInt(window.getComputedStyle(node).minHeight) || 0));
       expect(minHeight).toBeGreaterThanOrEqual(44);
     });
   });
 
   it('supports tvOS focus navigation', () => {
-    render(
-      <ContentTypePills
-        value="all"
-        onChange={mockOnChange}
-      />
-    );
-
-    const firstPill = screen.getByText('search.controls.contentTypes.all').closest('button');
-    expect(firstPill).toHaveAttribute('focusable', 'true');
+    inspectTvPills('all', buttons => {
+      expect(buttons[0].props.focusable).toBe(true);
+    });
   });
 
   it('sets hasTVPreferredFocus on selected pill for tvOS', () => {
-    render(
-      <ContentTypePills
-        value="vod"
-        onChange={mockOnChange}
-      />
-    );
-
-    const vodPill = screen.getByText('search.controls.contentTypes.vod').closest('button');
-    expect(vodPill).toHaveProperty('hasTVPreferredFocus', true);
+    inspectTvPills('vod', buttons => {
+      const vodPill = buttons.find(button => button.props.accessibilityLabel === 'search.controls.contentTypes.vod');
+      expect(vodPill?.props).toHaveProperty('hasTVPreferredFocus', true);
+    });
   });
 
   it('applies focus styles on tvOS', () => {
@@ -249,11 +260,11 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const pillContainer = container.querySelector('[data-testid="pill-container"]');
-    expect(pillContainer).toHaveStyle({ gap: expect.any(Number) });
+    const pillContainer = container.firstElementChild?.firstElementChild;
+    expect(parseFloat(window.getComputedStyle(pillContainer!).gap)).toBeGreaterThan(0);
   });
 
-  it('shows emoji and label for each pill', () => {
+  it('shows icon and label for each pill', () => {
     render(
       <ContentTypePills
         value="all"
@@ -261,9 +272,9 @@ describe('ContentTypePills', () => {
       />
     );
 
-    // Check VOD pill has both emoji and label
+    // Check VOD pill has both icon and label
     const vodPill = screen.getByText('search.controls.contentTypes.vod').closest('button');
-    expect(vodPill?.textContent).toContain('🎬');
+    expect(vodPill?.querySelector('svg')).not.toBeNull();
     expect(vodPill?.textContent).toContain('search.controls.contentTypes.vod');
   });
 
@@ -276,10 +287,10 @@ describe('ContentTypePills', () => {
     );
 
     const livePill = screen.getByText('search.controls.contentTypes.live').closest('button');
-    expect(livePill?.className).toContain('pillActive');
+    expect(livePill).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('supports keyboard navigation', () => {
+  it('supports keyboard navigation', async () => {
     render(
       <ContentTypePills
         value="all"
@@ -287,11 +298,12 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const allPill = screen.getByText('search.controls.contentTypes.all');
-    const vodPill = screen.getByText('search.controls.contentTypes.vod');
+    const allPill = screen.getByRole('button', { name: 'search.controls.contentTypes.all' });
+    const vodPill = screen.getByRole('button', { name: 'search.controls.contentTypes.vod' });
 
     // Tab to next element
-    fireEvent.keyDown(allPill, { key: 'Tab' });
+    allPill.focus();
+    await userEvent.tab();
     expect(vodPill).toHaveFocus();
   });
 
@@ -313,3 +325,9 @@ describe('ContentTypePills', () => {
     expect(labels[4]).toContain('search.controls.contentTypes.podcast');
   });
 });
+
+ test('explicit selection takes precedence over the value alias', () => {
+   render(<ContentTypePills selected="live" value="vod" onChange={jest.fn()} />);
+   expect(screen.getByRole('button', { name: 'search.controls.contentTypes.live' })).toHaveAttribute('aria-selected', 'true');
+   expect(screen.getByRole('button', { name: 'search.controls.contentTypes.vod' })).toHaveAttribute('aria-selected', 'false');
+ });

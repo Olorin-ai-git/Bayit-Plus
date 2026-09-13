@@ -1,6 +1,7 @@
 // Top Spenders tab - displays user cost ranking (PII redacted)
 
 import React from "react";
+import type { TopSpenders } from "@/services/adminApi/costData";
 import { useTranslation } from "react-i18next";
 import { GlassCard } from "@olorin/glass-ui";
 
@@ -11,11 +12,7 @@ interface TopSpendersTabProps {
 export default function TopSpendersTab({ dashboard }: TopSpendersTabProps) {
   const { t } = useTranslation();
 
-  const mockSpenders = [
-    { rank: 1, userHash: "a3f2b1...", range: "100-500 USD", percentage: 5.2 },
-    { rank: 2, userHash: "c7d4e2...", range: "50-100 USD", percentage: 4.1 },
-    { rank: 3, userHash: "f1b9a3...", range: "20-50 USD", percentage: 3.8 },
-  ];
+  const spenders = dashboard?.data?.topSpenders?.spenders;
 
   return (
     <GlassCard className="p-6 backdrop-blur-xl rounded-lg bg-black/30 border border-purple-500/20">
@@ -25,7 +22,7 @@ export default function TopSpendersTab({ dashboard }: TopSpendersTabProps) {
         <p className="text-gray-400">{t('admin.costDashboard.topSpenders.loading')}</p>
       ) : dashboard.errors.topSpenders ? (
         <p className="text-red-400">{t('common.error')}: {dashboard.errors.topSpenders}</p>
-      ) : (
+      ) : !spenders ? (<p>{t("common.unknown")}</p>) : spenders.length === 0 ? (<p>{t("common.noData")}</p>) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -37,13 +34,13 @@ export default function TopSpendersTab({ dashboard }: TopSpendersTabProps) {
               </tr>
             </thead>
             <tbody>
-              {mockSpenders.map((spender) => (
+              {spenders.map((spender: TopSpenders["spenders"][number]) => (
                 <tr key={spender.rank} className="border-b border-purple-500/10 hover:bg-black/30">
                   <td className="py-3 px-4 text-white font-medium">#{spender.rank}</td>
-                  <td className="py-3 px-4 text-purple-300 font-mono text-xs">{spender.userHash}</td>
-                  <td className="py-3 px-4 text-gray-300">{spender.range}</td>
+                  <td className="py-3 px-4 text-purple-300 font-mono text-xs">{spender.user_id_hash}</td>
+                  <td className="py-3 px-4 text-gray-300">{spender.total_cost_range}</td>
                   <td className="py-3 px-4 text-right text-orange-400 font-semibold">
-                    {spender.percentage}%
+                    {spender.spend_percentage === null ? t("common.unknown") : `${spender.spend_percentage}%`}
                   </td>
                 </tr>
               ))}

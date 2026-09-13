@@ -162,7 +162,7 @@ export function extractParameters(
   const params: Record<string, unknown> = {};
 
   switch (action) {
-    case 'volume':
+    case 'volume': {
       if (/up|louder|higher|increase|raise/i.test(transcript)) {
         params.direction = 'up';
       } else if (/down|quieter|lower|decrease/i.test(transcript)) {
@@ -175,6 +175,7 @@ export function extractParameters(
         params.level = parseInt(percentMatch[1], 10);
       }
       break;
+    }
 
     case 'search':
       // Extract content type if specified

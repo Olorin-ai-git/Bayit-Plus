@@ -4,31 +4,41 @@
  */
 
 import React from 'react'
-import { render, waitFor } from '@testing-library/react-native'
+import { render, waitFor } from '@testing-library/react'
 import { WatchPage } from '../WatchPage'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { logger } from '@/utils/logger'
+
+jest.mock('@/components/player/VideoPlayer', () => ({ __esModule: true, default: () => <div data-testid="video-player" /> }));
 
 // Mock all dependencies
 jest.mock('@olorin/glass-ui/hooks')
 jest.mock('@/utils/logger')
 jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: () => ({ state: null }),
   useParams: () => ({ contentId: 'test-content' }),
   useNavigate: () => jest.fn(),
   useSearchParams: () => [new URLSearchParams()],
 }))
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string, params?: any) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string, params?: any) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}))
+};
+})
 jest.mock('@/hooks/useDirection', () => ({
   useDirection: () => ({ isRTL: false }),
 }))
-jest.mock('@/stores/authStore', () => ({
+jest.mock('@bayit/shared-stores/authStore', () => ({
   useAuthStore: jest.fn((selector) => selector({ user: null })),
 }))
 jest.mock('../hooks', () => ({
+  ...jest.requireActual('../hooks'),
   usePlaylistManager: () => ({
     playlist: [],
     playlistIndex: 0,
@@ -38,23 +48,23 @@ jest.mock('../hooks', () => ({
     playItemAtIndex: jest.fn(),
     handleContentEnded: jest.fn(),
   }),
-  useContentLoader: () => ({
+  useContentLoader: jest.fn(() => ({
     content: { title: 'Test Content', id: 'test-content' },
     streamUrl: null,
     related: [],
     loading: false,
     availableSubtitleLanguages: [],
-  }),
+  })),
   useChaptersLoader: () => ({
     chapters: [],
     chaptersLoading: false,
     loadChapters: jest.fn(),
   }),
-  useEpisodePlayer: () => ({
+  useEpisodePlayer: jest.fn(() => ({
     currentEpisodeId: null,
     handlePlayEpisode: jest.fn(),
     handleDeleteEpisode: jest.fn(),
-  }),
+  })),
 }))
 
 describe('WatchPage - Notifications', () => {
@@ -72,7 +82,7 @@ describe('WatchPage - Notifications', () => {
 
   describe('Unauthenticated Access', () => {
     it('shows error notification when user tries to access content without auth', async () => {
-      const { useAuthStore } = require('@/stores/authStore')
+      const { useAuthStore } = require('@bayit/shared-stores/authStore')
       useAuthStore.mockImplementation((selector: any) =>
         selector({ user: null })
       )
@@ -112,7 +122,7 @@ describe('WatchPage - Notifications', () => {
         return '1'
       })
 
-      const { useAuthStore } = require('@/stores/authStore')
+      const { useAuthStore } = require('@bayit/shared-stores/authStore')
       useAuthStore.mockImplementation((selector: any) =>
         selector({ user: null })
       )
@@ -153,7 +163,7 @@ describe('WatchPage - Notifications', () => {
 
   describe('Authenticated Access', () => {
     it('does not show notification when user is authenticated with stream URL', () => {
-      const { useAuthStore } = require('@/stores/authStore')
+      const { useAuthStore } = require('@bayit/shared-stores/authStore')
       useAuthStore.mockImplementation((selector: any) =>
         selector({ user: { id: 'user-1' } })
       )
@@ -173,3 +183,5 @@ describe('WatchPage - Notifications', () => {
     })
   })
 })
+
+jest.mock('@bayit/shared-services/ttsService', () => ({ ttsService: { on: jest.fn(), off: jest.fn(), isCurrentlyPlaying: jest.fn(() => false) } }));

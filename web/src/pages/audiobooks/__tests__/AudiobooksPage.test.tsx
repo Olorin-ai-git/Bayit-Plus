@@ -8,11 +8,16 @@ import AudiobooksPage from '../AudiobooksPage'
 import * as audiobookService from '@/services/audiobookService'
 
 jest.mock('@/services/audiobookService')
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string, defaultValue?: string) => defaultValue || key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string, defaultValue?: string) => defaultValue || key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}))
+};
+})
 jest.mock('@/hooks/useDirection', () => ({
   useDirection: () => ({ isRTL: false }),
 }))
@@ -20,6 +25,7 @@ jest.mock('@/hooks/useDirection', () => ({
 describe('AudiobooksPage', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(audiobookService.default.getAuthors as jest.Mock).mockResolvedValue([])
   })
 
   it('should render loading state initially', () => {
@@ -112,7 +118,7 @@ describe('AudiobooksPage', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText(/error|failed/i)).toBeInTheDocument()
+      expect(screen.getByText('Failed to load audiobooks')).toBeInTheDocument()
     })
   })
 })

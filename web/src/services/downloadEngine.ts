@@ -31,13 +31,13 @@ export async function startDownload(
     throw new Error("ReadableStream not supported");
   }
 
-  const chunks: Uint8Array[] = [];
+  const chunks: Uint8Array<ArrayBuffer>[] = [];
   let received = 0;
 
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    chunks.push(value);
+    chunks.push(new Uint8Array(value));
     received += value.length;
     onProgress(received, contentLength);
   }
@@ -78,13 +78,13 @@ export async function resumeDownload(
     throw new Error("ReadableStream not supported");
   }
 
-  const chunks: Uint8Array[] = [];
+  const chunks: Uint8Array<ArrayBuffer>[] = [];
   let received = bytesAlreadyReceived;
 
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    chunks.push(value);
+    chunks.push(new Uint8Array(value));
     received += value.length;
     onProgress(received, contentLength + bytesAlreadyReceived);
   }

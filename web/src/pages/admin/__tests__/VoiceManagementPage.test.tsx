@@ -11,12 +11,16 @@ import { voiceManagementService } from '@/services/voiceManagementApi';
 
 // Mock services
 jest.mock('@/services/voiceManagementApi');
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: mockTranslate,
     i18n: { language: 'en' },
   }),
-}));
+};
+});
 
 // Mock useDirection hook
 jest.mock('@/hooks/useDirection', () => ({
@@ -26,6 +30,9 @@ jest.mock('@/hooks/useDirection', () => ({
     flexDirection: 'row',
   }),
 }));
+
+beforeEach(() => { jest.clearAllMocks(); jest.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(); });
+afterEach(() => { jest.restoreAllMocks(); });
 
 describe('VoiceManagementPage', () => {
   it('renders all tabs correctly', () => {
@@ -90,7 +97,7 @@ describe('VoiceConfigurationPanel', () => {
 
     await waitFor(() => {
       const input = screen.getByDisplayValue('voice123');
-      fireEvent.change(input, 'newvoice123');
+      fireEvent.change(input, { target: { value: 'newvoice123' } });
     });
 
     await waitFor(() => {
@@ -106,17 +113,11 @@ describe('VoiceConfigurationPanel', () => {
 
     render(<VoiceConfigurationPanel />);
 
-    await waitFor(() => {
-      const testButtons = screen.getAllByRole('button');
-      const testButton = testButtons.find((btn) => btn.getAttribute('aria-label') === 'test');
-
-      if (testButton) {
-        fireEvent.click(testButton);
-      }
-    });
+    const testButtons = await screen.findAllByRole('button', { name: 'admin.actions.test' });
+    fireEvent.click(testButtons[0]);
 
     await waitFor(() => {
-      expect(voiceManagementService.testVoice).toHaveBeenCalled();
+      expect(voiceManagementService.testVoice).toHaveBeenCalledWith('voice123', 'admin.voiceManagement.configuration.testText', 'en');
     });
   });
 
@@ -129,7 +130,7 @@ describe('VoiceConfigurationPanel', () => {
 
     await waitFor(() => {
       const input = screen.getByDisplayValue('voice123');
-      fireEvent.change(input, 'newvoice123');
+      fireEvent.change(input, { target: { value: 'newvoice123' } });
     });
 
     const saveButton = screen.getByText('common.save');

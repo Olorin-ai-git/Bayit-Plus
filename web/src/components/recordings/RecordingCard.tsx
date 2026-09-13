@@ -90,7 +90,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({
             <Play size={16} color="white" fill="white" />
             <Text style={styles.playButtonText}>{t('common.play')}</Text>
           </Pressable>
-          <Pressable onPress={handleDelete} style={styles.deleteButton}>
+          <Pressable onPress={handleDelete} style={styles.deleteButton} accessibilityRole="button" accessibilityLabel={t("common.delete")}>
             <Trash2 size={16} color={colors.error.DEFAULT} />
           </Pressable>
         </View>

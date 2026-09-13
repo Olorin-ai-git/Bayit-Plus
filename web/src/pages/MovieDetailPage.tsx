@@ -63,6 +63,8 @@ const IMDB_TEXT = "#000000";
 interface MovieData {
   id: string;
   title: string;
+  title_en?: string;
+  title_es?: string;
   description?: string;
   thumbnail?: string;
   backdrop?: string;

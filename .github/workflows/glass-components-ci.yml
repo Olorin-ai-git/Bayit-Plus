@@ -13,6 +13,8 @@ on:
 env:
   # Lets .npmrc (@olorin GitHub Packages auth) resolve during npm ci.
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NODE_VERSION: '20'
+  GLASS_NATIVE_BUNDLE_MAX_BYTES: ${{ vars.GLASS_NATIVE_BUNDLE_MAX_BYTES }}
 
 jobs:
   test:
@@ -20,16 +22,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies (workspace root)
         run: npm ci
+
+      - name: Build package dependencies
+        run: npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-icons
 
       - name: Run linter
         run: npm run lint
@@ -54,14 +59,20 @@ jobs:
 
       - name: Check bundle size
         run: |
+          if ! [[ "$GLASS_NATIVE_BUNDLE_MAX_BYTES" =~ ^[1-9][0-9]*$ ]]; then
+            echo "GLASS_NATIVE_BUNDLE_MAX_BYTES must be a positive integer"
+            exit 1
+          fi
           if [ -f "dist/native/index.js" ]; then
             SIZE=$(wc -c < dist/native/index.js)
-            MAX_SIZE=200000
-            if [ $SIZE -gt $MAX_SIZE ]; then
-              echo "❌ Bundle size exceeded: ${SIZE} bytes (max: ${MAX_SIZE})"
+            if [ "$SIZE" -gt "$GLASS_NATIVE_BUNDLE_MAX_BYTES" ]; then
+              echo "Bundle size exceeded: ${SIZE} bytes (max: ${GLASS_NATIVE_BUNDLE_MAX_BYTES})"
               exit 1
             fi
-            echo "✅ Bundle size OK: ${SIZE} bytes"
+            echo "Bundle size is within limit: ${SIZE} bytes"
+          else
+            echo "Expected native bundle was not produced"
+            exit 1
           fi
         working-directory: packages/ui/glass-components
 
@@ -70,18 +81,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies (workspace root)
         run: npm ci
 
-      - name: Run performance tests
+      - name: Build package dependencies
+        run: npm run build --workspace=@olorin/design-tokens && npm run build --workspace=@olorin/shared-icons
+
+      - name: Build Glass UI
+        run: npm run build
+        working-directory: packages/ui/glass-components
+
+      - name: Enforce native bundle ceiling
         run: |
-          # Performance budget check (placeholder - implement actual perf tests)
-          echo "✅ Performance tests passed"
+          if ! [[ "$GLASS_NATIVE_BUNDLE_MAX_BYTES" =~ ^[1-9][0-9]*$ ]]; then
+            echo "GLASS_NATIVE_BUNDLE_MAX_BYTES must be a positive integer"
+            exit 1
+          fi
+          test -f dist/native/index.js
+          SIZE=$(wc -c < dist/native/index.js)
+          test "$SIZE" -le "$GLASS_NATIVE_BUNDLE_MAX_BYTES"
+          echo "Native bundle size is within limit: ${SIZE} bytes"
         working-directory: packages/ui/glass-components

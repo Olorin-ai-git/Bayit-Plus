@@ -4,15 +4,22 @@
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';
+import TestRenderer, { act as rendererAct } from 'react-test-renderer';
+import { FlatList, Image } from 'react-native';
 import { SearchResultsList } from '../SearchResultsList';
 import type { SearchResult } from '../../../../../shared/hooks/useSearch';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
 
 const mockResults: SearchResult[] = [
   {
@@ -88,16 +95,12 @@ describe('SearchResultsList', () => {
     expect(screen.getByText('Emotional drama series')).toBeInTheDocument();
   });
 
-  it('renders thumbnails when available', () => {
-    render(
-      <SearchResultsList
-        results={mockResults}
-        onResultClick={mockOnResultClick}
-      />
-    );
-
-    const images = screen.getAllByRole('img');
-    expect(images[0]).toHaveAttribute('src', 'https://example.com/thumb1.jpg');
+  it('passes the thumbnail URI to the native image renderer', () => {
+    let tree: TestRenderer.ReactTestRenderer;
+    rendererAct(() => { tree = TestRenderer.create(<SearchResultsList results={mockResults} onResultClick={mockOnResultClick} />); });
+    try {
+      expect(tree!.root.findByType(Image).props.source.uri).toBe('https://example.com/thumb1.jpg');
+    } finally { rendererAct(() => tree!.unmount()); }
   });
 
   it('renders placeholder when thumbnail is null', () => {
@@ -108,7 +111,7 @@ describe('SearchResultsList', () => {
       />
     );
 
-    const placeholders = screen.getAllByText('🎬');
+    const placeholders = screen.getByRole('button', { name: 'Drama Series 2 - Series' }).querySelectorAll('svg');
     expect(placeholders.length).toBeGreaterThan(0);
   });
 
@@ -122,7 +125,8 @@ describe('SearchResultsList', () => {
 
     expect(screen.getByText('Movies')).toBeInTheDocument();
     expect(screen.getByText('2023')).toBeInTheDocument();
-    expect(screen.getByText('⭐ 4.5')).toBeInTheDocument();
+    expect(screen.getByText('4.5')).toBeInTheDocument();
+    expect(screen.getByText('4.5').parentElement?.querySelector('svg')).not.toBeNull();
     expect(screen.getByText('120 min')).toBeInTheDocument();
   });
 
@@ -217,7 +221,7 @@ describe('SearchResultsList', () => {
       />
     );
 
-    expect(screen.getByText('Loading more results...')).toBeInTheDocument();
+    expect(screen.getByText('search.loadingMore')).toBeInTheDocument();
   });
 
   it('does not render loading indicator when isLoadingMore is false', () => {
@@ -229,37 +233,28 @@ describe('SearchResultsList', () => {
       />
     );
 
-    expect(screen.queryByText('Loading more results...')).not.toBeInTheDocument();
+    expect(screen.queryByText('search.loadingMore')).not.toBeInTheDocument();
   });
 
-  it('calls onLoadMore when scrolled to end', () => {
-    render(
-      <SearchResultsList
-        results={mockResults}
-        onResultClick={mockOnResultClick}
-        onLoadMore={mockOnLoadMore}
-      />
-    );
-
-    const flatList = screen.getByTestId('flatlist');
-    fireEvent(flatList, new Event('onEndReached'));
-
-    expect(mockOnLoadMore).toHaveBeenCalled();
+  it('calls onLoadMore when the native list reports its end', () => {
+    let tree: TestRenderer.ReactTestRenderer;
+    rendererAct(() => { tree = TestRenderer.create(<SearchResultsList results={mockResults} onResultClick={mockOnResultClick} onLoadMore={mockOnLoadMore} />); });
+    try {
+      rendererAct(() => tree!.root.findByType(FlatList).props.onEndReached({ distanceFromEnd: 0 }));
+      expect(mockOnLoadMore).toHaveBeenCalled();
+    } finally { rendererAct(() => tree!.unmount()); }
   });
 
   it('applies FlatList performance props', () => {
-    const { container } = render(
-      <SearchResultsList
-        results={mockResults}
-        onResultClick={mockOnResultClick}
-      />
-    );
-
-    const flatList = container.querySelector('[data-testid="flatlist"]');
-    expect(flatList).toHaveProperty('initialNumToRender', 10);
-    expect(flatList).toHaveProperty('maxToRenderPerBatch', 10);
-    expect(flatList).toHaveProperty('windowSize', 5);
-    expect(flatList).toHaveProperty('removeClippedSubviews', true);
+    let tree: TestRenderer.ReactTestRenderer;
+    rendererAct(() => { tree = TestRenderer.create(<SearchResultsList results={mockResults} onResultClick={mockOnResultClick} />); });
+    try {
+      const flatList = tree!.root.findByType(FlatList).props;
+      expect(flatList).toHaveProperty('initialNumToRender', 10);
+      expect(flatList).toHaveProperty('maxToRenderPerBatch', 10);
+      expect(flatList).toHaveProperty('windowSize', 5);
+      expect(flatList).toHaveProperty('removeClippedSubviews', true);
+    } finally { rendererAct(() => tree!.unmount()); }
   });
 
   it('uses memoized renderItem callback', () => {
@@ -309,8 +304,8 @@ describe('SearchResultsList', () => {
       />
     );
 
-    const title = container.querySelector('.title');
-    expect(title).toHaveProperty('numberOfLines', 1);
+    const title = screen.getByText(longTitleResult[0].title);
+    expect(title).toHaveStyle({ whiteSpace: 'nowrap', textOverflow: 'ellipsis' });
   });
 
   it('truncates descriptions to two lines', () => {
@@ -321,9 +316,10 @@ describe('SearchResultsList', () => {
       />
     );
 
-    const descriptions = container.querySelectorAll('.description');
+    const descriptions = mockResults.map(result => screen.getByText(result.description!));
+    expect(descriptions).toHaveLength(2);
     descriptions.forEach(desc => {
-      expect(desc).toHaveProperty('numberOfLines', 2);
+      expect(window.getComputedStyle(desc).webkitLineClamp).toBe('2');
     });
   });
 

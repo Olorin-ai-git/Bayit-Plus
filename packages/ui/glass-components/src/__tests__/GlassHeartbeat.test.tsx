@@ -255,10 +255,10 @@ describe('GlassHeartbeat', () => {
       );
 
       const element = getByTestId('heartbeat');
-      expect(element.props.accessibilityRole).toBe('button');
+      expect(element.getAttribute('role')).toBe('button');
     });
 
-    it('has status role when onPress is not provided', () => {
+    it('has text role when onPress is not provided', () => {
       const { getByTestId } = render(
         <GlassHeartbeat
           status="healthy"
@@ -268,7 +268,7 @@ describe('GlassHeartbeat', () => {
       );
 
       const element = getByTestId('heartbeat');
-      expect(element.props.accessibilityRole).toBe('status');
+      expect(element.getAttribute('role')).toBe('text');
     });
   });
 
@@ -294,7 +294,7 @@ describe('GlassHeartbeat', () => {
         />
       );
 
-      expect(getByText('9999ms')).toBeTruthy();
+      expect(getByText('10.0s')).toBeTruthy();
     });
 
     it('formats decimal latency', () => {
@@ -318,7 +318,7 @@ describe('GlassHeartbeat', () => {
         />
       );
 
-      expect(getByText('0ms')).toBeTruthy();
+      expect(getByText('<1ms')).toBeTruthy();
     });
   });
 

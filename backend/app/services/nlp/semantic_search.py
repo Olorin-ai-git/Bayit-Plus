@@ -10,8 +10,9 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
-from anthropic import Anthropic
 from pydantic import BaseModel, Field
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.models.content import Content
@@ -55,7 +56,7 @@ class SemanticSearchService:
         if not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is required for semantic search")
 
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
     async def search(
         self,

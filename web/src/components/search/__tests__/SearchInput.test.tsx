@@ -4,14 +4,20 @@
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';
+import { colors } from '@olorin/design-tokens';
 import { SearchInput } from '../SearchInput';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
 
 describe('SearchInput', () => {
   const mockOnChangeText = jest.fn();
@@ -40,7 +46,7 @@ describe('SearchInput', () => {
       />
     );
 
-    expect(screen.getByPlaceholderText('controls.placeholder')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('search.controls.placeholder')).toBeInTheDocument();
   });
 
   it('displays current value', () => {
@@ -62,8 +68,8 @@ describe('SearchInput', () => {
       />
     );
 
-    const input = screen.getByPlaceholderText('controls.placeholder');
-    fireEvent.change(input, 'comedy');
+    const input = screen.getByPlaceholderText('search.controls.placeholder');
+    fireEvent.change(input, { target: { value: 'comedy' } });
 
     expect(mockOnChangeText).toHaveBeenCalledWith('comedy');
   });
@@ -76,7 +82,7 @@ describe('SearchInput', () => {
       />
     );
 
-    const clearButton = screen.getByLabelText('empty.clearSearch');
+    const clearButton = screen.getByLabelText('search.empty.clearSearch');
     expect(clearButton).toBeInTheDocument();
   });
 
@@ -88,7 +94,7 @@ describe('SearchInput', () => {
       />
     );
 
-    const clearButton = screen.queryByLabelText('empty.clearSearch');
+    const clearButton = screen.queryByLabelText('search.empty.clearSearch');
     expect(clearButton).not.toBeInTheDocument();
   });
 
@@ -100,7 +106,7 @@ describe('SearchInput', () => {
       />
     );
 
-    const clearButton = screen.getByLabelText('empty.clearSearch');
+    const clearButton = screen.getByLabelText('search.empty.clearSearch');
     fireEvent.click(clearButton);
 
     expect(mockOnChangeText).toHaveBeenCalledWith('');
@@ -114,8 +120,8 @@ describe('SearchInput', () => {
       />
     );
 
-    const input = screen.getByLabelText('controls.placeholder');
-    expect(input).toHaveAttribute('aria-label', 'controls.placeholder');
+    const input = screen.getByLabelText('search.controls.placeholder');
+    expect(input).toHaveAttribute('aria-label', 'search.controls.placeholder');
   });
 
   it('applies focus styles when focused', () => {
@@ -126,12 +132,12 @@ describe('SearchInput', () => {
       />
     );
 
-    const input = screen.getByPlaceholderText('controls.placeholder');
+    const input = screen.getByPlaceholderText('search.controls.placeholder');
     fireEvent.focus(input);
 
     // Check if focused class or style is applied
     const containerDiv = container.firstChild;
-    expect(containerDiv).toHaveStyle({ borderColor: expect.any(String) });
+    expect(containerDiv).toHaveStyle({ borderTopColor: colors.inputBorderFocus });
   });
 
   it('removes focus styles when blurred', () => {
@@ -142,12 +148,13 @@ describe('SearchInput', () => {
       />
     );
 
-    const input = screen.getByPlaceholderText('controls.placeholder');
+    const input = screen.getByPlaceholderText('search.controls.placeholder');
+    const containerDiv = container.firstElementChild!;
+    const unfocusedBorder = window.getComputedStyle(containerDiv).borderTopColor;
     fireEvent.focus(input);
+    expect(window.getComputedStyle(containerDiv).borderTopColor).not.toBe(unfocusedBorder);
     fireEvent.blur(input);
-
-    const containerDiv = container.firstChild;
-    expect(containerDiv).not.toHaveStyle({ borderColor: expect.stringContaining('168') });
+    expect(window.getComputedStyle(containerDiv).borderTopColor).toBe(unfocusedBorder);
   });
 
   it('renders search icon', () => {
@@ -158,7 +165,7 @@ describe('SearchInput', () => {
       />
     );
 
-    expect(container.textContent).toContain('🔍');
+    expect(container.querySelector('svg')).not.toBeNull();
   });
 
   it('renders clear icon in button', () => {
@@ -169,6 +176,6 @@ describe('SearchInput', () => {
       />
     );
 
-    expect(container.textContent).toContain('✕');
+    expect(screen.getByRole('button', { name: 'search.empty.clearSearch' }).querySelector('svg')).not.toBeNull();
   });
 });

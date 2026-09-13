@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react-native'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import EPGPage from '../EPGPage'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { recordingApi } from '@/services/recordingApi'
@@ -14,11 +14,16 @@ import logger from '@/utils/logger'
 jest.mock('@olorin/glass-ui/hooks')
 jest.mock('@/services/recordingApi')
 jest.mock('@/utils/logger')
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}))
+};
+})
 jest.mock('@/stores/authStore', () => ({
   useAuthStore: () => ({ user: { subscription: { plan: 'premium' } } }),
 }))

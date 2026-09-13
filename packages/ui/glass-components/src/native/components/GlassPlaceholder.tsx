@@ -8,7 +8,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { View, Text, Animated, StyleSheet, Platform, ViewStyle, StyleProp } from 'react-native';
-import { colors, spacing, borderRadius, CONTENT_TYPE_CONFIG, getContentTypeConfig, ContentType } from '../../theme';
+import { colors, spacing, borderRadius, getContentTypeConfig, ContentType } from '../../theme';
 
 export interface GlassPlaceholderProps {
   /** Content type for icon selection (required for accessibility) */
@@ -55,9 +55,6 @@ export const GlassPlaceholder: React.FC<GlassPlaceholderProps> = ({
   accessibilityHint,
   contentTitle,
   contentReason,
-  focusable = false,
-  onFocus,
-  onBlur,
   testID,
 }) => {
   const config = getContentTypeConfig(contentType);

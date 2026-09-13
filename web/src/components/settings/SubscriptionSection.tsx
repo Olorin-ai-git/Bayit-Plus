@@ -21,49 +21,32 @@ import { SettingSection } from "./shared/SettingSection";
 import { SettingRow } from "./shared/SettingRow";
 import api from "@/services/api";
 import logger from "@/utils/logger";
-
-interface SubscriptionInfo {
-  plan_name: string;
-  status: string;
-  renews_at: string | null;
-  billing_period: string;
-}
-
-interface CreditBalance {
-  remaining_credits: number;
-  total_credits: number;
-}
+import { subscriptionResponseSchema, creditBalanceSchema, type SubscriptionInfo, type CreditBalance } from './subscriptionResponse';
 
 export function SubscriptionSection() {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
   const navigate = useNavigate();
-  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(
-    null,
-  );
+  const [subscription, setSubscription] = useState<SubscriptionInfo>();
   const [credits, setCredits] = useState<CreditBalance | null>(null);
 
   useEffect(() => {
-    loadSubscription();
+    let active = true;
+    void api.get("/subscriptions/current").then(data => {
+      const response = subscriptionResponseSchema.parse(data);
+      if (active) setSubscription(response.subscription);
+    }).catch(error => logger.error("Failed to load subscription", "SubscriptionSection", error));
+    void api.get("/beta/credits/balance").then(data => {
+      const response = creditBalanceSchema.parse(data);
+      if (active) setCredits(response);
+    }).catch(error => logger.error("Failed to load credit balance", "SubscriptionSection", error));
+    return () => { active = false; };
   }, []);
 
-  const loadSubscription = async () => {
-    try {
-      const [subData, creditData] = await Promise.all([
-        api.get("/subscriptions/current"),
-        api.get("/beta/credits/balance"),
-      ]);
-      setSubscription(subData as unknown as SubscriptionInfo);
-      setCredits(creditData as unknown as CreditBalance);
-    } catch (error) {
-      logger.error("Failed to load subscription", "SubscriptionSection", error);
-    }
-  };
-
-  const planDisplay = subscription?.plan_name ?? t("settings.freePlan", "Free");
-  const statusDisplay = subscription?.status ?? t("settings.active", "Active");
+  const planDisplay = subscription === undefined ? t("common.unavailable") : subscription?.plan ?? t("settings.freePlan", "Free");
+  const statusDisplay = subscription === undefined ? t("common.unavailable") : subscription?.status ?? t("common.notAvailable");
   const isFree =
-    !subscription || subscription.plan_name.toLowerCase() === "free";
+    subscription === null || subscription?.plan.toLowerCase() === "free";
 
   return (
     <SettingSection
@@ -104,11 +87,11 @@ export function SubscriptionSection() {
           isRTL={isRTL}
         />
       )}
-      {subscription?.renews_at && (
+      {subscription?.currentPeriodEnd && (
         <SettingRow
           type="value"
           label={t("settings.renewsAt", "Renews At")}
-          value={subscription.renews_at}
+          value={subscription.currentPeriodEnd}
           isRTL={isRTL}
         />
       )}

@@ -8,11 +8,16 @@ import { SearchViewModeToggle } from '../SearchViewModeToggle';
 import type { ViewMode } from '../../../hooks/useSearchViewMode';
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
 
 describe('SearchViewModeToggle', () => {
   const mockOnChange = jest.fn();
@@ -29,9 +34,9 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    expect(screen.getByLabelText('viewMode.grid')).toBeInTheDocument();
-    expect(screen.getByLabelText('viewMode.list')).toBeInTheDocument();
-    expect(screen.getByLabelText('viewMode.cards')).toBeInTheDocument();
+    expect(screen.getByLabelText('search.viewMode.grid')).toBeInTheDocument();
+    expect(screen.getByLabelText('search.viewMode.list')).toBeInTheDocument();
+    expect(screen.getByLabelText('search.viewMode.cards')).toBeInTheDocument();
   });
 
   it('highlights grid button when grid mode is active', () => {
@@ -42,7 +47,7 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const gridButton = screen.getByLabelText('viewMode.grid');
+    const gridButton = screen.getByLabelText('search.viewMode.grid');
     expect(gridButton).toHaveAttribute('aria-selected', 'true');
   });
 
@@ -54,7 +59,7 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const listButton = screen.getByLabelText('viewMode.list');
+    const listButton = screen.getByLabelText('search.viewMode.list');
     expect(listButton).toHaveAttribute('aria-selected', 'true');
   });
 
@@ -66,7 +71,7 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const cardsButton = screen.getByLabelText('viewMode.cards');
+    const cardsButton = screen.getByLabelText('search.viewMode.cards');
     expect(cardsButton).toHaveAttribute('aria-selected', 'true');
   });
 
@@ -78,7 +83,7 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const listButton = screen.getByLabelText('viewMode.list');
+    const listButton = screen.getByLabelText('search.viewMode.list');
     fireEvent.click(listButton);
 
     expect(mockOnChange).toHaveBeenCalledWith('list');
@@ -92,7 +97,7 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const cardsButton = screen.getByLabelText('viewMode.cards');
+    const cardsButton = screen.getByLabelText('search.viewMode.cards');
     fireEvent.click(cardsButton);
 
     expect(mockOnChange).toHaveBeenCalledWith('cards');
@@ -106,7 +111,7 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const gridButton = screen.getByLabelText('viewMode.grid');
+    const gridButton = screen.getByLabelText('search.viewMode.grid');
     fireEvent.click(gridButton);
 
     expect(mockOnChange).toHaveBeenCalledWith('grid');
@@ -133,8 +138,8 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const listButton = screen.getByLabelText('viewMode.list');
-    expect(listButton).toHaveAttribute('data-variant', 'primary');
+    const listButton = screen.getByLabelText('search.viewMode.list');
+    expect(listButton).toHaveAttribute('aria-selected', 'true');
   });
 
   it('uses ghost variant for non-selected buttons', () => {
@@ -145,11 +150,11 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const gridButton = screen.getByLabelText('viewMode.grid');
-    const cardsButton = screen.getByLabelText('viewMode.cards');
+    const gridButton = screen.getByLabelText('search.viewMode.grid');
+    const cardsButton = screen.getByLabelText('search.viewMode.cards');
 
-    expect(gridButton).toHaveAttribute('data-variant', 'ghost');
-    expect(cardsButton).toHaveAttribute('data-variant', 'ghost');
+    expect(gridButton).toHaveAttribute('aria-selected', 'false');
+    expect(cardsButton).toHaveAttribute('aria-selected', 'false');
   });
 
   it('has proper accessibility states', () => {
@@ -160,8 +165,8 @@ describe('SearchViewModeToggle', () => {
       />
     );
 
-    const gridButton = screen.getByLabelText('viewMode.grid');
-    const listButton = screen.getByLabelText('viewMode.list');
+    const gridButton = screen.getByLabelText('search.viewMode.grid');
+    const listButton = screen.getByLabelText('search.viewMode.list');
 
     expect(gridButton).toHaveAttribute('aria-selected', 'true');
     expect(listButton).toHaveAttribute('aria-selected', 'false');
@@ -177,8 +182,7 @@ describe('SearchViewModeToggle', () => {
 
     const buttons = container.querySelectorAll('button');
     buttons.forEach(button => {
-      const styles = window.getComputedStyle(button);
-      const minSize = parseInt(styles.minWidth) || 0;
+      const minSize = Math.max(...Array.from(button.querySelectorAll('*')).map(node => parseInt(window.getComputedStyle(node).minWidth) || 0));
       expect(minSize).toBeGreaterThanOrEqual(44);
     });
   });

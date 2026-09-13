@@ -9,6 +9,8 @@ from uuid import uuid4
 from anthropic import AsyncAnthropic
 from anthropic.types import TextBlock
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.olorin.metering.service import MeteringService
@@ -61,7 +63,7 @@ class TriviaTranslationService:
         if anthropic_client is None:
             if not settings.ANTHROPIC_API_KEY:
                 raise ValueError("ANTHROPIC_API_KEY not configured")
-            self.client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+            self.client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         else:
             self.client = anthropic_client
 

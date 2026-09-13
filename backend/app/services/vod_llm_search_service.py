@@ -10,8 +10,9 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from anthropic import Anthropic
 from pydantic import BaseModel, Field
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.services.unified_search_service import (SearchFilters,
@@ -53,7 +54,7 @@ class VODLLMSearchService:
     """
 
     def __init__(self):
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         self.model = settings.CLAUDE_MODEL
         self.unified_search = UnifiedSearchService()
 

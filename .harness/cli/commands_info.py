@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from cli import config, fileio, hygiene, manifest, merge, units
+from cli import config, fileio, hygiene, manifest, merge, twogates, units
 from cli.commands_init import VENDORED_DIRS
 from cli.errors import HarnessError, emit
 from cli.paths import find_git_root, resolve_canonical
@@ -74,6 +74,7 @@ def status(args) -> int:
     root, mani = load_install(args.target)
     canonical = resolve_soft(args, mani)
     emit(f"state: {_active_state_line(root)}")
+    emit(f"twogates: {twogates.gate_summary(root)['line']}")
     if canonical is None:
         emit("canonical unreachable — skipping staleness check")
     broken = 0
@@ -138,7 +139,8 @@ def doctor(args) -> int:
         except HarnessError:
             continue
         check(f"project section in {rel}", units.project_section_problem(text))
-    for name, problem in hygiene.doctor_problems(root):
+    for name, problem in (*hygiene.doctor_problems(root),
+                          *twogates.doctor_problems(root)):
         check(name, problem, warn=True)
     if mani is None:
         emit(f"{failures} check(s) failed")

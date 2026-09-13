@@ -73,7 +73,10 @@ const GlassTooltip = ({ content, children, ...props }) =>
 const GlassDropdown = ({ trigger, children, ...props }) =>
   React.createElement('div', props, [trigger, children]);
 
+const { GlassEmptyState } = require('../../../packages/ui/glass-components/src/native/components/GlassEmptyState.tsx');
+
 module.exports = {
+  GlassEmptyState,
   GlassCard,
   GlassButton,
   GlassSelect,

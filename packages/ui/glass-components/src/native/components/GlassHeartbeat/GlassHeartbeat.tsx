@@ -26,6 +26,8 @@ export const GlassHeartbeat: React.FC<GlassHeartbeatProps> = ({
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const sizeConfig = getSizeConfig(size);
   const statusColor = getStatusColor(status);
+  const formattedLatency = latencyMs !== undefined ? formatLatency(latencyMs) : undefined;
+  const accessibilityLabel = `${serviceName}: ${status}${formattedLatency ? `, latency ${formattedLatency}` : ''}`;
 
   useEffect(() => {
     if (status === 'healthy' && showPulse) {
@@ -53,7 +55,7 @@ export const GlassHeartbeat: React.FC<GlassHeartbeatProps> = ({
   }, [status, showPulse, pulseAnim]);
 
   const content = (
-    <View style={styles.container} testID={testID}>
+    <View style={styles.container}>
       <Animated.View
         style={[
           styles.dot,
@@ -72,7 +74,7 @@ export const GlassHeartbeat: React.FC<GlassHeartbeatProps> = ({
         </Text>
         {latencyMs !== undefined && (
           <Text style={[styles.latency, { fontSize: sizeConfig.fontSize * 0.85 }]}>
-            {formatLatency(latencyMs)}
+            {formattedLatency}
           </Text>
         )}
       </View>
@@ -80,10 +82,27 @@ export const GlassHeartbeat: React.FC<GlassHeartbeatProps> = ({
   );
 
   if (onPress) {
-    return <Pressable onPress={onPress}>{content}</Pressable>;
+    return (
+      <Pressable
+        onPress={onPress}
+        testID={testID}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+      >
+        {content}
+      </Pressable>
+    );
   }
 
-  return content;
+  return (
+    <View
+      testID={testID}
+      accessibilityRole="text"
+      accessibilityLabel={accessibilityLabel}
+    >
+      {content}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

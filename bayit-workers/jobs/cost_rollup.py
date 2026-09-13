@@ -10,6 +10,7 @@ Usage: python -m jobs.cost_rollup
 import asyncio
 import logging
 
+from app.core.ai_clients import close_ai_clients
 from app.core.database import close_mongo_connection, connect_to_mongo_subset
 from app.core.logging_config import setup_logging
 from app.models.cost_breakdown import CostBreakdown, UserCostBreakdown
@@ -37,6 +38,7 @@ async def run() -> None:
             },
         )
     finally:
+        await close_ai_clients()
         await close_mongo_connection()
 
 

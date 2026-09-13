@@ -274,13 +274,14 @@ jobs:
       e2e-scene-search-tests,
       accessibility-tests
     ]
-    if: always() && (
+    if: >-
+      always() && (
       needs.frontend-scene-search-tests.result == 'success' &&
       needs.backend-scene-search-tests.result == 'success' &&
       needs.security-scan.result == 'success' &&
       (needs.e2e-scene-search-tests.result == 'success' || needs.e2e-scene-search-tests.result == 'skipped') &&
       (needs.accessibility-tests.result == 'success' || needs.accessibility-tests.result == 'skipped')
-    )
+      )
 
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
@@ -395,7 +396,7 @@ jobs:
             --port 8080 \
             --cpu-boost \
             --set-env-vars "FEATURE_SCENE_SEARCH_ENABLED=${{ steps.feature_flag.outputs.flag_value }},API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=true,GCP_PROJECT_ID=${{ env.PROJECT_ID }},SENTRY_ENVIRONMENT=${{ steps.env.outputs.sentry_env }},LOG_LEVEL=${{ steps.env.outputs.log_level }}" \
-            --set-secrets "SECRET_KEY=bayit-secret-key-${{ steps.env.outputs.tag_prefix }}:latest,MONGODB_URL=mongodb-${{ steps.env.outputs.tag_prefix }}-url:latest,MONGODB_DB_NAME=mongodb-${{ steps.env.outputs.tag_prefix }}-db-name:latest,PINECONE_API_KEY=bayit-pinecone-api-key-${{ steps.env.outputs.tag_prefix }}:latest,PINECONE_ENVIRONMENT=bayit-pinecone-environment-${{ steps.env.outputs.tag_prefix }}:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key-${{ steps.env.outputs.tag_prefix }}:latest"
+            --set-secrets "SECRET_KEY=bayit-secret-key-${{ steps.env.outputs.tag_prefix }}:latest,MONGODB_URL=mongodb-${{ steps.env.outputs.tag_prefix }}-url:latest,MONGODB_DB_NAME=mongodb-${{ steps.env.outputs.tag_prefix }}-db-name:latest,PINECONE_API_KEY=bayit-pinecone-api-key-${{ steps.env.outputs.tag_prefix }}:latest,PINECONE_ENVIRONMENT=bayit-pinecone-environment-${{ steps.env.outputs.tag_prefix }}:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key-${{ steps.env.outputs.tag_prefix }}:latest,TWOGATES_ROUTING_ENABLED=bayit-twogates-routing-enabled:latest,TWOGATES_PROXY_URL=bayit-twogates-proxy-url:latest,TWOGATES_PROXY_CREDENTIAL=bayit-twogates-proxy-credential:latest,TWOGATES_CA_CERT_PEM=bayit-twogates-ca-cert-pem:latest,TWOGATES_TASK_CLASS=bayit-twogates-task-class:latest,TWOGATES_CONNECT_TIMEOUT_SECONDS=bayit-twogates-connect-timeout-seconds:latest,TWOGATES_REQUEST_TIMEOUT_SECONDS=bayit-twogates-request-timeout-seconds:latest,TWOGATES_PROVIDER_MAX_ATTEMPTS=bayit-twogates-provider-max-attempts:latest,TWOGATES_MAX_CONNECTIONS=bayit-twogates-max-connections:latest,TWOGATES_MAX_KEEPALIVE_CONNECTIONS=bayit-twogates-max-keepalive-connections:latest,TWOGATES_KEEPALIVE_EXPIRY_SECONDS=bayit-twogates-keepalive-expiry-seconds:latest"
 
       - name: Get service URL
         id: service
@@ -454,7 +455,7 @@ jobs:
   notify:
     name: Deployment Summary
     runs-on: ubuntu-latest
-    needs: [deploy, scene-search-smoke-tests]
+    needs: [deploy, scene-search-smoke-tests, frontend-scene-search-tests, backend-scene-search-tests, security-scan, e2e-scene-search-tests, accessibility-tests]
     if: always()
 
     steps:
@@ -499,9 +500,9 @@ jobs:
             -d '{
               "text": "Scene Search Deployment",
               "attachments": [{
-                "color": "${{ needs.deploy.result == '\''success'\'' && '\''good'\'' || '\''danger'\'' }}",
+                "color": "${{ needs.deploy.result == 'success' && 'good' || 'danger' }}",
                 "fields": [
-                  {"title": "Environment", "value": "${{ github.event.inputs.environment || '\''staging'\'' }}", "short": true},
+                  {"title": "Environment", "value": "${{ github.event.inputs.environment || 'staging' }}", "short": true},
                   {"title": "Status", "value": "${{ needs.deploy.result }}", "short": true},
                   {"title": "Commit", "value": "${{ github.sha }}", "short": true},
                   {"title": "URL", "value": "${{ needs.deploy.outputs.service_url }}", "short": false}

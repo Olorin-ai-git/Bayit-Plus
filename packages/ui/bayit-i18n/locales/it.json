@@ -12888,7 +12888,22 @@
         "microphoneFailed": "Accesso al microfono fallito"
       }
     },
+    "viewer": {
+      "loading": "Caricamento avatar…",
+      "errors": {
+        "loadFailed": "Impossibile caricare l’avatar"
+      }
+    },
     "v2v": {
+      "targetLabel": "Frase da esercitare",
+      "defaultPhrase": "שלום, נעים מאוד.",
+      "tapToRecord": "Tocca per registrare",
+      "recording": "Registrazione…",
+      "errors": {
+        "micDenied": "Accesso al microfono negato",
+        "transformFailed": "Trasformazione vocale non riuscita",
+        "fetchSessionsFailed": "Impossibile caricare la cronologia degli esercizi"
+      },
       "transforming": "Trasformazione voce...",
       "latency": "Latenza",
       "retry": "Riprova",

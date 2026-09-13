@@ -8,9 +8,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from anthropic import Anthropic
 from anthropic.types import Message
 from beanie.operators import And, In, Or, RegEx
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.models.content import EPGEntry, LiveChannel
@@ -18,7 +19,7 @@ from app.models.content import EPGEntry, LiveChannel
 logger = logging.getLogger(__name__)
 
 # Initialize Anthropic client
-client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
 
 class LLMSearchService:

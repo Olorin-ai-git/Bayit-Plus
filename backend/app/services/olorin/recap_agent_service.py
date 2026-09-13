@@ -9,6 +9,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.config import settings
 from app.models.content_embedding import RecapSession
 
@@ -42,7 +44,7 @@ class RecapAgentService:
     async def _get_claude_client(self) -> Optional[AsyncAnthropic]:
         """Get or create Claude client."""
         if not self._claude_client and CLAUDE_AVAILABLE and settings.ANTHROPIC_API_KEY:
-            self._claude_client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+            self._claude_client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         return self._claude_client
 
     async def create_session(

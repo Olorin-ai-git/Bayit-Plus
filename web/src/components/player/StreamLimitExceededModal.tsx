@@ -28,7 +28,6 @@ export function StreamLimitExceededModal({
   const navigate = useNavigate();
 
   const handleManageDevices = () => {
-    onClose();
     navigate('/profile?tab=devices');
   };
 
@@ -56,7 +55,6 @@ export function StreamLimitExceededModal({
         {
           text: t('common.cancel', 'Cancel'),
           style: 'cancel',
-          onPress: onClose,
         },
         {
           text: t('player.streamLimit.manageDevices', 'Manage Devices'),

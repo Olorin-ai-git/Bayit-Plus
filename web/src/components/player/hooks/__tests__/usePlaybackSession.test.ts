@@ -1,11 +1,11 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import axios from 'axios';
+import api from '@/services/api';
 import { usePlaybackSession } from '../usePlaybackSession';
 import { deviceService } from '@/services/deviceService';
 
 // Mock dependencies
-jest.mock('axios');
+jest.mock('@/services/api', () => ({ __esModule: true, default: { post: jest.fn().mockResolvedValue({}), get: jest.fn().mockResolvedValue({}) } }));
 jest.mock('@/hooks/usePlaybackHeartbeat');
 
 // Mock deviceService
@@ -20,11 +20,12 @@ jest.mock('@/services/deviceService', () => ({
   },
 }));
 
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedApi = api as jest.Mocked<typeof api>;
 
 describe('usePlaybackSession', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockedApi.post.mockReset().mockResolvedValue({});
     (deviceService.generateDeviceId as jest.Mock).mockResolvedValue('test-device-id');
     (deviceService.getDeviceName as jest.Mock).mockReturnValue('Chrome on macOS');
     (deviceService.getDeviceType as jest.Mock).mockReturnValue('desktop');
@@ -44,7 +45,7 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       const { result } = renderHook(() =>
         usePlaybackSession({
@@ -59,13 +60,13 @@ describe('usePlaybackSession', () => {
         expect(result.current.sessionId).toBe('session-123');
       });
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/v1/playback/session/start',
+      expect(mockedApi.post).toHaveBeenCalledWith(
+        '/playback/session/start',
         expect.objectContaining({
           device_id: 'test-device-id',
           content_id: 'content-789',
           content_type: 'vod',
-          device_name: 'Test Device',
+          device_name: 'Chrome on macOS',
         })
       );
     });
@@ -80,7 +81,7 @@ describe('usePlaybackSession', () => {
         })
       );
 
-      expect(mockedAxios.post).not.toHaveBeenCalled();
+      expect(mockedApi.post).not.toHaveBeenCalled();
     });
 
     it('should not create session when disabled', () => {
@@ -93,7 +94,7 @@ describe('usePlaybackSession', () => {
         })
       );
 
-      expect(mockedAxios.post).not.toHaveBeenCalled();
+      expect(mockedApi.post).not.toHaveBeenCalled();
     });
 
     it('should not create session when contentId is undefined', () => {
@@ -106,7 +107,7 @@ describe('usePlaybackSession', () => {
         })
       );
 
-      expect(mockedAxios.post).not.toHaveBeenCalled();
+      expect(mockedApi.post).not.toHaveBeenCalled();
     });
 
     it('should not create duplicate sessions', async () => {
@@ -119,7 +120,7 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValue({ data: mockSession });
+      mockedApi.post.mockResolvedValue(mockSession);
 
       const { rerender } = renderHook(
         ({ isPlaying }) =>
@@ -133,14 +134,14 @@ describe('usePlaybackSession', () => {
       );
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedApi.post).toHaveBeenCalledTimes(1);
       });
 
       // Rerender with same props
       rerender({ isPlaying: true });
 
       // Should not create second session
-      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+      expect(mockedApi.post).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -157,11 +158,8 @@ describe('usePlaybackSession', () => {
         ],
       };
 
-      mockedAxios.post.mockRejectedValueOnce({
-        response: {
-          status: 403,
-          data: { detail: limitError },
-        },
+      mockedApi.post.mockRejectedValueOnce({
+        detail: limitError,
       });
 
       const onLimitExceeded = jest.fn();
@@ -183,29 +181,17 @@ describe('usePlaybackSession', () => {
       expect(onLimitExceeded).toHaveBeenCalledWith(limitError);
     });
 
-    it('should handle other API errors gracefully', async () => {
-      mockedAxios.post.mockRejectedValueOnce({
-        response: {
-          status: 500,
-          data: { message: 'Internal server error' },
-        },
-      });
-
-      const { result } = renderHook(() =>
-        usePlaybackSession({
-          contentId: 'content-789',
-          contentType: 'vod',
-          isPlaying: true,
-          enabled: true,
-        })
-      );
-
-      await waitFor(() => {
+    it('reports failure after exhausting transient API retries', async () => {
+      jest.useFakeTimers();
+      mockedApi.post.mockRejectedValue({ message: 'Internal server error' });
+      const { result, unmount } = renderHook(() => usePlaybackSession({ contentId: 'content-789', contentType: 'vod', isPlaying: true, enabled: true }));
+      try {
+        await act(async () => { await jest.runAllTimersAsync(); });
         expect(result.current.isCreatingSession).toBe(false);
-      });
-
-      expect(result.current.sessionId).toBeNull();
-      expect(result.current.error).toBeNull();
+        expect(result.current.sessionId).toBeNull();
+        expect(result.current.error).toEqual(expect.objectContaining({ code: 'SESSION_CREATION_FAILED' }));
+        expect(mockedApi.post).toHaveBeenCalledTimes(3);
+      } finally { unmount(); jest.useRealTimers(); }
     });
   });
 
@@ -220,7 +206,7 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       const { unmount, result } = renderHook(() =>
         usePlaybackSession({
@@ -238,7 +224,7 @@ describe('usePlaybackSession', () => {
       unmount();
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/playback/session/end', {
+        expect(mockedApi.post).toHaveBeenCalledWith('/playback/session/end', {
           session_id: 'session-123',
         });
       });
@@ -254,8 +240,8 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post
-        .mockResolvedValueOnce({ data: mockSession })
+      mockedApi.post
+        .mockResolvedValueOnce(mockSession)
         .mockRejectedValueOnce(new Error('Network error'));
 
       const { unmount, result } = renderHook(() =>
@@ -287,7 +273,7 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       const { result } = renderHook(() =>
         usePlaybackSession({
@@ -306,7 +292,7 @@ describe('usePlaybackSession', () => {
         await result.current.endSession();
       });
 
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/playback/session/end', {
+      expect(mockedApi.post).toHaveBeenCalledWith('/playback/session/end', {
         session_id: 'session-123',
       });
 
@@ -327,8 +313,8 @@ describe('usePlaybackSession', () => {
         await result.current.endSession();
       });
 
-      expect(mockedAxios.post).not.toHaveBeenCalledWith(
-        '/api/v1/playback/session/end',
+      expect(mockedApi.post).not.toHaveBeenCalledWith(
+        '/playback/session/end',
         expect.anything()
       );
     });
@@ -354,9 +340,9 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post
-        .mockResolvedValueOnce({ data: mockSession1 })
-        .mockResolvedValueOnce({ data: mockSession2 });
+      mockedApi.post
+        .mockResolvedValueOnce(mockSession1)
+        .mockResolvedValueOnce(mockSession2);
 
       const { rerender, result } = renderHook(
         ({ contentId }) =>
@@ -378,7 +364,7 @@ describe('usePlaybackSession', () => {
 
       // Should end old session on unmount and create new one
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/playback/session/end', {
+        expect(mockedApi.post).toHaveBeenCalledWith('/playback/session/end', {
           session_id: 'session-123',
         });
       });
@@ -396,7 +382,7 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       const { result } = renderHook(() =>
         usePlaybackSession({
@@ -411,8 +397,8 @@ describe('usePlaybackSession', () => {
         expect(result.current.sessionId).toBe('session-123');
       });
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/v1/playback/session/start',
+      expect(mockedApi.post).toHaveBeenCalledWith(
+        '/playback/session/start',
         expect.objectContaining({
           content_type: 'live',
         })
@@ -429,7 +415,7 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       const { result } = renderHook(() =>
         usePlaybackSession({
@@ -444,8 +430,8 @@ describe('usePlaybackSession', () => {
         expect(result.current.sessionId).toBe('session-123');
       });
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/v1/playback/session/start',
+      expect(mockedApi.post).toHaveBeenCalledWith(
+        '/playback/session/start',
         expect.objectContaining({
           content_type: 'podcast',
         })
@@ -462,7 +448,7 @@ describe('usePlaybackSession', () => {
         started_at: new Date().toISOString(),
       };
 
-      mockedAxios.post.mockResolvedValueOnce({ data: mockSession });
+      mockedApi.post.mockResolvedValueOnce(mockSession);
 
       const { result } = renderHook(() =>
         usePlaybackSession({
@@ -477,8 +463,8 @@ describe('usePlaybackSession', () => {
         expect(result.current.sessionId).toBe('session-123');
       });
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/v1/playback/session/start',
+      expect(mockedApi.post).toHaveBeenCalledWith(
+        '/playback/session/start',
         expect.objectContaining({
           content_type: 'radio',
         })

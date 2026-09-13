@@ -1,3 +1,4 @@
+import '@/__tests__/support/costDashboardI18n';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,51 +6,17 @@ import CostDashboardPage from '../CostDashboardPage';
 import * as costDashboardService from '../../../services/adminApi/costDashboard';
 
 jest.mock('../../../services/adminApi/costDashboard');
-jest.mock('../../../hooks/admin/useCostDashboard', () => ({
-  useCostDashboard: () => ({
-    scope: 'system_wide',
-    selectedUserId: undefined,
-    onScopeChange: jest.fn(),
-    onUserSelect: jest.fn(),
-    dateRange: { start: new Date(), end: new Date() },
-    activeTab: 'overview',
-    onTabChange: jest.fn(),
-    data: {
-      revenue: 15000,
-      totalCost: 8500,
-      profitLoss: 6500,
-      profitMargin: 43.3,
-      costPerMinute: 0.85,
-      monthlyRate: 255000,
-      ytdCost: 102000,
-      ytdRevenue: 180000,
-      breakdown: {
-        ai_cost: 5230,
-        infrastructure_cost: 4120,
-        thirdparty_cost: 2390,
-      },
-    },
-    loading: {
-      overview: false,
-      breakdown: false,
-      timeline: false,
-      topSpenders: false,
-    },
-    errors: {
-      overview: null,
-      breakdown: null,
-      timeline: null,
-      topSpenders: null,
-    },
-  }),
-}));
+jest.mock('@/services/adminApi', () => ({ usersService: { getUsers: jest.fn().mockResolvedValue({ items: [] }) } }));
 
 describe('CostDashboardPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(costDashboardService.costDashboardService.getTimeline).mockResolvedValue([] as never);
+    jest.mocked(costDashboardService.costDashboardService.getBreakdown).mockResolvedValue({ ai_costs: { stt: 0 }, infrastructure_costs: { gcp: 0 }, thirdparty_costs: { stripe: 0 }, total_platform: 0, total_permanent: 0, total_transient: 0 } as never);
     (costDashboardService.costDashboardService.getOverview as jest.Mock).mockResolvedValue({
       revenue: 15000,
-      totalCost: 8500,
+      total_costs: 8500,
+      profit_loss: 6500, profit_margin: 43.3, cost_per_minute: 0,
     });
   });
 

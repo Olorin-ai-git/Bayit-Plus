@@ -91,7 +91,6 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
 
   const buttonSize = isTV ? 'w-11 h-11' : 'w-9 h-9';
   const buttonRadius = isTV ? 'rounded-[22px]' : 'rounded-[18px]';
-  const arrowTextSize = isTV ? 'text-base' : 'text-xs';
   const visibilityTextSize = isTV ? 'text-xl' : 'text-base';
 
   return (

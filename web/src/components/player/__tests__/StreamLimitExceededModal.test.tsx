@@ -11,9 +11,8 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, defaultValue: string, params?: any) => {
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string, defaultValue: string, params?: any) => {
       if (params) {
         let result = defaultValue;
         Object.keys(params).forEach((param) => {
@@ -22,9 +21,15 @@ jest.mock('react-i18next', () => ({
         return result;
       }
       return defaultValue;
-    },
+    };
+  return {
+  ...jest.requireActual('react-i18next'),
+  useTranslation: () => ({
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}));
+};
+});
 
 const mockActiveDevices = [
   { device_id: 'device-1', device_name: 'iPhone 15 Pro', content_id: 'content-1' },
@@ -200,7 +205,7 @@ describe('StreamLimitExceededModal', () => {
 
       expect(screen.getByText('iPhone 15')).toBeInTheDocument();
       // Icon is rendered as SVG
-      expect(container.querySelector('svg')).toBeInTheDocument();
+      expect(document.body.querySelector('svg.lucide-smartphone')).toBeInTheDocument();
     });
 
     it('should show Smartphone icon for Android', () => {

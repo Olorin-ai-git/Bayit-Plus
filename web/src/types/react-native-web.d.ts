@@ -93,6 +93,14 @@ declare module 'react-native' {
     focused?: boolean;
   }
 
+  export interface AccessibilityState {
+    disabled?: boolean;
+    selected?: boolean;
+    checked?: boolean | 'mixed';
+    busy?: boolean;
+    expanded?: boolean;
+  }
+
   export type AccessibilityRole =
     | 'none' | 'button' | 'link' | 'search' | 'image' | 'keyboardkey'
     | 'text' | 'adjustable' | 'imagebutton' | 'header' | 'summary'

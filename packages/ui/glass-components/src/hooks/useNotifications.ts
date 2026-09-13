@@ -4,7 +4,6 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { useNotificationContext } from '../contexts/NotificationContext';
 import { useNotificationStore } from '../stores/notificationStore';
 import { sanitizeMessage } from '../utils/sanitization';
 import type {

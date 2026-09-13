@@ -2,6 +2,8 @@
 import logging
 from typing import Optional
 
+from app.core.ai_clients import get_anthropic_client, get_openai_client
+
 from app.core.config import settings
 from ..constants import (
     GOOGLE_AVAILABLE,
@@ -71,9 +73,7 @@ class TranslationProviderManager:
             logger.debug("OPENAI_API_KEY not configured, skipping")
             return
         try:
-            from openai import AsyncOpenAI
-
-            self.openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+            self.openai_client = get_openai_client(api_key=settings.OPENAI_API_KEY)
             logger.info("OpenAI translation initialized")
         except Exception as e:
             logger.warning("OpenAI client init failed: %s", e)
@@ -87,9 +87,7 @@ class TranslationProviderManager:
             logger.debug("ANTHROPIC_API_KEY not configured, skipping")
             return
         try:
-            from anthropic import AsyncAnthropic
-
-            self.anthropic_client = AsyncAnthropic(
+            self.anthropic_client = get_anthropic_client(
                 api_key=settings.ANTHROPIC_API_KEY
             )
             logger.info("Claude translation initialized")

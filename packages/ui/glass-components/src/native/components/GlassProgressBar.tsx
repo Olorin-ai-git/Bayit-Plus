@@ -15,7 +15,7 @@ import {
   StyleProp,
   Platform,
 } from 'react-native';
-import { colors, borderRadius, spacing } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 export type ProgressSize = 'sm' | 'md' | 'lg';
 export type ProgressVariant = 'default' | 'gradient' | 'success' | 'warning';

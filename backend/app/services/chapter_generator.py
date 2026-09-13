@@ -8,7 +8,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
-import anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -145,7 +146,7 @@ async def _generate_news_chapters(
 5. הפרק האחרון צריך להסתיים ב-{int(duration)} שניות"""
 
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
@@ -283,7 +284,7 @@ async def _generate_general_chapters(
 3. הזמנים צריכים להיות רציפים"""
 
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
@@ -387,7 +388,7 @@ async def generate_chapters_from_transcript(
 4. כל פרק לפחות 90 שניות"""
 
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
@@ -486,7 +487,7 @@ Rules:
 7. Return ONLY the JSON object, no prose around it."""
 
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=2000,

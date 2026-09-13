@@ -8,7 +8,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-import anthropic
+
+from app.core.ai_clients import get_sync_anthropic_client
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -104,7 +105,7 @@ async def analyze_headlines(headlines: List[HeadlineItem]) -> TrendAnalysis:
 4. התמקד בנושאים שרלוונטיים לישראלים בחו"ל"""
 
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",

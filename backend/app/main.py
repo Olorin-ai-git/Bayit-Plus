@@ -20,6 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.router_registry import (register_all_routers,
                                      register_upload_serving)
+from app.core.ai_clients import close_ai_clients
 from app.core.config import settings
 from app.core.config_validation import log_configuration_warnings
 from app.core.database import (close_mongo_connection, connect_to_mongo,
@@ -368,6 +369,12 @@ async def lifespan(app: FastAPI):
         logger.info("Redis connections closed")
     except Exception as e:
         logger.warning(f"Failed to close Redis connections: {e}")
+
+    try:
+        await close_ai_clients()
+        logger.info("AI provider clients closed")
+    except Exception as e:
+        logger.warning("Failed to close AI provider clients: %s", e)
 
     # Close database connection
     await close_mongo_connection()

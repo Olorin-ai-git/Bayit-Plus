@@ -1,0 +1,72 @@
+.bayit-review {
+  --review-space: 0.75rem;
+  --review-radius: 0.75rem;
+  --review-touch: 2.75rem;
+  --review-panel-width: 24rem;
+  --review-layer: 2147483000;
+  color: var(--text);
+  font: inherit;
+  line-height: 1.5;
+  text-align: start;
+}
+.bayit-review *, .bayit-review *::before, .bayit-review *::after { box-sizing: border-box; }
+.bayit-review-panel {
+  position: fixed;
+  z-index: var(--review-layer);
+  inset: auto var(--review-space) max(var(--review-space), env(safe-area-inset-bottom));
+  max-height: 75dvh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--review-space);
+  padding: var(--review-space);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--review-radius);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(1rem);
+  -webkit-backdrop-filter: blur(1rem);
+  box-shadow: 0 0 var(--review-space) var(--glass-glow);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.bayit-review-panel header, .bayit-review-actions { display: flex; gap: var(--review-space); align-items: center; flex-wrap: wrap; }
+.bayit-review-panel header { justify-content: space-between; }
+.bayit-review-panel p { margin: 0; overflow-wrap: anywhere; }
+.bayit-review-panel > * { flex-shrink: 0; }
+.bayit-review-body { overflow: visible; }
+.bayit-review-build, .bayit-review-help { color: var(--text-secondary); font-size: 0.875rem; }
+.bayit-review-build code { overflow-wrap: anywhere; }
+.bayit-review button, .bayit-review select, .bayit-review textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--background-elevated);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--review-radius);
+  min-height: var(--review-touch);
+  padding: calc(var(--review-space) / 2) var(--review-space);
+}
+.bayit-review button { cursor: pointer; }
+.bayit-review-position { display: none; }
+.bayit-review button:disabled { opacity: 0.5; cursor: default; }
+.bayit-review button:focus-visible, .bayit-review textarea:focus-visible, .bayit-review select:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.bayit-review .bayit-review-primary, .bayit-review .bayit-review-pin { background: var(--primary); }
+.bayit-review-form { display: flex; flex-direction: column; gap: var(--review-space); }
+.bayit-review-form label { display: flex; flex-direction: column; gap: calc(var(--review-space) / 2); }
+.bayit-review textarea { width: 100%; min-height: 5rem; resize: vertical; }
+.bayit-review-list { list-style: none; margin: 0; padding: 0; }
+.bayit-review-list li { display: flex; flex-direction: column; gap: var(--review-space); border-top: 1px solid var(--glass-border-strong); padding-block: var(--review-space); }
+.bayit-review .bayit-review-pin { position: fixed; z-index: calc(var(--review-layer) - 1); min-width: var(--review-touch); border: 2px solid var(--text); border-radius: 50%; }
+[data-bayit-review-selected] { outline: 2px solid var(--text) !important; outline-offset: 2px; }
+@media (min-width: 48rem) {
+  .bayit-review-panel { left: auto; top: var(--review-space); bottom: auto; width: var(--review-panel-width); max-height: calc(100dvh - 2 * var(--review-space)); }
+  .bayit-review-panel[data-review-panel-side="left"] { left: var(--review-space); right: auto; }
+  .bayit-review-position { display: inline-flex; align-items: center; }
+  .bayit-review-body { flex-shrink: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+}
+@media (forced-colors: active) {
+  .bayit-review-panel, .bayit-review button { border-color: ButtonText; }
+  [data-bayit-review-selected] { outline-color: Highlight !important; }
+}

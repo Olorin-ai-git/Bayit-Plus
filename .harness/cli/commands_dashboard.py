@@ -5,7 +5,7 @@ import math
 import re
 from pathlib import Path
 
-from cli import fileio, ignores
+from cli import fileio, ignores, twogates
 from cli.dashboard_data import collect
 from cli.dashboard_page import CSS, PAGE
 from cli.errors import emit
@@ -114,9 +114,16 @@ def render(data: dict) -> str:
                       else "unreachable from this machine")
     ledger_scope_note = ("" if data["canonical_reachable"]
                          else " (canonical unreachable — record unavailable here)")
+    tg = data["twogates"]
+    twogates_card = (
+        f'<span class="chip {twogates.status_class(tg["status"])}">'
+        f'{html.escape(tg["status"])}</span> '
+        f'<span>{html.escape(tg["line"])}</span>'
+    )
     return PAGE.format(
         reflect_rows=reflect_rows,
         ledger_scope_note=ledger_scope_note,
+        twogates_card=twogates_card,
         css=CSS,
         project=html.escape(data["project"]),
         generated=html.escape(data["generated"]),

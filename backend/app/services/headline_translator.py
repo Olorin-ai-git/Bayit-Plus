@@ -11,6 +11,8 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
+from app.core.ai_clients import get_sync_anthropic_client
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -87,10 +89,9 @@ async def translate_headlines(
     )
 
     try:
-        from anthropic import Anthropic
         from anthropic.types import TextBlock
 
-        client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_sync_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         message = client.messages.create(
             model=settings.CLAUDE_MODEL,
             max_tokens=settings.CLAUDE_MAX_TOKENS_LONG,

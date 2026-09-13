@@ -2,7 +2,7 @@
   "schema": 1,
   "canonical": {
     "path": "/Users/olorin/Documents/projects/olorin/harness",
-    "commit": "da14a8f43c0c33b5f30abea59a60257285095964"
+    "commit": "68defdbd52180d292b0ba9ffb4952616d9abd368"
   },
   "units": [
     {
@@ -11,7 +11,7 @@
       "path": ".harness/PROCESS.md",
       "marker": "harness:core",
       "template": "templates/PROCESS.md",
-      "sha256": "357cd30c5fbeea2caf3c2207325e0a4fada6341804461258fcae30511b779943"
+      "sha256": "ad7ca90463d11db2d74c9618ba61881c3e41938b15d199e73000450a909edfd3"
     },
     {
       "id": "selfimprove-core",
@@ -27,7 +27,7 @@
       "path": ".harness/LEARNINGS.md",
       "marker": "harness:durable",
       "template": "templates/LEARNINGS.md",
-      "sha256": "3be7481a25d4290977de80ed5cbf931fe7bcc3c9633a8fad09d958287bce1770"
+      "sha256": "018bd26376c97a9ec3601514fd3bd50e96e54812b33c43a2dc1c6a69cb576f27"
     },
     {
       "id": "agent-reviewer",
@@ -59,7 +59,7 @@
       "path": ".harness",
       "marker": null,
       "template": "",
-      "sha256": "5d0eaa107b263f1ea29fe09197e05914b7f55f6ff073c3c2c00976a8a3e4f48c"
+      "sha256": "a8ea7d4954e1ac2dc3a1cb37f85c7c90029ffa53ce1b23e5cf79348ea452df8f"
     }
   ]
 }

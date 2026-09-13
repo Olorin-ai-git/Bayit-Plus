@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react-native'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { RecordButton } from '../RecordButton'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { recordingApi } from '@/services/recordingApi'
@@ -13,12 +13,21 @@ import logger from '@/utils/logger'
 // Mock dependencies
 jest.mock('@olorin/glass-ui/hooks')
 jest.mock('@/services/recordingApi')
-jest.mock('@/utils/logger')
-jest.mock('react-i18next', () => ({
+jest.mock('@/utils/logger', () => {
+  const logger = { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn(), scope: jest.fn() }
+  logger.scope.mockReturnValue(logger)
+  return { __esModule: true, default: logger }
+})
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr', on: jest.fn(), off: jest.fn() },
+    t: mockTranslate,
   }),
-}))
+};
+})
 jest.mock('@/stores/authStore', () => ({
   useAuthStore: () => ({ user: { id: 'test-user' } }),
 }))
@@ -67,9 +76,11 @@ describe('RecordButton', () => {
       // Start recording
       fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
+      await waitFor(() => expect(mockOnRecordingStateChange).toHaveBeenCalledWith(true, 0))
 
       // Stop recording
       fireEvent.click(getByText('0:00'))
+      expect(recordingApi.stopRecording).toHaveBeenCalledWith('session-123')
       await waitFor(() => {
         expect(mockShowSuccess).toHaveBeenCalledWith(
           expect.stringContaining('recordings.savedSuccess'),
@@ -99,8 +110,10 @@ describe('RecordButton', () => {
       // Start and stop recording
       fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
+      await waitFor(() => expect(mockOnRecordingStateChange).toHaveBeenCalledWith(true, 0))
 
       fireEvent.click(getByText('0:00'))
+      expect(recordingApi.stopRecording).toHaveBeenCalledWith('session-123')
 
       await waitFor(() => {
         expect(logger.debug).toHaveBeenCalledWith(
@@ -150,9 +163,11 @@ describe('RecordButton', () => {
       // Start recording
       fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
+      await waitFor(() => expect(mockOnRecordingStateChange).toHaveBeenCalledWith(true, 0))
 
       // Try to stop (fails)
       fireEvent.click(getByText('0:00'))
+      expect(recordingApi.stopRecording).toHaveBeenCalledWith('session-123')
 
       await waitFor(() => {
         expect(logger.error).toHaveBeenCalledWith(

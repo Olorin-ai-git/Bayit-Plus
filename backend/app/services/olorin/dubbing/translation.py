@@ -12,6 +12,8 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Tuple
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.config import settings
 from app.services.olorin.resilience import (GOOGLE_TRANSLATE_BREAKER,
                                             circuit_breaker)
@@ -77,7 +79,7 @@ class TranslationProvider:
         elif provider == "claude" and CLAUDE_AVAILABLE:
             api_key = settings.ANTHROPIC_API_KEY
             if api_key:
-                self._claude_client = AsyncAnthropic(api_key=api_key)
+                self._claude_client = get_anthropic_client(api_key=api_key)
                 logger.info("Using Claude for dubbing translation")
         else:
             if GOOGLE_TRANSLATE_AVAILABLE:

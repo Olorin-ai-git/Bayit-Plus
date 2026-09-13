@@ -12888,7 +12888,22 @@
         "microphoneFailed": "माइक्रोफ़ोन एक्सेस विफल"
       }
     },
+    "viewer": {
+      "loading": "अवतार लोड हो रहा है…",
+      "errors": {
+        "loadFailed": "अवतार लोड नहीं हो सका"
+      }
+    },
     "v2v": {
+      "targetLabel": "अभ्यास वाक्य",
+      "defaultPhrase": "שלום, נעים מאוד.",
+      "tapToRecord": "रिकॉर्ड करने के लिए टैप करें",
+      "recording": "रिकॉर्ड हो रहा है…",
+      "errors": {
+        "micDenied": "माइक्रोफ़ोन की अनुमति नहीं मिली",
+        "transformFailed": "आवाज़ का रूपांतरण विफल हुआ",
+        "fetchSessionsFailed": "अभ्यास का इतिहास लोड नहीं हो सका"
+      },
       "transforming": "आवाज़ बदल रही है...",
       "latency": "विलंबता",
       "retry": "पुनः प्रयास करें",

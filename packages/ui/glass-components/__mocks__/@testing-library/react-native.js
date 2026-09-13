@@ -31,6 +31,33 @@ const fireEvent = {
   changeText: (element, text) => {
     testingLib.fireEvent.change(element, { target: { value: text } });
   },
+  focus: (element) => {
+    testingLib.fireEvent.focus(element);
+  },
+  blur: (element) => {
+    testingLib.fireEvent.blur(element);
+  },
+  keyDown: (element, event) => {
+    testingLib.fireEvent.keyDown(element, event);
+  },
+  mouseDown: (element, event) => {
+    testingLib.fireEvent.mouseDown(element, event);
+  },
+  mouseMove: (element, event) => {
+    testingLib.fireEvent.mouseMove(element, event);
+  },
+  mouseUp: (element, event) => {
+    testingLib.fireEvent.mouseUp(element, event);
+  },
+  mouseEnter: (element) => {
+    testingLib.fireEvent.mouseEnter(element);
+  },
+  mouseLeave: (element) => {
+    testingLib.fireEvent.mouseLeave(element);
+  },
+  error: (element) => {
+    testingLib.fireEvent.error(element);
+  },
 };
 
 module.exports = {

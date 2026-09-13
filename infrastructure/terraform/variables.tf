@@ -27,6 +27,30 @@ variable "backend_service_account" {
   type        = string
 }
 
+variable "twogates_secret_ids" {
+  description = "Secret Manager IDs for owner-controlled TwoGates provider-routing configuration"
+  type        = map(string)
+  default = {
+    TWOGATES_ROUTING_ENABLED               = "bayit-twogates-routing-enabled"
+    TWOGATES_PROXY_URL                     = "bayit-twogates-proxy-url"
+    TWOGATES_PROXY_CREDENTIAL              = "bayit-twogates-proxy-credential"
+    TWOGATES_CA_CERT_PEM                   = "bayit-twogates-ca-cert-pem"
+    TWOGATES_TASK_CLASS                    = "bayit-twogates-task-class"
+    TWOGATES_CONNECT_TIMEOUT_SECONDS       = "bayit-twogates-connect-timeout-seconds"
+    TWOGATES_REQUEST_TIMEOUT_SECONDS       = "bayit-twogates-request-timeout-seconds"
+    TWOGATES_PROVIDER_MAX_ATTEMPTS         = "bayit-twogates-provider-max-attempts"
+    TWOGATES_MAX_CONNECTIONS               = "bayit-twogates-max-connections"
+    TWOGATES_MAX_KEEPALIVE_CONNECTIONS     = "bayit-twogates-max-keepalive-connections"
+    TWOGATES_KEEPALIVE_EXPIRY_SECONDS      = "bayit-twogates-keepalive-expiry-seconds"
+  }
+}
+
+variable "twogates_secret_version" {
+  description = "Secret Manager version used for TwoGates provider-routing configuration"
+  type        = string
+  default     = "latest"
+}
+
 # Optional variables with defaults
 
 variable "translation_job_cpu" {

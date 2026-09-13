@@ -10,6 +10,8 @@ import json
 from datetime import datetime
 from typing import Dict, List
 
+from app.core.ai_clients import get_anthropic_client
+
 from app.core.logging_config import get_logger
 from app.models.byoc_channel_index import ChannelIndexEntry
 
@@ -51,9 +53,8 @@ class BYOCAIClassifier:
             logger.warning("ANTHROPIC_API_KEY not configured, skipping AI classification")
             return []
 
-        import anthropic
 
-        client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
         all_results: List[Dict] = []
 
         for i in range(0, len(entries), BATCH_SIZE):

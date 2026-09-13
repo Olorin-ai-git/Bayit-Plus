@@ -8,6 +8,8 @@ import {
   type ViewStyle,
   type TextStyle,
   type StyleProp,
+  type AccessibilityRole,
+  type AccessibilityState,
 } from 'react-native';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from './GlassView';
@@ -36,10 +38,11 @@ interface GlassButtonProps {
   textStyle?: StyleProp<TextStyle>;
   className?: string;
   hasTVPreferredFocus?: boolean;
+  focusable?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
-  accessibilityState?: Record<string, any>;
-  accessibilityRole?: string;
+  accessibilityState?: AccessibilityState;
+  accessibilityRole?: AccessibilityRole;
   onFocus?: () => void;
   onBlur?: () => void;
   testID?: string;
@@ -47,6 +50,7 @@ interface GlassButtonProps {
 
 export const GlassButton: React.FC<GlassButtonProps> = ({
   title,
+  children,
   onPress,
   variant = 'primary',
   size = 'md',
@@ -58,8 +62,14 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   style,
   textStyle,
   hasTVPreferredFocus = false,
+  focusable,
   accessibilityLabel,
   accessibilityHint,
+  accessibilityState,
+  accessibilityRole = 'button',
+  onFocus,
+  onBlur,
+  testID,
 }) => {
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: 'button',
@@ -192,7 +202,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
       ) : (
         <>
           {icon && <View style={{ marginHorizontal: 4 }}>{icon}</View>}
-          <Text
+          {children != null && typeof children !== 'string' && typeof children !== 'number' ? children : <Text
             style={[
               {
                 fontSize: currentSize.fontSize,
@@ -204,8 +214,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
               textStyle,
             ]}
           >
-            {title}
-          </Text>
+            {children ?? title}
+          </Text>}
         </>
       )}
     </View>
@@ -226,12 +236,18 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   };
 
   const a11yProps = {
-    accessibilityRole: 'button' as const,
+    accessibilityRole,
     accessibilityLabel: accessibilityLabel || title,
     accessibilityHint: accessibilityHint || (loading ? 'Loading' : undefined),
     accessibilityState: {
+      ...accessibilityState,
       disabled: disabled || loading,
     },
+    'aria-checked': accessibilityState?.checked,
+    'aria-selected': accessibilityState?.selected,
+    'aria-expanded': accessibilityState?.expanded,
+    'aria-busy': loading || accessibilityState?.busy,
+    'aria-disabled': disabled || loading,
     accessible: true,
   };
 
@@ -239,8 +255,10 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     return (
       <TouchableOpacity
         onPress={onPress}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
+        onFocus={() => { handleFocus(); onFocus?.(); }}
+        onBlur={() => { handleBlur(); onBlur?.(); }}
+        testID={testID}
+        focusable={disabled || loading ? false : focusable}
         disabled={disabled || loading}
         activeOpacity={0.8}
         {...a11yProps}
@@ -259,8 +277,10 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
+      onFocus={() => { handleFocus(); onFocus?.(); }}
+      onBlur={() => { handleBlur(); onBlur?.(); }}
+      testID={testID}
+      focusable={disabled || loading ? false : focusable}
       disabled={disabled || loading}
       activeOpacity={0.8}
       {...a11yProps}

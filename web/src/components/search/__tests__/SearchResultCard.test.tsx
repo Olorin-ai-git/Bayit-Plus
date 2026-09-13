@@ -6,21 +6,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SearchResultCard } from '../SearchResultCard';
 
-// Mock react-native
-jest.mock('react-native', () => ({
-  View: ({ children, style, ...props }: any) => <div style={style} {...props}>{children}</div>,
-  Text: ({ children, style, numberOfLines, ...props }: any) => (
-    <span style={style} {...props}>{children}</span>
-  ),
-  Image: ({ source, style, ...props }: any) => (
-    <img src={source?.uri} style={style} data-testid="result-image" {...props} />
-  ),
-  StyleSheet: {
-    create: (styles: any) => styles,
-    flatten: (s: any) => s,
-  },
-}));
-
 // Mock design tokens
 jest.mock('@olorin/design-tokens', () => ({
   colors: {
@@ -35,7 +20,7 @@ jest.mock('@olorin/design-tokens', () => ({
 }));
 
 // Mock shared GlassButton
-jest.mock('../../../../shared/components/ui/GlassButton', () => ({
+jest.mock('@bayit/shared/ui/GlassButton', () => ({
   GlassButton: ({ children, onPress, accessibilityLabel, style, ...props }: any) => (
     <button
       onClick={onPress}
@@ -62,7 +47,7 @@ jest.mock('@olorin/shared-icons/native', () => ({
 jest.mock('../SearchCardBadges', () => ({
   SearchCardBadges: ({ requiresSubscription, isKidsContent, isFeatured }: any) => (
     <div data-testid="badges">
-      {requiresSubscription && <span data-testid="badge-subscription">Premium</span>}
+      {requiresSubscription && requiresSubscription !== 'free' && <span data-testid="badge-subscription">Premium</span>}
       {isKidsContent && <span data-testid="badge-kids">Kids</span>}
       {isFeatured && <span data-testid="badge-featured">Featured</span>}
     </div>
@@ -118,7 +103,7 @@ describe('SearchResultCard', () => {
 
     it('renders backdrop image', () => {
       render(<SearchResultCard result={baseResult} position={0} />);
-      const img = screen.getByTestId('result-image');
+      const img = document.querySelector('img');
       expect(img).toHaveAttribute('src', 'https://cdn.bayit.tv/backdrop.jpg');
     });
 
@@ -131,7 +116,7 @@ describe('SearchResultCard', () => {
     it('uses thumbnail when no backdrop', () => {
       const result = { ...baseResult, backdrop: undefined };
       render(<SearchResultCard result={result} position={0} />);
-      const img = screen.getByTestId('result-image');
+      const img = document.querySelector('img');
       expect(img).toHaveAttribute('src', 'https://cdn.bayit.tv/thumb.jpg');
     });
   });

@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react-native'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { RecordingCard } from '../RecordingCard'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
@@ -12,11 +12,16 @@ import logger from '@/utils/logger'
 // Mock dependencies
 jest.mock('@olorin/glass-ui/hooks')
 jest.mock('@/utils/logger')
-jest.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => {
+  const mockTranslate = (key: string) => key;
+  return {
+  ...jest.requireActual('react-i18next'),
   useTranslation: () => ({
-    t: (key: string) => key,
+    i18n: { language: 'en', dir: () => 'ltr' },
+    t: mockTranslate,
   }),
-}))
+};
+})
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: jest.fn(),
@@ -59,7 +64,7 @@ describe('RecordingCard', () => {
 
   describe('Delete Confirmation', () => {
     it('shows confirmation notification on delete press', async () => {
-      const { getByTestId } = render(
+      const { getByRole } = render(
         <RecordingCard
           recording={mockRecording}
           onDelete={mockOnDelete}
@@ -69,7 +74,7 @@ describe('RecordingCard', () => {
         />
       )
 
-      const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
+      const deleteButton = getByRole('button', { name: 'common.delete' })
       fireEvent.click(deleteButton)
 
       await waitFor(() => {
@@ -97,7 +102,7 @@ describe('RecordingCard', () => {
         return '1'
       })
 
-      const { getByTestId } = render(
+      const { getByRole } = render(
         <RecordingCard
           recording={mockRecording}
           onDelete={mockOnDelete}
@@ -107,7 +112,7 @@ describe('RecordingCard', () => {
         />
       )
 
-      const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
+      const deleteButton = getByRole('button', { name: 'common.delete' })
       fireEvent.click(deleteButton)
 
       await waitFor(() => expect(mockShow).toHaveBeenCalled())
@@ -125,7 +130,7 @@ describe('RecordingCard', () => {
     })
 
     it('uses warning level for destructive action', async () => {
-      const { getByTestId } = render(
+      const { getByRole } = render(
         <RecordingCard
           recording={mockRecording}
           onDelete={mockOnDelete}
@@ -135,7 +140,7 @@ describe('RecordingCard', () => {
         />
       )
 
-      const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
+      const deleteButton = getByRole('button', { name: 'common.delete' })
       fireEvent.click(deleteButton)
 
       await waitFor(() => {
@@ -148,7 +153,7 @@ describe('RecordingCard', () => {
     })
 
     it('confirmation modal is dismissable', async () => {
-      const { getByTestId } = render(
+      const { getByRole } = render(
         <RecordingCard
           recording={mockRecording}
           onDelete={mockOnDelete}
@@ -158,7 +163,7 @@ describe('RecordingCard', () => {
         />
       )
 
-      const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
+      const deleteButton = getByRole('button', { name: 'common.delete' })
       fireEvent.click(deleteButton)
 
       await waitFor(() => {

@@ -6,6 +6,7 @@ import { useDirection } from "@/hooks/useDirection";
 import { VoiceListeningProvider } from "@bayit/shared-contexts";
 import { NotificationProvider } from "@olorin/glass-ui/contexts";
 import { GlassAlertRoot } from "@bayit/shared/ui";
+import AppQueryProvider from "./providers/AppQueryProvider";
 import Layout from "./components/layout/Layout";
 import FullscreenVideoOverlay from "./components/player/FullscreenVideoOverlay";
 import LocationManager from "./components/location/LocationManager";
@@ -513,6 +514,7 @@ const AppContent = () => {
 };
 
 function App() {
+  const queryIdentity = useAuthStore(state => state.isAuthenticated ? state.user?.id ?? null : null);
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
   useDirection();
 
@@ -557,6 +559,7 @@ function App() {
   }, []);
 
   return (
+    <AppQueryProvider identity={queryIdentity}>
     <GlassAlertRoot>
       {/* Mobile Device Redirect - redirects phones to m.bayit.tv */}
       <MobileRedirect />
@@ -573,6 +576,7 @@ function App() {
         <LocationManager />
       </NotificationProvider>
     </GlassAlertRoot>
+    </AppQueryProvider>
   );
 }
 

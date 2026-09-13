@@ -1,6 +1,7 @@
 // Overview tab - displays cost breakdown pie chart
 
 import React from "react";
+import { sumCosts, costShare } from "@/services/adminApi/costData";
 import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import { GlassCard } from "@olorin/glass-ui";
@@ -18,35 +19,14 @@ const COLORS = {
 export default function OverviewTab({ dashboard }: OverviewTabProps) {
   const { t } = useTranslation();
 
-  const categoryData = [
-    { name: t('admin.costDashboard.aiCosts'), value: dashboard?.data?.breakdown?.ai_cost || 5230, color: COLORS.ai },
-    { name: t('admin.costDashboard.infrastructure'), value: dashboard?.data?.breakdown?.infrastructure_cost || 4120, color: COLORS.infrastructure },
-    { name: t('admin.costDashboard.thirdParty'), value: dashboard?.data?.breakdown?.thirdparty_cost || 2390, color: COLORS.thirdparty },
-  ];
-
+  const breakdown = dashboard?.data?.breakdown;
   const categories = [
-    {
-      label: t('admin.costDashboard.aiCosts'),
-      value: dashboard?.data?.breakdown?.ai_cost || 5230,
-      percentage: 45,
-      color: COLORS.ai,
-      items: ["STT", "TTS", t('admin.costDashboard.translation'), "LLM", t('admin.costDashboard.search')],
-    },
-    {
-      label: t('admin.costDashboard.infrastructure'),
-      value: dashboard?.data?.breakdown?.infrastructure_cost || 4120,
-      percentage: 35,
-      color: COLORS.infrastructure,
-      items: ["GCP", "MongoDB", "Firebase", "Sentry", "CDN"],
-    },
-    {
-      label: t('admin.costDashboard.thirdParty'),
-      value: dashboard?.data?.breakdown?.thirdparty_cost || 2390,
-      percentage: 20,
-      color: COLORS.thirdparty,
-      items: ["Stripe", "ElevenLabs", "TMDB", "Twilio"],
-    },
-  ];
+    { label: t('admin.costDashboard.aiCosts'), value: sumCosts(breakdown?.ai_costs), color: COLORS.ai, items: Object.keys(breakdown?.ai_costs ?? {}) },
+    { label: t('admin.costDashboard.infrastructure'), value: sumCosts(breakdown?.infrastructure_costs), color: COLORS.infrastructure, items: Object.keys(breakdown?.infrastructure_costs ?? {}) },
+    { label: t('admin.costDashboard.thirdParty'), value: sumCosts(breakdown?.thirdparty_costs), color: COLORS.thirdparty, items: Object.keys(breakdown?.thirdparty_costs ?? {}) },
+  ].map(category => ({ ...category, percentage: costShare(category.value, breakdown?.total_platform) }));
+  const categoryData = categories.map(category => ({ name: category.label, value: category.value, color: category.color }));
+  const hasCompleteData = categories.every(category => category.value !== null);
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -70,7 +50,7 @@ export default function OverviewTab({ dashboard }: OverviewTabProps) {
             <p className="text-gray-400">{t('admin.costDashboard.loadingBreakdown')}</p>
           ) : dashboard?.errors?.breakdown ? (
             <p className="text-red-400">{t('common.error')}: {dashboard.errors.breakdown}</p>
-          ) : (
+          ) : !hasCompleteData ? (<p>{t("common.unknown")}</p>) : (
             <div className="flex justify-center py-8">
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -102,9 +82,9 @@ export default function OverviewTab({ dashboard }: OverviewTabProps) {
           <GlassCard key={category.label} className="p-4 backdrop-blur-xl rounded-lg bg-black/30 border border-purple-500/20">
             <p className="text-sm text-gray-400 mb-2">{category.label}</p>
             <p className="text-2xl font-bold" style={{ color: category.color }}>
-              ${category.value.toLocaleString()}
+              {category.value === null ? t("common.unknown") : `$${category.value.toLocaleString()}`}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{category.percentage}{t('admin.costDashboard.percentOfTotal')}</p>
+            <p className="text-xs text-gray-500 mt-1">{category.percentage === null ? t('common.unknown') : `${category.percentage.toFixed(2)}${t('admin.costDashboard.percentOfTotal')}`}</p>
             <div className="mt-3 pt-3 border-t border-purple-500/10">
               <p className="text-xs text-gray-400 font-medium mb-2">{t('admin.costDashboard.components')}:</p>
               <ul className="text-xs space-y-1">

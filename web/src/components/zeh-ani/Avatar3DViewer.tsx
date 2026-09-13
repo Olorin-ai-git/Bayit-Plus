@@ -1,4 +1,5 @@
 import React, { Suspense, useCallback, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import { useTranslation } from 'react-i18next';
@@ -15,10 +16,9 @@ interface Avatar3DViewerProps {
 interface AvatarModelProps {
   url: string;
   onLoadComplete: () => void;
-  onLoadError: (message: string) => void;
 }
 
-function AvatarModel({ url, onLoadComplete, onLoadError }: AvatarModelProps) {
+function AvatarModel({ url, onLoadComplete }: AvatarModelProps) {
   const gltf = useGLTF(url) as GLTF;
 
   React.useEffect(() => {
@@ -27,19 +27,7 @@ function AvatarModel({ url, onLoadComplete, onLoadError }: AvatarModelProps) {
     }
   }, [gltf, onLoadComplete]);
 
-  React.useEffect(() => {
-    const handleError = () => {
-      onLoadError('gltf_load_failed');
-    };
-
-    if (!gltf?.scene) {
-      handleError();
-    }
-  }, [gltf, onLoadError]);
-
-  if (!gltf?.scene) {
-    return null;
-  }
+  if (!gltf?.scene) throw new Error('gltf_load_failed');
 
   return <primitive object={gltf.scene} dispose={null} />;
 }
@@ -64,50 +52,36 @@ const MIN_DISTANCE = 1;
 const MAX_DISTANCE = 5;
 const MAX_POLAR_ANGLE = Math.PI / 1.8;
 
-export function Avatar3DViewer({ avatarId, glbUrl }: Avatar3DViewerProps) {
+export function Avatar3DViewer(props: Avatar3DViewerProps) {
+  return <AvatarViewerSession key={`${props.avatarId}:${props.glbUrl}`} {...props} />;
+}
+
+function AvatarViewerSession({ avatarId, glbUrl }: Avatar3DViewerProps) {
   const { t } = useTranslation();
   const [loaded, setLoaded] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
 
   const handleLoadComplete = useCallback(() => {
     setLoaded(true);
-    setLoadError(null);
     viewerLogger.info('Avatar model loaded', { avatarId });
   }, [avatarId]);
 
-  const handleLoadError = useCallback(
-    (message: string) => {
-      setLoadError(message);
-      setLoaded(false);
-      viewerLogger.error('Avatar model load failed', { avatarId, message });
-    },
-    [avatarId],
-  );
-
-  if (loadError) {
-    return (
-      <div className="rounded-2xl bg-white/5 border border-white/10 p-8 backdrop-blur-md flex flex-col items-center justify-center gap-4 min-h-[400px]">
-        <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-          <span className="text-red-400 text-xl font-bold">!</span>
-        </div>
-        <p className="text-sm text-red-400 text-center">
-          {t('zehAni.viewer.errors.loadFailed')}
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            setLoadError(null);
-            setLoaded(false);
-          }}
-          className="px-4 py-2 rounded-lg bg-white/10 text-white/80 text-sm hover:bg-white/20 transition-colors"
-        >
-          {t('common.retry')}
-        </button>
-      </div>
-    );
-  }
-
   return (
+    <ErrorBoundary
+      onError={() => viewerLogger.error('Avatar model load failed', { avatarId })}
+      onReset={() => {
+        useGLTF.clear(glbUrl);
+        setLoaded(false);
+      }}
+      fallbackRender={({ resetErrorBoundary }: { resetErrorBoundary: () => void }) => (
+        <div role="alert" className="rounded-2xl bg-white/5 border border-white/10 p-8 backdrop-blur-md flex flex-col items-center justify-center gap-4 min-h-[400px]">
+          <p className="text-sm text-red-400 text-center">{t('zehAni.viewer.errors.loadFailed')}</p>
+          <button type="button" onClick={resetErrorBoundary}
+            className="px-4 py-2 rounded-lg bg-white/10 text-white/80 text-sm hover:bg-white/20 transition-colors">
+            {t('common.retry')}
+          </button>
+        </div>
+      )}
+    >
     <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md overflow-hidden relative min-h-[400px]">
       {!loaded && <LoadingFallback />}
 
@@ -138,10 +112,10 @@ export function Avatar3DViewer({ avatarId, glbUrl }: Avatar3DViewerProps) {
           <AvatarModel
             url={glbUrl}
             onLoadComplete={handleLoadComplete}
-            onLoadError={handleLoadError}
           />
         </Suspense>
       </Canvas>
     </div>
+    </ErrorBoundary>
   );
 }

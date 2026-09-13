@@ -1,8 +1,8 @@
-import axios from 'axios';
+import api from '@/services/api';
 import { costDashboardService } from '../costDashboard';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+jest.mock('@/services/api', () => ({ __esModule: true, default: { get: jest.fn() } }));
+const mockedApi = api as jest.Mocked<typeof api>;
 
 describe('costDashboardService', () => {
   beforeEach(() => {
@@ -13,7 +13,7 @@ describe('costDashboardService', () => {
   describe('getOverview', () => {
     it('calls GET /admin/costs/overview with system_wide scope', async () => {
       const mockResponse = { revenue: 15000, totalCost: 8500 };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const result = await costDashboardService.getOverview('system_wide');
 
@@ -22,11 +22,11 @@ describe('costDashboardService', () => {
 
     it('includes user_id parameter when provided', async () => {
       const mockResponse = { revenue: 5000, totalCost: 2500 };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       await costDashboardService.getOverview('per_user', 'user-123');
 
-      const call = mockedAxios.create().get as jest.Mock;
+      const call = mockedApi.get as jest.Mock;
       expect(call.mock.calls[0][0]).toContain('user_id=user-123');
     });
   });
@@ -34,7 +34,7 @@ describe('costDashboardService', () => {
   describe('getTimeline', () => {
     it('calls GET /admin/costs/timeline with correct parameters', async () => {
       const mockResponse = [{ date: '2025-01-01', cost: 100 }];
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const params = {
         scope: 'system_wide' as const,
@@ -50,7 +50,7 @@ describe('costDashboardService', () => {
 
     it('includes user_id when provided', async () => {
       const mockResponse = [{ date: '2025-01-01', cost: 50 }];
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const params = {
         scope: 'per_user' as const,
@@ -62,7 +62,7 @@ describe('costDashboardService', () => {
 
       await costDashboardService.getTimeline(params);
 
-      const call = mockedAxios.create().get as jest.Mock;
+      const call = mockedApi.get as jest.Mock;
       expect(call.mock.calls[0][0]).toContain('user_id=user-123');
     });
   });
@@ -70,7 +70,7 @@ describe('costDashboardService', () => {
   describe('getBreakdown', () => {
     it('calls GET /admin/costs/breakdown with period parameter', async () => {
       const mockResponse = { ai: 5000, infrastructure: 3000 };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const params = { period: 'month' as const, scope: 'system_wide' as const };
       const result = await costDashboardService.getBreakdown(params);
@@ -80,7 +80,7 @@ describe('costDashboardService', () => {
 
     it('handles year period', async () => {
       const mockResponse = { ai: 60000, infrastructure: 36000 };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const params = { period: 'year' as const, scope: 'system_wide' as const };
       const result = await costDashboardService.getBreakdown(params);
@@ -96,7 +96,7 @@ describe('costDashboardService', () => {
         costs: 30000,
         profit: 20000,
       };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const params = { period: 'month' as const, scope: 'system_wide' as const };
       const result = await costDashboardService.getBalanceSheet(params);
@@ -108,7 +108,7 @@ describe('costDashboardService', () => {
   describe('getPerMinute', () => {
     it('calls GET /admin/costs/per-minute with period parameter', async () => {
       const mockResponse = { costPerMinute: 0.85 };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const params = { period: 'today' as const, scope: 'system_wide' as const };
       const result = await costDashboardService.getPerMinute(params);
@@ -123,7 +123,7 @@ describe('costDashboardService', () => {
         { rank: 1, userId: 'user-1', cost: 500 },
         { rank: 2, userId: 'user-2', cost: 300 },
       ];
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const result = await costDashboardService.getTopSpenders({ period: 'month' });
 
@@ -131,11 +131,11 @@ describe('costDashboardService', () => {
     });
 
     it('includes limit parameter when provided', async () => {
-      mockedAxios.create().get = jest.fn().mockResolvedValue([]);
+      mockedApi.get = jest.fn().mockResolvedValue([]);
 
       await costDashboardService.getTopSpenders({ period: 'month', limit: 50 });
 
-      const call = mockedAxios.create().get as jest.Mock;
+      const call = mockedApi.get as jest.Mock;
       expect(call.mock.calls[0][0]).toContain('limit=50');
     });
   });
@@ -146,7 +146,7 @@ describe('costDashboardService', () => {
         permanent: 8000,
         transient: 6000,
       };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const params = {
         period: 'month',
@@ -161,7 +161,7 @@ describe('costDashboardService', () => {
   describe('getUserBreakdown', () => {
     it('calls GET /admin/costs/users/{userId}/breakdown', async () => {
       const mockResponse = { ai: 2000, infrastructure: 1500 };
-      mockedAxios.create().get = jest.fn().mockResolvedValue(mockResponse);
+      mockedApi.get = jest.fn().mockResolvedValue(mockResponse);
 
       const result = await costDashboardService.getUserBreakdown('user-123');
 
@@ -187,18 +187,18 @@ describe('costDashboardService', () => {
   describe('error handling', () => {
     it('rejects promise on API error', async () => {
       const error = new Error('Network error');
-      mockedAxios.create().get = jest.fn().mockRejectedValue(error);
+      mockedApi.get = jest.fn().mockRejectedValue(error);
 
       const params = { scope: 'system_wide' as const };
       await expect(costDashboardService.getOverview('system_wide')).rejects.toThrow();
     });
 
     it('constructs URLs correctly', async () => {
-      mockedAxios.create().get = jest.fn().mockResolvedValue({});
+      mockedApi.get = jest.fn().mockResolvedValue({});
 
       await costDashboardService.getOverview('system_wide');
 
-      const call = mockedAxios.create().get as jest.Mock;
+      const call = mockedApi.get as jest.Mock;
       expect(call.mock.calls[0][0]).toContain('/admin/costs/overview');
     });
   });
