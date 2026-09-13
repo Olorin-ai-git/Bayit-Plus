@@ -12,7 +12,6 @@ import {
   Platform,
   Pressable,
   I18nManager,
-  Text,
   ViewStyle,
   StyleProp,
 } from 'react-native';

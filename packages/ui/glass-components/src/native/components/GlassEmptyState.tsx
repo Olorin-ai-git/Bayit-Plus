@@ -19,14 +19,13 @@ import {
   View,
   Text,
   ActivityIndicator,
-  StyleSheet,
   Platform,
   type ViewStyle,
   type TextStyle,
 } from 'react-native';
 import { GlassCard } from './GlassCard';
 import { GlassButton, type ButtonVariant } from './GlassButton';
-import { colors, spacing, fontSize, fontSizeTV, borderRadius } from '../../theme';
+import { colors, spacing, fontSize, fontSizeTV } from '../../theme';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Variant types
@@ -255,15 +254,10 @@ export const GlassEmptyState: React.FC<GlassEmptyStateProps> = ({
   titleColor,
   descriptionColor,
   noCard = false,
-  cardIntensity = 'medium',
   accessibilityLabel,
   accessibilityHint,
   accessibilityRole = 'text',
   hasTVPreferredFocus = false,
-  focusable = false,
-  titleKey,
-  descriptionKey,
-  i18nValues,
   children,
   testID = 'glass-empty-state',
 }) => {

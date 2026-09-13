@@ -10,7 +10,9 @@
 
 import React, { useEffect } from 'react';
 import { useNotifications } from '../hooks/useNotifications';
-import type { ModalType } from '../../shared/components/ui/GlassModal';
+import type { NotificationLevel } from '../native/components/GlassToast/types';
+
+type ModalType = Exclude<NotificationLevel, 'debug'> | 'confirm';
 
 export interface GlassModalCompatProps {
   visible: boolean;
@@ -37,7 +39,7 @@ export const GlassModalCompat: React.FC<GlassModalCompatProps> = ({
   useEffect(() => {
     if (visible && message) {
       // Map ModalType to NotificationLevel
-      const levelMap: Record<ModalType, string> = {
+      const levelMap: Record<ModalType, NotificationLevel> = {
         error: 'error',
         success: 'success',
         warning: 'warning',
@@ -45,9 +47,9 @@ export const GlassModalCompat: React.FC<GlassModalCompatProps> = ({
         confirm: 'info',
       };
 
-      const level = levelMap[type] as any;
+      const level = levelMap[type];
 
-      const id = notifications.show({
+      notifications.show({
         level,
         message,
         title,

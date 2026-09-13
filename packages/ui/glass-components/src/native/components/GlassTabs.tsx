@@ -14,7 +14,7 @@ import {
   Animated,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, spacing } from '../../theme';
+import { colors } from '../../theme';
 import { useTVFocus } from '../../hooks/useTVFocus';
 
 export interface Tab {

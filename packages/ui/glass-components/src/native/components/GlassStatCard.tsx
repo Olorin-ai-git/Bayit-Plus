@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { View, Text, Pressable, ViewStyle, StyleProp } from 'react-native';
-import { colors, spacing } from '../../theme';
+import { colors } from '../../theme';
 import { GlassView } from './GlassView';
 
 export interface GlassStatCardProps {
@@ -38,8 +38,6 @@ export interface GlassStatCardProps {
  */
 export const GlassStatCard: React.FC<GlassStatCardProps> = ({
   icon,
-  iconColor = colors.primary,
-  iconBgColor,
   label,
   value,
   subtitle,

@@ -27,17 +27,29 @@ interface AnnouncementQueueItem {
   timestamp: number;
 }
 
+interface TTSService {
+  speak(text: string, options: {
+    priority: 'high' | 'normal';
+    interruptible: boolean;
+  }): unknown;
+}
+
+interface AudioDuckingService {
+  duck(): unknown;
+  restore(): unknown;
+}
+
 class TTSAnnouncementQueue {
   private queue: AnnouncementQueueItem[] = [];
   private isAnnouncing: boolean = false;
-  private ttsService: any = null;
-  private audioDuckingService: any = null;
+  private ttsService: TTSService | null = null;
+  private audioDuckingService: AudioDuckingService | null = null;
 
-  setTTSService(service: any) {
+  setTTSService(service: TTSService | null) {
     this.ttsService = service;
   }
 
-  setAudioDuckingService(service: any) {
+  setAudioDuckingService(service: AudioDuckingService | null) {
     this.audioDuckingService = service;
   }
 
@@ -127,8 +139,8 @@ export const ttsAnnouncementQueue = new TTSAnnouncementQueue();
  * Call this in app initialization to hook up TTS service
  */
 export const initNotificationTTS = (
-  ttsService: any,
-  audioDuckingService?: any
+  ttsService: TTSService | null,
+  audioDuckingService?: AudioDuckingService | null
 ): void => {
   ttsAnnouncementQueue.setTTSService(ttsService);
   if (audioDuckingService) {

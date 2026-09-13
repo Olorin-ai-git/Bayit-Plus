@@ -47,8 +47,6 @@ declare module 'react-native-linear-gradient' {
 }
 
 declare module 'react-native-reanimated' {
-  import * as RN from 'react-native';
-
   export interface AnimatedProps<P> extends P {
     className?: string;
   }

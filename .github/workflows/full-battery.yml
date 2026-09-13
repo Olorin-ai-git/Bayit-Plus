@@ -63,9 +63,8 @@ jobs:
         ports:
           - 27017:27017
     env:
-      MONGODB_URL: mongodb://localhost:27017
+      MONGODB_URI: mongodb://localhost:27017
       MONGODB_DB_NAME: bayit_test
-      SECRET_KEY: test-secret-key
       DEBUG: 'true'
       ENVIRONMENT: test
     steps:
@@ -134,9 +133,8 @@ jobs:
         ports:
           - 27017:27017
     env:
-      MONGODB_URL: mongodb://localhost:27017
+      MONGODB_URI: mongodb://localhost:27017
       MONGODB_DB_NAME: bayit_smoke
-      SECRET_KEY: smoke-secret-key
       DEBUG: 'true'
       ENVIRONMENT: test
       BACKEND_PORT: '8000'

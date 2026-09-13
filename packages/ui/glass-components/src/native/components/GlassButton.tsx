@@ -169,7 +169,6 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   fullWidth = false,
   style,
   textStyle,
-  className,
   hasTVPreferredFocus = false,
   accessibilityLabel,
   accessibilityHint,

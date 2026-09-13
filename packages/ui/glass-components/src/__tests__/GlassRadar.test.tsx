@@ -18,15 +18,13 @@ const mockAgents: RadarAgent[] = [
   {
     id: 'agent-1',
     name: 'Service A',
-    ring: 2,
-    position: 0,
+    radius: 100,
     color: '#00ff00',
   },
   {
     id: 'agent-2',
     name: 'Service B',
-    ring: 3,
-    position: Math.PI,
+    radius: 150,
     color: '#0000ff',
   },
 ];
@@ -34,13 +32,9 @@ const mockAgents: RadarAgent[] = [
 const mockAnomalies: RadarAnomaly[] = [
   {
     id: 'anomaly-1',
-    agent_id: 'agent-1',
+    name: 'High CPU usage',
     severity: 'critical',
-    type: 'performance',
-    description: 'High CPU usage',
-    timestamp: new Date().toISOString(),
-    ring: 2,
-    angle: 0,
+    position: { x: 400, y: 350 },
   },
 ];
 
@@ -214,9 +208,8 @@ describe('GlassRadar', () => {
       const manyAgents: RadarAgent[] = Array.from({ length: 20 }, (_, i) => ({
         id: `agent-${i}`,
         name: `Service ${i}`,
-        ring: (i % 5) + 1,
-        position: (i / 20) * 2 * Math.PI,
-        color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+        radius: ((i % 5) + 1) * 50,
+        color: '#00ff00',
       }));
 
       const { getByTestId } = render(

@@ -3,6 +3,7 @@
  * Tracks render performance and alerts on budget violations
  */
 
+import React from 'react';
 import { logger } from './logger';
 
 interface PerformanceMetrics {
@@ -83,7 +84,7 @@ export const withPerformanceTracking = <P extends object>(
   Component: React.ComponentType<P>,
   componentName: string
 ): React.FC<P> => {
-  return (props: P) => {
+  const TrackedComponent: React.FC<P> = (props: P) => {
     const endMeasure = performanceMonitor.startMeasure(componentName);
 
     React.useEffect(() => {
@@ -92,4 +93,6 @@ export const withPerformanceTracking = <P extends object>(
 
     return <Component {...props} />;
   };
+  TrackedComponent.displayName = `withPerformanceTracking(${componentName})`;
+  return TrackedComponent;
 };

@@ -7,9 +7,9 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, type ViewStyle, type StyleProp } from 'react-native';
-import { AlertCircle, X } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassButton } from './GlassButton';
-import { colors, spacing, borderRadius } from '../../theme';
+import { spacing, borderRadius } from '../../theme';
 
 export interface GlassErrorBannerProps {
   /** Error message to display */
@@ -44,8 +44,9 @@ export const GlassErrorBanner = ({
       accessibilityLabel={accessibilityLabel}
       accessible
     >
-      <AlertCircle
-        size={18}
+      <NativeIcon
+        name="alert"
+        size="sm"
         color="#ef4444"
         style={styles.icon}
       />
@@ -57,7 +58,7 @@ export const GlassErrorBanner = ({
         variant="ghost"
         size="sm"
         onPress={onDismiss}
-        icon={<X size={18} color="#ef4444" />}
+        icon={<NativeIcon name="close" size="sm" color="#ef4444" />}
         accessibilityLabel="Dismiss error"
         style={styles.dismissButton}
       />
