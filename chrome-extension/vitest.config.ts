@@ -9,6 +9,13 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
+      include: [
+        'extension/background/**/*.ts',
+        'extension/lib/crypto.ts',
+        'extension/lib/logger.ts',
+        'extension/lib/performance-monitor.ts',
+        'extension/offscreen/audio-buffer-manager.ts',
+      ],
       exclude: [
         'node_modules/',
         'dist/',
