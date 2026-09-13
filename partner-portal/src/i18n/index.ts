@@ -5,7 +5,7 @@
  * Supports 10 languages with fallback to B2B-specific overrides.
  */
 
-import i18n, { languages } from '@olorin/shared-i18n';
+import i18n, { languages, type BayitLanguage } from '@olorin/shared-i18n';
 import { initWebI18n as initWebI18nCore, saveLanguageWeb, setupWebDirectionListener } from '@olorin/shared-i18n/web';
 import { getB2BConfig } from '../config/env';
 
@@ -47,7 +47,7 @@ export async function initializeI18n(): Promise<typeof i18n> {
  * @param lang Language code
  */
 export async function changeLanguage(lang: string): Promise<void> {
-  await saveLanguageWeb(lang as any);
+  await saveLanguageWeb(lang as BayitLanguage);
 }
 
 /**
