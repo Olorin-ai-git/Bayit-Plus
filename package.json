@@ -66,7 +66,7 @@
     "changeset:version": "changeset version",
     "changeset:publish": "turbo run build --filter='./packages/**' && changeset publish",
     "prepare": "echo 'Husky disabled - configure later if needed' || true",
-    "postinstall": "patch-package",
+    "postinstall": "node scripts/postinstall.js",
     "legacy:build:all": "npm run build:web && npm run build:tv",
     "legacy:build:web": "cd web && npm run build",
     "legacy:build:tv": "cd tv-app && npm run build:web",
